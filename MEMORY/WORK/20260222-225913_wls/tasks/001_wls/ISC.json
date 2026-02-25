@@ -1,0 +1,10 @@
+{
+  "taskId": "001_wls",
+  "status": "PENDING",
+  "effortLevel": "STANDARD",
+  "criteria": [],
+  "antiCriteria": [],
+  "satisfaction": null,
+  "createdAt": "2026-02-22T22:59:13+03:00",
+  "updatedAt": "2026-02-22T22:59:13+03:00"
+}

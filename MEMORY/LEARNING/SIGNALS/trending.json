@@ -1,0 +1,91 @@
+{
+  "updated_at": "2026-02-25T19:32:05.041Z",
+  "total_ratings": 141,
+  "all_time_avg": 5.57,
+  "last_7d_avg": 5.57,
+  "last_30d_avg": 5.57,
+  "last_10_avg": 6.6,
+  "trend": "down",
+  "trend_delta": -0.4,
+  "by_source": {
+    "explicit": {
+      "count": 14,
+      "avg": 7.29
+    },
+    "implicit": {
+      "count": 114,
+      "avg": 5.21
+    }
+  },
+  "distribution": {
+    "3": 4,
+    "4": 3,
+    "5": 100,
+    "6": 4,
+    "7": 9,
+    "8": 15,
+    "9": 6
+  },
+  "recent_sessions": [
+    {
+      "session_id": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
+      "avg_rating": 4,
+      "count": 1,
+      "last_timestamp": "2026-02-25T22:32:05+03:00"
+    },
+    {
+      "session_id": "7a3762a7-8959-4ddb-b626-0017cdf66623",
+      "avg_rating": 6.5,
+      "count": 4,
+      "last_timestamp": "2026-02-25T21:30:59+03:00"
+    },
+    {
+      "session_id": "f671a458-1e90-478f-93fe-40a0c6f8ed9e",
+      "avg_rating": 6.5,
+      "count": 2,
+      "last_timestamp": "2026-02-25T18:46:59+03:00"
+    },
+    {
+      "session_id": "cb9c783f-0cb9-453a-8eec-7f650b5707d3",
+      "avg_rating": 8,
+      "count": 1,
+      "last_timestamp": "2026-02-25T17:40:36+03:00"
+    },
+    {
+      "session_id": "00d00fab-2899-4bf0-8e15-2985391cdfda",
+      "avg_rating": 8,
+      "count": 1,
+      "last_timestamp": "2026-02-25T16:31:47+03:00"
+    },
+    {
+      "session_id": "ac633c0b-e256-4885-a726-e717f64376d0",
+      "avg_rating": 7,
+      "count": 1,
+      "last_timestamp": "2026-02-25T12:58:03+03:00"
+    },
+    {
+      "session_id": "2dac5548-ee86-4bfb-b88f-b64a6e9255ca",
+      "avg_rating": 8,
+      "count": 1,
+      "last_timestamp": "2026-02-25T11:28:55+03:00"
+    },
+    {
+      "session_id": "31e8642e-535f-46f5-93ed-d7c57c2e71bf",
+      "avg_rating": 8,
+      "count": 1,
+      "last_timestamp": "2026-02-23T03:35:19+03:00"
+    },
+    {
+      "session_id": "1bb350bc-d61b-4456-99dd-894d585986e6",
+      "avg_rating": 8,
+      "count": 1,
+      "last_timestamp": "2026-02-23T03:12:46+03:00"
+    },
+    {
+      "session_id": "47a95f1e-ee52-46e1-b78c-d0b70d46963b",
+      "avg_rating": 7.25,
+      "count": 8,
+      "last_timestamp": "2026-02-23T02:36:38+03:00"
+    }
+  ]
+}

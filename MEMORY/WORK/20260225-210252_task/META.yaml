@@ -1,0 +1,11 @@
+id: "20260225-210252_task"
+title: "Начем мы остановились по нашему цифровому прорабу "
+session_id: "4574a700-5878-42d9-9ea2-2f0c32c826ab"
+created_at: "2026-02-25T21:02:52+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

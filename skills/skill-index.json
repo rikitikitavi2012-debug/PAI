@@ -1,0 +1,986 @@
+{
+  "generated": "2026-02-22T23:22:42.252Z",
+  "totalSkills": 44,
+  "alwaysLoadedCount": 2,
+  "deferredCount": 42,
+  "skills": {
+    "osint": {
+      "name": "OSINT",
+      "path": "OSINT/SKILL.md",
+      "fullDescription": "Open source intelligence gathering. USE WHEN OSINT, due diligence, background check, research person, company intel, investigate. SkillSearch('osint') for docs.",
+      "triggers": [
+        "osint",
+        "due",
+        "diligence",
+        "background",
+        "check",
+        "research",
+        "person",
+        "company",
+        "intel",
+        "investigate"
+      ],
+      "workflows": [
+        "PeopleLookup",
+        "CompanyLookup",
+        "CompanyDueDiligence",
+        "EntityLookup"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "art": {
+      "name": "Art",
+      "path": "Art/SKILL.md",
+      "fullDescription": "Complete visual content system. USE WHEN user wants to create visual content, illustrations, diagrams, OR mentions art, header images, visualizations, mermaid, flowchart, technical diagram, infographic, PAI icon, pack icon, or PAI pack icon.",
+      "triggers": [
+        "create",
+        "visual",
+        "content",
+        "illustrations",
+        "diagrams",
+        "mentions",
+        "art",
+        "header",
+        "images",
+        "visualizations",
+        "mermaid",
+        "flowchart",
+        "technical",
+        "diagram",
+        "infographic",
+        "pai",
+        "icon",
+        "pack"
+      ],
+      "workflows": [
+        "RemoveBackground",
+        "ULWallpaper",
+        "Essay",
+        "D3Dashboards",
+        "Visualize",
+        "Mermaid",
+        "TechnicalDiagrams",
+        "Taxonomies",
+        "Timelines",
+        "Frameworks",
+        "Comparisons",
+        "AnnotatedScreenshots",
+        "step",
+        "Aphorisms",
+        "Maps",
+        "Stats",
+        "Comics",
+        "YouTubeThumbnail",
+        "AdHocYouTubeThumbnail",
+        "CreatePAIPackIcon",
+        "RecipeCards"
+      ],
+      "tier": "always",
+      "minModel": "sonnet"
+    },
+    "aphorisms": {
+      "name": "Aphorisms",
+      "path": "Aphorisms/SKILL.md",
+      "fullDescription": "Aphorism management. USE WHEN aphorism, quote, saying. SkillSearch('aphorisms') for docs.",
+      "triggers": [
+        "aphorism",
+        "quote",
+        "saying"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "haiku"
+    },
+    "vercel-react-best-practices": {
+      "name": "vercel-react-best-practices",
+      "path": "vercel-react-best-practices/SKILL.md",
+      "fullDescription": "React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.",
+      "triggers": [],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "usmetrics": {
+      "name": "USMetrics",
+      "path": "USMetrics/SKILL.md",
+      "fullDescription": "US economic indicators. USE WHEN GDP, inflation, unemployment, economic metrics, gas prices. SkillSearch('usmetrics') for docs.",
+      "triggers": [
+        "gdp",
+        "inflation",
+        "unemployment",
+        "economic",
+        "metrics",
+        "gas",
+        "prices"
+      ],
+      "workflows": [
+        "UpdateData",
+        "GetCurrentState"
+      ],
+      "tier": "deferred",
+      "minModel": "haiku"
+    },
+    "promptinjection": {
+      "name": "PromptInjection",
+      "path": "PromptInjection/SKILL.md",
+      "fullDescription": "Prompt injection testing. USE WHEN prompt injection, jailbreak, LLM security, AI security assessment, pentest AI application, test chatbot vulnerabilities.",
+      "triggers": [
+        "prompt",
+        "injection",
+        "jailbreak",
+        "llm",
+        "security",
+        "assessment",
+        "pentest",
+        "application",
+        "test",
+        "chatbot",
+        "vulnerabilities"
+      ],
+      "workflows": [
+        "CompleteAssessment",
+        "Reconnaissance",
+        "DirectInjectionTesting",
+        "IndirectInjectionTesting",
+        "MultiStageAttacks"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "agents": {
+      "name": "Agents",
+      "path": "Agents/SKILL.md",
+      "fullDescription": "Dynamic agent composition and management system. USE WHEN user says create custom agents, spin up custom agents, specialized agents, OR asks for agent personalities, available traits, agent voices. Handles custom agent creation, personality assignment, voice mapping, and parallel agent orchestration.",
+      "triggers": [
+        "create",
+        "custom",
+        "agents",
+        "spin",
+        "specialized",
+        "asks",
+        "agent",
+        "personalities",
+        "available",
+        "traits",
+        "voices",
+        "voice"
+      ],
+      "workflows": [
+        "CREATECUSTOMAGENT",
+        "CreateCustomAgent",
+        "LISTTRAITS",
+        "ListTraits",
+        "SPAWNPARALLEL",
+        "SpawnParallelAgents"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "vercel-composition-patterns": {
+      "name": "vercel-composition-patterns",
+      "path": "vercel-composition-patterns/SKILL.md",
+      "fullDescription": "React composition patterns that scale. Use when refactoring components with",
+      "triggers": [
+        "refactoring",
+        "components"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "paiupgrade": {
+      "name": "PAIUpgrade",
+      "path": "PAIUpgrade/SKILL.md",
+      "fullDescription": "Extract system improvements from content AND monitor external sources (Anthropic ecosystem, YouTube). USE WHEN upgrade, improve system, system upgrade, analyze for improvements, check Anthropic, Anthropic changes, new Claude features, check YouTube, new videos. SkillSearch('upgrade') for docs.",
+      "triggers": [
+        "upgrade",
+        "improve",
+        "system",
+        "analyze",
+        "improvements",
+        "check",
+        "anthropic",
+        "changes",
+        "new",
+        "claude",
+        "features",
+        "youtube",
+        "videos",
+        "extract"
+      ],
+      "workflows": [
+        "Upgrade",
+        "MineReflections",
+        "AlgorithmUpgrade",
+        "ResearchUpgrade",
+        "FindSources"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "annualreports": {
+      "name": "AnnualReports",
+      "path": "AnnualReports/SKILL.md",
+      "fullDescription": "Annual security report aggregation and analysis. USE WHEN annual reports, security reports, threat reports, industry reports, update reports, analyze reports, vendor reports, threat landscape.",
+      "triggers": [
+        "annual",
+        "reports",
+        "security",
+        "threat",
+        "industry",
+        "update",
+        "analyze",
+        "vendor",
+        "landscape"
+      ],
+      "workflows": [
+        "UPDATE",
+        "Update",
+        "ANALYZE",
+        "Analyze",
+        "FETCH",
+        "Fetch"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "writestory": {
+      "name": "WriteStory",
+      "path": "WriteStory/SKILL.md",
+      "fullDescription": "Layered fiction writing system using Will Storr's storytelling science and rhetorical figures. USE WHEN write story, fiction, novel, short story, book, chapter, story bible, character arc, plot outline, creative writing, worldbuilding, narrative, mystery writing, dialogue, prose, series planning.",
+      "triggers": [
+        "write",
+        "story",
+        "fiction",
+        "novel",
+        "short",
+        "book",
+        "chapter",
+        "bible",
+        "character",
+        "arc",
+        "plot",
+        "outline",
+        "creative",
+        "writing",
+        "worldbuilding",
+        "narrative",
+        "mystery",
+        "dialogue",
+        "prose",
+        "series",
+        "planning"
+      ],
+      "workflows": [
+        "Interview",
+        "BuildBible",
+        "Explore",
+        "WriteChapter",
+        "Revise"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "supabase-postgres-best-practices": {
+      "name": "supabase-postgres-best-practices",
+      "path": "supabase-postgres-best-practices/SKILL.md",
+      "fullDescription": "Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizing Postgres queries, schema designs, or database configurations.",
+      "triggers": [],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "remotion": {
+      "name": "Remotion",
+      "path": "Remotion/SKILL.md",
+      "fullDescription": "Programmatic video creation with React. USE WHEN video, animation, motion graphics, video rendering, React video, intro video, YouTube video, TikTok video, video production, render video.",
+      "triggers": [
+        "video",
+        "animation",
+        "motion",
+        "graphics",
+        "rendering",
+        "react",
+        "intro",
+        "youtube",
+        "tiktok",
+        "production",
+        "render"
+      ],
+      "workflows": [
+        "ContentToAnimation"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "recon": {
+      "name": "Recon",
+      "path": "Recon/SKILL.md",
+      "fullDescription": "Security reconnaissance. USE WHEN recon, reconnaissance, bug bounty, attack surface. SkillSearch('recon') for docs.",
+      "triggers": [
+        "recon",
+        "reconnaissance",
+        "bug",
+        "bounty",
+        "attack",
+        "surface",
+        "security"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "fabric": {
+      "name": "Fabric",
+      "path": "Fabric/SKILL.md",
+      "fullDescription": "Intelligent prompt pattern system with 240+ specialized patterns for content analysis, extraction, and transformation. USE WHEN user says 'use fabric', 'fabric pattern', 'run fabric', 'update fabric', 'update patterns', 'sync fabric', 'extract wisdom', 'summarize with fabric', 'create threat model', 'analyze with fabric', OR any request to apply Fabric patterns to content.",
+      "triggers": [
+        "use",
+        "fabric",
+        "pattern",
+        "run",
+        "update",
+        "patterns",
+        "sync",
+        "extract",
+        "wisdom",
+        "summarize",
+        "create",
+        "threat",
+        "model",
+        "analyze",
+        "any",
+        "request",
+        "apply",
+        "content"
+      ],
+      "workflows": [
+        "ExecutePattern",
+        "UpdatePatterns"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "documents": {
+      "name": "Documents",
+      "path": "Documents/SKILL.md",
+      "fullDescription": "Document processing. USE WHEN document, process file. SkillSearch('documents') for docs.",
+      "triggers": [
+        "document",
+        "process",
+        "file"
+      ],
+      "workflows": [
+        "DOCX",
+        "PDF",
+        "PPTX",
+        "XLSX",
+        "ConsultingReport"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "pdf": {
+      "name": "Pdf",
+      "path": "Documents/Pdf/SKILL.md",
+      "fullDescription": "PDF processing. USE WHEN pdf, PDF file. SkillSearch('pdf') for docs.",
+      "triggers": [
+        "pdf",
+        "file"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "pptx": {
+      "name": "Pptx",
+      "path": "Documents/Pptx/SKILL.md",
+      "fullDescription": "PowerPoint processing. USE WHEN pptx, PowerPoint, slides. SkillSearch('pptx') for docs.",
+      "triggers": [
+        "pptx",
+        "powerpoint",
+        "slides"
+      ],
+      "workflows": [
+        "CRITICAL",
+        "LAYOUT",
+        "VALIDATION",
+        "IMPORTANT",
+        "WARNING"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "docx": {
+      "name": "Docx",
+      "path": "Documents/Docx/SKILL.md",
+      "fullDescription": "Word document processing. USE WHEN docx, Word document. SkillSearch('docx') for docs.",
+      "triggers": [
+        "docx",
+        "word",
+        "document"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "xlsx": {
+      "name": "Xlsx",
+      "path": "Documents/Xlsx/SKILL.md",
+      "fullDescription": "Excel file processing. USE WHEN xlsx, Excel, spreadsheet. SkillSearch('xlsx') for docs.",
+      "triggers": [
+        "xlsx",
+        "excel",
+        "spreadsheet"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "parser": {
+      "name": "Parser",
+      "path": "Parser/SKILL.md",
+      "fullDescription": "Parse URLs, files, videos to JSON. USE WHEN parse, extract, URL, transcript, entities, JSON, batch, content, YouTube, PDF, article. SkillSearch('parser') for docs.",
+      "triggers": [
+        "parse",
+        "extract",
+        "url",
+        "transcript",
+        "entities",
+        "json",
+        "batch",
+        "content",
+        "youtube",
+        "pdf",
+        "article"
+      ],
+      "workflows": [
+        "ParseContent",
+        "CollisionDetection",
+        "DetectContentType",
+        "ExtractNewsletter",
+        "ExtractTwitter",
+        "ExtractArticle",
+        "ExtractYoutube",
+        "ExtractPdf",
+        "ExtractBrowserExtension"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "createcli": {
+      "name": "CreateCLI",
+      "path": "CreateCLI/SKILL.md",
+      "fullDescription": "Generate TypeScript CLIs. USE WHEN create CLI, build CLI, command-line tool. SkillSearch('createcli') for docs.",
+      "triggers": [
+        "create",
+        "cli",
+        "build",
+        "command-line",
+        "tool"
+      ],
+      "workflows": [
+        "CreateCli",
+        "AddCommand",
+        "UpgradeTier"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "prompting": {
+      "name": "Prompting",
+      "path": "Prompting/SKILL.md",
+      "fullDescription": "Meta-prompting system for dynamic prompt generation using templates, standards, and patterns. USE WHEN meta-prompting, template generation, prompt optimization, or programmatic prompt composition.",
+      "triggers": [
+        "meta-prompting",
+        "template",
+        "generation",
+        "prompt",
+        "optimization",
+        "programmatic",
+        "composition"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "webassessment": {
+      "name": "WebAssessment",
+      "path": "WebAssessment/SKILL.md",
+      "fullDescription": "Web security assessment. USE WHEN web assessment, pentest, security testing, vulnerability scan. SkillSearch('webassessment') for docs.",
+      "triggers": [
+        "web",
+        "assessment",
+        "pentest",
+        "security",
+        "testing",
+        "vulnerability",
+        "scan"
+      ],
+      "workflows": [
+        "UnderstandApplication",
+        "CreateThreatModel"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "web-design-guidelines": {
+      "name": "web-design-guidelines",
+      "path": "web-design-guidelines/SKILL.md",
+      "fullDescription": "Review UI code for Web Interface Guidelines compliance. Use when asked to \"review my UI\", \"check accessibility\", \"audit design\", \"review UX\", or \"check my site against best practices\".",
+      "triggers": [
+        "asked",
+        "review",
+        "check",
+        "accessibility",
+        "audit",
+        "design",
+        "site",
+        "against",
+        "best",
+        "practices"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "apify": {
+      "name": "Apify",
+      "path": "Apify/SKILL.md",
+      "fullDescription": "Social media scraping, business data, e-commerce via Apify actors. USE WHEN Twitter, Instagram, LinkedIn, TikTok, YouTube, Facebook, Google Maps, Amazon scraping.",
+      "triggers": [
+        "twitter",
+        "instagram",
+        "linkedin",
+        "tiktok",
+        "youtube",
+        "facebook",
+        "google",
+        "maps",
+        "amazon",
+        "scraping"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "council": {
+      "name": "Council",
+      "path": "Council/SKILL.md",
+      "fullDescription": "Multi-agent debate system. USE WHEN council, debate, perspectives, agents discuss. SkillSearch('council') for docs.",
+      "triggers": [
+        "council",
+        "debate",
+        "perspectives",
+        "agents",
+        "discuss"
+      ],
+      "workflows": [
+        "Debate",
+        "Quick"
+      ],
+      "tier": "deferred",
+      "minModel": "opus"
+    },
+    "firstprinciples": {
+      "name": "FirstPrinciples",
+      "path": "FirstPrinciples/SKILL.md",
+      "fullDescription": "First principles analysis. USE WHEN first principles, fundamental, root cause, decompose. SkillSearch('firstprinciples') for docs.",
+      "triggers": [
+        "first",
+        "principles",
+        "fundamental",
+        "root",
+        "cause",
+        "decompose"
+      ],
+      "workflows": [
+        "Deconstruct",
+        "Challenge",
+        "Reconstruct"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "sales": {
+      "name": "Sales",
+      "path": "Sales/SKILL.md",
+      "fullDescription": "Sales workflows. USE WHEN sales, proposal, pricing. SkillSearch('sales') for docs.",
+      "triggers": [
+        "sales",
+        "proposal",
+        "pricing"
+      ],
+      "workflows": [
+        "Create-sales-package",
+        "Create-narrative",
+        "Create-visual"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "privateinvestigator": {
+      "name": "PrivateInvestigator",
+      "path": "PrivateInvestigator/SKILL.md",
+      "fullDescription": "Ethical people-finding. USE WHEN find person, locate, reconnect, people search, skip trace. SkillSearch('privateinvestigator') for docs.",
+      "triggers": [
+        "find",
+        "person",
+        "locate",
+        "reconnect",
+        "people",
+        "search",
+        "skip",
+        "trace"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "createskill": {
+      "name": "CreateSkill",
+      "path": "CreateSkill/SKILL.md",
+      "fullDescription": "Create and validate skills. USE WHEN create skill, new skill, skill structure, canonicalize. SkillSearch('createskill') for docs.",
+      "triggers": [
+        "create",
+        "skill",
+        "new",
+        "structure",
+        "canonicalize"
+      ],
+      "workflows": [
+        "Create",
+        "CompanyDueDiligence",
+        "WorkflowName",
+        "CreateSkill",
+        "ValidateSkill",
+        "UpdateSkill",
+        "CanonicalizeSkill"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "cloudflare": {
+      "name": "Cloudflare",
+      "path": "Cloudflare/SKILL.md",
+      "fullDescription": "Deploy Cloudflare Workers/Pages. USE WHEN Cloudflare, worker, deploy, Pages, MCP server. SkillSearch('cloudflare') for docs.",
+      "triggers": [
+        "cloudflare",
+        "worker",
+        "deploy",
+        "pages",
+        "mcp",
+        "server"
+      ],
+      "workflows": [
+        "Create",
+        "Troubleshoot"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "extractwisdom": {
+      "name": "ExtractWisdom",
+      "path": "ExtractWisdom/SKILL.md",
+      "fullDescription": "Dynamic wisdom extraction that adapts sections to content. USE WHEN extract wisdom, analyze video, analyze podcast, extract insights, what's interesting, extract from YouTube, what did I miss, key takeaways. Replaces static extract_wisdom with content-adaptive extraction.",
+      "triggers": [
+        "extract",
+        "wisdom",
+        "analyze",
+        "video",
+        "podcast",
+        "insights",
+        "whats",
+        "interesting",
+        "youtube",
+        "what",
+        "did",
+        "miss",
+        "key",
+        "takeaways"
+      ],
+      "workflows": [
+        "Extract"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "science": {
+      "name": "Science",
+      "path": "Science/SKILL.md",
+      "fullDescription": "Universal thinking and iteration engine based on the scientific method. USE WHEN user says \"think about\", \"figure out\", \"try approaches\", \"experiment with\", \"test this idea\", \"iterate on\", \"improve\", \"optimize\", OR any problem-solving that benefits from structured hypothesis-test-analyze cycles. THE meta-skill that other workflows implement.",
+      "triggers": [
+        "think",
+        "figure",
+        "out",
+        "try",
+        "approaches",
+        "experiment",
+        "test",
+        "this",
+        "idea",
+        "iterate",
+        "improve",
+        "optimize",
+        "any",
+        "problem-solving",
+        "that",
+        "benefits",
+        "structured",
+        "hypothesis-test-analyze",
+        "cycles"
+      ],
+      "workflows": [
+        "DefineGoal",
+        "GenerateHypotheses",
+        "DesignExperiment",
+        "MeasureResults",
+        "AnalyzeResults",
+        "Iterate",
+        "FullCycle",
+        "QuickDiagnosis",
+        "StructuredInvestigation"
+      ],
+      "tier": "deferred",
+      "minModel": "opus"
+    },
+    "worldthreatmodelharness": {
+      "name": "WorldThreatModelHarness",
+      "path": "WorldThreatModelHarness/SKILL.md",
+      "fullDescription": ">",
+      "triggers": [],
+      "workflows": [
+        "TestIdea",
+        "UpdateModels",
+        "ViewModels"
+      ],
+      "tier": "deferred",
+      "minModel": "opus"
+    },
+    "research": {
+      "name": "Research",
+      "path": "Research/SKILL.md",
+      "fullDescription": "Comprehensive research, analysis, and content extraction system. USE WHEN user says 'research' (ANY form - this is the MANDATORY trigger), 'do research', 'extensive research', 'quick research', 'minor research', 'research this', 'find information', 'investigate', 'extract wisdom', 'extract alpha', 'analyze content', 'can't get this content', 'use fabric', OR requests any web/content research. Supports three research modes (quick/standard/extensive), deep content analysis, intelligent retrieval, and 242+ Fabric patterns. NOTE: For due diligence, OSINT, or background checks, use OSINT skill instead.",
+      "triggers": [
+        "research",
+        "(any",
+        "form",
+        "this",
+        "mandatory",
+        "trigger)",
+        "extensive",
+        "quick",
+        "minor",
+        "find",
+        "information",
+        "investigate",
+        "extract",
+        "wisdom",
+        "alpha",
+        "analyze",
+        "content",
+        "cant",
+        "get",
+        "use",
+        "fabric",
+        "requests",
+        "any",
+        "web/content",
+        "osint"
+      ],
+      "workflows": [
+        "OSINT",
+        "QuickResearch",
+        "StandardResearch",
+        "ExtensiveResearch",
+        "DeepInvestigation",
+        "ExtractAlpha",
+        "Retrieve",
+        "YoutubeExtraction",
+        "WebScraping",
+        "ClaudeResearch",
+        "InterviewResearch",
+        "AnalyzeAiTrends",
+        "Fabric",
+        "Enhance",
+        "ExtractKnowledge"
+      ],
+      "tier": "always",
+      "minModel": "sonnet"
+    },
+    "secupdates": {
+      "name": "SECUpdates",
+      "path": "SECUpdates/SKILL.md",
+      "fullDescription": "Security news aggregation from tldrsec, no.security, and other sources. USE WHEN security news, security updates, what's new in security, breaches, security research, sec updates. SkillSearch('secupdates') for docs.",
+      "triggers": [
+        "security",
+        "news",
+        "updates",
+        "whats",
+        "new",
+        "breaches",
+        "research",
+        "sec"
+      ],
+      "workflows": [
+        "Update"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "iterativedepth": {
+      "name": "IterativeDepth",
+      "path": "IterativeDepth/SKILL.md",
+      "fullDescription": "Multi-angle iterative exploration for deeper ISC extraction. USE WHEN iterative depth, deep exploration, multi-angle analysis, explore deeper, multiple perspectives on problem, examine from angles, OR when the Algorithm's OBSERVE phase needs enhanced ISC extraction.",
+      "triggers": [
+        "iterative",
+        "depth",
+        "deep",
+        "exploration",
+        "multi-angle",
+        "analysis",
+        "explore",
+        "deeper",
+        "multiple",
+        "perspectives",
+        "problem",
+        "examine",
+        "angles",
+        "when",
+        "algorithms",
+        "observe",
+        "phase",
+        "needs",
+        "enhanced",
+        "isc",
+        "extraction"
+      ],
+      "workflows": [
+        "Explore"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "becreative": {
+      "name": "BeCreative",
+      "path": "BeCreative/SKILL.md",
+      "fullDescription": "Extended thinking mode. USE WHEN be creative, deep thinking, deep thinking, extended reasoning. SkillSearch('becreative') for docs.",
+      "triggers": [
+        "creative",
+        "deep",
+        "thinking",
+        "extended",
+        "reasoning"
+      ],
+      "workflows": [
+        "StandardCreativity",
+        "MaximumCreativity",
+        "IdeaGeneration",
+        "TreeOfThoughts",
+        "DomainSpecific"
+      ],
+      "tier": "deferred",
+      "minModel": "opus"
+    },
+    "brightdata": {
+      "name": "BrightData",
+      "path": "BrightData/SKILL.md",
+      "fullDescription": "Progressive URL scraping. USE WHEN Bright Data, scrape URL, web scraping tiers. SkillSearch('brightdata') for docs.",
+      "triggers": [
+        "bright",
+        "data",
+        "scrape",
+        "url",
+        "web",
+        "scraping",
+        "tiers"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "redteam": {
+      "name": "RedTeam",
+      "path": "RedTeam/SKILL.md",
+      "fullDescription": "Adversarial analysis with 32 agents. USE WHEN red team, attack idea, counterarguments, critique, stress test. SkillSearch('redteam') for docs.",
+      "triggers": [
+        "red",
+        "team",
+        "attack",
+        "idea",
+        "counterarguments",
+        "critique",
+        "stress",
+        "test"
+      ],
+      "workflows": [
+        "ParallelAnalysis",
+        "AdversarialValidation"
+      ],
+      "tier": "deferred",
+      "minModel": "opus"
+    },
+    "browser": {
+      "name": "Browser",
+      "path": "Browser/SKILL.md",
+      "fullDescription": "Debug-first browser automation with always-on visibility. Console logs, network requests, and errors captured by default. USE WHEN browser, screenshot, debug web, verify UI, troubleshoot frontend.",
+      "triggers": [
+        "browser",
+        "screenshot",
+        "debug",
+        "web",
+        "verify",
+        "troubleshoot",
+        "frontend",
+        "automation"
+      ],
+      "workflows": [],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "evals": {
+      "name": "Evals",
+      "path": "Evals/SKILL.md",
+      "fullDescription": "Agent evaluation framework based on Anthropic's best practices. USE WHEN eval, evaluate, test agent, benchmark, verify behavior, regression test, capability test. Includes three grader types (code-based, model-based, human), transcript capture, pass@k/pass^k metrics, and ALGORITHM integration.",
+      "triggers": [
+        "eval",
+        "evaluate",
+        "test",
+        "agent",
+        "benchmark",
+        "verify",
+        "behavior",
+        "regression",
+        "capability"
+      ],
+      "workflows": [
+        "ALGORITHM"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
+    "telos": {
+      "name": "Telos",
+      "path": "Telos/SKILL.md",
+      "fullDescription": "Life OS and project analysis. USE WHEN TELOS, life goals, projects, dependencies, books, movies. SkillSearch('telos') for docs.",
+      "triggers": [
+        "telos",
+        "life",
+        "goals",
+        "projects",
+        "dependencies",
+        "books",
+        "movies"
+      ],
+      "workflows": [
+        "Update",
+        "InterviewExtraction",
+        "CreateNarrativePoints",
+        "WriteReport"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    }
+  }
+}

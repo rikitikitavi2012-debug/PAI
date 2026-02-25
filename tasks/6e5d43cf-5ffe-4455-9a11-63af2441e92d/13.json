@@ -1,0 +1,9 @@
+{
+  "id": "13",
+  "subject": "ISC-C13: TypeScript strict mode enabled with zero type errors",
+  "description": "tsconfig.json has strict: true. Running tsc --noEmit produces zero errors. | Verify: CLI: npx tsc --noEmit exits with code 0",
+  "activeForm": "Verifying TypeScript strict mode",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

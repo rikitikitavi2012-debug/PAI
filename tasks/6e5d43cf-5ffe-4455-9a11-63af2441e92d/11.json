@@ -1,0 +1,9 @@
+{
+  "id": "11",
+  "subject": "ISC-C11: Dark theme applied as default with PAI brand colors",
+  "description": "Dashboard uses dark theme by default. PAI brand colors (#1E3A8A deep blue, #3B82F6 primary blue, #93C5FD light blue) integrated into shadcn/ui theme. | Verify: Browser: screenshot showing dark theme with PAI colors",
+  "activeForm": "Verifying dark theme",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

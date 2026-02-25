@@ -1,0 +1,916 @@
+{
+  "active": false,
+  "sessionId": "f671a458-1e90-478f-93fe-40a0c6f8ed9e",
+  "taskDescription": "Algorithm Loop Testing",
+  "currentPhase": "COMPLETE",
+  "phaseStartedAt": 1772035312455,
+  "algorithmStartedAt": 1772035192897,
+  "sla": "Standard",
+  "criteria": [
+    {
+      "id": "C1",
+      "description": "algorithm.ts парсит filled PRD и показывает correct criteria count",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C2",
+      "description": "algorithm.ts loop mode запускается и выполняет хотя бы одну итерацию",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C3",
+      "description": "Loop iteration updates PRD checkboxes from failing to passing",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C4",
+      "description": "Loop creates dashboard state file in MEMORY/STATE/algorithms/",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A1",
+      "description": "Loop exits cleanly when all criteria pass or max iterations reached",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    }
+  ],
+  "agents": [],
+  "capabilities": [
+    "Task Tool"
+  ],
+  "phaseHistory": [
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772035192897,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 7,
+      "completedAt": 1772035251954
+    },
+    {
+      "phase": "THINK",
+      "startedAt": 1772035251954,
+      "criteriaCount": 5,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 7,
+      "completedAt": 1772035269610
+    },
+    {
+      "phase": "PLAN",
+      "startedAt": 1772035269610,
+      "criteriaCount": 5,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 7,
+      "completedAt": 1772035278185
+    },
+    {
+      "phase": "BUILD",
+      "startedAt": 1772035278185,
+      "criteriaCount": 5,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 7,
+      "completedAt": 1772035312455
+    },
+    {
+      "phase": "EXECUTE",
+      "startedAt": 1772035312455,
+      "criteriaCount": 5,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 7
+    }
+  ],
+  "effortLevel": "Standard",
+  "currentAction": "ISCSyncHook — автосинк ISC на диск",
+  "reworkHistory": [
+    {
+      "iteration": 0,
+      "startedAt": 1772027264718,
+      "completedAt": 1772028381119,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "Algorithm reflections JSONL содержит записи из нескольких сессий [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "Wisdom frames содержат наблюдения из прошлых сессий [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "Рефлексии читаются обратно в OBSERVE фазе каждой сессии [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Wisdom frames читаются обратно в OBSERVE фазе [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "Рефлексии содержат конкретные паттерны улучшения со временем [I]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C6",
+          "description": "Прослеживается эволюция паттернов между ранними и поздними записями [R]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C7",
+          "description": "Полный pipeline запись-хранение-чтение работает без разрывов [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Рефлексии не являются пустыми шаблонными отписками без содержания [I]",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772027264718,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "completedAt": 1772027264718
+        },
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772027264718,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "completedAt": 1772027396249
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772027396249,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772027417005
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772027417005,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772027426426
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772027426426,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772027472077
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772027472077,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772027487096
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772027487096,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772027538503
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772027538503,
+          "criteriaCount": 8,
+          "agentCount": 0
+        }
+      ]
+    },
+    {
+      "iteration": 1,
+      "startedAt": 1772028381119,
+      "completedAt": 1772031780399,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "Root cause отставания wisdom extraction идентифицирован и задокументирован [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "Исправленный gate пропускает органические сессии с транскриптом [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "WisdomExtractor вызывается при наличии валидного транскрипта [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Dry-run WisdomExtractor на текущем транскрипте возвращает наблюдения [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Learning capture для значимых сессий не сломан изменениями [I]",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772028381119,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772028558488
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772028558488,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772028581687
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772028581687,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772028594083
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772028594083,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772028623370
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772028623370,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772029358969
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772029358969,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772029396509
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772029396509,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "startedAt": 1772031780399,
+      "completedAt": 1772032740846,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "Inference.ts использует прямой API вызов при наличии ключа [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "Fallback на claude --print при отсутствии API ключа [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "Latency прямого API вызова ниже пяти секунд для Haiku [I]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "WisdomExtractor dry-run успешно извлекает наблюдения из транскрипта [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "API ключ загружается из .env файла без hardcode [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C6",
+          "description": "Exported inference() interface не изменён для обратной совместимости [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "API ключ не появляется в логах или stdout вывода [I]",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772031780399,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772031830918
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772031830918,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772031882777
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772031882777,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772031926825
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772031926825,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772031964425
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772031964425,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "startedAt": 1772032740846,
+      "completedAt": 1772033297076,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "Объяснена суть Алгоритма простым языком без жаргона [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "Каждая из семи фаз объяснена с конкретной функцией [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "Показано что ISC центральная идея а не просто чеклист [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Дана верификация через реальные данные текущей сессии [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "Подтверждено что Алгоритм является главным движком PAI [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Объяснение не является сухой копипастой документации [I]",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772032740846,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772032771976
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772032771976,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772032780316
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772032780316,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772032787781
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772032787781,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772032793192
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772032793192,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772032834050
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772032834050,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772032856096
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772032856096,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3
+        }
+      ]
+    },
+    {
+      "iteration": 4,
+      "startedAt": 1772033297076,
+      "completedAt": 1772033783881,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "META.yaml создаётся с lineage секцией и source полем [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "hasSignificantWork использует реалистичный критерий вместо lineage [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "Тривиальные сессии без работы по-прежнему не создают learnings [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Существующие META.yaml файлы не сломаны новыми полями [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Не создаются дублирующие learnings для одной сессии [I]",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772033297076,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 4,
+          "completedAt": 1772033357066
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772033357066,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 4,
+          "completedAt": 1772033369226
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772033369226,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 4,
+          "completedAt": 1772033406907
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772033406907,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 4,
+          "completedAt": 1772033468873
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772033468873,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 4,
+          "completedAt": 1772033503527
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772033503527,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 4
+        }
+      ]
+    },
+    {
+      "iteration": 5,
+      "startedAt": 1772033783881,
+      "completedAt": 1772034471255,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "PRD disk files updated during VERIFY phase with evidence",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "ISC.json on disk populated with criteria from TaskCreate",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "All identified gaps documented with root cause analysis",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Learning capture files created for significant completed sessions",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "THREAD.md files contain actual phase progression log data",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C6",
+          "description": "Loop mode CLI functional and tested with real PRD",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "No duplicate work directories for same session ID created",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A2",
+          "description": "No stale current-work state files from dead sessions linger",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772033783881,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 5,
+          "completedAt": 1772033949193
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772033949193,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 5,
+          "completedAt": 1772033975629
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772033975629,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 5,
+          "completedAt": 1772033983497
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772033983497,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 5,
+          "completedAt": 1772034047318
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772034047318,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 5,
+          "completedAt": 1772034075891
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772034075891,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 5,
+          "completedAt": 1772034182967
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772034182967,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 5
+        }
+      ]
+    },
+    {
+      "iteration": 6,
+      "startedAt": 1772034471255,
+      "completedAt": 1772035192897,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "ISCSyncHook парсит TaskCreate из транскрипта и извлекает criteria",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "ISCSyncHook парсит TaskUpdate и определяет финальный статус criteria",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "ISC.json на диске заполняется реальными criteria после сессии",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "PRD файл получает ISC checkboxes и обновлённый frontmatter",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "Хук зарегистрирован в settings.json как SessionEnd hook",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Хук не крашится на сессиях без TaskCreate calls",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772034471255,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 6,
+          "completedAt": 1772034617465
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772034617465,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 6,
+          "completedAt": 1772034631353
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772034631353,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 6,
+          "completedAt": 1772034644616
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772034644616,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 6,
+          "completedAt": 1772034801403
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772034801403,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 6,
+          "completedAt": 1772034895769
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772034895769,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 6,
+          "completedAt": 1772034947239
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772034947239,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 6
+        }
+      ]
+    }
+  ],
+  "reworkCount": 7,
+  "isRework": true,
+  "previousNames": [
+    {
+      "name": "Wisdom Session",
+      "changedAt": "2026-02-25T15:28:03.976Z"
+    },
+    {
+      "name": "Metadata Lineage Fix",
+      "changedAt": "2026-02-25T15:46:57.837Z"
+    },
+    {
+      "name": "Sync Hook Fix",
+      "changedAt": "2026-02-25T15:59:34.524Z"
+    }
+  ],
+  "completedAt": 1772039915385
+}

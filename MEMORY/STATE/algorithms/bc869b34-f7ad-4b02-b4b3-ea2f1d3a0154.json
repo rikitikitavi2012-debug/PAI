@@ -1,0 +1,83 @@
+{
+  "active": false,
+  "sessionId": "bc869b34-f7ad-4b02-b4b3-ea2f1d3a0154",
+  "taskDescription": "Диагностика отсутствия голосовых сообщений PAI",
+  "currentPhase": "COMPLETE",
+  "phaseStartedAt": 1772007332007,
+  "algorithmStartedAt": 1772005712657,
+  "sla": "Standard",
+  "criteria": [
+    {
+      "id": "C1",
+      "description": "Корневая причина отсутствия голоса точно определена",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C2",
+      "description": "Голосовой сервер воспроизводит тестовое сообщение успешно",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C3",
+      "description": "Фазовые голосовые curl Алгоритма работают корректно",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C4",
+      "description": "Решение устойчиво к исчерпанию квоты ElevenLabs",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A1",
+      "description": "Никакие другие PAI компоненты не сломаны починкой",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    }
+  ],
+  "agents": [],
+  "capabilities": [
+    "Task Tool"
+  ],
+  "phaseHistory": [
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772005712657,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "completedAt": 1772006465057
+    },
+    {
+      "phase": "PLAN",
+      "startedAt": 1772006465057,
+      "criteriaCount": 5,
+      "agentCount": 0,
+      "completedAt": 1772007332007
+    },
+    {
+      "phase": "VERIFY",
+      "startedAt": 1772007332007,
+      "criteriaCount": 5,
+      "agentCount": 0
+    }
+  ],
+  "effortLevel": "Standard",
+  "currentAction": "Диагностика отсутствия голосовых сообщений PAI",
+  "qualityGate": {
+    "count": false,
+    "length": false,
+    "state": false,
+    "testable": false,
+    "anti": false,
+    "open": false
+  },
+  "completedAt": 1772012377407
+}

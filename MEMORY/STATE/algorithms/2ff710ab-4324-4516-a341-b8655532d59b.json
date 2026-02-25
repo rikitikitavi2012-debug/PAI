@@ -1,0 +1,162 @@
+{
+  "active": false,
+  "sessionId": "2ff710ab-4324-4516-a341-b8655532d59b",
+  "taskDescription": "Unknown Skill Telos",
+  "currentPhase": "COMPLETE",
+  "phaseStartedAt": 1772024877825,
+  "algorithmStartedAt": 1772024151080,
+  "sla": "Standard",
+  "criteria": [
+    {
+      "id": "C4",
+      "description": "P1 Timber Frame сайт обновлён с целью презентации",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C2",
+      "description": "P3 трансформирован из Telegram-бота в PWA проект",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C3",
+      "description": "Telegram-бот заморожен как отдельный подпроект в проектах",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C5",
+      "description": "I1 и I2 конкретизированы двумя проектами презентации",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C6",
+      "description": "N0 elevator pitch обновлён с приложения вместо бота",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C7",
+      "description": "PR0 обновлена с упоминанием PWA вместо бота",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C8",
+      "description": "Таблица связей Цель→Миссия актуальна после всех изменений",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C9",
+      "description": "Приоритизация проектов актуальна в PROJECTS таблице",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C10",
+      "description": "updates.md содержит запись о всех изменениях сессии",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A1",
+      "description": "Никакие существующие связи между файлами не потеряны",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A2",
+      "description": "Бэкапы созданы для всех изменяемых файлов",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    }
+  ],
+  "agents": [],
+  "capabilities": [
+    "Task",
+    "Telos Update"
+  ],
+  "phaseHistory": [
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772024151080,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "completedAt": 1772024151080
+    },
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772024151080,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "completedAt": 1772024254674
+    },
+    {
+      "phase": "THINK",
+      "startedAt": 1772024254674,
+      "criteriaCount": 11,
+      "agentCount": 0,
+      "completedAt": 1772024273218
+    },
+    {
+      "phase": "PLAN",
+      "startedAt": 1772024273218,
+      "criteriaCount": 11,
+      "agentCount": 0,
+      "completedAt": 1772024283206
+    },
+    {
+      "phase": "BUILD",
+      "startedAt": 1772024283206,
+      "criteriaCount": 11,
+      "agentCount": 0,
+      "completedAt": 1772024720667
+    },
+    {
+      "phase": "EXECUTE",
+      "startedAt": 1772024720667,
+      "criteriaCount": 11,
+      "agentCount": 0,
+      "completedAt": 1772024789203
+    },
+    {
+      "phase": "VERIFY",
+      "startedAt": 1772024789203,
+      "criteriaCount": 11,
+      "agentCount": 0,
+      "completedAt": 1772024877825
+    },
+    {
+      "phase": "LEARN",
+      "startedAt": 1772024877825,
+      "criteriaCount": 11,
+      "agentCount": 0
+    }
+  ],
+  "effortLevel": "Standard",
+  "completedAt": 1772024877825,
+  "currentAction": "Сопоставить TELOS цели с текущими проектами",
+  "summary": "Обновил 7 файлов TELOS — бот заморожен, PWA активен, два проекта для презентации руководству связаны со всеми миссиями.",
+  "qualityGate": {
+    "count": true,
+    "length": true,
+    "state": true,
+    "testable": true,
+    "anti": true,
+    "open": true
+  }
+}

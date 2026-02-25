@@ -1,0 +1,9 @@
+{
+  "id": "11",
+  "subject": "ISC-A1: No PAI source files corrupted or data lost during migration",
+  "description": "Original MISSION.md, GOALS.md, INFRASTRUCTURE.md files remain intact. No data loss. Verify: Read: compare files before/after implementation",
+  "activeForm": "Checking for data integrity",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

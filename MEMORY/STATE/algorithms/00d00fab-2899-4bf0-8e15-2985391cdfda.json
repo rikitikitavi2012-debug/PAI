@@ -1,0 +1,242 @@
+{
+  "active": false,
+  "sessionId": "00d00fab-2899-4bf0-8e15-2985391cdfda",
+  "taskDescription": "Telegram Session",
+  "currentPhase": "COMPLETE",
+  "phaseStartedAt": 1772026871733,
+  "algorithmStartedAt": 1772026871733,
+  "sla": "Fast",
+  "criteria": [],
+  "agents": [],
+  "capabilities": [
+    "Task Tool"
+  ],
+  "phaseHistory": [
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772026871733,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 1
+    }
+  ],
+  "effortLevel": "Fast",
+  "currentAction": "Собрать credentials из старого бота, настроить .env",
+  "previousNames": [
+    {
+      "name": "Digital Session",
+      "changedAt": "2026-02-25T12:50:00.819Z"
+    },
+    {
+      "name": "Toolu Session",
+      "changedAt": "2026-02-25T12:50:24.804Z"
+    },
+    {
+      "name": "Toolu Session",
+      "changedAt": "2026-02-25T13:05:59.131Z"
+    },
+    {
+      "name": "Ivan Session",
+      "changedAt": "2026-02-25T13:26:46.464Z"
+    }
+  ],
+  "reworkHistory": [
+    {
+      "iteration": 0,
+      "startedAt": 1772022381947,
+      "completedAt": 1772024845603,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "compressImage outputs JPEG max 800px longest side [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "compressImage limits output to 0.2MB maximum size [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "compressImage uses quality 0.7 for JPEG compression [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Camera input uses capture=\"environment\" HTML attribute [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "useCamera hook returns processing state and photo blob [I]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C6",
+          "description": "Estimate page camera button captures and stores photo [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C7",
+          "description": "Finance page camera button captures receipt photo [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C8",
+          "description": "Photos saved to IndexedDB photos table with linkedTo [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C9",
+          "description": "Photo operations enqueued in SyncQueue as submitPhoto [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C10",
+          "description": "Photo thumbnails display inline after capture on pages [I]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C11",
+          "description": "Multiple photos supported per estimate item record [I]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C12",
+          "description": "browser-image-compression package installed and importable [E]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C13",
+          "description": "TypeScript compiles with zero errors after all changes [R]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C14",
+          "description": "Vite production build succeeds without errors cleanly [R]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C15",
+          "description": "camera.ts service wraps compress and returns ready blob [I]",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "No getUserMedia API call exists in codebase [E]",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A2",
+          "description": "No uncompressed original photos stored in IndexedDB [E]",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A3",
+          "description": "Camera buttons never smaller than 48x48 pixel touch [E]",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Extended",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772022381947,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "completedAt": 1772022381948
+        },
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772022381948,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "completedAt": 1772022697216
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772022697216,
+          "criteriaCount": 18,
+          "agentCount": 0,
+          "completedAt": 1772022713390
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772022713390,
+          "criteriaCount": 18,
+          "agentCount": 0,
+          "completedAt": 1772022725853
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772022725853,
+          "criteriaCount": 18,
+          "agentCount": 0,
+          "completedAt": 1772023369604
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772023369604,
+          "criteriaCount": 18,
+          "agentCount": 0,
+          "completedAt": 1772023407722
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772023407722,
+          "criteriaCount": 18,
+          "agentCount": 0,
+          "completedAt": 1772023744433
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772023744433,
+          "criteriaCount": 18,
+          "agentCount": 0
+        }
+      ]
+    }
+  ],
+  "reworkCount": 1,
+  "isRework": true,
+  "completedAt": 1772027893833
+}

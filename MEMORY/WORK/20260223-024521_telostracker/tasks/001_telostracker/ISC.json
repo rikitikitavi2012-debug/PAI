@@ -1,0 +1,10 @@
+{
+  "taskId": "001_telostracker",
+  "status": "PENDING",
+  "effortLevel": "STANDARD",
+  "criteria": [],
+  "antiCriteria": [],
+  "satisfaction": null,
+  "createdAt": "2026-02-23T02:45:21+03:00",
+  "updatedAt": "2026-02-23T02:45:21+03:00"
+}

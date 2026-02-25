@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "ISC-C5: TELOS Editor provides CRUD for goals and projects",
+  "description": "The /telos route has a rich editor for creating, reading, updating, deleting TELOS goals and projects. Data persists in Supabase. | Verify: Browser: create a goal, refresh, verify it persists",
+  "activeForm": "Verifying TELOS Editor",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

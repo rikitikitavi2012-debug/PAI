@@ -1,0 +1,61 @@
+{
+  "domain": "system",
+  "updated": "2026-02-25T16:06:11.192Z",
+  "observations": [
+    {
+      "type": "contextual-rule",
+      "observation": "Ivan работает в WSL2 Ubuntu на Windows 11 с Windows Terminal (WT_SESSION всегда есть)",
+      "timestamp": "2026-02-22T21:16:43.594Z",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Голосовые уведомления через ElevenLabs критичны для рабочего процесса Ivan",
+      "timestamp": "2026-02-22T21:16:43.610Z",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Перед изменением системных хуков проверять переменные окружения на всех платформах",
+      "timestamp": "2026-02-22T21:16:43.626Z",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Всегда использовать -i флаг в grep для human-readable текста",
+      "timestamp": "2026-02-22T21:16:53.376Z",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "При создании новых инструментов — сначала проверить наличие в PAI/Tools/, не создавать дубли",
+      "timestamp": "2026-02-22T21:17:50.518Z",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "algorithm-reflections должны читаться безусловно в WISDOM INJECTION, не только в CONTEXT RECOVERY",
+      "timestamp": "2026-02-22T21:48:11.211Z",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "ConfigChange hook event blocks mid-session settings.json mutations — add to SecurityValidator",
+      "timestamp": "2026-02-22T22:09:27.094Z",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "claude --print subprocess takes 9-90+s unpredictably — fragile for background inference, direct API preferred",
+      "timestamp": "2026-02-25T14:23:43.999Z",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "When running multi-iteration loops, Ivan structures PRDs with per-iteration effort levels (Fast/Normal/Deep) — will likely ask to adjust pace mid-loop based on results",
+      "timestamp": "2026-02-25T16:06:11.192Z",
+      "session_id": "fe393342-197c-42f8-a5ea-442e8fb3bf2e",
+      "confirmed": 1
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "ISC-C1: Проект создан в /home/ser/projects/digital-foreman с чистой структурой",
+  "description": "Директория проекта существует в WSL. Verify: CLI: ls /home/ser/projects/digital-foreman",
+  "activeForm": "Создание директории проекта",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

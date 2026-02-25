@@ -1,0 +1,9 @@
+{
+  "id": "10",
+  "subject": "ISC-A2: Папки venv node_modules __pycache__ не перенесены в WSL",
+  "description": "Анти-критерий: временные/сгенерированные файлы не копируются. Verify: CLI: ls for absence",
+  "activeForm": "Проверка отсутствия мусора",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

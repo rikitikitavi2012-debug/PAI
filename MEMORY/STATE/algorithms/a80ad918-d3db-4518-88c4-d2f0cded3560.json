@@ -1,0 +1,177 @@
+{
+  "active": false,
+  "sessionId": "a80ad918-d3db-4518-88c4-d2f0cded3560",
+  "taskDescription": "Digital Foreman Development",
+  "currentPhase": "COMPLETE",
+  "phaseStartedAt": 1772034305839,
+  "algorithmStartedAt": 1772033713620,
+  "sla": "Extended",
+  "criteria": [
+    {
+      "id": "C1",
+      "description": "ShiftSummary компонент показывает выполненные работы за смену",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C2",
+      "description": "ShiftSummary показывает расходы за сегодня по категориям",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C3",
+      "description": "ShiftSummary показывает итого расходов и баланс кассы",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C4",
+      "description": "Кнопка подтверждения \"Подтвердить и отправить\" присутствует",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C5",
+      "description": "closeShift операция добавляется в SyncQueue при подтверждении",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C6",
+      "description": "Toast \"Смена закрыта, дайджест отправлен\" после отправки",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C7",
+      "description": "Fact за текущую смену сбрасывается в ноль",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C8",
+      "description": "Кнопка \"Закрыть смену\" на Dashboard открывает ShiftSummary",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C9",
+      "description": "SyncEngine обрабатывает closeShift action при push",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C10",
+      "description": "Проект билдится без ошибок после всех изменений",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A1",
+      "description": "Отправка дайджеста невозможна без подтверждения пользователем",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A2",
+      "description": "totalFact не сбрасывается при закрытии смены",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A3",
+      "description": "GAS backend не модифицируется клиентским кодом",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    }
+  ],
+  "agents": [],
+  "capabilities": [
+    "Task",
+    "Test Runner",
+    "CLI Probes"
+  ],
+  "phaseHistory": [
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772033713620,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "completedAt": 1772033713621
+    },
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772033713621,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "completedAt": 1772033943860
+    },
+    {
+      "phase": "THINK",
+      "startedAt": 1772033943860,
+      "criteriaCount": 13,
+      "agentCount": 0,
+      "completedAt": 1772033979639
+    },
+    {
+      "phase": "PLAN",
+      "startedAt": 1772033979639,
+      "criteriaCount": 13,
+      "agentCount": 0,
+      "completedAt": 1772033989197
+    },
+    {
+      "phase": "BUILD",
+      "startedAt": 1772033989197,
+      "criteriaCount": 13,
+      "agentCount": 0,
+      "completedAt": 1772034096235
+    },
+    {
+      "phase": "EXECUTE",
+      "startedAt": 1772034096235,
+      "criteriaCount": 13,
+      "agentCount": 0,
+      "completedAt": 1772034135393
+    },
+    {
+      "phase": "VERIFY",
+      "startedAt": 1772034135393,
+      "criteriaCount": 13,
+      "agentCount": 0,
+      "completedAt": 1772034305839
+    },
+    {
+      "phase": "LEARN",
+      "startedAt": 1772034305839,
+      "criteriaCount": 13,
+      "agentCount": 0
+    }
+  ],
+  "effortLevel": "Extended",
+  "completedAt": 1772034305839,
+  "currentAction": "Реализовать \"Закрыть смену\" с Telegram дайджестом",
+  "summary": "Закрытие смены готово — превью дайджеста, подтверждение, отправка в Telegram через SyncQueue. MVP Итерация 1 завершена, запушено.",
+  "qualityGate": {
+    "count": true,
+    "length": true,
+    "state": true,
+    "testable": true,
+    "anti": true,
+    "open": true
+  }
+}

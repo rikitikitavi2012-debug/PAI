@@ -1,0 +1,9 @@
+{
+  "id": "9",
+  "subject": "ISC-C9: Navigation sidebar provides routing between all three screens",
+  "description": "A persistent sidebar/nav component allows navigation between Overview (/), TELOS Editor (/telos), and Memory Viewer (/memory). Active state indicated visually. | Verify: Browser: click each nav item, verify route changes",
+  "activeForm": "Verifying navigation",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

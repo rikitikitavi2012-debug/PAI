@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "ISC-C2: API routes read goals directly from GOALS.md file",
+  "description": "GET /api/goals parses ~/.claude/skills/PAI/USER/TELOS/GOALS.md and returns structured goal data (G0-G9) with progress, status, priority. Verify: CLI: curl localhost:3000/api/goals returns real goal data",
+  "activeForm": "Implementing goals file reader",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

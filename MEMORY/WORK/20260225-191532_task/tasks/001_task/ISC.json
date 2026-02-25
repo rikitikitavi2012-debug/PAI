@@ -1,0 +1,215 @@
+{
+  "taskId": "001_task",
+  "status": "COMPLETE",
+  "effortLevel": "STANDARD",
+  "criteria": [
+    {
+      "id": "ISC-C1",
+      "text": "ISCSyncHook успешно парсит criteria из реального транскрипта сессии",
+      "description": "Запустить хук с текущим или недавним транскриптом, проверить что criteria извлекаются. EX-1. [E] | Verify: CLI: bun ISCSyncHook.hook.ts < test_input",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "ISC.json на диске содержит реальные criteria после запуска хука",
+      "description": "Проверить что ISC.json заполнен ненулевыми criteria после тестового запуска. EX-2. [E] | Verify: Read: cat ISC.json, проверить criteria.length > 0",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "PRD frontmatter обновлён хуком с verification_summary и status",
+      "description": "PRD файл после запуска хука содержит актуальный status и verification_summary. EX-3. [E] | Verify: Grep: проверить frontmatter PRD",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Хук находит transcript path для текущей сессии корректно",
+      "description": "Проверить что resolveTranscript находит .jsonl файл. Потенциальный баг: путь может не совпадать. [I] | Verify: CLI: проверить логику пути",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "Хук корректно определяет completed vs pending статус criteria",
+      "description": "TaskUpdate calls с status=completed должны менять статус criterion. EX-1. [E] | Verify: CLI: проверить criteria.status в ISC.json",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C6",
+      "text": "lib/time.ts зависимость существует и экспортирует getISOTimestamp",
+      "description": "Хук импортирует getISOTimestamp из ./lib/time. Проверить что файл существует. [I] | Verify: CLI: test -f hooks/lib/time.ts",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C7",
+      "text": "Все 59 старых пустых ISC.json могут быть ретроактивно заполнены",
+      "description": "Проверить можно ли прогнать хук по существующим транскриптам для заполнения данных. [R] | Verify: CLI: тест на старом транскрипте",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C8",
+      "text": "Другие блокеры алгоритма идентифицированы и задокументированы",
+      "description": "Помимо ISCSyncHook — найти другие проблемы мешающие алгоритму работать правильно. [I] | Verify: Custom: список проблем с root cause",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "ISCSyncHook обновляет THREAD.md фазы из транскрипта при SessionEnd",
+      "description": "Хук парсит phase headers из транскрипта и заменяет _Pending..._ на timestamps. [E] | Verify: CLI: запустить хук, проверить THREAD.md",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Каждая пройденная фаза в THREAD.md имеет timestamp и краткое описание",
+      "description": "Pending заменяется на реальные данные — когда фаза пройдена и что в ней сделано. [E] | Verify: Read: проверить обновлённый THREAD.md",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "THREAD.md frontmatter status обновляется на COMPLETED при завершении",
+      "description": "Frontmatter status меняется с IN_PROGRESS на COMPLETED. [I] | Verify: Grep: проверить frontmatter после запуска",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "ISC Evolution секция в THREAD.md заполнена количеством criteria",
+      "description": "Секция ISC Evolution содержит итог: сколько criteria создано, passed, failed. [I] | Verify: Read: проверить секцию",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "algorithm.ts CLI показывает актуальную версию v1.8.1-ru вместо v1.0.0",
+      "description": "Версия в printHelp() должна читаться из LATEST файла или быть синхронизирована. [E] | Verify: CLI: bun algorithm.ts --help | grep version",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Все семь фаз алгоритма реально выполняются в интерактивной сессии",
+      "description": "Проверить что OBSERVE→THINK→PLAN→BUILD→EXECUTE→VERIFY→LEARN все присутствуют в транскриптах. [E] | Verify: CLI: парсинг транскриптов на phase markers",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Voice curls выполняются для каждой фазы без пропусков",
+      "description": "Каждая фаза должна иметь свой voice curl. Проверить в транскрипте. [E] | Verify: CLI: подсчёт curls в транскрипте",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "ISC criteria создаются в OBSERVE до начала работы",
+      "description": "TaskCreate вызовы должны быть перед BUILD/EXECUTE фазами. [E] | Verify: CLI: проверить порядок в транскрипте",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "Loop mode worker prompt содержит актуальные инструкции алгоритма",
+      "description": "buildIterationPrompt и buildWorkerPrompt должны давать правильный контекст. [I] | Verify: Read: проверить промпты",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C6",
+      "text": "Причины начальных сбоев фаз идентифицированы и задокументированы",
+      "description": "Ответить на вопрос Ivan: почему изначально не работали все фазы. Root cause analysis. [E] | Verify: Custom: список причин с evidence",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C7",
+      "text": "Полный pipeline алгоритма end-to-end проверен на текущей сессии",
+      "description": "Текущая сессия = доказательство что все фазы работают. Трассировка полного цикла. [E] | Verify: Custom: evidence из текущей сессии",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "TELOSTracker успешно выполняется при закрытии каждой рабочей сессии",
+      "description": "TELOSTracker должен запускаться и не крашиться. Сейчас stderr: 'ignore' скрывает ошибки. [E] | Verify: CLI: запустить вручную с --transcript текущей сессии",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "TELOSTracker корректно анализирует сессию и находит TELOS-связи",
+      "description": "Haiku-анализ должен возвращать валидный JSON с goal_updates и victories. [E] | Verify: CLI: dry-run на реальном транскрипте",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "TELOS updates.md содержит записи пропорционально рабочим сессиям",
+      "description": "64 сессии, 2 записи = 3% покрытие. Ожидаем минимум 30-40% сессий. [I] | Verify: Read: сравнить количество",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Все слепые зоны алгоритмного движка идентифицированы и задокументированы",
+      "description": "Полный аудит: ISCSyncHook, TELOSTracker, WisdomExtractor, SessionEnd pipeline. [I] | Verify: Custom: список слепых зон",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Комментарии jlacour-git на issues 766 и 768 проанализированы",
+      "description": "Проверить PR #795 и #796 от jlacour — подходят ли фиксы. [E] | Verify: Read: проверить PR content",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Релевантные PR-ы для нашей системы идентифицированы и оценены",
+      "description": "Из 30+ open PR выбрать те что важны для нашей PAI инсталляции. [I] | Verify: Custom: список с оценкой",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Благодарность jlacour-git оставлена от имени Navi агента Ivan",
+      "description": "Поблагодарить за фиксы на наши issues с подписью Navi. [E] | Verify: CLI: gh api проверить что комментарий создан",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Upstream изменения с 17 февраля проверены на совместимость",
+      "description": "Последний merge был 17 Feb. Проверить что не пропустили важное. [I] | Verify: Custom: список изменений",
+      "status": "completed"
+    }
+  ],
+  "antiCriteria": [
+    {
+      "id": "ISC-A1",
+      "text": "Хук не крашится на сессиях без TaskCreate вызовов",
+      "description": "Простые сессии (вопрос-ответ) не должны вызывать ошибку. EX-5. [E] | Verify: CLI: тест с пустым транскриптом",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A2",
+      "text": "ISCSyncHook не затирает ранее записанные criteria из loop-mode",
+      "description": "Если loop mode уже заполнил ISC.json, interactive хук не должен обнулить. [I] | Verify: Read: проверить merge-логику",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "THREAD.md обновление не ломает существующий ISCSyncHook функционал",
+      "description": "ISC.json и PRD обновления продолжают работать после добавления THREAD.md логики. [E] | Verify: CLI: полный тест хука",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "algorithm.ts и промпт-шаблон не конфликтуют по формату ISC",
+      "description": "countCriteria() в algorithm.ts должен парсить тот формат что промпт генерирует. [I] | Verify: Read: сравнить форматы",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "TELOSTracker не затирает ручные правки Ivan в TELOS файлах",
+      "description": "Backup создаётся перед записью. Fuzzy matching не должен ломать структуру. [I] | Verify: Read: проверить backup логику",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Комментарии от Navi не содержат конфиденциальных данных Ivan",
+      "description": "Не раскрывать инфраструктуру, API ключи, IP адреса. [E] | Verify: Read: проверить текст перед отправкой",
+      "status": "completed"
+    }
+  ],
+  "satisfaction": {
+    "total": 33,
+    "satisfied": 33,
+    "partial": 0,
+    "failed": 0
+  },
+  "createdAt": "2026-02-25T19:15:32+03:00",
+  "updatedAt": "2026-02-25T21:33:31+03:00"
+}

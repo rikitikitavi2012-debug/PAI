@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "ISC-C3: Все 6 тестовых файлов перенесены из tests/",
+  "description": "Тесты скопированы с сохранением структуры. Verify: CLI: ls tests/",
+  "activeForm": "Перенос тестов",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

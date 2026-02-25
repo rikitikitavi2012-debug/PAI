@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "ISC-C2: shadcn/ui initialized with consistent design tokens configured",
+  "description": "shadcn/ui is initialized with components.json, tailwind config extended with PAI design tokens (colors, spacing). | Verify: Read: check components.json exists and tailwind.config.ts has custom theme",
+  "activeForm": "Verifying shadcn/ui setup",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,9 @@
+{
+  "id": "7",
+  "subject": "ISC-C7: Supabase dependency completely removed from the project",
+  "description": "No Supabase imports, no .env.local needed, no supabase client files. Package @supabase/supabase-js removed. Verify: Grep: no \"supabase\" imports in src/",
+  "activeForm": "Removing Supabase dependency",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

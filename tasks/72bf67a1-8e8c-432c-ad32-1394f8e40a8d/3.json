@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "ISC-C3: API routes read infrastructure from INFRASTRUCTURE.md file",
+  "description": "GET /api/infrastructure parses ~/.claude/skills/PAI/USER/INFRASTRUCTURE.md and returns server data with active ping checks. Verify: CLI: curl localhost:3000/api/infrastructure returns real server data",
+  "activeForm": "Implementing infrastructure file reader",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

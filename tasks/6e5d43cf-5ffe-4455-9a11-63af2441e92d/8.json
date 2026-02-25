@@ -1,0 +1,9 @@
+{
+  "id": "8",
+  "subject": "ISC-C8: GitHub repository created and connected to Vercel deployment",
+  "description": "Repository pai-dashboard exists on rikitikitavi2012-debug GitHub account, connected to Vercel for auto-deploy on push to main. | Verify: CLI: gh repo view rikitikitavi2012-debug/pai-dashboard",
+  "activeForm": "Verifying GitHub + Vercel connection",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

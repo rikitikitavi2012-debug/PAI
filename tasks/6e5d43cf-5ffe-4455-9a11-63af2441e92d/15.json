@@ -1,0 +1,9 @@
+{
+  "id": "15",
+  "subject": "ISC-A1: No secrets or API keys committed to git repository",
+  "description": "No .env files with real values committed. .gitignore includes .env.local, .env. Only .env.example with placeholders. | Verify: Grep: search for \"sbp_\" or \"github_pat_\" in tracked files",
+  "activeForm": "Checking for leaked secrets",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

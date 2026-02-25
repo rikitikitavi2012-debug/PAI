@@ -1,0 +1,62 @@
+{
+  "active": false,
+  "sessionId": "4574a700-5878-42d9-9ea2-2f0c32c826ab",
+  "taskDescription": "Seed Session",
+  "currentPhase": "COMPLETE",
+  "phaseStartedAt": 1772042650033,
+  "algorithmStartedAt": 1772042650033,
+  "sla": "Standard",
+  "criteria": [
+    {
+      "id": "C1",
+      "description": "GAS seedTestData() создаёт 3 этапа с позициями",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "COMPLETE"
+    },
+    {
+      "id": "C2",
+      "description": "Seed создаёт Финансовый_Журнал с тестовыми записями",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "COMPLETE"
+    },
+    {
+      "id": "C3",
+      "description": "GAS importEstimate() парсит внешнюю таблицу по URL",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "COMPLETE"
+    },
+    {
+      "id": "C4",
+      "description": "PWA имеет экран импорта проекта с URL",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "COMPLETE"
+    },
+    {
+      "id": "C5",
+      "description": "Seed вызывается через GAS API action seedData",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "COMPLETE"
+    },
+    {
+      "id": "A1",
+      "description": "Seed не перезаписывает существующие данные без предупреждения",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "COMPLETE"
+    }
+  ],
+  "agents": [],
+  "capabilities": [
+    "Task Tool"
+  ],
+  "phaseHistory": [],
+  "currentAction": "Автозаполнение таблицы — seed + импорт сметы",
+  "effortLevel": "Standard",
+  "summary": "Seed-скрипт готов — 99 реальных позиций из КП 27909 в 7 этапах. Вставь в Apps Script и запусти.",
+  "completedAt": 1772046784595
+}

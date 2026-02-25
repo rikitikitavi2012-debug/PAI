@@ -1,0 +1,10 @@
+{
+  "taskId": "001_api-error-403-errortypeforbiddenm",
+  "status": "PENDING",
+  "effortLevel": "STANDARD",
+  "criteria": [],
+  "antiCriteria": [],
+  "satisfaction": null,
+  "createdAt": "2026-02-19T19:33:29+03:00",
+  "updatedAt": "2026-02-19T19:33:29+03:00"
+}

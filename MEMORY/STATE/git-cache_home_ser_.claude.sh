@@ -1,0 +1,10 @@
+branch='master'
+stash_count=0
+modified=2
+staged=1855
+untracked=2
+total_changed=1857
+ahead=0
+behind=0
+last_commit_epoch=0
+is_git_repo=true

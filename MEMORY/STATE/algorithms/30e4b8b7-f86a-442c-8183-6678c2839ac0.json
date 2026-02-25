@@ -1,0 +1,204 @@
+{
+  "active": false,
+  "sessionId": "30e4b8b7-f86a-442c-8183-6678c2839ac0",
+  "taskDescription": "Digital Session",
+  "currentPhase": "COMPLETE",
+  "phaseStartedAt": 1772031332776,
+  "algorithmStartedAt": 1772030707887,
+  "sla": "Extended",
+  "criteria": [
+    {
+      "id": "C1",
+      "description": "SyncEngine.pullEstimate fetches estimate from GAS API correctly [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C2",
+      "description": "SyncEngine.pushQueue sends pending operations via gasPost [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C3",
+      "description": "Exponential backoff retries with delays 1s 2s 4s max three [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C4",
+      "description": "GAS response body status field checked for errors [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C5",
+      "description": "Photo blobs converted to base64 before sync payload [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C6",
+      "description": "useSync hook triggers sync automatically on online event [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C7",
+      "description": "useSync exposes manual sync function and isSyncing state [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C8",
+      "description": "useSyncStore updates queueSize isSyncing and lastSyncAt [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C9",
+      "description": "useEstimateStore.loadStages uses pullEstimate when online [I]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C10",
+      "description": "StatusBar displays real queueSize from useSyncStore [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C11",
+      "description": "Dashboard sync button triggers manual sync and shows state [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C12",
+      "description": "ProjectLoad calls pullEstimate and navigates to dashboard [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C13",
+      "description": "Dashboard shows real queueSize from useSyncStore not hardcoded [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "C14",
+      "description": "TypeScript builds successfully with zero type errors [E]",
+      "type": "criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A1",
+      "description": "No mock data used when real GAS API available [I]",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A2",
+      "description": "Sync operations never block UI rendering or navigation [I]",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    },
+    {
+      "id": "A3",
+      "description": "Failed sync operations never lose data from IndexedDB [I]",
+      "type": "anti-criterion",
+      "status": "pending",
+      "createdInPhase": "OBSERVE"
+    }
+  ],
+  "agents": [],
+  "capabilities": [
+    "Task",
+    "AskUserQuestion"
+  ],
+  "phaseHistory": [
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772030707887,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "completedAt": 1772030707888
+    },
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772030707888,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "completedAt": 1772030947892
+    },
+    {
+      "phase": "THINK",
+      "startedAt": 1772030947892,
+      "criteriaCount": 17,
+      "agentCount": 0,
+      "completedAt": 1772030967888
+    },
+    {
+      "phase": "PLAN",
+      "startedAt": 1772030967888,
+      "criteriaCount": 17,
+      "agentCount": 0,
+      "completedAt": 1772030977975
+    },
+    {
+      "phase": "BUILD",
+      "startedAt": 1772030977975,
+      "criteriaCount": 17,
+      "agentCount": 0,
+      "completedAt": 1772031099313
+    },
+    {
+      "phase": "EXECUTE",
+      "startedAt": 1772031099313,
+      "criteriaCount": 17,
+      "agentCount": 0,
+      "completedAt": 1772031123776
+    },
+    {
+      "phase": "VERIFY",
+      "startedAt": 1772031123776,
+      "criteriaCount": 17,
+      "agentCount": 0,
+      "completedAt": 1772031332776
+    },
+    {
+      "phase": "LEARN",
+      "startedAt": 1772031332776,
+      "criteriaCount": 17,
+      "agentCount": 0
+    }
+  ],
+  "effortLevel": "Extended",
+  "completedAt": 1772031332776,
+  "currentAction": "SyncEngine + GAS интеграция для PWA",
+  "summary": "Промт готов — следующая сессия закрывает MVP: кнопка \"Закрыть смену\" с Telegram дайджестом.",
+  "qualityGate": {
+    "count": true,
+    "length": true,
+    "state": true,
+    "testable": true,
+    "anti": true,
+    "open": true
+  }
+}

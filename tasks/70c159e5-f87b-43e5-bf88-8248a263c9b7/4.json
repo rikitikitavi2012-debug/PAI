@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "ISC-C4: Документация из четырёх источников собрана в docs/",
+  "description": "Obsidian, kilocode memory-bank, opencode MEMORY, research — всё в docs/ с подпапками. Verify: Read: docs/ structure",
+  "activeForm": "Сбор документации",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

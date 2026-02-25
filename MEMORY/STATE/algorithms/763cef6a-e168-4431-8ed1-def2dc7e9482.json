@@ -1,0 +1,164 @@
+{
+  "active": false,
+  "sessionId": "763cef6a-e168-4431-8ed1-def2dc7e9482",
+  "taskDescription": "Digital Session",
+  "currentPhase": "COMPLETE",
+  "phaseStartedAt": 1772020395960,
+  "algorithmStartedAt": 1772020378159,
+  "sla": "Standard",
+  "criteria": [],
+  "agents": [],
+  "capabilities": [
+    "Task Tool"
+  ],
+  "phaseHistory": [
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772020378159,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 1,
+      "completedAt": 1772020395960
+    },
+    {
+      "phase": "THINK",
+      "startedAt": 1772020395960,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 1
+    }
+  ],
+  "effortLevel": "Standard",
+  "currentAction": "Подключить реальный баланс кассы к дашборду",
+  "reworkHistory": [
+    {
+      "iteration": 0,
+      "startedAt": 1772019763182,
+      "completedAt": 1772020378159,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C6",
+          "description": "Category select dropdown contains all nineteen real categories",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C7",
+          "description": "Amount input uses inputMode numeric for mobile keyboard",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C8",
+          "description": "Transaction list displays today's expenses with daily total",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C9",
+          "description": "All interactive elements have minimum 48x48 pixel touch targets",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C10",
+          "description": "Photo receipt button present as placeholder with camera icon",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C11",
+          "description": "npm run build compiles without TypeScript or bundler errors",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C12",
+          "description": "npm run dev starts dev server without errors",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "No hardcoded PRD categories remain in types or UI",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A2",
+          "description": "No expense submission possible without amount greater than zero",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772019763182,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "completedAt": 1772019779707
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772019779707,
+          "criteriaCount": 9,
+          "agentCount": 0,
+          "completedAt": 1772019797046
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772019797046,
+          "criteriaCount": 9,
+          "agentCount": 0,
+          "completedAt": 1772019803876
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772019803876,
+          "criteriaCount": 9,
+          "agentCount": 0,
+          "completedAt": 1772019890916
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772019890916,
+          "criteriaCount": 9,
+          "agentCount": 0,
+          "completedAt": 1772019959216
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772019959216,
+          "criteriaCount": 9,
+          "agentCount": 0,
+          "completedAt": 1772020051181
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772020051181,
+          "criteriaCount": 9,
+          "agentCount": 0
+        }
+      ]
+    }
+  ],
+  "reworkCount": 1,
+  "isRework": true,
+  "summary": "Промт готов. Скопируй блок выше и вставь в начале следующей сессии. Удачи, Ivan!",
+  "completedAt": 1772023785940
+}

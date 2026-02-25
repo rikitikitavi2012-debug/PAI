@@ -1,0 +1,1517 @@
+{
+  "generated": "2026-02-22T14:39:17.807Z",
+  "version": "1.0.0",
+  "totalSkills": 40,
+  "totalWorkflows": 140,
+  "skills": {
+    "OSINT": {
+      "description": "Open source intelligence gathering",
+      "tier": "deferred",
+      "workflows": {
+        "PeopleLookup": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "osint",
+            "intelligence",
+            "investigation",
+            "search"
+          ]
+        },
+        "CompanyLookup": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "osint",
+            "intelligence",
+            "investigation",
+            "search"
+          ]
+        },
+        "CompanyDueDiligence": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "osint",
+            "intelligence",
+            "investigation"
+          ]
+        },
+        "EntityLookup": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "osint",
+            "intelligence",
+            "investigation",
+            "search"
+          ]
+        }
+      }
+    },
+    "Art": {
+      "description": "Complete visual content system",
+      "tier": "always",
+      "workflows": {
+        "RemoveBackground": {
+          "description": "Remove backgrounds from existing images using remove.bg API.",
+          "timing": "standard",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "ULWallpaper": {
+          "description": "Generate branded wallpapers with embedded logo concepts for Kitty terminal and macOS desktop.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Essay": {
+          "description": "Charcoal Architectural Sketch TECHNIQUE — Applied to CONTENT-RELEVANT subjects.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "D3Dashboards": {
+          "description": "Interactive data visualizations and dashboards using D3.js.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Visualize": {
+          "description": "Intelligent multi-modal visualization combining optimal approaches based on content analysis.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Mermaid": {
+          "description": "Hand-drawn technical diagrams combining Mermaid structure with Excalidraw sketchy aesthetic and UL color scheme.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "TechnicalDiagrams": {
+          "description": "Clean Excalidraw-style technical diagrams with custom typography aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Taxonomies": {
+          "description": "Hand-drawn classification systems, taxonomies, and reference grids using UL aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Timelines": {
+          "description": "Hand-drawn timelines showing evolution, trends, and transformations using UL aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Frameworks": {
+          "description": "Hand-drawn frameworks, mental models, and conceptual diagrams using UL aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Comparisons": {
+          "description": "Hand-drawn side-by-side visual comparisons using UL aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "AnnotatedScreenshots": {
+          "description": "Real screenshots with hand-drawn editorial annotations, arrows, and highlights using UL aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "step": {
+          "description": "step workflow for Art",
+          "timing": "standard",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Aphorisms": {
+          "description": "Aphorisms as shareable visual quote cards using editorial aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Maps": {
+          "description": "Hand-drawn conceptual maps showing idea territories and domain landscapes using UL aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Stats": {
+          "description": "Single striking statistics illustrated as visual data points using UL aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "Comics": {
+          "description": "Comic strips in UL editorial illustration style, NOT cartoonish.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "YouTubeThumbnail": {
+          "description": "you tube thumbnail workflow for Art",
+          "timing": "standard",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "AdHocYouTubeThumbnail": {
+          "description": "Generate complete YouTube thumbnails from content input with dramatic tech backgrounds and AI-generated headshots.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        },
+        "CreatePAIPackIcon": {
+          "description": "Generate 256x256 transparent PNG icons for PAI packs.",
+          "timing": "standard",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media",
+            "creation"
+          ]
+        },
+        "RecipeCards": {
+          "description": "Step-by-step visual recipes for processes and methodologies using UL aesthetic.",
+          "timing": "fast",
+          "tags": [
+            "art",
+            "visual",
+            "creative",
+            "media"
+          ]
+        }
+      }
+    },
+    "Aphorisms": {
+      "description": "Aphorism management",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "USMetrics": {
+      "description": "US economic indicators",
+      "tier": "deferred",
+      "workflows": {
+        "UpdateData": {
+          "description": "Skill: USMetrics",
+          "timing": "standard",
+          "tags": [
+            "usmetrics",
+            "analytics",
+            "data",
+            "economics",
+            "maintenance"
+          ]
+        },
+        "GetCurrentState": {
+          "description": "Skill: USMetrics",
+          "timing": "fast",
+          "tags": [
+            "usmetrics",
+            "analytics",
+            "data",
+            "economics"
+          ]
+        }
+      }
+    },
+    "PromptInjection": {
+      "description": "Prompt injection testing",
+      "tier": "deferred",
+      "workflows": {
+        "CompleteAssessment": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "fast",
+          "tags": [
+            "promptinjection",
+            "security",
+            "ai-safety"
+          ]
+        },
+        "Reconnaissance": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "promptinjection",
+            "security",
+            "ai-safety"
+          ]
+        },
+        "DirectInjectionTesting": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "promptinjection",
+            "security",
+            "ai-safety"
+          ]
+        },
+        "IndirectInjectionTesting": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "promptinjection",
+            "security",
+            "ai-safety"
+          ]
+        },
+        "MultiStageAttacks": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "promptinjection",
+            "security",
+            "ai-safety"
+          ]
+        }
+      }
+    },
+    "Agents": {
+      "description": "Dynamic agent composition and management system",
+      "tier": "deferred",
+      "workflows": {
+        "CREATECUSTOMAGENT": {
+          "description": "{PRINCIPAL.NAME} says:",
+          "timing": "fast",
+          "tags": [
+            "agents",
+            "infrastructure",
+            "creation"
+          ]
+        },
+        "CreateCustomAgent": {
+          "description": "{PRINCIPAL.NAME} says:",
+          "timing": "fast",
+          "tags": [
+            "agents",
+            "infrastructure",
+            "creation"
+          ]
+        },
+        "LISTTRAITS": {
+          "description": "Shows all available traits that can be composed into custom agents.",
+          "timing": "fast",
+          "tags": [
+            "agents",
+            "infrastructure"
+          ]
+        },
+        "ListTraits": {
+          "description": "Shows all available traits that can be composed into custom agents.",
+          "timing": "fast",
+          "tags": [
+            "agents",
+            "infrastructure"
+          ]
+        },
+        "SPAWNPARALLEL": {
+          "description": "s p a w n p a r a l l e l workflow for Agents",
+          "timing": "standard",
+          "tags": [
+            "agents",
+            "infrastructure"
+          ]
+        },
+        "SpawnParallelAgents": {
+          "description": "{PRINCIPAL.NAME} says:",
+          "timing": "deep",
+          "tags": [
+            "agents",
+            "infrastructure"
+          ]
+        }
+      }
+    },
+    "PAIUpgrade": {
+      "description": "Extract system improvements from content AND monitor external sources (Anthropic ecosystem, YouTube)",
+      "tier": "deferred",
+      "workflows": {
+        "Upgrade": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "fast",
+          "tags": [
+            "paiupgrade",
+            "infrastructure",
+            "system"
+          ]
+        },
+        "MineReflections": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "fast",
+          "tags": [
+            "paiupgrade",
+            "infrastructure",
+            "system"
+          ]
+        },
+        "AlgorithmUpgrade": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "paiupgrade",
+            "infrastructure",
+            "system"
+          ]
+        },
+        "ResearchUpgrade": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "paiupgrade",
+            "infrastructure",
+            "system",
+            "search"
+          ]
+        },
+        "FindSources": {
+          "description": "find sources workflow for PAIUpgrade",
+          "timing": "standard",
+          "tags": [
+            "paiupgrade",
+            "infrastructure",
+            "system",
+            "search"
+          ]
+        }
+      }
+    },
+    "AnnualReports": {
+      "description": "Annual security report aggregation and analysis",
+      "tier": "deferred",
+      "workflows": {
+        "UPDATE": {
+          "description": "u p d a t e workflow for AnnualReports",
+          "timing": "standard",
+          "tags": [
+            "annualreports",
+            "maintenance"
+          ]
+        },
+        "Update": {
+          "description": "update workflow for AnnualReports",
+          "timing": "standard",
+          "tags": [
+            "annualreports",
+            "maintenance"
+          ]
+        },
+        "ANALYZE": {
+          "description": "a n a l y z e workflow for AnnualReports",
+          "timing": "standard",
+          "tags": [
+            "annualreports",
+            "analysis"
+          ]
+        },
+        "Analyze": {
+          "description": "analyze workflow for AnnualReports",
+          "timing": "standard",
+          "tags": [
+            "annualreports",
+            "analysis"
+          ]
+        },
+        "FETCH": {
+          "description": "f e t c h workflow for AnnualReports",
+          "timing": "standard",
+          "tags": [
+            "annualreports"
+          ]
+        },
+        "Fetch": {
+          "description": "fetch workflow for AnnualReports",
+          "timing": "standard",
+          "tags": [
+            "annualreports"
+          ]
+        }
+      }
+    },
+    "WriteStory": {
+      "description": "Layered fiction writing system using Will Storr's storytelling science and rhetorical figures",
+      "tier": "deferred",
+      "workflows": {
+        "Interview": {
+          "description": "Extract the writer's vision, ideas, and preferences into structured input for the Story Bible.",
+          "timing": "standard",
+          "tags": [
+            "writestory"
+          ]
+        },
+        "BuildBible": {
+          "description": "Construct the comprehensive Story Bible — a PRD-based plan that maps the entire story across all seven layers from start to finish.",
+          "timing": "deep",
+          "tags": [
+            "writestory"
+          ]
+        },
+        "Explore": {
+          "description": "Writer says \"I'm stuck\" or \"I need ideas for...\"",
+          "timing": "standard",
+          "tags": [
+            "writestory"
+          ]
+        },
+        "WriteChapter": {
+          "description": "write chapter workflow for WriteStory",
+          "timing": "fast",
+          "tags": [
+            "writestory",
+            "creation"
+          ]
+        },
+        "Revise": {
+          "description": "Iterate on existing story content — tighten prose, deepen layers, enhance memorable moments, fix structural issues.",
+          "timing": "standard",
+          "tags": [
+            "writestory"
+          ]
+        }
+      }
+    },
+    "Remotion": {
+      "description": "Programmatic video creation with React",
+      "tier": "deferred",
+      "workflows": {
+        "ContentToAnimation": {
+          "description": "Transform any content into professional PAI-themed animations.",
+          "timing": "standard",
+          "tags": [
+            "remotion",
+            "video",
+            "creative"
+          ]
+        }
+      }
+    },
+    "Recon": {
+      "description": "Security reconnaissance",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "Fabric": {
+      "description": "Intelligent prompt pattern system with 240+ specialized patterns for content analysis, extraction, and transformation",
+      "tier": "deferred",
+      "workflows": {
+        "ExecutePattern": {
+          "description": "Execute Fabric patterns natively without spawning the fabric CLI. Patterns are applied directly from local storage for faster, more integrated execution.",
+          "timing": "standard",
+          "tags": [
+            "fabric",
+            "prompts",
+            "patterns",
+            "extraction"
+          ]
+        },
+        "UpdatePatterns": {
+          "description": "update patterns workflow for Fabric",
+          "timing": "standard",
+          "tags": [
+            "fabric",
+            "prompts",
+            "patterns",
+            "extraction",
+            "maintenance"
+          ]
+        }
+      }
+    },
+    "Documents": {
+      "description": "Document processing",
+      "tier": "deferred",
+      "workflows": {
+        "DOCX": {
+          "description": "d o c x workflow for Documents",
+          "timing": "standard",
+          "tags": [
+            "documents",
+            "file-processing"
+          ]
+        },
+        "PDF": {
+          "description": "p d f workflow for Documents",
+          "timing": "standard",
+          "tags": [
+            "documents",
+            "file-processing"
+          ]
+        },
+        "PPTX": {
+          "description": "p p t x workflow for Documents",
+          "timing": "standard",
+          "tags": [
+            "documents",
+            "file-processing"
+          ]
+        },
+        "XLSX": {
+          "description": "x l s x workflow for Documents",
+          "timing": "standard",
+          "tags": [
+            "documents",
+            "file-processing"
+          ]
+        },
+        "ConsultingReport": {
+          "description": "Trigger: \"create consulting report\", \"generate report PDF\", \"build assessment report\", \"consulting report\"",
+          "timing": "standard",
+          "tags": [
+            "documents",
+            "file-processing"
+          ]
+        }
+      }
+    },
+    "Pdf": {
+      "description": "PDF processing",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "Pptx": {
+      "description": "PowerPoint processing",
+      "tier": "deferred",
+      "workflows": {
+        "CRITICAL": {
+          "description": "c r i t i c a l workflow for Pptx",
+          "timing": "standard",
+          "tags": [
+            "pptx"
+          ]
+        },
+        "LAYOUT": {
+          "description": "l a y o u t workflow for Pptx",
+          "timing": "standard",
+          "tags": [
+            "pptx"
+          ]
+        },
+        "VALIDATION": {
+          "description": "v a l i d a t i o n workflow for Pptx",
+          "timing": "standard",
+          "tags": [
+            "pptx"
+          ]
+        },
+        "IMPORTANT": {
+          "description": "i m p o r t a n t workflow for Pptx",
+          "timing": "standard",
+          "tags": [
+            "pptx"
+          ]
+        },
+        "WARNING": {
+          "description": "w a r n i n g workflow for Pptx",
+          "timing": "standard",
+          "tags": [
+            "pptx"
+          ]
+        }
+      }
+    },
+    "Docx": {
+      "description": "Word document processing",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "Xlsx": {
+      "description": "Excel file processing",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "Parser": {
+      "description": "Parse URLs, files, videos to JSON",
+      "tier": "deferred",
+      "workflows": {
+        "ParseContent": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        },
+        "CollisionDetection": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        },
+        "DetectContentType": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        },
+        "ExtractNewsletter": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        },
+        "ExtractTwitter": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        },
+        "ExtractArticle": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        },
+        "ExtractYoutube": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        },
+        "ExtractPdf": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        },
+        "ExtractBrowserExtension": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "fast",
+          "tags": [
+            "parser",
+            "extraction",
+            "data",
+            "parsing"
+          ]
+        }
+      }
+    },
+    "CreateCLI": {
+      "description": "Generate TypeScript CLIs",
+      "tier": "deferred",
+      "workflows": {
+        "CreateCli": {
+          "description": "Generate production-quality TypeScript command-line interfaces following llcli pattern and CLI-First Architecture.",
+          "timing": "fast",
+          "tags": [
+            "createcli",
+            "infrastructure",
+            "tooling",
+            "creation"
+          ]
+        },
+        "AddCommand": {
+          "description": "Extend existing CLI with new commands while maintaining code quality and consistency.",
+          "timing": "standard",
+          "tags": [
+            "createcli",
+            "infrastructure",
+            "tooling"
+          ]
+        },
+        "UpgradeTier": {
+          "description": "Migrate from manual parsing to Commander.js when CLI grows complex.",
+          "timing": "standard",
+          "tags": [
+            "createcli",
+            "infrastructure",
+            "tooling"
+          ]
+        }
+      }
+    },
+    "Prompting": {
+      "description": "Meta-prompting system for dynamic prompt generation using templates, standards, and patterns",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "WebAssessment": {
+      "description": "Web security assessment",
+      "tier": "deferred",
+      "workflows": {
+        "UnderstandApplication": {
+          "description": "Produces a structured narrative of application functionality, user flows, and sensitive data for security assessments.",
+          "timing": "standard",
+          "tags": [
+            "webassessment",
+            "security",
+            "pentest"
+          ]
+        },
+        "CreateThreatModel": {
+          "description": "Generates prioritized attack scenarios and test plans from application understanding.",
+          "timing": "fast",
+          "tags": [
+            "webassessment",
+            "security",
+            "pentest",
+            "creation"
+          ]
+        }
+      }
+    },
+    "Apify": {
+      "description": "Social media scraping, business data, e-commerce via Apify actors",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "Council": {
+      "description": "Multi-agent debate system",
+      "tier": "deferred",
+      "workflows": {
+        "Debate": {
+          "description": "Full structured multi-agent debate with 3 rounds and visible transcript.",
+          "timing": "standard",
+          "tags": [
+            "council",
+            "thinking",
+            "debate"
+          ]
+        },
+        "Quick": {
+          "description": "Fast single-round perspective check. Use for sanity checks and quick feedback.",
+          "timing": "fast",
+          "tags": [
+            "council",
+            "thinking",
+            "debate"
+          ]
+        }
+      }
+    },
+    "FirstPrinciples": {
+      "description": "First principles analysis",
+      "tier": "deferred",
+      "workflows": {
+        "Deconstruct": {
+          "description": "Purpose: Break down any problem, system, or concept into its fundamental constituent parts and irreducible truths.",
+          "timing": "standard",
+          "tags": [
+            "firstprinciples",
+            "thinking",
+            "analysis"
+          ]
+        },
+        "Challenge": {
+          "description": "Purpose: Systematically challenge every assumption and constraint, classifying each as hard constraint (physics), soft constraint (choice), or unvalidated assumption.",
+          "timing": "standard",
+          "tags": [
+            "firstprinciples",
+            "thinking",
+            "analysis"
+          ]
+        },
+        "Reconstruct": {
+          "description": "Purpose: Build an optimal solution from scratch using only the fundamental truths and hard constraints identified through Deconstruct and Challenge.",
+          "timing": "standard",
+          "tags": [
+            "firstprinciples",
+            "thinking",
+            "analysis"
+          ]
+        }
+      }
+    },
+    "Sales": {
+      "description": "Sales workflows",
+      "tier": "deferred",
+      "workflows": {
+        "Create-sales-package": {
+          "description": "create sales package workflow for Sales",
+          "timing": "standard",
+          "tags": [
+            "sales",
+            "business",
+            "creation"
+          ]
+        },
+        "Create-narrative": {
+          "description": "create narrative workflow for Sales",
+          "timing": "standard",
+          "tags": [
+            "sales",
+            "business",
+            "creation"
+          ]
+        },
+        "Create-visual": {
+          "description": "create visual workflow for Sales",
+          "timing": "standard",
+          "tags": [
+            "sales",
+            "business",
+            "creation"
+          ]
+        }
+      }
+    },
+    "PrivateInvestigator": {
+      "description": "Ethical people-finding",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "CreateSkill": {
+      "description": "Create and validate skills",
+      "tier": "deferred",
+      "workflows": {
+        "Create": {
+          "description": "create workflow for CreateSkill",
+          "timing": "standard",
+          "tags": [
+            "createskill",
+            "infrastructure",
+            "skills",
+            "creation"
+          ]
+        },
+        "CompanyDueDiligence": {
+          "description": "company due diligence workflow for CreateSkill",
+          "timing": "standard",
+          "tags": [
+            "createskill",
+            "infrastructure",
+            "skills"
+          ]
+        },
+        "WorkflowName": {
+          "description": "workflow name workflow for CreateSkill",
+          "timing": "standard",
+          "tags": [
+            "createskill",
+            "infrastructure",
+            "skills"
+          ]
+        },
+        "CreateSkill": {
+          "description": "Create a new skill following the canonical structure with proper TitleCase naming.",
+          "timing": "fast",
+          "tags": [
+            "createskill",
+            "infrastructure",
+            "skills",
+            "creation"
+          ]
+        },
+        "ValidateSkill": {
+          "description": "Purpose: Check if an existing skill follows the canonical structure with proper TitleCase naming.",
+          "timing": "standard",
+          "tags": [
+            "createskill",
+            "infrastructure",
+            "skills",
+            "validation"
+          ]
+        },
+        "UpdateSkill": {
+          "description": "Purpose: Add workflows or modify an existing skill while maintaining canonical structure and TitleCase naming.",
+          "timing": "standard",
+          "tags": [
+            "createskill",
+            "infrastructure",
+            "skills",
+            "maintenance"
+          ]
+        },
+        "CanonicalizeSkill": {
+          "description": "Purpose: Restructure an existing skill to match the canonical format with proper naming conventions.",
+          "timing": "standard",
+          "tags": [
+            "createskill",
+            "infrastructure",
+            "skills"
+          ]
+        }
+      }
+    },
+    "Cloudflare": {
+      "description": "Deploy Cloudflare Workers/Pages",
+      "tier": "deferred",
+      "workflows": {
+        "Create": {
+          "description": "Deploy a new Cloudflare Worker or MCP server.",
+          "timing": "standard",
+          "tags": [
+            "cloudflare",
+            "infrastructure",
+            "deployment",
+            "creation"
+          ]
+        },
+        "Troubleshoot": {
+          "description": "Comprehensive Cloudflare deployment troubleshooting workflow with recursive testing and automated fixes using Chrome MCP tools for visual verification.",
+          "timing": "deep",
+          "tags": [
+            "cloudflare",
+            "infrastructure",
+            "deployment"
+          ]
+        }
+      }
+    },
+    "ExtractWisdom": {
+      "description": "Dynamic wisdom extraction that adapts sections to content",
+      "tier": "deferred",
+      "workflows": {
+        "Extract": {
+          "description": "Extract dynamic, content-adaptive wisdom from any content source.",
+          "timing": "standard",
+          "tags": [
+            "extractwisdom",
+            "extraction"
+          ]
+        }
+      }
+    },
+    "Science": {
+      "description": "Universal thinking and iteration engine based on the scientific method",
+      "tier": "deferred",
+      "workflows": {
+        "DefineGoal": {
+          "description": "Phase 0 of the Scientific Cycle",
+          "timing": "standard",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology"
+          ]
+        },
+        "GenerateHypotheses": {
+          "description": "Phase 2 of the Scientific Cycle",
+          "timing": "standard",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology"
+          ]
+        },
+        "DesignExperiment": {
+          "description": "Phase 3 of the Scientific Cycle",
+          "timing": "fast",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology"
+          ]
+        },
+        "MeasureResults": {
+          "description": "Phase 5 of the Scientific Cycle",
+          "timing": "standard",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology"
+          ]
+        },
+        "AnalyzeResults": {
+          "description": "Phase 6 of the Scientific Cycle",
+          "timing": "standard",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology",
+            "analysis"
+          ]
+        },
+        "Iterate": {
+          "description": "Phase 7 of the Scientific Cycle",
+          "timing": "standard",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology"
+          ]
+        },
+        "FullCycle": {
+          "description": "Product strategy or architectural decisions",
+          "timing": "fast",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology"
+          ]
+        },
+        "QuickDiagnosis": {
+          "description": "You've tried the obvious fix and it didn't work",
+          "timing": "fast",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology",
+            "analysis"
+          ]
+        },
+        "StructuredInvestigation": {
+          "description": "Quick Diagnosis escalated (15+ minutes without resolution)",
+          "timing": "fast",
+          "tags": [
+            "science",
+            "thinking",
+            "methodology"
+          ]
+        }
+      }
+    },
+    "WorldThreatModelHarness": {
+      "description": ">",
+      "tier": "deferred",
+      "workflows": {
+        "TestIdea": {
+          "description": "User says \"test this idea,\" \"how will this hold up,\" \"test my strategy,\" \"stress test this\"",
+          "timing": "fast",
+          "tags": [
+            "worldthreatmodelharness"
+          ]
+        },
+        "UpdateModels": {
+          "description": "User says \"update world models,\" \"refresh models,\" \"new analysis for models\"",
+          "timing": "deep",
+          "tags": [
+            "worldthreatmodelharness",
+            "maintenance"
+          ]
+        },
+        "ViewModels": {
+          "description": "User says \"view world models,\" \"show models,\" \"current models,\" \"model status\"",
+          "timing": "standard",
+          "tags": [
+            "worldthreatmodelharness"
+          ]
+        }
+      }
+    },
+    "Research": {
+      "description": "Comprehensive research, analysis, and content extraction system",
+      "tier": "always",
+      "workflows": {
+        "OSINT": {
+          "description": "o s i n t workflow for Research",
+          "timing": "standard",
+          "tags": [
+            "research",
+            "web",
+            "investigation"
+          ]
+        },
+        "QuickResearch": {
+          "description": "User says \"quick research\" or \"minor research\"",
+          "timing": "fast",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "search"
+          ]
+        },
+        "StandardResearch": {
+          "description": "Default mode for most research requests",
+          "timing": "fast",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "search"
+          ]
+        },
+        "ExtensiveResearch": {
+          "description": "User says \"extensive research\" or \"do extensive research\"",
+          "timing": "deep",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "search"
+          ]
+        },
+        "DeepInvestigation": {
+          "description": "User says \"deep investigation\", \"investigate [topic]\", \"deep research on [market/landscape/domain]\"",
+          "timing": "fast",
+          "tags": [
+            "research",
+            "web",
+            "investigation"
+          ]
+        },
+        "ExtractAlpha": {
+          "description": "Extract the highest-alpha ideas from content using deep deep thinking analysis.",
+          "timing": "fast",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "extraction"
+          ]
+        },
+        "Retrieve": {
+          "description": "retrieve workflow for Research",
+          "timing": "fast",
+          "tags": [
+            "research",
+            "web",
+            "investigation"
+          ]
+        },
+        "YoutubeExtraction": {
+          "description": "Extract content from YouTube videos using Fabric CLI. Automatically downloads, transcribes, and processes video content with optional pattern application for analysis and summarization.",
+          "timing": "standard",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "extraction"
+          ]
+        },
+        "WebScraping": {
+          "description": "web scraping workflow for Research",
+          "timing": "standard",
+          "tags": [
+            "research",
+            "web",
+            "investigation"
+          ]
+        },
+        "ClaudeResearch": {
+          "description": "claude research workflow for Research",
+          "timing": "deep",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "search"
+          ]
+        },
+        "InterviewResearch": {
+          "description": "interview research workflow for Research",
+          "timing": "standard",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "search"
+          ]
+        },
+        "AnalyzeAiTrends": {
+          "description": "You are executing the analyze-ai-trends command to perform deep trend analysis across historical AI news logs.",
+          "timing": "deep",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "analysis"
+          ]
+        },
+        "Fabric": {
+          "description": "fabric workflow for Research",
+          "timing": "standard",
+          "tags": [
+            "research",
+            "web",
+            "investigation"
+          ]
+        },
+        "Enhance": {
+          "description": "Comprehensive content enhancement for blog posts",
+          "timing": "deep",
+          "tags": [
+            "research",
+            "web",
+            "investigation"
+          ]
+        },
+        "ExtractKnowledge": {
+          "description": "extract knowledge workflow for Research",
+          "timing": "deep",
+          "tags": [
+            "research",
+            "web",
+            "investigation",
+            "extraction"
+          ]
+        }
+      }
+    },
+    "SECUpdates": {
+      "description": "Security news aggregation from tldrsec, no",
+      "tier": "deferred",
+      "workflows": {
+        "Update": {
+          "description": "Trigger: \"security updates\", \"sec updates\", \"/secupdates\", \"what's new in security\"",
+          "timing": "standard",
+          "tags": [
+            "secupdates",
+            "maintenance"
+          ]
+        }
+      }
+    },
+    "IterativeDepth": {
+      "description": "Multi-angle iterative exploration for deeper ISC extraction",
+      "tier": "deferred",
+      "workflows": {
+        "Explore": {
+          "description": "Run N structured exploration passes over the same problem, each from a different lens, to extract richer ISC criteria than single-pass analysis produces.",
+          "timing": "standard",
+          "tags": [
+            "iterativedepth"
+          ]
+        }
+      }
+    },
+    "BeCreative": {
+      "description": "Extended thinking mode",
+      "tier": "deferred",
+      "workflows": {
+        "StandardCreativity": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "becreative",
+            "thinking",
+            "creativity"
+          ]
+        },
+        "MaximumCreativity": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "becreative",
+            "thinking",
+            "creativity"
+          ]
+        },
+        "IdeaGeneration": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "becreative",
+            "thinking",
+            "creativity"
+          ]
+        },
+        "TreeOfThoughts": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "becreative",
+            "thinking",
+            "creativity"
+          ]
+        },
+        "DomainSpecific": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "standard",
+          "tags": [
+            "becreative",
+            "thinking",
+            "creativity"
+          ]
+        }
+      }
+    },
+    "BrightData": {
+      "description": "Progressive URL scraping",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "RedTeam": {
+      "description": "Adversarial analysis with 32 agents",
+      "tier": "deferred",
+      "workflows": {
+        "ParallelAnalysis": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "deep",
+          "tags": [
+            "redteam",
+            "thinking",
+            "adversarial"
+          ]
+        },
+        "AdversarialValidation": {
+          "description": "-H \"Content-Type: application/json\" \\",
+          "timing": "fast",
+          "tags": [
+            "redteam",
+            "thinking",
+            "adversarial"
+          ]
+        }
+      }
+    },
+    "Browser": {
+      "description": "Debug-first browser automation with always-on visibility",
+      "tier": "deferred",
+      "workflows": {}
+    },
+    "Evals": {
+      "description": "Agent evaluation framework based on Anthropic's best practices",
+      "tier": "deferred",
+      "workflows": {
+        "ALGORITHM": {
+          "description": "a l g o r i t h m workflow for Evals",
+          "timing": "standard",
+          "tags": [
+            "evals",
+            "testing",
+            "evaluation"
+          ]
+        }
+      }
+    },
+    "Telos": {
+      "description": "Life OS and project analysis",
+      "tier": "deferred",
+      "workflows": {
+        "Update": {
+          "description": "update workflow for Telos",
+          "timing": "deep",
+          "tags": [
+            "telos",
+            "life-system",
+            "goals",
+            "maintenance"
+          ]
+        },
+        "InterviewExtraction": {
+          "description": "Extract standardized insights from interviews and notes into categorized output files.",
+          "timing": "deep",
+          "tags": [
+            "telos",
+            "life-system",
+            "goals",
+            "extraction"
+          ]
+        },
+        "CreateNarrativePoints": {
+          "description": "Purpose: Generate a story-driven consulting narrative that delivers hard truths, presents evidence, establishes existential stakes, and offers a vision that demands courage to execute.",
+          "timing": "standard",
+          "tags": [
+            "telos",
+            "life-system",
+            "goals",
+            "creation"
+          ]
+        },
+        "WriteReport": {
+          "description": "write report workflow for Telos",
+          "timing": "fast",
+          "tags": [
+            "telos",
+            "life-system",
+            "goals",
+            "creation"
+          ]
+        }
+      }
+    }
+  }
+}

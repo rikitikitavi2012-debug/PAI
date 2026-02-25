@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "ISC-C1: Exa neural search возвращает релевантные результаты",
+  "description": "Семантический поиск работает корректно — не keyword, а смысловой",
+  "activeForm": "Тестируем neural search",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

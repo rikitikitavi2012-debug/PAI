@@ -1,0 +1,9 @@
+{
+  "id": "7",
+  "subject": "ISC-C7: README.md обновлён с актуальной информацией и путями WSL",
+  "description": "README отражает новое расположение, команды для WSL. Verify: Read: README.md",
+  "activeForm": "Обновление README",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

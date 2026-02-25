@@ -1,0 +1,9 @@
+{
+  "id": "16",
+  "subject": "ISC-A2: No interference with existing Vercel projects or deployments",
+  "description": "Existing projects (smart-estimator-pro, v0-terrace-calculator-app, v0-finance-flow-ai-structure) remain untouched. New project created separately. | Verify: CLI: vercel ls shows all existing projects intact",
+  "activeForm": "Checking existing projects",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

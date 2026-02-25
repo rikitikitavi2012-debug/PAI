@@ -1,0 +1,519 @@
+{
+  "active": true,
+  "sessionId": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
+  "taskDescription": "Voice Phrases Config",
+  "currentPhase": "OBSERVE",
+  "phaseStartedAt": 1772048875259,
+  "algorithmStartedAt": 1772048875259,
+  "sla": "Standard",
+  "criteria": [],
+  "agents": [],
+  "capabilities": [
+    "Task Tool"
+  ],
+  "phaseHistory": [
+    {
+      "phase": "OBSERVE",
+      "startedAt": 1772048875259,
+      "criteriaCount": 0,
+      "agentCount": 0,
+      "isRework": true,
+      "reworkIteration": 4
+    }
+  ],
+  "effortLevel": "Standard",
+  "currentAction": "Аудит и фикс голосовых уведомлений — язык и голоса",
+  "reworkHistory": [
+    {
+      "iteration": 0,
+      "startedAt": 1772044517346,
+      "completedAt": 1772044964702,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "WisdomExtractor stderr записывается в debug лог-файл",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "TELOSTracker stderr записывается в debug лог-файл",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "TrendingAnalysis stderr записывается в debug лог-файл",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Debug лог-директория создаётся автоматически при записи",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "Логи пишутся с таймстампом и именем инструмента",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C6",
+          "description": "Fire-and-forget семантика сохранена без блокировки",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C7",
+          "description": "Stdout остаётся 'ignore' во всех трёх местах",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Логирование не крашит хук при ошибке записи",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772044517346,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "completedAt": 1772044517347
+        },
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772044517347,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "completedAt": 1772044597519
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772044597519,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772044624019
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772044624019,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772044633383
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772044633383,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772044731178
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772044731178,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772044787288
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772044787288,
+          "criteriaCount": 8,
+          "agentCount": 0,
+          "completedAt": 1772044844388
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772044844388,
+          "criteriaCount": 8,
+          "agentCount": 0
+        }
+      ]
+    },
+    {
+      "iteration": 1,
+      "startedAt": 1772044964702,
+      "completedAt": 1772046618614,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "Fork PAI repo создан под аккаунтом rikitikitavi2012-debug",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "Branch fix/inference-json-parsing создан от main",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "JSON parsing fix применён к upstream Inference.ts",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "PR создан в danielmiessler/PAI с описанием бага",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "Только JSON fix в коммите без других наших изменений",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Никакие наши локальные секреты не попали в PR",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772044964702,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772045111857
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772045111857,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772045126014
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772045126014,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772045137226
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772045137226,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772046327252
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772046327252,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772046386532
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772046386532,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1,
+          "completedAt": 1772046421435
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772046421435,
+          "criteriaCount": 6,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 1
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "startedAt": 1772046618614,
+      "completedAt": 1772047942139,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "PostCompactRecovery.hook.ts создан в hooks директории",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "Compact matcher добавлен в SessionStart settings.json",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "Хук читает identity из settings.json динамически",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Хук выводит additionalContext как JSON на stdout",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C5",
+          "description": "Хук молча exit(0) для не-compact sources",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C6",
+          "description": "Хук компилируется и запускается без ошибок",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Recovery контент не содержит хардкоженных имён или секретов",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772046618614,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772046685052
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772046685052,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772046726164
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772046726164,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772046734872
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772046734872,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772046800475
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772046800475,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772046823987
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772046823987,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2,
+          "completedAt": 1772046863790
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772046863790,
+          "criteriaCount": 7,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 2
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "startedAt": 1772047942139,
+      "completedAt": 1772048875259,
+      "fromPhase": "COMPLETE",
+      "toPhase": "OBSERVE",
+      "criteria": [
+        {
+          "id": "C1",
+          "description": "UpdateTabTitle voice summary на русском языке",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C2",
+          "description": "Все хардкоженные voice_id заменены на Rachel fallback",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C3",
+          "description": "Голосовое приветствие при старте на русском",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "C4",
+          "description": "Settings.json mainDAVoiceID указывает на Rachel",
+          "type": "criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        },
+        {
+          "id": "A1",
+          "description": "Нет английских голосовых сообщений в хуках",
+          "type": "anti-criterion",
+          "status": "pending",
+          "createdInPhase": "OBSERVE"
+        }
+      ],
+      "effortLevel": "Standard",
+      "phaseHistory": [
+        {
+          "phase": "OBSERVE",
+          "startedAt": 1772047942139,
+          "criteriaCount": 0,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772048027108
+        },
+        {
+          "phase": "THINK",
+          "startedAt": 1772048027108,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772048060139
+        },
+        {
+          "phase": "PLAN",
+          "startedAt": 1772048060139,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772048067123
+        },
+        {
+          "phase": "BUILD",
+          "startedAt": 1772048067123,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772048160867
+        },
+        {
+          "phase": "EXECUTE",
+          "startedAt": 1772048160867,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772048190952
+        },
+        {
+          "phase": "VERIFY",
+          "startedAt": 1772048190952,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3,
+          "completedAt": 1772048236322
+        },
+        {
+          "phase": "LEARN",
+          "startedAt": 1772048236322,
+          "criteriaCount": 5,
+          "agentCount": 0,
+          "isRework": true,
+          "reworkIteration": 3
+        }
+      ]
+    }
+  ],
+  "reworkCount": 4,
+  "isRework": true,
+  "previousNames": [
+    {
+      "name": "Fire Session",
+      "changedAt": "2026-02-25T19:10:05.422Z"
+    },
+    {
+      "name": "Postcompact Recovery",
+      "changedAt": "2026-02-25T19:26:47.748Z"
+    },
+    {
+      "name": "Notification Wrapper",
+      "changedAt": "2026-02-25T19:28:07.576Z"
+    },
+    {
+      "name": "Upstream Pull Requests",
+      "changedAt": "2026-02-25T19:32:01.371Z"
+    }
+  ]
+}

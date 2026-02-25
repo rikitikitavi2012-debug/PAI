@@ -1,0 +1,9 @@
+{
+  "id": "11",
+  "subject": "ISC-C9: Первый коммит с кодовой базой запушен на GitHub",
+  "description": "ОТЛОЖЕНО: GitHub токен не имеет write access. Нужно перелогиниться: `gh auth login -s repo`. После этого: `git push -u origin main --force-with-lease`",
+  "activeForm": "Пуш на GitHub",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}
