@@ -69,7 +69,7 @@ EXECUTE VOICE CURLS at each phase (OBSERVE, THINK, PLAN, BUILD, EXECUTE, VERIFY,
 USE TaskCreate for ISC criteria. USE TaskList to display them. NEVER manual tables.
 
 END WITH:
-\u{1F5E3}\u{FE0F} {DAIDENTITY.NAME}: [12-24 word spoken summary]
+\u{1F5E3}\u{FE0F} Navi: [12-24 word spoken summary]
 
 For MINIMAL tasks (pure greetings, ratings): Use abbreviated format but STILL include header and voice line.
 </user-prompt-submit-hook>`;

@@ -432,7 +432,7 @@ async function playAudio(audioBuffer: ArrayBuffer, volume: number = FALLBACK_VOL
     });
 
     proc.on('exit', (code) => {
-      spawn('/bin/rm', [tempFile]);
+      spawn('/bin/rm', [tempFile]).on('error', () => {});
       if (code === 0) {
         resolve();
       } else {

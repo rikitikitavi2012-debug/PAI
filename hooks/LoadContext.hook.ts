@@ -44,7 +44,7 @@ import { execSync } from 'child_process';
 import { getPaiDir } from './lib/paths';
 import { recordSessionStart } from './lib/notifications';
 import { setTabState, readTabState } from './lib/tab-setter';
-import { getDAName } from './lib/identity';
+import { getDAName, getPrincipal } from './lib/identity';
 
 /**
  * Reset tab title to clean state at session start.
@@ -74,7 +74,7 @@ async function getCurrentDate(): Promise<string> {
   try {
     const proc = Bun.spawn(['date', '+%Y-%m-%d %H:%M:%S %Z'], {
       stdout: 'pipe',
-      env: { ...process.env, TZ: process.env.TIME_ZONE || 'America/Los_Angeles' }
+      env: { ...process.env, TZ: process.env.TIME_ZONE || getPrincipal().timezone }
     });
     const output = await new Response(proc.stdout).text();
     return output.trim();

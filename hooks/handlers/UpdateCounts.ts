@@ -16,7 +16,7 @@
  * - Single source of truth in settings.json
  */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync, statSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, statSync, mkdirSync, copyFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
 import { getPaiDir, getSettingsPath } from '../lib/paths';
@@ -79,26 +79,38 @@ function countWorkflowFiles(dir: string): number {
 }
 
 /**
- * Count skills (directories with SKILL.md file)
+ * Count skills (directories with SKILL.md file, including nested like Documents/Pdf)
+ * Matches skill-index.json totalSkills which includes nested skills.
+ * Excludes PAI and CORE (infrastructure dirs, not user-facing skills).
  */
 function countSkills(paiDir: string): number {
+  const EXCLUDED_DIRS = new Set(['PAI', 'CORE']);
   let count = 0;
   const skillsDir = join(paiDir, 'skills');
-  try {
-    for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
-      // Handle both real directories and symlinks to directories
-      const isDir = entry.isDirectory() ||
-        (entry.isSymbolicLink() && statSync(join(skillsDir, entry.name)).isDirectory());
-      if (isDir) {
-        const skillFile = join(skillsDir, entry.name, 'SKILL.md');
-        if (existsSync(skillFile)) {
-          count++;
+
+  function walkSkills(dir: string, depth: number) {
+    try {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const isDirectory = entry.isDirectory() ||
+          (entry.isSymbolicLink() && statSync(join(dir, entry.name)).isDirectory());
+        if (isDirectory) {
+          // Skip infrastructure dirs at top level
+          if (depth === 0 && EXCLUDED_DIRS.has(entry.name)) continue;
+          const fullPath = join(dir, entry.name);
+          const skillFile = join(fullPath, 'SKILL.md');
+          if (existsSync(skillFile)) {
+            count++;
+          }
+          // Recurse into subdirs to find nested skills (e.g. Documents/Pdf/SKILL.md)
+          walkSkills(fullPath, depth + 1);
         }
       }
+    } catch {
+      // directory doesn't exist or not readable
     }
-  } catch {
-    // skills directory doesn't exist
   }
+
+  walkSkills(skillsDir, 0);
   return count;
 }
 
@@ -249,6 +261,27 @@ export async function handleUpdateCounts(): Promise<void> {
   const settingsPath = getSettingsPath();
 
   try {
+    // Backup settings.json before modifying (keep last 5 backups)
+    const backupDir = join(paiDir, 'backups');
+    try {
+      mkdirSync(backupDir, { recursive: true });
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const backupPath = join(backupDir, `settings.json.${dateStr}`);
+      if (!existsSync(backupPath)) {
+        copyFileSync(settingsPath, backupPath);
+      }
+      // Prune old backups (keep last 5)
+      const backups = readdirSync(backupDir)
+        .filter(f => f.startsWith('settings.json.'))
+        .sort()
+        .reverse();
+      for (const old of backups.slice(5)) {
+        try { unlinkSync(join(backupDir, old)); } catch {}
+      }
+    } catch {
+      // Non-fatal — backup failure shouldn't block counts update
+    }
+
     // Run counts + usage refresh in parallel
     const [counts] = await Promise.all([
       Promise.resolve(getCounts(paiDir)),

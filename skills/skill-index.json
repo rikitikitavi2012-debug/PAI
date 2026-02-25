@@ -1,8 +1,8 @@
 {
-  "generated": "2026-02-22T23:22:42.252Z",
-  "totalSkills": 44,
+  "generated": "2026-02-25T22:23:31.078Z",
+  "totalSkills": 45,
   "alwaysLoadedCount": 2,
-  "deferredCount": 42,
+  "deferredCount": 43,
   "skills": {
     "osint": {
       "name": "OSINT",
@@ -745,11 +745,58 @@
       "tier": "deferred",
       "minModel": "opus"
     },
+    "systemaudit": {
+      "name": "SystemAudit",
+      "path": "SystemAudit/SKILL.md",
+      "fullDescription": "Deep PAI system audit with multi-agent analysis and upstream comparison. USE WHEN system audit, health check, check system, audit PAI, system health, compare upstream, sync check, what's broken, diagnose system.",
+      "triggers": [
+        "system",
+        "audit",
+        "health",
+        "check",
+        "pai",
+        "compare",
+        "upstream",
+        "sync",
+        "whats",
+        "broken",
+        "diagnose"
+      ],
+      "workflows": [
+        "FullAudit",
+        "QuickCheck",
+        "UpstreamSync"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
     "worldthreatmodelharness": {
       "name": "WorldThreatModelHarness",
       "path": "WorldThreatModelHarness/SKILL.md",
-      "fullDescription": ">",
-      "triggers": [],
+      "fullDescription": "\"Persistent world model system across 11 time horizons (6mo-50yr) for adversarial analysis of ideas, strategies, and investments. USE WHEN threat model, world model, test idea, test strategy, future analysis, test investment, how will this hold up, test against future, update world models, view world models, time horizon analysis, adversarial future test, stress test idea.\"",
+      "triggers": [
+        "threat",
+        "model",
+        "world",
+        "test",
+        "idea",
+        "strategy",
+        "future",
+        "analysis",
+        "investment",
+        "how",
+        "will",
+        "this",
+        "hold",
+        "against",
+        "update",
+        "models",
+        "view",
+        "time",
+        "horizon",
+        "adversarial",
+        "stress"
+      ],
       "workflows": [
         "TestIdea",
         "UpdateModels",

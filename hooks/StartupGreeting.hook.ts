@@ -51,6 +51,7 @@ import { spawnSync } from 'child_process';
 
 import { getPaiDir, getSettingsPath } from './lib/paths';
 import { persistKittySession } from './lib/tab-setter';
+import { getVoiceId } from './lib/identity';
 
 const paiDir = getPaiDir();
 const settingsPath = getSettingsPath();
@@ -121,7 +122,7 @@ const settingsPath = getSettingsPath();
       await fetch('http://localhost:8888/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Navi готов к работе', voice_id: 'pNInz6obpgDQGcFmaJgB' }),
+        body: JSON.stringify({ message: 'Navi готов к работе', voice_id: getVoiceId() }),
         signal: AbortSignal.timeout(3000),
       });
     } catch { /* voice server unavailable — not critical */ }

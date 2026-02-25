@@ -13,13 +13,15 @@
 
 ### Step 1: Launch Single Claude Agent
 
+**Check `~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Research/PREFERENCES.md` for language preferences.**
+
 **ONE Task call - Claude researcher with a single focused query:**
 
 ```typescript
 Task({
   subagent_type: "ClaudeResearcher",
   description: "[topic] quick lookup",
-  prompt: "Do ONE web search for: [query]. Return the key findings immediately. Keep it brief and factual."
+  prompt: "Do ONE web search for: [query]. Return the key findings immediately. Keep it brief and factual. IMPORTANT: Respond in Russian (русский язык). Technical terms may stay in English."
 })
 ```
 
@@ -28,7 +30,14 @@ Task({
 - Instruct to return immediately after first search
 - No multi-query exploration
 
-### Step 2: Return Results
+### Step 2: Save Results to Disk (MANDATORY)
+
+```bash
+mkdir -p ~/.claude/MEMORY/RESEARCH/YYYY-MM/
+# Write: ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_{topic-slug}/RESEARCH_REPORT.md
+```
+
+### Step 3: Return Results
 
 Report findings using standard format:
 
@@ -39,6 +48,7 @@ Report findings using standard format:
 ✅ RESULTS: [Answer]
 📊 STATUS: Quick mode - 1 agent, 1 query
 📁 CAPTURE: [Key facts]
+📁 SAVED: ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_{topic-slug}/
 ➡️ NEXT: [Suggest standard research if more depth needed]
 📖 STORY EXPLANATION: [3-5 numbered points - keep brief]
 🎯 COMPLETED: Quick answer on [topic]

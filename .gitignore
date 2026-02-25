@@ -56,3 +56,8 @@ backups/
 /bun.lock
 .credentials.json
 plugins/marketplaces/
+
+# Memory subdirectories with sensitive/generated data
+MEMORY/AUDIT/
+MEMORY/SECURITY/
+MEMORY/RELATIONSHIP/

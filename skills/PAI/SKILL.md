@@ -2,7 +2,7 @@
   🔨 GENERATED FILE - Do not edit directly
   Edit:   ~/.claude/skills/PAI/Components/
   Build:  bun ~/.claude/skills/PAI/Tools/RebuildPAI.ts
-  Built:  25 February 2026 22:53:09
+  Built:  26 February 2026 01:07:37
 -->
 ---
 name: PAI
@@ -1181,6 +1181,14 @@ Scan: 25/25 | Sections: N/6 | Selected: N | Declined: M | N/A: P
 9. **Cross-section combination preferred.** Selections from a single section only are a yellow flag. The power is in combining across sections.
 
 ### Agent Instructions (CRITICAL)
+
+### Agent Language (MANDATORY)
+
+**ALL agent prompts MUST include Russian language instruction.** The principal (Ivan) communicates in Russian. Subagents spawned via Task tool do NOT inherit the main session's language context. Therefore, ALWAYS append to every agent prompt:
+
+`IMPORTANT: Respond in Russian (русский язык). Technical terms and proper nouns may remain in English.`
+
+This applies to ALL agent types: Researcher, Engineer, Architect, Algorithm, Intern, Explore, custom agents — no exceptions.
 
 ### Custom Agent Invocation (v1.0.0)
 

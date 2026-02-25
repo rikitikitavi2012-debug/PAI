@@ -117,8 +117,7 @@ export function isValidWorkingTitle(text: string): boolean {
   return false;
 }
 
-/** @deprecated Use isValidWorkingTitle */
-export const isValidTabSummary = isValidWorkingTitle;
+// Removed: isValidTabSummary (deprecated alias, 0 consumers)
 
 /**
  * Completion-phase title: must NOT start with gerund.

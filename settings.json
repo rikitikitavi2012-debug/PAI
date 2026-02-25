@@ -769,12 +769,12 @@
   },
   "principal": {
     "name": "Ivan",
-    "pronunciation": "{PRINCIPAL.PRONUNCIATION}",
+    "pronunciation": "",
     "timezone": "Europe/Moscow",
     "voiceClone": {
       "_docs": "Principal's ElevenLabs voice clone for narration, audiobooks, and content read in their voice",
-      "voiceId": "YOUR_VOICE_ID_HERE",
-      "voiceName": "{PRINCIPAL.NAME}",
+      "voiceId": "",
+      "voiceName": "Ivan",
       "provider": "elevenlabs"
     }
   },
@@ -843,16 +843,16 @@
     }
   },
   "counts": {
-    "skills": 41,
-    "workflows": 162,
-    "hooks": 21,
-    "signals": 16,
-    "files": 104,
-    "work": 65,
-    "sessions": 32,
+    "skills": 45,
+    "workflows": 165,
+    "hooks": 22,
+    "signals": 25,
+    "files": 93,
+    "work": 6,
+    "sessions": 41,
     "research": 1,
-    "ratings": 140,
-    "updatedAt": "2026-02-25T18:33:31.390Z"
+    "ratings": 160,
+    "updatedAt": "2026-02-25T23:00:52.651Z"
   },
   "mcpServers": {
     "supabase": {
@@ -868,7 +868,7 @@
     "exa": {
       "command": "/home/ser/.npm-global/bin/exa-mcp-server",
       "env": {
-        "EXA_API_KEY": "e1733f49-4920-48f9-8c34-facc85a247df"
+        "EXA_API_KEY": "${EXA_API_KEY}"
       }
     }
   }

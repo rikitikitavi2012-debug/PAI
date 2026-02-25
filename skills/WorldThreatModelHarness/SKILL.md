@@ -1,10 +1,6 @@
 ---
 name: WorldThreatModelHarness
-description: >
-  Persistent world model system across 11 time horizons (6mo→50yr) for adversarial analysis of ideas,
-  strategies, and investments. USE WHEN threat model, world model, test idea, test strategy, future analysis,
-  test investment, how will this hold up, test against future, update world models, view world models,
-  time horizon analysis, adversarial future test, stress test idea.
+description: "Persistent world model system across 11 time horizons (6mo-50yr) for adversarial analysis of ideas, strategies, and investments. USE WHEN threat model, world model, test idea, test strategy, future analysis, test investment, how will this hold up, test against future, update world models, view world models, time horizon analysis, adversarial future test, stress test idea."
 implements: Science
 science_cycle_time: macro
 context: fork
@@ -80,7 +76,7 @@ Before any workflow execution:
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running WORKFLOW_NAME in the World Threat Model Harness", "voice_id": "YOUR_VOICE_ID_HERE"}'
+  -d '{"message": "Running WORKFLOW_NAME in the World Threat Model Harness"}'
 ```
 
 ## Customization Check

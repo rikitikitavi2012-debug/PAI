@@ -20,7 +20,7 @@ Configure your Digital Assistant's identity and personality.
 
 ## Voice
 
-ElevenLabs voice: `21m00Tcm4TlvDq8ikWAM`
+ElevenLabs voice: configured in `settings.json` → `daidentity.voices.main.voiceId`
 
 | Trait | Value | Effect |
 |-------|-------|--------|
