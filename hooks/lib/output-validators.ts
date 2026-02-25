@@ -93,21 +93,28 @@ function isValidTitleBase(text: string): { valid: boolean; firstWord: string } {
     return { valid: false, firstWord };
   }
 
-  // Reject dangling/incomplete endings
-  const lastWord = words[words.length - 1].toLowerCase().replace(/[^a-z]/g, '');
+  // Reject dangling/incomplete endings (support Latin + Cyrillic)
+  const lastWord = words[words.length - 1].toLowerCase().replace(/[^a-zа-яё]/g, '');
   if (INCOMPLETE_ENDINGS.has(lastWord)) return { valid: false, firstWord };
 
   return { valid: true, firstWord };
 }
 
 /**
- * Working-phase title: MUST start with gerund (-ing verb).
+ * Working-phase title: MUST start with gerund (-ing verb) or Russian verbal noun.
  * Used by UpdateTabTitle for 🧠/⚙️ titles.
+ * Russian verbal nouns: -ние, -ка, -ция, -тие (Исправление, Проверка, Настройка, Обновление)
  */
 export function isValidWorkingTitle(text: string): boolean {
   const { valid, firstWord } = isValidTitleBase(text);
   if (!valid) return false;
-  return firstWord.endsWith('ing');
+  // English gerund
+  if (firstWord.endsWith('ing')) return true;
+  // Russian verbal noun endings (отглагольные существительные)
+  if (/[а-яё]/.test(firstWord)) {
+    return /(ние|нье|ка|ция|тие|зка|жка|вка)$/i.test(firstWord);
+  }
+  return false;
 }
 
 /** @deprecated Use isValidWorkingTitle */
