@@ -39,6 +39,17 @@ PAI-Install/
 *.cache
 *.log
 
+# Telemetry
+telemetry/
+
+# State caches (regenerated automatically)
+MEMORY/STATE/*.sh
+MEMORY/STATE/*.json
+MEMORY/STATE/algorithms/
+
+# Backup rotation files
+backups/
+
 # Accidental npm/bun debris
 /package.json
 /package-lock.json

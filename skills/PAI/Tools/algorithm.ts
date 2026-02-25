@@ -50,7 +50,7 @@ const ALGORITHMS_DIR = join(BASE_DIR, "MEMORY", "STATE", "algorithms");
 const SESSION_NAMES_PATH = join(BASE_DIR, "MEMORY", "STATE", "session-names.json");
 const PROJECTS_DIR = process.env.PROJECTS_DIR || join(HOME, "Projects");
 const VOICE_URL = "http://localhost:8888/notify";
-const VOICE_ID = "fTtv3eikoepIosk8dTZ5";
+const VOICE_ID = "pNInz6obpgDQGcFmaJgB";
 const ALGORITHM_VERSION = (() => {
   try {
     const latestPath = join(BASE_DIR, "skills", "PAI", "Components", "Algorithm", "LATEST");
