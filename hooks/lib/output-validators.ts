@@ -45,7 +45,7 @@ export function isValidVoiceCompletion(text: string): boolean {
   if (!text || text.length < 10) return false;
   const wordCount = text.trim().split(/\s+/).length;
   if (wordCount === 1) {
-    const lower = text.toLowerCase().replace(/[^a-z]/g, '');
+    const lower = text.toLowerCase().replace(/[^a-zа-яё]/g, '');
     if (SINGLE_WORD_BLOCKLIST.has(lower) || lower.length < 10) return false;
   }
   for (const p of GARBAGE_PATTERNS) if (p.test(text)) return false;
