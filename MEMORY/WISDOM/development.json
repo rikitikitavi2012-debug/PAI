@@ -1,6 +1,6 @@
 {
   "domain": "development",
-  "updated": "2026-02-25T18:33:35.615Z",
+  "updated": "2026-02-26T19:54:14.980Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -56,6 +56,13 @@
       "observation": "When finding one JSON parsing bug in Inference.ts, Ivan audits all 4 dependent tools (TELOSTracker, FailureCapture, WisdomExtractor, IntegrityMaintenance)",
       "timestamp": "2026-02-25T18:33:35.615Z",
       "session_id": "7a3762a7-8959-4ddb-b626-0017cdf66623",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Agents produce false alarms when given only line numbers—require exact code snippets in audit report format to reduce verification overhead",
+      "timestamp": "2026-02-26T19:54:14.980Z",
+      "session_id": "6065d990-06d8-4289-a118-ed6fe1883180",
       "confirmed": 1
     }
   ]

@@ -1,0 +1,13 @@
+{
+  "domain": "learning",
+  "updated": "2026-02-26T18:45:03.302Z",
+  "observations": [
+    {
+      "type": "anti-pattern",
+      "observation": "Pure theoretical explanations don't satisfy Ivan — he wants live examples and concrete demonstrations of how tools work, not abstract architecture",
+      "timestamp": "2026-02-26T18:45:03.302Z",
+      "session_id": "b9de0178-e71b-4491-b6a8-ee0d7495e0fa",
+      "confirmed": 1
+    }
+  ]
+}

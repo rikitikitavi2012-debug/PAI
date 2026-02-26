@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-02-26T19:39:52.680Z",
+  "updated": "2026-02-26T19:54:15.001Z",
   "observations": [
     {
       "type": "principle",
@@ -52,6 +52,20 @@
       "observation": "Ivan struggles with visual/interactive features (image insertion, text pasting in Kitty) — prefers text-based CLI explanations over live demos",
       "timestamp": "2026-02-26T19:39:52.680Z",
       "session_id": "8aabe577-7eb9-409a-9950-02aa10a1e82e",
+      "confirmed": 1
+    },
+    {
+      "type": "contextual-rule",
+      "observation": "Ivan delegates audits to 3-4 parallel agents by functional/dependency domain, then consolidates and verifies findings before fixing",
+      "timestamp": "2026-02-26T19:54:14.959Z",
+      "session_id": "6065d990-06d8-4289-a118-ed6fe1883180",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "After completing a multi-level audit, Ivan will ask 'should we commit now or is there more work for next session?' to close the loop",
+      "timestamp": "2026-02-26T19:54:15.001Z",
+      "session_id": "6065d990-06d8-4289-a118-ed6fe1883180",
       "confirmed": 1
     }
   ]

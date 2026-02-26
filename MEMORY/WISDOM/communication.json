@@ -1,0 +1,13 @@
+{
+  "domain": "communication",
+  "updated": "2026-02-26T19:39:52.701Z",
+  "observations": [
+    {
+      "type": "contextual-rule",
+      "observation": "Ivan uses Russian; asks rapid-fire follow-up questions when confused; needs simple, concrete examples over theoretical explanations",
+      "timestamp": "2026-02-26T19:39:52.701Z",
+      "session_id": "8aabe577-7eb9-409a-9950-02aa10a1e82e",
+      "confirmed": 1
+    }
+  ]
+}

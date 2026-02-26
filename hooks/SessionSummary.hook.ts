@@ -139,6 +139,11 @@ async function main() {
 
     // Mark work as complete and clear state
     // NOTE: Does NOT write to SESSIONS/ - WORK/ is the primary system
+    // RACE CONDITION FIX: Wait 2s before clearing state.
+    // Other SessionEnd hooks (ISCSyncHook, WorkCompletionLearning) read
+    // current-work.json. Claude Code fires all SessionEnd hooks in parallel,
+    // so we delay deletion to let readers finish first.
+    await new Promise(resolve => setTimeout(resolve, 2000));
     clearSessionWork(sessionId);
 
     // Reset Kitty tab to neutral styling — no lingering colored backgrounds
