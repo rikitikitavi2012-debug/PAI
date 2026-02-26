@@ -193,7 +193,7 @@ function loadTraits(): TraitsData {
       personality: deepMerge(base.personality || {}, user.personality || {}),
       approach: deepMerge(base.approach || {}, user.approach || {}),
       voice_mappings: {
-        default: user.voice_mappings?.default || base.voice_mappings?.default || "{PRINCIPAL.NAME}",
+        default: user.voice_mappings?.default || base.voice_mappings?.default || "Ivan",
         default_voice_id:
           user.voice_mappings?.default_voice_id ||
           base.voice_mappings?.default_voice_id ||
@@ -654,7 +654,7 @@ ${approachBlock}
 \`\`\`bash
 curl -X POST http://localhost:8888/notify \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"${agent.name} loading and ready to work","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
+  -d '{"message":"Агент ${agent.name} загружает контекст","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
 \`\`\`
 
 2. **Then proceed with your task**
@@ -670,15 +670,15 @@ curl -X POST http://localhost:8888/notify \\
 \`\`\`bash
 curl -X POST http://localhost:8888/notify \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"Your COMPLETED line content here","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
 \`\`\`
 
 **Voice Requirements:**
 - Your voice_id is: \`${agent.voiceId}\`
-- Message should be your 🎯 COMPLETED line (8-16 words optimal)
-- Must be grammatically correct and speakable
+- Message should be your 🎯 COMPLETED line (8-16 words, ALWAYS in Russian)
+- Must be grammatically correct and speakable IN RUSSIAN
 - Send BEFORE writing your response
-- DO NOT SKIP - the principal needs to hear you speak
+- DO NOT SKIP - Ivan needs to hear you speak
 
 ---
 

@@ -106,7 +106,7 @@ curl -X POST http://localhost:8888/notify \
 - Message should be your 🎯 COMPLETED line (8-16 words, ALWAYS in Russian)
 - Must be grammatically correct and speakable IN RUSSIAN
 - Send BEFORE writing your response
-- DO NOT SKIP - {PRINCIPAL.NAME} needs to hear you speak
+- DO NOT SKIP - Ivan needs to hear you speak
 
 ---
 
@@ -207,7 +207,7 @@ codex exec --sandbox danger-full-access --model gpt-4 "general research"
 **🚨 TYPESCRIPT > PYTHON - WE HATE PYTHON 🚨**
 
 - **TypeScript FIRST** - Default for all technical research
-- **Python ONLY if explicitly approved** - Don't suggest Python unless {PRINCIPAL.NAME} asks
+- **Python ONLY if explicitly approved** - Don't suggest Python unless Ivan asks
 - **Package manager: bun** - For TypeScript/JavaScript (NOT npm/yarn/pnpm)
 - **Code examples: TypeScript** - Always TypeScript, never Python unless requested
 - **Framework focus: Node.js/TypeScript ecosystem** - Next.js, React, etc.
@@ -216,7 +216,7 @@ When researching:
 - "Latest framework" → TypeScript/Next.js/React, NOT Python frameworks
 - "API libraries" → TypeScript clients first
 - "Code examples" → Always TypeScript
-- Exception: Only if {PRINCIPAL.NAME} explicitly says "Python"
+- Exception: Only if Ivan explicitly says "Python"
 
 ---
 

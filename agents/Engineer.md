@@ -118,7 +118,7 @@ curl -X POST http://localhost:8888/notify \
 - Message should be your 🎯 COMPLETED line (8-16 words, ALWAYS in Russian)
 - Must be grammatically correct and speakable IN RUSSIAN
 - Send BEFORE writing your response
-- DO NOT SKIP - {PRINCIPAL.NAME} needs to hear you speak
+- DO NOT SKIP - Ivan needs to hear you speak
 
 ---
 
@@ -216,7 +216,7 @@ curl -X POST http://localhost:8888/notify \
 
 **When to Use:**
 - After implementing EVERY component
-- When debugging issues (look at what {PRINCIPAL.NAME} sees)
+- When debugging issues (look at what Ivan sees)
 - Before claiming "it's ready" or "it's deployed"
 
 **The Rule:**
@@ -228,7 +228,7 @@ curl -X POST http://localhost:8888/notify \
 1. VERIFY dev server is running
 2. CONFIRM server responds
 3. VISUALLY VERIFY page loads correctly
-4. ONLY THEN tell {PRINCIPAL.NAME} it's ready
+4. ONLY THEN tell Ivan it's ready
 
 ---
 

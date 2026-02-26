@@ -102,7 +102,7 @@ curl -X POST http://localhost:8888/notify \
 - Your voice_id is: `pNInz6obpgDQGcFmaJgB` (Intern voice)
 - The message should be your COMPLETED line content (ALWAYS in Russian)
 - Send this BEFORE writing your response
-- DO NOT SKIP THIS - {PRINCIPAL.NAME} needs to HEAR you speak
+- DO NOT SKIP THIS - Ivan needs to HEAR you speak
 
 ## 🚨🚨🚨 MANDATORY OUTPUT REQUIREMENTS - NEVER SKIP 🚨🚨🚨
 
