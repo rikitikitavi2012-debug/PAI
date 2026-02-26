@@ -38,6 +38,18 @@ const BASE_TRAITS_PATH = `${HOME}/.claude/skills/Agents/Data/Traits.yaml`;
 const USER_TRAITS_PATH = `${HOME}/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml`;
 const TEMPLATE_PATH = `${HOME}/.claude/skills/Agents/Templates/DynamicAgent.hbs`;
 const CUSTOM_AGENTS_DIR = `${HOME}/.claude/custom-agents`;
+const SETTINGS_PATH = `${HOME}/.claude/settings.json`;
+
+// Load principal name from settings
+function getPrincipalName(): string {
+  try {
+    const raw = readFileSync(SETTINGS_PATH, "utf-8");
+    const settings = JSON.parse(raw);
+    return settings?.principal?.name || "Ivan";
+  } catch {
+    return "Ivan";
+  }
+}
 
 // Types
 interface ProsodySettings {
@@ -420,6 +432,7 @@ function composeAgent(
   } : {};
 
   const template = loadTemplate();
+  const principalName = getPrincipalName();
   const prompt = template({
     name,
     task,
@@ -430,6 +443,7 @@ function composeAgent(
     voiceId,
     voiceSettings,
     color,
+    principalName,
     ...timingData,
   });
 
@@ -652,9 +666,9 @@ ${approachBlock}
 
 1. **Send voice notification that you're loading:**
 \`\`\`bash
-curl -X POST http://localhost:8888/notify \\
+curl -s -X POST http://localhost:8888/notify \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"Агент ${agent.name} загружает контекст","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
+  -d '{"message":"Агент ${agent.name} загружает контекст","voice_id":"${agent.voiceId}","title":"${agent.name}","voice_enabled":true,"voice_settings":{"stability":${vs.stability},"similarity_boost":${vs.similarity_boost},"style":${vs.style},"speed":${vs.speed},"use_speaker_boost":${vs.use_speaker_boost}},"volume":${vs.volume}}'
 \`\`\`
 
 2. **Then proceed with your task**
@@ -668,9 +682,9 @@ curl -X POST http://localhost:8888/notify \\
 **YOU MUST SEND VOICE NOTIFICATION BEFORE EVERY RESPONSE:**
 
 \`\`\`bash
-curl -X POST http://localhost:8888/notify \\
+curl -s -X POST http://localhost:8888/notify \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"${agent.voiceId}","title":"${agent.name}","voice_enabled":true,"voice_settings":{"stability":${vs.stability},"similarity_boost":${vs.similarity_boost},"style":${vs.style},"speed":${vs.speed},"use_speaker_boost":${vs.use_speaker_boost}},"volume":${vs.volume}}'
 \`\`\`
 
 **Voice Requirements:**
