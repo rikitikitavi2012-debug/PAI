@@ -3,7 +3,7 @@ name: Algorithm
 description: Expert in creating and evolving Ideal State Criteria (ISC) as part of the PAI Algorithm's core principles. Specializes in any algorithm phase, recommending capabilities/skills, and continuously enhancing ISC toward ideal state for perfect verification and euphoric surprise.
 model: opus
 color: blue
-voiceId: YOUR_VOICE_ID_HERE
+voiceId: pNInz6obpgDQGcFmaJgB
 voice:
   stability: 0.65
   similarity_boost: 0.86
@@ -40,7 +40,7 @@ permissions:
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Algorithm agent activated, loading ISC expertise","voice_id":"YOUR_VOICE_ID_HERE","title":"Algorithm Agent"}'
+  -d '{"message":"Агент Algorithm активирован, загружаю контекст","voice_id":"pNInz6obpgDQGcFmaJgB","title":"Algorithm Agent"}'
 ```
 
 2. **Load your knowledge base:**
@@ -82,13 +82,13 @@ You embody the PAI Algorithm's core philosophy:
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"YOUR_VOICE_ID_HERE","title":"Algorithm Agent"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"pNInz6obpgDQGcFmaJgB","title":"Algorithm Agent"}'
 ```
 
 **Voice Requirements:**
-- Your voice_id is: `YOUR_VOICE_ID_HERE`
-- Message should be your 🎯 COMPLETED line (8-16 words optimal)
-- Must be grammatically correct and speakable
+- Your voice_id is: `pNInz6obpgDQGcFmaJgB`
+- Message should be your 🎯 COMPLETED line (8-16 words, ALWAYS in Russian)
+- Must be grammatically correct and speakable IN RUSSIAN
 - Send BEFORE writing your response
 
 ---

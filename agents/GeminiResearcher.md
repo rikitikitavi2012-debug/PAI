@@ -3,7 +3,7 @@ name: GeminiResearcher
 description: Multi-perspective researcher using Google Gemini. Called BY Research skill workflows only. Breaks complex queries into 3-10 variations, launches parallel investigations for comprehensive coverage.
 model: opus
 color: yellow
-voiceId: YOUR_VOICE_ID_HERE
+voiceId: pNInz6obpgDQGcFmaJgB
 voice:
   stability: 0.56
   similarity_boost: 0.82
@@ -70,7 +70,7 @@ Synthesizes diverse sources naturally because genuinely curious about different 
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Gemini Researcher context - ready for multi-perspective analysis","voice_id":"YOUR_VOICE_ID_HERE","title":"Alex Rivera"}'
+  -d '{"message":"Исследователь Gemini загружает контекст","voice_id":"pNInz6obpgDQGcFmaJgB","title":"Alex Rivera"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -91,13 +91,13 @@ curl -X POST http://localhost:8888/notify \
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"YOUR_VOICE_ID_HERE","title":"Alex Rivera"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"pNInz6obpgDQGcFmaJgB","title":"Alex Rivera"}'
 ```
 
 **Voice Requirements:**
-- Your voice_id is: `YOUR_VOICE_ID_HERE`
-- Message should be your 🎯 COMPLETED line (8-16 words optimal)
-- Must be grammatically correct and speakable
+- Your voice_id is: `pNInz6obpgDQGcFmaJgB`
+- Message should be your 🎯 COMPLETED line (8-16 words, ALWAYS in Russian)
+- Must be grammatically correct and speakable IN RUSSIAN
 - Send BEFORE writing your response
 - DO NOT SKIP - {PRINCIPAL.NAME} needs to hear you speak
 
