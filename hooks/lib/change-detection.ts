@@ -279,9 +279,8 @@ export function isSignificantChange(changes: FileChange[]): boolean {
     return true;
   }
 
-  // Significant if multiple files in same domain
-  const categories = new Set(systemChanges.map(c => c.category));
-  if (categories.size >= 1 && systemChanges.length >= 2) {
+  // Significant if multiple system files changed
+  if (systemChanges.length >= 2) {
     return true;
   }
 

@@ -1,37 +1,62 @@
 {
-  "updated_at": "2026-02-25T19:32:05.041Z",
-  "total_ratings": 141,
-  "all_time_avg": 5.57,
-  "last_7d_avg": 5.57,
-  "last_30d_avg": 5.57,
-  "last_10_avg": 6.6,
-  "trend": "down",
-  "trend_delta": -0.4,
+  "updated_at": "2026-02-26T18:39:37.601Z",
+  "total_ratings": 165,
+  "all_time_avg": 5.62,
+  "last_7d_avg": 5.65,
+  "last_30d_avg": 5.62,
+  "last_10_avg": 6.2,
+  "trend": "stable",
+  "trend_delta": 0.1,
   "by_source": {
     "explicit": {
-      "count": 14,
-      "avg": 7.29
+      "count": 16,
+      "avg": 7.31
     },
     "implicit": {
-      "count": 114,
-      "avg": 5.21
+      "count": 136,
+      "avg": 5.3
     }
   },
   "distribution": {
+    "2": 1,
     "3": 4,
-    "4": 3,
+    "4": 10,
     "5": 100,
-    "6": 4,
-    "7": 9,
-    "8": 15,
-    "9": 6
+    "6": 10,
+    "7": 14,
+    "8": 19,
+    "9": 7
   },
   "recent_sessions": [
     {
-      "session_id": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
-      "avg_rating": 4,
+      "session_id": "b9de0178-e71b-4491-b6a8-ee0d7495e0fa",
+      "avg_rating": 7,
       "count": 1,
-      "last_timestamp": "2026-02-25T22:32:05+03:00"
+      "last_timestamp": "2026-02-26T21:39:37+03:00"
+    },
+    {
+      "session_id": "6065d990-06d8-4289-a118-ed6fe1883180",
+      "avg_rating": 6.5,
+      "count": 2,
+      "last_timestamp": "2026-02-26T20:15:37+03:00"
+    },
+    {
+      "session_id": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
+      "avg_rating": 5.88,
+      "count": 16,
+      "last_timestamp": "2026-02-26T02:15:39+03:00"
+    },
+    {
+      "session_id": "e5056f53-4b5d-4cac-9694-5a49ff28f302",
+      "avg_rating": 7,
+      "count": 2,
+      "last_timestamp": "2026-02-26T00:48:31+03:00"
+    },
+    {
+      "session_id": "4574a700-5878-42d9-9ea2-2f0c32c826ab",
+      "avg_rating": 4.5,
+      "count": 4,
+      "last_timestamp": "2026-02-26T00:17:30+03:00"
     },
     {
       "session_id": "7a3762a7-8959-4ddb-b626-0017cdf66623",
@@ -62,30 +87,6 @@
       "avg_rating": 7,
       "count": 1,
       "last_timestamp": "2026-02-25T12:58:03+03:00"
-    },
-    {
-      "session_id": "2dac5548-ee86-4bfb-b88f-b64a6e9255ca",
-      "avg_rating": 8,
-      "count": 1,
-      "last_timestamp": "2026-02-25T11:28:55+03:00"
-    },
-    {
-      "session_id": "31e8642e-535f-46f5-93ed-d7c57c2e71bf",
-      "avg_rating": 8,
-      "count": 1,
-      "last_timestamp": "2026-02-23T03:35:19+03:00"
-    },
-    {
-      "session_id": "1bb350bc-d61b-4456-99dd-894d585986e6",
-      "avg_rating": 8,
-      "count": 1,
-      "last_timestamp": "2026-02-23T03:12:46+03:00"
-    },
-    {
-      "session_id": "47a95f1e-ee52-46e1-b78c-d0b70d46963b",
-      "avg_rating": 7.25,
-      "count": 8,
-      "last_timestamp": "2026-02-23T02:36:38+03:00"
     }
   ]
 }

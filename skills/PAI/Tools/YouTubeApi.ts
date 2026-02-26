@@ -70,12 +70,18 @@ async function apiGet<T>(endpoint: string, params: Record<string, string>): Prom
   for (const [k, v] of Object.entries(params)) {
     url.searchParams.set(k, v)
   }
-  const res = await fetch(url.toString())
-  if (!res.ok) {
-    const err = await res.json()
-    throw new Error(err.error?.message || `API error: ${res.status}`)
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 30000)
+  try {
+    const res = await fetch(url.toString(), { signal: controller.signal })
+    if (!res.ok) {
+      const err = await res.json()
+      throw new Error(err.error?.message || `API error: ${res.status}`)
+    }
+    return res.json()
+  } finally {
+    clearTimeout(timeout)
   }
-  return res.json()
 }
 
 // Format numbers with commas

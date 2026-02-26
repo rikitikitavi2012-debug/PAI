@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-02-25T18:33:35.594Z",
+  "updated": "2026-02-26T19:39:52.680Z",
   "observations": [
     {
       "type": "principle",
@@ -32,6 +32,26 @@
       "observation": "Ivan cross-references upstream repos (Daniel Miessler's PAI) to distinguish own bugs vs. community issues before committing fixes",
       "timestamp": "2026-02-25T18:33:35.594Z",
       "session_id": "7a3762a7-8959-4ddb-b626-0017cdf66623",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Выполнение 3+ независимых задач последовательно вместо параллельного делегирования агентам — потеря времени в 3-5x. Всегда спавнить агентов для параллельной работы.",
+      "timestamp": "2026-02-26T17:52:24.023Z",
+      "confirmed": 1
+    },
+    {
+      "type": "contextual-rule",
+      "observation": "Ivan prefers automatic pattern detection over manual selection — dislikes remembering tool names/options, wants PAI to infer context and apply solutions natively",
+      "timestamp": "2026-02-26T18:45:03.282Z",
+      "session_id": "b9de0178-e71b-4491-b6a8-ee0d7495e0fa",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Ivan struggles with visual/interactive features (image insertion, text pasting in Kitty) — prefers text-based CLI explanations over live demos",
+      "timestamp": "2026-02-26T19:39:52.680Z",
+      "session_id": "8aabe577-7eb9-409a-9950-02aa10a1e82e",
       "confirmed": 1
     }
   ]

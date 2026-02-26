@@ -149,51 +149,55 @@ export async function handleAlgorithmEnrichment(
   parsed: ParsedTranscript,
   sessionId: string,
 ): Promise<void> {
-  const text = parsed.currentResponseText || parsed.plainCompletion || '';
+  try {
+    const text = parsed.currentResponseText || parsed.plainCompletion || '';
 
-  const isAlgo = isAlgorithmResponse(text);
+    const isAlgo = isAlgorithmResponse(text);
 
-  // Compaction guard: if the algorithm is actively mid-phase, this Stop is likely
-  // from context compaction, not a genuine response end. Enrich but don't terminate.
-  const compaction = isLikelyCompaction(sessionId);
-  if (compaction) {
-    process.stderr.write(`[AlgorithmEnrichment] compaction detected for ${sessionId.slice(0, 8)}... — enriching without terminal marking\n`);
-    // Still extract enrichment data (effort level, task description) but skip algorithmEnd
-    // which would mark the session as complete
-    const state = readState(sessionId);
-    if (state) {
-      const extractedSla = extractSLA(text);
-      const effectiveSla = inferEffortFromCriteria(sessionId, extractedSla);
-      if (extractedSla && effectiveSla) state.sla = effectiveSla;
-      const taskDesc = extractTaskDescription(text);
-      if (taskDesc) {
-        state.taskDescription = taskDesc;
-        state.currentAction = taskDesc;
+    // Compaction guard: if the algorithm is actively mid-phase, this Stop is likely
+    // from context compaction, not a genuine response end. Enrich but don't terminate.
+    const compaction = isLikelyCompaction(sessionId);
+    if (compaction) {
+      process.stderr.write(`[AlgorithmEnrichment] compaction detected for ${sessionId.slice(0, 8)}... — enriching without terminal marking\n`);
+      // Still extract enrichment data (effort level, task description) but skip algorithmEnd
+      // which would mark the session as complete
+      const state = readState(sessionId);
+      if (state) {
+        const extractedSla = extractSLA(text);
+        const effectiveSla = inferEffortFromCriteria(sessionId, extractedSla);
+        if (extractedSla && effectiveSla) state.sla = effectiveSla;
+        const taskDesc = extractTaskDescription(text);
+        if (taskDesc) {
+          state.taskDescription = taskDesc;
+          state.currentAction = taskDesc;
+        }
+        const qg = extractQualityGate(text);
+        if (qg) state.qualityGate = qg;
+        // Write enrichment without touching active/phase/completedAt
+        writeState(state);
       }
-      const qg = extractQualityGate(text);
-      if (qg) state.qualityGate = qg;
-      // Write enrichment without touching active/phase/completedAt
-      writeState(state);
+      sweepStaleActive(sessionId);
+      return;
     }
+
+    const extractedSla = extractSLA(text);
+    const effectiveSla = inferEffortFromCriteria(sessionId, extractedSla);
+
+    // Enrich algorithm state
+    algorithmEnd(sessionId, {
+      taskDescription: extractTaskDescription(text),
+      summary: extractSummary(text),
+      sla: effectiveSla,
+      qualityGate: extractQualityGate(text),
+      capabilities: extractCapabilities(text),
+      isAlgorithmResponse: isAlgo,
+    });
+
+    // Sweep stale sessions (cleans up other sessions, not current)
     sweepStaleActive(sessionId);
-    return;
+
+    process.stderr.write(`[AlgorithmEnrichment] enriched session ${sessionId.slice(0, 8)}... (isAlgo=${isAlgo}, sla=${effectiveSla || 'none'}, regex=${extractedSla || 'miss'})\n`);
+  } catch (error) {
+    process.stderr.write(`[AlgorithmEnrichment] Error: ${error}\n`);
   }
-
-  const extractedSla = extractSLA(text);
-  const effectiveSla = inferEffortFromCriteria(sessionId, extractedSla);
-
-  // Enrich algorithm state
-  algorithmEnd(sessionId, {
-    taskDescription: extractTaskDescription(text),
-    summary: extractSummary(text),
-    sla: effectiveSla,
-    qualityGate: extractQualityGate(text),
-    capabilities: extractCapabilities(text),
-    isAlgorithmResponse: isAlgo,
-  });
-
-  // Sweep stale sessions (cleans up other sessions, not current)
-  sweepStaleActive(sessionId);
-
-  process.stderr.write(`[AlgorithmEnrichment] enriched session ${sessionId.slice(0, 8)}... (isAlgo=${isAlgo}, sla=${effectiveSla || 'none'}, regex=${extractedSla || 'miss'})\n`);
 }

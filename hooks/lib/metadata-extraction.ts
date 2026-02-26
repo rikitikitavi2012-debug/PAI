@@ -40,7 +40,7 @@ export function extractAgentInstanceId(
   // Strategy 1: Extract from description [agent-type-N]
   // Example: "Research consumer complaints [perplexity-researcher-1]"
   if (description) {
-    const descMatch = description.match(/\[([a-z-]+-researcher)-(\d+)\]/);
+    const descMatch = description.match(/\[([a-z-]+)-(\d+)\]/);
     if (descMatch) {
       result.agent_type = descMatch[1];
       result.instance_number = parseInt(descMatch[2], 10);

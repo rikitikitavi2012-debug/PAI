@@ -61,12 +61,12 @@ get_mtime() {
 
 input=$(cat)
 
-# Get DA name from settings (single source of truth)
-DA_NAME=$(jq -r '.daidentity.name // .daidentity.displayName // .env.DA // "Assistant"' "$SETTINGS_FILE" 2>/dev/null)
+# Get DA name and PAI version from settings (single jq call)
+eval "$(jq -r '
+  "DA_NAME=" + (.daidentity.name // .daidentity.displayName // .env.DA // "Assistant" | @sh) + "\n" +
+  "PAI_VERSION=" + (.pai.version // "—" | @sh)
+' "$SETTINGS_FILE" 2>/dev/null)"
 DA_NAME="${DA_NAME:-Assistant}"
-
-# Get PAI version from settings
-PAI_VERSION=$(jq -r '.pai.version // "—"' "$SETTINGS_FILE" 2>/dev/null)
 PAI_VERSION="${PAI_VERSION:-—}"
 
 # Get Algorithm version from LATEST file (single source of truth)
@@ -266,8 +266,8 @@ GITEOF
             lat=$(jq -r '.lat // empty' "$LOCATION_CACHE" 2>/dev/null)
             lon=$(jq -r '.lon // empty' "$LOCATION_CACHE" 2>/dev/null)
         fi
-        lat="${lat:-37.7749}"
-        lon="${lon:-122.4194}"
+        lat="${lat:-59.9343}"
+        lon="${lon:-30.3351}"
 
         weather_json=$(curl -s --max-time 3 "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&temperature_unit=celsius" 2>/dev/null)
         if [ -n "$weather_json" ] && echo "$weather_json" | jq -e '.current' >/dev/null 2>&1; then
@@ -307,13 +307,13 @@ GITEOF
             "ratings_count=" + (.counts.ratings // 0 | tostring)
         ' "$SETTINGS_FILE" > "$_parallel_tmp/counts.sh" 2>/dev/null
     else
-        # First run before any stop hook has fired — seed with defaults
+        # First run before any stop hook has fired — show zeros until UpdateCounts runs
         cat > "$_parallel_tmp/counts.sh" << COUNTSEOF
-skills_count=65
-workflows_count=339
-hooks_count=18
-learnings_count=3000
-files_count=172
+skills_count=0
+workflows_count=0
+hooks_count=0
+learnings_count=0
+files_count=0
 work_count=0
 sessions_count=0
 research_count=0
@@ -439,10 +439,8 @@ else
     MODE="normal"
 fi
 
-# NOTE: DA_NAME, PAI_VERSION, input JSON, cc_version, model_name
-# are all already parsed above (lines 59-113). No duplicate parsing needed.
-
-dir_name=$(basename "$current_dir")
+# NOTE: DA_NAME, PAI_VERSION, input JSON, cc_version, model_name, dir_name
+# are all already parsed above (lines 59-121). No duplicate parsing needed.
 
 # ─────────────────────────────────────────────────────────────────────────────
 # COLOR PALETTE
@@ -596,78 +594,9 @@ get_usage_color() {
     fi
 }
 
-# Calculate human-readable time until reset from ISO 8601 timestamp
-# Uses TZ from settings.json (principal.timezone) for correct local time
-time_until_reset() {
-    local reset_ts="$1"
-    [ -z "$reset_ts" ] && { echo "—"; return; }
-    # Use python3 for reliable ISO 8601 parsing with timezone handling
-    local diff=$(python3 -c "
-from datetime import datetime, timezone
-import sys
-try:
-    ts = '$reset_ts'
-    # Parse ISO 8601 with timezone
-    from datetime import datetime
-    if '+' in ts[10:]:
-        dt = datetime.fromisoformat(ts)
-    elif ts.endswith('Z'):
-        dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
-    else:
-        dt = datetime.fromisoformat(ts + '+00:00')
-    now = datetime.now(timezone.utc)
-    diff = int((dt - now).total_seconds())
-    print(max(diff, 0))
-except:
-    print(-1)
-" 2>/dev/null)
-    [ -z "$diff" ] || [ "$diff" = "-1" ] && { echo "—"; return; }
-    [ "$diff" -le 0 ] && { echo "now"; return; }
-    local hours=$((diff / 3600))
-    local mins=$(((diff % 3600) / 60))
-    if [ "$hours" -ge 24 ]; then
-        local days=$((hours / 24))
-        local rem_hours=$((hours % 24))
-        [ "$rem_hours" -gt 0 ] && echo "${days}d${rem_hours}h" || echo "${days}d"
-    elif [ "$hours" -gt 0 ]; then
-        echo "${hours}h${mins}m"
-    else
-        echo "${mins}m"
-    fi
-}
-
-# Calculate local clock time from ISO 8601 reset timestamp
-# Returns format like "3:45p" for 5H or "Mon 3p" for weekly
-reset_clock_time() {
-    local reset_ts="$1" fmt="$2"
-    [ -z "$reset_ts" ] && { echo ""; return; }
-    local result=$(python3 -c "
-from datetime import datetime, timezone, timedelta
-import sys
-try:
-    ts = '$reset_ts'
-    if '+' in ts[10:]:
-        dt = datetime.fromisoformat(ts)
-    elif ts.endswith('Z'):
-        dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
-    else:
-        dt = datetime.fromisoformat(ts + '+00:00')
-    # Convert to Pacific
-    from zoneinfo import ZoneInfo
-    tz_name = '$(jq -r '.principal.timezone // "UTC"' "$SETTINGS_FILE" 2>/dev/null)'
-    local_dt = dt.astimezone(ZoneInfo(tz_name))
-    if '$fmt' == 'weekly':
-        day = local_dt.strftime('%a')
-        hour = local_dt.strftime('%H:%M')
-        print(f'{day} {hour}')
-    else:
-        hour = local_dt.strftime('%H:%M')
-        print(hour)
-except:
-    print('')
-" 2>/dev/null)
-    echo "$result"
-}
+# NOTE: time_until_reset() and reset_clock_time() were standalone functions
+# that have been replaced by the batched python3 call in the USAGE section (~line 898).
+# Removed in statusline audit 2026-02-26 to eliminate dead code.
 
 # Render context bar - gradient progress bar using (potentially scaled) percentage
 render_context_bar() {

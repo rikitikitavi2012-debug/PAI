@@ -219,7 +219,7 @@ export function readTabState(sessionId?: string): { title: string; state: TabSta
   try {
     const statePath = join(TAB_TITLES_DIR, `${windowId}.json`);
     if (!existsSync(statePath)) return null;
-    const raw = JSON.parse(require('fs').readFileSync(statePath, 'utf-8'));
+    const raw = JSON.parse(readFileSync(statePath, 'utf-8'));
     return {
       title: raw.title || '',
       state: raw.state || 'idle',

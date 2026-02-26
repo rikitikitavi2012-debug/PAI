@@ -2,7 +2,7 @@
   🔨 GENERATED FILE - Do not edit directly
   Edit:   ~/.claude/skills/PAI/Components/
   Build:  bun ~/.claude/skills/PAI/Tools/RebuildPAI.ts
-  Built:  26 February 2026 01:07:37
+  Built:  26 February 2026 20:54:21
 -->
 ---
 name: PAI
@@ -499,7 +499,7 @@ For EACH criterion in the list:
 **Framing:** Reflect on ALGORITHM PERFORMANCE, not task subject matter.
 
 [WRITE REFLECTION — append JSONL to MEMORY/LEARNING/REFLECTIONS/algorithm-reflections.jsonl]
-[Fields: timestamp, effort_level, task_description, criteria_count, criteria_passed, criteria_failed, prd_id, implied_sentiment (1-10), reflection_q1, reflection_q2, reflection_q3, within_budget]
+[Fields: timestamp, effort_level, task_description, criteria_count, criteria_passed, criteria_failed, prd_id, implied_sentiment (1-10), reflection_q1, reflection_q2, reflection_q3, within_budget, agents_spawned (number — how many agents were spawned this session; 0 = solo execution)]
 
 📄 **PRD LOG:**
   - Append session entry: work done, criteria passed/failed, context for next session
@@ -1176,19 +1176,12 @@ Scan: 25/25 | Sections: N/6 | Selected: N | Declined: M | N/A: P
 4. **NOT APPLICABLE** = Genuinely irrelevant to this task. Group with shared reason.
 5. Count must sum to 25. Incomplete scan = critical failure.
 6. Minimum USE count by effort level: Instant >= 1, Fast >= 2, Standard >= 3, Extended >= 4, Advanced >= 5, Deep >= 6, Comprehensive >= 8.
+6b. **Minimum AGENT count by effort level** (Section C capabilities): Extended >= 2 agents, Advanced >= 3, Deep >= 4, Comprehensive >= 6. If 3+ ISC criteria are independently workable at ANY effort level, spawn agents regardless of tier. Solo-execution of parallelizable work = critical failure.
 7. **Capability #4 (Skills) requires active index scanning.** Read `skill-index.json` and match task context against every skill's triggers and description. A bare "Skills — N/A" without evidence of scanning the index is a critical error. Show matched skills or confirm none matched after scanning.
 8. **ISC IMPROVEMENT is not optional.** Before selecting execution capabilities, explicitly state which B/C/D capabilities would improve Ideal State Criteria. The audit must show you considered ISC improvement, not just task execution.
 9. **Cross-section combination preferred.** Selections from a single section only are a yellow flag. The power is in combining across sections.
 
 ### Agent Instructions (CRITICAL)
-
-### Agent Language (MANDATORY)
-
-**ALL agent prompts MUST include Russian language instruction.** The principal (Ivan) communicates in Russian. Subagents spawned via Task tool do NOT inherit the main session's language context. Therefore, ALWAYS append to every agent prompt:
-
-`IMPORTANT: Respond in Russian (русский язык). Technical terms and proper nouns may remain in English.`
-
-This applies to ALL agent types: Researcher, Engineer, Architect, Algorithm, Intern, Explore, custom agents — no exceptions.
 
 ### Custom Agent Invocation (v1.0.0)
 
