@@ -44,9 +44,9 @@ const OutputSchema = z.object({
 type Input = z.infer<typeof InputSchema>;
 type Output = z.infer<typeof OutputSchema>;
 
-// TODO: Configure broadcast tool path for your installation
-// const BROADCAST_TOOL = `${process.env.HOME}/.claude/skills/Broadcast/Tools/Broadcast.ts`;
-const BROADCAST_TOOL = `${process.env.HOME}/.claude/skills/Broadcast/Tools/Broadcast.ts`;
+// NOTE: Broadcast skill does not exist yet — this path is a placeholder
+// When Broadcast skill is created, update this path to point to its broadcast tool
+const BROADCAST_TOOL: string | null = null;
 
 // Platform character limits
 const LIMITS: Record<string, number> = {
@@ -99,9 +99,16 @@ export default defineAction<Input, Output>({
       };
     }
 
-    // Check if Broadcast tool exists
+    // Check if Broadcast tool exists — guard against phantom ref
     if (!existsSync(BROADCAST_TOOL)) {
-      throw new Error(`Broadcast tool not found at ${BROADCAST_TOOL}`);
+      return {
+        results: platforms.map(p => ({
+          platform: p,
+          success: false,
+          error: `Broadcast tool not found at ${BROADCAST_TOOL}. Install the Broadcast skill or update BROADCAST_TOOL path.`,
+        })),
+        success: false,
+      };
     }
 
     // Execute actual post

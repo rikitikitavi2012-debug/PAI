@@ -129,7 +129,7 @@ Custom agents are composed on-the-fly from traits using ComposeAgent. Each uniqu
 | security + adversarial | Callum (edgy) | Hacker character |
 | analytical + meticulous | Charlotte (sophisticated) | Precision analysis |
 
-**Full trait definitions and voice mappings:** `skills/Agents/Data/Traits.yaml`
+**Full trait definitions and voice mappings:** `~/.claude/skills/Agents/Data/Traits.yaml`
 
 ---
 
@@ -167,7 +167,7 @@ Task({
 ## References
 
 - **Agents Skill:** `skills/Agents/SKILL.md` — Custom agent creation, workflows
-- **ComposeAgent:** `skills/Agents/Tools/ComposeAgent.ts` — Dynamic composition tool
+- **ComposeAgent:** `~/.claude/skills/Agents/Tools/ComposeAgent.ts` — Dynamic composition tool
 - **Traits:** `skills/Agents/Data/Traits.yaml` — Trait definitions and voice mappings
 - **Agent Personalities:** Individual `agents/*.md` files — Named agent backstories and voice settings
 

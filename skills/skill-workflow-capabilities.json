@@ -1,15 +1,15 @@
 {
-  "generated": "2026-02-22T14:39:17.807Z",
+  "generated": "2026-02-27T11:43:37.077Z",
   "version": "1.0.0",
-  "totalSkills": 40,
-  "totalWorkflows": 140,
+  "totalSkills": 45,
+  "totalWorkflows": 135,
   "skills": {
     "OSINT": {
       "description": "Open source intelligence gathering",
       "tier": "deferred",
       "workflows": {
         "PeopleLookup": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the PeopleLookup workflow in the OSINT skill to research individuals...",
           "timing": "deep",
           "tags": [
             "osint",
@@ -19,7 +19,7 @@
           ]
         },
         "CompanyLookup": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the CompanyLookup workflow in the OSINT skill to research companies...",
           "timing": "deep",
           "tags": [
             "osint",
@@ -29,7 +29,7 @@
           ]
         },
         "CompanyDueDiligence": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the CompanyDueDiligence workflow in the OSINT skill to vet investments...",
           "timing": "deep",
           "tags": [
             "osint",
@@ -38,7 +38,7 @@
           ]
         },
         "EntityLookup": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the EntityLookup workflow in the OSINT skill to investigate entities...",
           "timing": "standard",
           "tags": [
             "osint",
@@ -271,6 +271,11 @@
       "tier": "deferred",
       "workflows": {}
     },
+    "vercel-react-best-practices": {
+      "description": "React and Next",
+      "tier": "deferred",
+      "workflows": {}
+    },
     "USMetrics": {
       "description": "US economic indicators",
       "tier": "deferred",
@@ -303,7 +308,7 @@
       "tier": "deferred",
       "workflows": {
         "CompleteAssessment": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the CompleteAssessment workflow in the PromptInjection skill to test security...",
           "timing": "fast",
           "tags": [
             "promptinjection",
@@ -312,7 +317,7 @@
           ]
         },
         "Reconnaissance": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the Reconnaissance workflow in the PromptInjection skill to map attack surface...",
           "timing": "deep",
           "tags": [
             "promptinjection",
@@ -321,7 +326,7 @@
           ]
         },
         "DirectInjectionTesting": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the DirectInjectionTesting workflow in the PromptInjection skill to test direct attacks...",
           "timing": "deep",
           "tags": [
             "promptinjection",
@@ -330,7 +335,7 @@
           ]
         },
         "IndirectInjectionTesting": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the IndirectInjectionTesting workflow in the PromptInjection skill to test data sources...",
           "timing": "deep",
           "tags": [
             "promptinjection",
@@ -339,7 +344,7 @@
           ]
         },
         "MultiStageAttacks": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the MultiStageAttacks workflow in the PromptInjection skill to test attack chains...",
           "timing": "deep",
           "tags": [
             "promptinjection",
@@ -353,30 +358,13 @@
       "description": "Dynamic agent composition and management system",
       "tier": "deferred",
       "workflows": {
-        "CREATECUSTOMAGENT": {
-          "description": "{PRINCIPAL.NAME} says:",
-          "timing": "fast",
-          "tags": [
-            "agents",
-            "infrastructure",
-            "creation"
-          ]
-        },
         "CreateCustomAgent": {
-          "description": "{PRINCIPAL.NAME} says:",
+          "description": "Creates custom agents with unique personalities, colors, and voices using ComposeAgent.",
           "timing": "fast",
           "tags": [
             "agents",
             "infrastructure",
             "creation"
-          ]
-        },
-        "LISTTRAITS": {
-          "description": "Shows all available traits that can be composed into custom agents.",
-          "timing": "fast",
-          "tags": [
-            "agents",
-            "infrastructure"
           ]
         },
         "ListTraits": {
@@ -387,16 +375,8 @@
             "infrastructure"
           ]
         },
-        "SPAWNPARALLEL": {
-          "description": "s p a w n p a r a l l e l workflow for Agents",
-          "timing": "standard",
-          "tags": [
-            "agents",
-            "infrastructure"
-          ]
-        },
         "SpawnParallelAgents": {
-          "description": "{PRINCIPAL.NAME} says:",
+          "description": "Launches multiple parallel agents for grunt work - same task, different inputs.",
           "timing": "deep",
           "tags": [
             "agents",
@@ -405,12 +385,17 @@
         }
       }
     },
+    "vercel-composition-patterns": {
+      "description": "React composition patterns that scale",
+      "tier": "deferred",
+      "workflows": {}
+    },
     "PAIUpgrade": {
       "description": "Extract system improvements from content AND monitor external sources (Anthropic ecosystem, YouTube)",
       "tier": "deferred",
       "workflows": {
         "Upgrade": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the Upgrade workflow in the PAIUpgrade skill to check for upgrades...",
           "timing": "fast",
           "tags": [
             "paiupgrade",
@@ -419,7 +404,7 @@
           ]
         },
         "MineReflections": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the MineReflections workflow in the PAIUpgrade skill to mine internal algorithm reflections...",
           "timing": "fast",
           "tags": [
             "paiupgrade",
@@ -428,7 +413,7 @@
           ]
         },
         "AlgorithmUpgrade": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the AlgorithmUpgrade workflow in the PAIUpgrade skill to propose Algorithm improvements...",
           "timing": "standard",
           "tags": [
             "paiupgrade",
@@ -437,18 +422,8 @@
           ]
         },
         "ResearchUpgrade": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ResearchUpgrade workflow in the PAIUpgrade skill to research upgrades...",
           "timing": "deep",
-          "tags": [
-            "paiupgrade",
-            "infrastructure",
-            "system",
-            "search"
-          ]
-        },
-        "FindSources": {
-          "description": "find sources workflow for PAIUpgrade",
-          "timing": "standard",
           "tags": [
             "paiupgrade",
             "infrastructure",
@@ -462,14 +437,6 @@
       "description": "Annual security report aggregation and analysis",
       "tier": "deferred",
       "workflows": {
-        "UPDATE": {
-          "description": "u p d a t e workflow for AnnualReports",
-          "timing": "standard",
-          "tags": [
-            "annualreports",
-            "maintenance"
-          ]
-        },
         "Update": {
           "description": "update workflow for AnnualReports",
           "timing": "standard",
@@ -478,27 +445,12 @@
             "maintenance"
           ]
         },
-        "ANALYZE": {
-          "description": "a n a l y z e workflow for AnnualReports",
-          "timing": "standard",
-          "tags": [
-            "annualreports",
-            "analysis"
-          ]
-        },
         "Analyze": {
           "description": "analyze workflow for AnnualReports",
           "timing": "standard",
           "tags": [
             "annualreports",
             "analysis"
-          ]
-        },
-        "FETCH": {
-          "description": "f e t c h workflow for AnnualReports",
-          "timing": "standard",
-          "tags": [
-            "annualreports"
           ]
         },
         "Fetch": {
@@ -552,6 +504,11 @@
         }
       }
     },
+    "supabase-postgres-best-practices": {
+      "description": "Postgres performance optimization and best practices from Supabase",
+      "tier": "deferred",
+      "workflows": {}
+    },
     "Remotion": {
       "description": "Programmatic video creation with React",
       "tier": "deferred",
@@ -570,7 +527,74 @@
     "Recon": {
       "description": "Security reconnaissance",
       "tier": "deferred",
-      "workflows": {}
+      "workflows": {
+        "PassiveRecon": {
+          "description": "Initial reconnaissance before active testing",
+          "timing": "fast",
+          "tags": [
+            "recon",
+            "security",
+            "reconnaissance"
+          ]
+        },
+        "DomainRecon": {
+          "description": "Investigating target domains for pentesting",
+          "timing": "deep",
+          "tags": [
+            "recon",
+            "security",
+            "reconnaissance"
+          ]
+        },
+        "IpRecon": {
+          "description": "Investigating suspicious IP addresses",
+          "timing": "fast",
+          "tags": [
+            "recon",
+            "security",
+            "reconnaissance"
+          ]
+        },
+        "NetblockRecon": {
+          "description": "Pentesting entire network ranges",
+          "timing": "deep",
+          "tags": [
+            "recon",
+            "security",
+            "reconnaissance"
+          ]
+        },
+        "BountyPrograms": {
+          "description": "Running the BountyPrograms workflow in the Recon skill to find bounty programs...",
+          "timing": "deep",
+          "tags": [
+            "recon",
+            "security",
+            "reconnaissance"
+          ]
+        },
+        "UpdateTools": {
+          "description": "Running the UpdateTools workflow in the Recon skill to update recon tools...",
+          "timing": "standard",
+          "tags": [
+            "recon",
+            "security",
+            "reconnaissance",
+            "maintenance"
+          ]
+        },
+        "AnalyzeScanResultsGemini3": {
+          "description": "*Ideal scenarios:**",
+          "timing": "fast",
+          "tags": [
+            "recon",
+            "security",
+            "reconnaissance",
+            "validation",
+            "analysis"
+          ]
+        }
+      }
     },
     "Fabric": {
       "description": "Intelligent prompt pattern system with 240+ specialized patterns for content analysis, extraction, and transformation",
@@ -653,43 +677,7 @@
     "Pptx": {
       "description": "PowerPoint processing",
       "tier": "deferred",
-      "workflows": {
-        "CRITICAL": {
-          "description": "c r i t i c a l workflow for Pptx",
-          "timing": "standard",
-          "tags": [
-            "pptx"
-          ]
-        },
-        "LAYOUT": {
-          "description": "l a y o u t workflow for Pptx",
-          "timing": "standard",
-          "tags": [
-            "pptx"
-          ]
-        },
-        "VALIDATION": {
-          "description": "v a l i d a t i o n workflow for Pptx",
-          "timing": "standard",
-          "tags": [
-            "pptx"
-          ]
-        },
-        "IMPORTANT": {
-          "description": "i m p o r t a n t workflow for Pptx",
-          "timing": "standard",
-          "tags": [
-            "pptx"
-          ]
-        },
-        "WARNING": {
-          "description": "w a r n i n g workflow for Pptx",
-          "timing": "standard",
-          "tags": [
-            "pptx"
-          ]
-        }
-      }
+      "workflows": {}
     },
     "Docx": {
       "description": "Word document processing",
@@ -706,7 +694,7 @@
       "tier": "deferred",
       "workflows": {
         "ParseContent": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ParseContent workflow in the Parser skill to parse URLs...",
           "timing": "deep",
           "tags": [
             "parser",
@@ -716,7 +704,7 @@
           ]
         },
         "CollisionDetection": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the CollisionDetection workflow in the Parser skill to prevent duplicates...",
           "timing": "standard",
           "tags": [
             "parser",
@@ -726,7 +714,7 @@
           ]
         },
         "DetectContentType": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the DetectContentType workflow in the Parser skill to detect content...",
           "timing": "standard",
           "tags": [
             "parser",
@@ -736,7 +724,7 @@
           ]
         },
         "ExtractNewsletter": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ExtractNewsletter workflow in the Parser skill to parse newsletters...",
           "timing": "deep",
           "tags": [
             "parser",
@@ -746,7 +734,7 @@
           ]
         },
         "ExtractTwitter": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ExtractTwitter workflow in the Parser skill to parse tweets...",
           "timing": "deep",
           "tags": [
             "parser",
@@ -756,7 +744,7 @@
           ]
         },
         "ExtractArticle": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ExtractArticle workflow in the Parser skill to parse articles...",
           "timing": "deep",
           "tags": [
             "parser",
@@ -766,7 +754,7 @@
           ]
         },
         "ExtractYoutube": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ExtractYoutube workflow in the Parser skill to parse videos...",
           "timing": "deep",
           "tags": [
             "parser",
@@ -776,7 +764,7 @@
           ]
         },
         "ExtractPdf": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ExtractPdf workflow in the Parser skill to parse PDFs...",
           "timing": "deep",
           "tags": [
             "parser",
@@ -786,7 +774,7 @@
           ]
         },
         "ExtractBrowserExtension": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ExtractBrowserExtension workflow in the Parser skill to analyze browser extensions...",
           "timing": "fast",
           "tags": [
             "parser",
@@ -860,6 +848,11 @@
           ]
         }
       }
+    },
+    "web-design-guidelines": {
+      "description": "Review UI code for Web Interface Guidelines compliance",
+      "tier": "deferred",
+      "workflows": {}
     },
     "Apify": {
       "description": "Social media scraping, business data, e-commerce via Apify actors",
@@ -965,34 +958,6 @@
       "description": "Create and validate skills",
       "tier": "deferred",
       "workflows": {
-        "Create": {
-          "description": "create workflow for CreateSkill",
-          "timing": "standard",
-          "tags": [
-            "createskill",
-            "infrastructure",
-            "skills",
-            "creation"
-          ]
-        },
-        "CompanyDueDiligence": {
-          "description": "company due diligence workflow for CreateSkill",
-          "timing": "standard",
-          "tags": [
-            "createskill",
-            "infrastructure",
-            "skills"
-          ]
-        },
-        "WorkflowName": {
-          "description": "workflow name workflow for CreateSkill",
-          "timing": "standard",
-          "tags": [
-            "createskill",
-            "infrastructure",
-            "skills"
-          ]
-        },
         "CreateSkill": {
           "description": "Create a new skill following the canonical structure with proper TitleCase naming.",
           "timing": "fast",
@@ -1162,8 +1127,42 @@
         }
       }
     },
+    "SystemAudit": {
+      "description": "Deep PAI system audit with multi-agent analysis and upstream comparison",
+      "tier": "deferred",
+      "workflows": {
+        "FullAudit": {
+          "description": "\"audit\", \"full audit\", \"deep check\", \"check everything\"",
+          "timing": "deep",
+          "tags": [
+            "systemaudit",
+            "infrastructure",
+            "maintenance"
+          ]
+        },
+        "QuickCheck": {
+          "description": "\"quick check\", \"health check\", \"is system ok\", \"status\"",
+          "timing": "fast",
+          "tags": [
+            "systemaudit",
+            "infrastructure",
+            "maintenance",
+            "validation"
+          ]
+        },
+        "UpstreamSync": {
+          "description": "\"compare upstream\", \"sync check\", \"what's new upstream\"",
+          "timing": "standard",
+          "tags": [
+            "systemaudit",
+            "infrastructure",
+            "maintenance"
+          ]
+        }
+      }
+    },
     "WorldThreatModelHarness": {
-      "description": ">",
+      "description": "Persistent world model system across 11 time horizons (6mo-50yr) for adversarial analysis of ideas, strategies, and investments",
       "tier": "deferred",
       "workflows": {
         "TestIdea": {
@@ -1195,7 +1194,7 @@
       "tier": "always",
       "workflows": {
         "OSINT": {
-          "description": "o s i n t workflow for Research",
+          "description": "Running the OSINT workflow in the Research skill for open source intelligence gathering...",
           "timing": "standard",
           "tags": [
             "research",
@@ -1282,7 +1281,7 @@
         },
         "ClaudeResearch": {
           "description": "claude research workflow for Research",
-          "timing": "deep",
+          "timing": "standard",
           "tags": [
             "research",
             "web",
@@ -1372,7 +1371,7 @@
       "tier": "deferred",
       "workflows": {
         "StandardCreativity": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running StandardCreativity in BeCreative...",
           "timing": "standard",
           "tags": [
             "becreative",
@@ -1381,7 +1380,7 @@
           ]
         },
         "MaximumCreativity": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running MaximumCreativity in BeCreative...",
           "timing": "standard",
           "tags": [
             "becreative",
@@ -1390,7 +1389,7 @@
           ]
         },
         "IdeaGeneration": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running IdeaGeneration in BeCreative...",
           "timing": "standard",
           "tags": [
             "becreative",
@@ -1399,7 +1398,7 @@
           ]
         },
         "TreeOfThoughts": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running TreeOfThoughts in BeCreative...",
           "timing": "standard",
           "tags": [
             "becreative",
@@ -1408,7 +1407,7 @@
           ]
         },
         "DomainSpecific": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running DomainSpecific in BeCreative...",
           "timing": "standard",
           "tags": [
             "becreative",
@@ -1428,7 +1427,7 @@
       "tier": "deferred",
       "workflows": {
         "ParallelAnalysis": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the ParallelAnalysis workflow in the RedTeam skill to red team arguments...",
           "timing": "deep",
           "tags": [
             "redteam",
@@ -1437,7 +1436,7 @@
           ]
         },
         "AdversarialValidation": {
-          "description": "-H \"Content-Type: application/json\" \\",
+          "description": "Running the AdversarialValidation workflow in the RedTeam skill to validate decisions...",
           "timing": "fast",
           "tags": [
             "redteam",
@@ -1456,8 +1455,8 @@
       "description": "Agent evaluation framework based on Anthropic's best practices",
       "tier": "deferred",
       "workflows": {
-        "ALGORITHM": {
-          "description": "a l g o r i t h m workflow for Evals",
+        "Algorithm": {
+          "description": "algorithm workflow for Evals",
           "timing": "standard",
           "tags": [
             "evals",

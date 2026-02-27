@@ -170,7 +170,8 @@ function extractDescription(content: string, workflowName: string, skillName: st
   // Try "When to Use" section
   const whenMatch = content.match(/##?\s*When to Use\s*\n([\s\S]*?)(?=\n##|\n$)/i);
   if (whenMatch) {
-    const firstBullet = whenMatch[1].trim().split('\n')[0].replace(/^[-*]\s*/, '').trim();
+    let firstBullet = whenMatch[1].trim().split('\n')[0].replace(/^[-*]\s*/, '').trim();
+    firstBullet = firstBullet.replace(/\{[A-Z_.]+\}/g, '').trim();
     if (firstBullet.length > 10 && firstBullet.length < 200) {
       return firstBullet;
     }
@@ -179,7 +180,8 @@ function extractDescription(content: string, workflowName: string, skillName: st
   // Try first paragraph after H1
   const afterH1 = content.match(/^#\s+.+\n\n(.+)/m);
   if (afterH1) {
-    const para = afterH1[1].replace(/\*\*/g, '').trim();
+    let para = afterH1[1].replace(/\*\*/g, '').trim();
+    para = para.replace(/\{[A-Z_.]+\}/g, '').trim();
     if (para.length > 10 && para.length < 200 && !para.startsWith('#') && !para.startsWith('```')) {
       return para;
     }
@@ -188,13 +190,35 @@ function extractDescription(content: string, workflowName: string, skillName: st
   // Try **Mode:** line (Research workflows use this)
   const modeMatch = content.match(/\*\*Mode:\*\*\s*(.+?)(?:\s*\||\n)/);
   if (modeMatch) {
-    return modeMatch[1].trim();
+    return modeMatch[1].replace(/\{[A-Z_.]+\}/g, '').trim();
   }
 
-  // Try first non-empty, non-heading line
-  const lines = content.split('\n').filter(l => l.trim() && !l.startsWith('#') && !l.startsWith('```') && !l.startsWith('//') && !l.startsWith('curl'));
+  // Try first non-empty, non-heading line (skip curl commands and their continuation lines)
+  let inCodeBlock = false;
+  const lines = content.split('\n').filter(l => {
+    const trimmed = l.trim();
+    // Track code block boundaries
+    if (trimmed.startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
+      return false;
+    }
+    // Skip everything inside code blocks
+    if (inCodeBlock) return false;
+    // Skip empty lines, headings, comments, curl commands and their flags/args
+    if (!trimmed) return false;
+    if (trimmed.startsWith('#')) return false;
+    if (trimmed.startsWith('//')) return false;
+    if (trimmed.startsWith('curl')) return false;
+    if (/^-[A-Za-z]\s/.test(trimmed) || /^-[A-Za-z]$/.test(trimmed)) return false; // curl flags like -H, -d, -X
+    if (trimmed.startsWith('-d ') || trimmed.startsWith('-H ')) return false; // curl data/header flags
+    if (trimmed.startsWith('> /dev/null')) return false; // redirect suffixes
+    if (trimmed.endsWith('\\')) return false; // line continuations (common in curl blocks)
+    return true;
+  });
   if (lines.length > 0) {
-    const candidate = lines[0].replace(/\*\*/g, '').replace(/^[-*]\s*/, '').trim();
+    let candidate = lines[0].replace(/\*\*/g, '').replace(/^[-*]\s*/, '').trim();
+    // Sanitize template variables like {PRINCIPAL.NAME}
+    candidate = candidate.replace(/\{[A-Z_.]+\}/g, '').trim();
     if (candidate.length > 10 && candidate.length < 200) {
       return candidate;
     }

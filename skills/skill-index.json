@@ -1,5 +1,5 @@
 {
-  "generated": "2026-02-25T22:23:31.078Z",
+  "generated": "2026-02-27T14:35:27.000Z",
   "totalSkills": 45,
   "alwaysLoadedCount": 2,
   "deferredCount": 43,
@@ -167,11 +167,8 @@
         "voice"
       ],
       "workflows": [
-        "CREATECUSTOMAGENT",
         "CreateCustomAgent",
-        "LISTTRAITS",
         "ListTraits",
-        "SPAWNPARALLEL",
         "SpawnParallelAgents"
       ],
       "tier": "deferred",
@@ -213,8 +210,7 @@
         "Upgrade",
         "MineReflections",
         "AlgorithmUpgrade",
-        "ResearchUpgrade",
-        "FindSources"
+        "ResearchUpgrade"
       ],
       "tier": "deferred",
       "minModel": "sonnet"
@@ -235,11 +231,8 @@
         "landscape"
       ],
       "workflows": [
-        "UPDATE",
         "Update",
-        "ANALYZE",
         "Analyze",
-        "FETCH",
         "Fetch"
       ],
       "tier": "deferred",
@@ -327,7 +320,15 @@
         "surface",
         "security"
       ],
-      "workflows": [],
+      "workflows": [
+        "PassiveRecon",
+        "DomainRecon",
+        "IpRecon",
+        "NetblockRecon",
+        "BountyPrograms",
+        "UpdateTools",
+        "AnalyzeScanResultsGemini3"
+      ],
       "tier": "deferred",
       "minModel": "sonnet"
     },
@@ -350,7 +351,6 @@
         "threat",
         "model",
         "analyze",
-        "any",
         "request",
         "apply",
         "content"
@@ -402,13 +402,7 @@
         "powerpoint",
         "slides"
       ],
-      "workflows": [
-        "CRITICAL",
-        "LAYOUT",
-        "VALIDATION",
-        "IMPORTANT",
-        "WARNING"
-      ],
+      "workflows": [],
       "tier": "deferred",
       "minModel": "sonnet"
     },
@@ -650,9 +644,6 @@
         "canonicalize"
       ],
       "workflows": [
-        "Create",
-        "CompanyDueDiligence",
-        "WorkflowName",
         "CreateSkill",
         "ValidateSkill",
         "UpdateSkill",
@@ -718,14 +709,11 @@
         "approaches",
         "experiment",
         "test",
-        "this",
         "idea",
         "iterate",
         "improve",
         "optimize",
-        "any",
         "problem-solving",
-        "that",
         "benefits",
         "structured",
         "hypothesis-test-analyze",
@@ -773,7 +761,7 @@
     "worldthreatmodelharness": {
       "name": "WorldThreatModelHarness",
       "path": "WorldThreatModelHarness/SKILL.md",
-      "fullDescription": "\"Persistent world model system across 11 time horizons (6mo-50yr) for adversarial analysis of ideas, strategies, and investments. USE WHEN threat model, world model, test idea, test strategy, future analysis, test investment, how will this hold up, test against future, update world models, view world models, time horizon analysis, adversarial future test, stress test idea.\"",
+      "fullDescription": "Persistent world model system across 11 time horizons (6mo-50yr) for adversarial analysis of ideas, strategies, and investments. USE WHEN threat model, world model, test idea, test strategy, future analysis, test investment, how will this hold up, test against future, update world models, view world models, time horizon analysis, adversarial future test, stress test idea.",
       "triggers": [
         "threat",
         "model",
@@ -786,7 +774,6 @@
         "investment",
         "how",
         "will",
-        "this",
         "hold",
         "against",
         "update",
@@ -811,11 +798,6 @@
       "fullDescription": "Comprehensive research, analysis, and content extraction system. USE WHEN user says 'research' (ANY form - this is the MANDATORY trigger), 'do research', 'extensive research', 'quick research', 'minor research', 'research this', 'find information', 'investigate', 'extract wisdom', 'extract alpha', 'analyze content', 'can't get this content', 'use fabric', OR requests any web/content research. Supports three research modes (quick/standard/extensive), deep content analysis, intelligent retrieval, and 242+ Fabric patterns. NOTE: For due diligence, OSINT, or background checks, use OSINT skill instead.",
       "triggers": [
         "research",
-        "(any",
-        "form",
-        "this",
-        "mandatory",
-        "trigger)",
         "extensive",
         "quick",
         "minor",
@@ -832,7 +814,6 @@
         "use",
         "fabric",
         "requests",
-        "any",
         "web/content",
         "osint"
       ],
@@ -894,7 +875,6 @@
         "problem",
         "examine",
         "angles",
-        "when",
         "algorithms",
         "observe",
         "phase",
@@ -1002,7 +982,7 @@
         "capability"
       ],
       "workflows": [
-        "ALGORITHM"
+        "Algorithm"
       ],
       "tier": "deferred",
       "minModel": "sonnet"
