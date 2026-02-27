@@ -17,7 +17,7 @@ Running **CreateCustomAgent** in **Agents**...
 
 ## When to Use
 
-{PRINCIPAL.NAME} says:
+Ivan says:
 - "Create custom agents to do X"
 - "Spin up custom agents for Y"
 - "I need specialized agents with Z expertise"
@@ -29,7 +29,7 @@ Running **CreateCustomAgent** in **Agents**...
 
 ### Step 1: Determine Agent Count & Requirements
 
-Extract from {PRINCIPAL.NAME}'s request:
+Extract from Ivan's request:
 - How many agents? (Default: 1 if not specified)
 - What's the task?
 - Are specific traits mentioned? (security, legal, skeptical, thorough, etc.)
@@ -178,9 +178,9 @@ If `--timing` is omitted, agents get no scope section (backward compatible).
 
 ## Example Execution
 
-**{PRINCIPAL.NAME}:** "Create 5 custom science agents to analyze this climate data"
+**Ivan:** "Create 5 custom science agents to analyze this climate data"
 
-**{DAIDENTITY.NAME}'s Internal Execution:**
+**Navi's Internal Execution:**
 ```bash
 # Agent 1 - Climate Science Enthusiast
 bun run ComposeAgent.ts --traits "research,enthusiastic,thorough" --task "Analyze climate data patterns" --output json
@@ -188,7 +188,7 @@ bun run ComposeAgent.ts --traits "research,enthusiastic,thorough" --task "Analyz
 
 # Agent 2 - Skeptical Data Analyst
 bun run ComposeAgent.ts --traits "data,skeptical,systematic" --task "Analyze climate data patterns" --output json
-# Returns: voice="{PRINCIPAL.NAME}", voice_id="YOUR_VOICE_ID"
+# Returns: voice="Ivan", voice_id="pNInz6obpgDQGcFmaJgB"
 
 # Agent 3 - Creative Pattern Finder
 bun run ComposeAgent.ts --traits "data,creative,exploratory" --task "Analyze climate data patterns" --output json

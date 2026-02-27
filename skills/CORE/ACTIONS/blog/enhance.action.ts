@@ -32,7 +32,7 @@ const SocialPreviewSchema = z.object({
 const InputSchema = z.object({
   content: z.string().min(1).describe("The blog post content"),
   customSlug: z.string().optional().describe("Override the auto-generated slug"),
-  author: z.string().optional().default("{PRINCIPAL.NAME}").describe("Author name"),
+  author: z.string().optional().default("Ivan").describe("Author name"),
 });
 
 const OutputSchema = z.object({

@@ -17,7 +17,7 @@ Running **SpawnParallelAgents** in **Agents**...
 
 ## When to Use
 
-{PRINCIPAL.NAME} says:
+Ivan says:
 - "Launch 5 agents to research these companies"
 - "Spin up agents to process this list"
 - "Create agents to analyze these files" (no "custom")
@@ -146,9 +146,9 @@ Provide a brief assessment and any issues found.`,
 
 ## Example: Research 5 Companies
 
-**{PRINCIPAL.NAME}:** "Launch agents to research these 5 AI security companies"
+**Ivan:** "Launch agents to research these 5 AI security companies"
 
-**{DAIDENTITY.NAME}'s Execution:**
+**Navi's Execution:**
 ```typescript
 // Single message with 5 Task calls:
 Task({

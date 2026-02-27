@@ -707,7 +707,7 @@ function categorizeHosts(liveHosts: HostInfo[]): CategorizedHosts {
 **Scan Window:** 2025-11-11 06:00-08:00 PST
 **Contact:** security@example.com, +1-555-0199
 
-**Analyst:** {DAIDENTITY.NAME} (recon skill)
+**Analyst:** Navi (recon skill)
 
 **Report End**
 ```

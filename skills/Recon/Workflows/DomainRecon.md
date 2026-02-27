@@ -904,7 +904,7 @@ _dmarc.example.com: v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com
 
 **Authorization:** Passive reconnaissance only (no authorization required)
 
-**Analyst:** {DAIDENTITY.NAME} (recon skill)
+**Analyst:** Navi (recon skill)
 
 **Report End**
 ```

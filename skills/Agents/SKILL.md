@@ -167,7 +167,7 @@ bun run ~/.claude/skills/Agents/Tools/ComposeAgent.ts --output json
 {
   "name": "Security Expert Skeptical Thorough",
   "voice": "YourVoiceName",
-  "voice_id": "YOUR_VOICE_ID",
+  "voice_id": "pNInz6obpgDQGcFmaJgB",
   "voice_settings": {
     "stability": 0.70,
     "similarity_boost": 0.85,

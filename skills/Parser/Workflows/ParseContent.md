@@ -36,7 +36,7 @@ Running the **ParseContent** workflow in the **Parser** skill to parse URLs...
 
 ### 2. Content Type Detection
 
-**Route to:** `Workflows/Detect-content-type.md`
+**Route to:** `Workflows/DetectContentType.md`
 
 **For each URL, determine:**
 - YouTube video (youtube.com, youtu.be domains)
@@ -57,37 +57,37 @@ Running the **ParseContent** workflow in the **Parser** skill to parse URLs...
 
 **Route to appropriate extractor based on content type:**
 
-**YouTube Videos** → `Workflows/extract/Youtube.md`
+**YouTube Videos** → `Workflows/ExtractYoutube.md`
 - Use Fabric `yt --transcript` for transcript
 - Scrape page for metadata
 - Extract channel information
 - Parse description for links
 
-**Web Articles** → `Workflows/extract/Article.md`
+**Web Articles** → `Workflows/ExtractArticle.md`
 - Use Gemini Researcher for full content scraping
 - Extract HTML metadata (OpenGraph, Twitter Cards, JSON-LD)
 - Parse article body for entities and links
 - Identify author, publication, date
 
-**PDF Documents** → `Workflows/extract/Pdf.md`
+**PDF Documents** → `Workflows/ExtractPdf.md`
 - Extract text content from PDF
 - Parse metadata (author, title, date)
 - Use Gemini for entity extraction
 - Handle citations and references
 
-**Newsletter HTML** → `Workflows/extract/Newsletter.md`
+**Newsletter HTML** → `Workflows/ExtractNewsletter.md`
 - Parse HTML structure
 - Extract individual sections/stories
 - Identify links with context
 - Preserve formatting for excerpts
 
-**Twitter/X Threads** → `Workflows/extract/Twitter.md`
+**Twitter/X Threads** → `Workflows/ExtractTwitter.md`
 - Fetch entire thread
 - Combine tweets into coherent content
 - Extract @mentions and #hashtags
 - Parse engagement metrics
 
-**Generic Web Pages** → `Workflows/extract/Article.md` (fallback)
+**Generic Web Pages** → `Workflows/ExtractArticle.md` (fallback)
 - Extract whatever content is available
 - Lower confidence scores
 - Flag as "generic" type
@@ -98,31 +98,31 @@ Running the **ParseContent** workflow in the **Parser** skill to parse URLs...
 
 **For ALL content types, use Gemini Researcher to extract:**
 
-**People Extraction** (use `prompts/entity-extraction.md`)
+**People Extraction** (use `Prompts/entity-extraction.md`)
 - Identify all people mentioned
 - Determine roles (author, subject, quoted, etc.)
 - Find social handles and affiliations
 - Assess importance (primary/secondary/minor)
 
-**Company Extraction** (use `prompts/entity-extraction.md`)
+**Company Extraction** (use `Prompts/entity-extraction.md`)
 - Identify all companies/organizations
 - Extract domains and industry classifications
 - Determine mention context (subject, competitor, partner, etc.)
 - Assess sentiment (positive, neutral, negative, mixed)
 
-**Topic Classification** (use `prompts/topic-classification.md`)
+**Topic Classification** (use `Prompts/topic-classification.md`)
 - Determine primary and secondary categories
 - Extract tags, keywords, themes
 - Map to newsletter sections (Headlines, Analysis, Tools, etc.)
 - Identify audience relevance
 
-**Summarization** (use `prompts/summarization.md`)
+**Summarization** (use `Prompts/summarization.md`)
 - Generate short summary (1-2 sentences, Twitter-length)
 - Generate medium summary (paragraph, newsletter preview)
 - Generate long summary (comprehensive, multiple paragraphs)
 - Extract key excerpts/quotes
 
-**Link Analysis** (use `prompts/link-analysis.md`)
+**Link Analysis** (use `Prompts/link-analysis.md`)
 - Identify all URLs in content
 - Classify link types (reference, source, related, tool, etc.)
 - Extract context for each link
@@ -209,7 +209,7 @@ Running the **ParseContent** workflow in the **Parser** skill to parse URLs...
 ### 6. Validation
 
 **Validate against schema:**
-- Load `schema/content-schema.json`
+- Load `Schema/content-schema.json`
 - Validate populated data against schema
 - Check all required fields present
 - Verify data types match schema
@@ -357,7 +357,7 @@ Failed:
 ```
 User: "Parse this article: https://anthropic.com/news/claude-3"
 
-{DAIDENTITY.NAME}:
+Navi:
 1. Detects web article type
 2. Uses Gemini to scrape and analyze
 3. Extracts entities, topics, links
@@ -375,7 +375,7 @@ User: "Parse this article: https://anthropic.com/news/claude-3"
 ```
 User: "Parse this YouTube video: https://youtube.com/watch?v=abc123"
 
-{DAIDENTITY.NAME}:
+Navi:
 1. Detects YouTube video type
 2. Uses Fabric for transcript extraction
 3. Scrapes video metadata
@@ -396,7 +396,7 @@ User: "Parse these 3 URLs:
 - https://twitter.com/user/status/123
 - https://newsletter.com/issue/42"
 
-{DAIDENTITY.NAME}:
+Navi:
 [Processes each sequentially]
 
 📊 Batch Processing Complete

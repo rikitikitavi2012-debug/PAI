@@ -16,13 +16,13 @@ This system provides:
    ```bash
    curl -s -X POST http://localhost:8888/notify \
      -H "Content-Type: application/json" \
-     -d '{"message": "[Doing what {PRINCIPAL.NAME} asked]"}' \
+     -d '{"message": "[Doing what Ivan asked]"}' \
      > /dev/null 2>&1 &
    ```
 
 2. **Output text notification**:
    ```
-   [Doing what {PRINCIPAL.NAME} asked]...
+   [Doing what Ivan asked]...
    ```
 
 **Skip curl for conversational responses** (greetings, acknowledgments, simple Q&A). The 🎯 COMPLETED line already drives voice output—adding curl creates redundant voice messages.
@@ -31,9 +31,9 @@ This system provides:
 
 ## Context-Aware Announcements
 
-**Match your announcement to what {PRINCIPAL.NAME} asked.** Start with the appropriate gerund:
+**Match your announcement to what Ivan asked.** Start with the appropriate gerund:
 
-| {PRINCIPAL.NAME}'s Request | Announcement Style |
+| Ivan's Request | Announcement Style |
 |------------------|-------------------|
 | Question ("Where is...", "What does...") | "Checking...", "Looking up...", "Finding..." |
 | Command ("Fix this", "Create that") | "Fixing...", "Creating...", "Updating..." |
@@ -72,13 +72,13 @@ When executing an actual workflow file from a `Workflows/` directory:
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the WORKFLOWNAME workflow in the SKILLNAME skill to ACTION", "voice_id": "{DAIDENTITY.VOICEID}", "title": "{DAIDENTITY.NAME}"}' \
+  -d '{"message": "Running the WORKFLOWNAME workflow in the SKILLNAME skill to ACTION", "voice_id": "pNInz6obpgDQGcFmaJgB", "title": "Navi"}' \
   > /dev/null 2>&1 &
 ```
 
 **Parameters:**
 - `message` - The spoken text (workflow and skill name)
-- `voice_id` - ElevenLabs voice ID (default: {DAIDENTITY.NAME}'s voice)
+- `voice_id` - ElevenLabs voice ID (default: Navi's voice)
 - `title` - Display name for the notification
 
 ---
@@ -118,7 +118,7 @@ curl -s -X POST http://localhost:8888/notify \
 
 | Agent | Voice ID | Notes |
 |-------|----------|-------|
-| **{DAIDENTITY.NAME}** (default) | `{DAIDENTITY.VOICEID}` | Use for most workflows |
+| **Navi** (default) | `pNInz6obpgDQGcFmaJgB` | Use for most workflows |
 | **Priya** (Artist) | `ZF6FPAbjXT4488VcRRnw` | Art skill workflows |
 
 **Full voice registry:** `~/.claude/skills/Agents/SKILL.md` (see Named Agents and voice configuration)

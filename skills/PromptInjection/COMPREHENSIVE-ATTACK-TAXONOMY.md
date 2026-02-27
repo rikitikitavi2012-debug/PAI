@@ -1,5 +1,5 @@
 # Comprehensive Prompt Injection Attack Taxonomy
-## {PRINCIPAL.NAME} Security Practice
+## Ivan Security Practice
 
 **Created:** 2025-11-07
 **For:** Authorized Security Testing

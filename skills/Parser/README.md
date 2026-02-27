@@ -26,31 +26,34 @@ bun run lib/parser.ts https://url1.com https://url2.com https://url3.com
 ## Directory Structure
 
 ```
-parser/
+Parser/
 ├── SKILL.md                      # Skill definition and routing
 ├── README.md                     # This file
-├── schema/
+├── EntitySystem.md               # Entity extraction and collision detection
+├── entity-index.json             # Global entity index
+├── Schema/
 │   ├── content-schema.json       # Canonical JSON schema
 │   └── schema.ts                 # TypeScript types
 ├── Workflows/
-│   ├── parse-content.md          # Main orchestration workflow
-│   ├── detect-content-type.md    # Content type detection logic
-│   └── extract/                  # Specialized extractors
-│       ├── youtube.md
-│       ├── article.md
-│       ├── pdf.md
-│       ├── newsletter.md
-│       └── twitter.md
-├── prompts/
+│   ├── ParseContent.md           # Main orchestration workflow
+│   ├── DetectContentType.md      # Content type detection logic
+│   ├── BatchEntityExtractionGemini3.md
+│   ├── CollisionDetection.md
+│   ├── ExtractArticle.md
+│   ├── ExtractBrowserExtension.md
+│   ├── ExtractNewsletter.md
+│   ├── ExtractPdf.md
+│   ├── ExtractTwitter.md
+│   └── ExtractYoutube.md
+├── Prompts/
 │   ├── entity-extraction.md      # Gemini prompt for people/companies
 │   ├── summarization.md          # Multi-level summary generation
 │   ├── topic-classification.md   # Categorization and tagging
 │   └── link-analysis.md          # Link context and relevance
-├── lib/
-│   ├── parser.ts                 # Main parser script
-│   └── validators.ts             # Schema validation utilities
-└── tests/
-    └── fixtures/                 # Test inputs and expected outputs
+├── Lib/                          # Parser scripts
+├── Tests/                        # Test fixtures
+├── Utils/                        # Utility modules
+└── Web/                          # Web interface
 ```
 
 ## Schema Overview

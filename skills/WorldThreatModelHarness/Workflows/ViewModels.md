@@ -20,7 +20,7 @@ Read and display the current state of world threat models.
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Checking current world model state", "voice_id": "YOUR_VOICE_ID_HERE"}'
+  -d '{"message": "Checking current world model state", "voice_id": "pNInz6obpgDQGcFmaJgB"}'
 ```
 
 ### Step 2: Read INDEX

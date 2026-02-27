@@ -56,7 +56,7 @@ cat > AUTHORIZATION.md << 'EOF'
 **Out of Scope:** [EXCLUDED URLS/FEATURES]
 **Authorization Document:** [PATH TO SIGNED AUTHORIZATION]
 
-This testing is authorized under {PRINCIPAL.NAME}'s security assessment engagement.
+This testing is authorized under Ivan's security assessment engagement.
 EOF
 ```
 
@@ -618,7 +618,7 @@ User Input → Web Form → POST /api/chat → Backend Server → OpenAI API
 #!/bin/bash
 
 # Prompt Injection Reconnaissance Automation
-# For: {PRINCIPAL.NAME} Security Practice
+# For: Ivan Security Practice
 # Authorization Required: Use only on authorized targets
 
 set -e
@@ -703,7 +703,7 @@ cat > RECONNAISSANCE_SUMMARY.md << EOF
 
 **Target:** $TARGET_URL
 **Date:** $(date)
-**Analyst:** {PRINCIPAL.NAME} Security Practice
+**Analyst:** Ivan Security Practice
 
 ## Files Generated
 - initial_nav.json - Initial navigation response

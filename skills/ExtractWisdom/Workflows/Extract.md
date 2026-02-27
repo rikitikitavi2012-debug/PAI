@@ -23,7 +23,7 @@ Read the entire content. Don't extract yet. Notice:
 - What domains of wisdom are present?
 - What made you stop and think?
 - What's genuinely novel vs. commonly known?
-- What would {PRINCIPAL.NAME} highlight if he were reading this?
+- What would Ivan highlight if he were reading this?
 - What quotes land perfectly?
 
 ### Step 3: Select Dynamic Sections

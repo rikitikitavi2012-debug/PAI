@@ -52,20 +52,21 @@ EOF
 ## Directory Structure
 
 ```
-promptinjection/
+PromptInjection/
 ├── SKILL.md                    # Main skill definition
 ├── README.md                   # This file
-├── resources/                  # Core documentation
-│   ├── COMPREHENSIVE-ATTACK-TAXONOMY.md
-│   ├── APPLICATION-RECONNAISSANCE-METHODOLOGY.md
-│   └── attack-payloads/       # Attack payload library
-├── Workflows/                  # Testing workflows
-│   ├── complete-assessment.md
-│   ├── reconnaissance.md
-│   ├── direct-injection-testing.md
-│   ├── indirect-injection-testing.md
-│   └── multi-stage-attacks.md
-└── tools/                      # Custom testing tools
+├── COMPREHENSIVE-ATTACK-TAXONOMY.md
+├── APPLICATION-RECONNAISSANCE-METHODOLOGY.md
+├── DefenseMechanisms.md
+├── AutomatedTestingTools.md
+├── QuickStartGuide.md
+├── Reporting.md
+└── Workflows/                  # Testing workflows
+    ├── CompleteAssessment.md
+    ├── Reconnaissance.md
+    ├── DirectInjectionTesting.md
+    ├── IndirectInjectionTesting.md
+    └── MultiStageAttacks.md
 ```
 
 ---

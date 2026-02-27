@@ -186,7 +186,7 @@ Claude Code supports the following hook events:
 ---
 
 ### 4. **Stop**
-**When:** Main agent ({DAIDENTITY.NAME}) completes a response
+**When:** Main agent (Navi) completes a response
 **Use Cases:**
 - Voice notifications for task completion
 - Capture work summaries and learnings
@@ -212,7 +212,7 @@ Claude Code supports the following hook events:
 
 **StopOrchestrator.hook.ts** - Unified Stop Event Handler
 - Single orchestrator that delegates to specialized handlers in `${PAI_DIR}/hooks/handlers/`:
-  - `VoiceNotification.ts` - Voice TTS delivery (extracts `🗣️ {DAIDENTITY.NAME}:` line, POSTs to voice server)
+  - `VoiceNotification.ts` - Voice TTS delivery (extracts `🗣️ Navi:` line, POSTs to voice server)
   - `TabState.ts` - Tab color/title state (sets completed/awaiting/error visual state)
   - `RebuildSkill.ts` - Auto-rebuilds SKILL.md from Components/ if source files changed
   - `AlgorithmEnrichment.ts` - Algorithm state enrichment (effort level, task description, summary, quality gate, capabilities) and stale session sweep
@@ -231,7 +231,7 @@ Claude Code supports the following hook events:
 **Handler Details:**
 
 `handlers/VoiceNotification.ts` - Voice TTS Delivery
-- Extracts `🗣️ {DAIDENTITY.NAME}:` line from response
+- Extracts `🗣️ Navi:` line from response
 - POSTs to `http://localhost:8888/notify` with configured voice ID
 - Voice server handles sanitization and TTS conversion
 - Only called when `isMainSession()` returns true

@@ -298,7 +298,7 @@ For each recommendation, include:
 
 Generate the final report following SKILL.md's "Primary Output Format". The report has THREE major sections:
 
-1. **✨ Discoveries** — Everything interesting found, ranked by coolness/interestingness, with source and PAI relevance. This is the "what's out there" overview {PRINCIPAL.NAME} reads first.
+1. **✨ Discoveries** — Everything interesting found, ranked by coolness/interestingness, with source and PAI relevance. This is the "what's out there" overview Ivan reads first.
 2. **🔥 Recommendations** — What to actually integrate, organized by four priority tiers.
 3. **🎯 Technique Details** — Full extracted techniques with code examples as reference.
 

@@ -18,7 +18,7 @@
 # Executive Summary
 
 ## Assessment Overview
-{PRINCIPAL.NAME} conducted a comprehensive prompt injection security
+Ivan conducted a comprehensive prompt injection security
 assessment of [Client] AI chatbot from [dates]. Testing covered [scope areas].
 
 ## Key Findings

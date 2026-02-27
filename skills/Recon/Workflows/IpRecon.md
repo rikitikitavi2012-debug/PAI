@@ -113,7 +113,7 @@ curl "https://ipinfo.io/1.2.3.4/json?token=$IPINFO_API_KEY" | jq
   "country": "US",
   "loc": "37.7749,-122.4194",
   "postal": "94102",
-  "timezone": "{PRINCIPAL.TIMEZONE}",
+  "timezone": "America/Los_Angeles",
   "asn": {
     "asn": "AS12345",
     "name": "Example Hosting Inc",
@@ -683,7 +683,7 @@ None required - IP appears legitimate with good security posture
 
 **Authorization:** Active reconnaissance authorized - Pentest Engagement SOW-2025-11-01
 
-**Analyst:** {DAIDENTITY.NAME} (recon skill)
+**Analyst:** Navi (recon skill)
 ```
 
 ## Integration Examples

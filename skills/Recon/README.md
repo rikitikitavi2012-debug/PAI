@@ -8,7 +8,7 @@ Comprehensive reconnaissance skill for domains, IP addresses, netblocks, and ASN
 ```
 User: "Do passive recon on example.com"
 
-{DAIDENTITY.NAME}: Activating recon with passive-recon workflow
+Navi: Activating recon with passive-recon workflow
      - WHOIS lookup
      - DNS enumeration
      - Certificate transparency
@@ -22,7 +22,7 @@ Report: ~/.claude/MEMORY/WORK/{current_work}/scratch/recon-example-com/
 ```
 User: "Investigate IP 1.2.3.4"
 
-{DAIDENTITY.NAME}: Activating recon with ip-recon workflow
+Navi: Activating recon with ip-recon workflow
      - IPInfo lookup (Cloudflare, San Francisco, AS13335)
      - Reverse DNS (www.example.com)
      - WHOIS netblock (1.2.3.0/24, Cloudflare Inc)
@@ -35,7 +35,7 @@ Report: Complete IP intelligence report generated
 ```
 User: "Do OSINT on Acme Corp and map their infrastructure"
 
-{DAIDENTITY.NAME}: Activating OSINT...
+Navi: Activating OSINT...
      Found: acme.com, acmecorp.com, acme.io
 
      Calling recon for technical infrastructure...
@@ -351,5 +351,5 @@ echo "OSINT Acme Corp and map infrastructure" | claude
 ---
 
 **Created:** 2025-11-11
-**Author:** {DAIDENTITY.NAME} (with deep thinking deep reasoning)
+**Author:** Navi (with deep thinking deep reasoning)
 **Status:** Production Ready

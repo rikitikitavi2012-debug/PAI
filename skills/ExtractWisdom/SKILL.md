@@ -62,7 +62,7 @@ The output should feel like your smartest friend watched/read the thing and is t
 
 ## Tone Rules (CRITICAL)
 
-**Canonical voice reference: `skills/PAI/USER/WRITINGSTYLE.md`** — read this file for the full voice definition. The bullets should sound like {PRINCIPAL.NAME} telling a friend about it over coffee. Not compressed info nuggets. Not clever one-liners. Actual spoken observations.
+**Canonical voice reference: `skills/PAI/USER/WRITINGSTYLE.md`** — read this file for the full voice definition. The bullets should sound like Ivan telling a friend about it over coffee. Not compressed info nuggets. Not clever one-liners. Actual spoken observations.
 
 **THREE LEVELS — we're aiming for Level 3:**
 
@@ -76,7 +76,7 @@ The output should feel like your smartest friend watched/read the thing and is t
 - Money has diminishing returns. A cheeseburger is a cheeseburger no matter how rich you are.
 - "Vibe coding is a slur" — he calls it agentic engineering, and only does vibe coding after 3am
 
-**Level 3 (YES — this is what we want — conversational, {PRINCIPAL.NAME}'s voice):**
+**Level 3 (YES — this is what we want — conversational, Ivan's voice):**
 - He wasn't trying to build self-modifying software. He just let the agent see its own source code and it started fixing itself.
 - Past a certain point, money stops mattering. A cheeseburger is a cheeseburger no matter how rich you are.
 - He calls vibe coding a slur. What he does is agentic engineering. The vibe coding only happens after 3am, and he regrets it in the morning.
