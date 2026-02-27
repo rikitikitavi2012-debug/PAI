@@ -396,7 +396,7 @@ But it's going to require extraordinary courage to pull it off.
 
 **Works with:**
 - `InterviewExtraction` workflow output (provides evidence)
-- `AnalyzeProjectWithGemini3` workflow output (provides analysis)
+- `CreateNarrativePoints` workflow output (provides analysis)
 - Direct TELOS directory analysis
 - Any structured consulting context
 

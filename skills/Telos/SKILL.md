@@ -28,7 +28,7 @@ compatibility:
 
 **TELOS** (Telic Evolution and Life Operating System) is a comprehensive context-gathering system with two applications:
 
-1. **Personal TELOS** - {PRINCIPAL.NAME}'s life context system (beliefs, goals, lessons, wisdom) at `~/.claude/skills/PAI/USER/TELOS/`
+1. **Personal TELOS** - Ivan's life context system (beliefs, goals, lessons, wisdom) at `~/.claude/skills/PAI/USER/TELOS/`
 2. **Project TELOS** - Analysis framework for organizations/projects (relationships, dependencies, goals, progress)
 
 
@@ -101,7 +101,7 @@ User: "write a TELOS report for Acme Corp"
 
 ## Context Detection
 
-**How {DAIDENTITY.NAME} determines which TELOS context:**
+**How Navi determines which TELOS context:**
 
 | User Request | Context | Location |
 |--------------|---------|----------|
@@ -111,7 +111,7 @@ User: "write a TELOS report for Acme Corp"
 
 ---
 
-# Part 1: Personal TELOS ({PRINCIPAL.NAME}'s Life)
+# Part 1: Personal TELOS (Ivan's Life)
 
 ## Location
 
@@ -136,7 +136,8 @@ All files located in `~/.claude/skills/PAI/USER/TELOS/`:
 - **BOOKS.md** - Favorite books
 - **MOVIES.md** - Favorite movies
 - **LEARNED.md** - Lessons learned over time
-- **WRONG.md** - Things {PRINCIPAL.NAME} was wrong about (growth tracking)
+- **IDEAS.md** - Ideas and creative proposals
+- **WRONG.md** - Things Ivan was wrong about (growth tracking)
 
 ### Mental Models
 - **FRAMES.md** - Mental frames and perspectives
@@ -152,7 +153,8 @@ All files located in `~/.claude/skills/PAI/USER/TELOS/`:
 - **PREDICTIONS.md** - Predictions about the future
 - **TRAUMAS.md** - Past traumas (for context and healing)
 
-### Change Tracking
+### Tracking
+- **STATUS.md** - Current life spheres status overview
 - **updates.md** - Comprehensive changelog of all TELOS updates
 
 ## Working with Personal TELOS
@@ -181,7 +183,7 @@ The workflow provides:
 - Proper formatting and structure
 
 **Valid files for updates:**
-BELIEFS.md, BOOKS.md, CHALLENGES.md, FRAMES.md, GOALS.md, LEARNED.md, MISSION.md, MODELS.md, MOVIES.md, NARRATIVES.md, PREDICTIONS.md, PROBLEMS.md, PROJECTS.md, STRATEGIES.md, TELOS.md, TRAUMAS.md, WISDOM.md, WRONG.md
+BELIEFS.md, BOOKS.md, CHALLENGES.md, FRAMES.md, GOALS.md, IDEAS.md, LEARNED.md, MISSION.md, MODELS.md, MOVIES.md, NARRATIVES.md, PREDICTIONS.md, PROBLEMS.md, PROJECTS.md, STATUS.md, STRATEGIES.md, TELOS.md, TRAUMAS.md, WISDOM.md, WRONG.md
 
 ---
 
@@ -205,9 +207,9 @@ For any project directory, TELOS provides:
 ```bash
 # User specifies directory
 "Analyze ~/Cloud/Projects/TELOSAPP"
---> {DAIDENTITY.NAME} scans for .md and .csv files anywhere in tree
+--> Navi scans for .md and .csv files anywhere in tree
 
-# {DAIDENTITY.NAME} automatically finds all .md and .csv files regardless of structure
+# Navi automatically finds all .md and .csv files regardless of structure
 ```
 
 ## Analysis Workflow
@@ -217,7 +219,7 @@ For any project directory, TELOS provides:
 **Auto-detection:**
 - User mentions project name (TELOSAPP, Alma, etc.)
 - User provides path explicitly
-- {DAIDENTITY.NAME} looks for common project locations
+- Navi looks for common project locations
 
 ### Step 2: Scan Files
 
@@ -388,6 +390,6 @@ Engineer 10: Integration and testing
 
 ---
 
-**TELOS is {PRINCIPAL.NAME}'s life operating system AND project analysis framework. One skill, two powerful contexts.**
+**TELOS is Ivan's life operating system AND project analysis framework. One skill, two powerful contexts.**
 
 **Remember:** Personal TELOS files live at `~/.claude/skills/PAI/USER/TELOS/` (in the CORE USER directory)

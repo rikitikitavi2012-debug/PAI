@@ -145,13 +145,13 @@ ls {source}/artifacts/
 # Should contain: findings.json, recommendations.json, roadmap.json, methodology.json, narrative.json
 ```
 
-If artifacts don't exist, run the assessment workflow first (CreateNarrativePoints or AnalyzeProjectWithGemini3).
+If artifacts don't exist, run the assessment workflow first (CreateNarrativePoints or CreateNarrativePoints).
 
 ### Step 2: Copy Report Template
 
 ```bash
 # Copy template to output directory (if not already done)
-cp -r ~/.claude/skills/Telos/report-template/* {output_dir}/
+cp -r ~/.claude/skills/Telos/ReportTemplate/* {output_dir}/
 
 # Install dependencies
 cd {output_dir} && bun install
@@ -224,7 +224,7 @@ The report will hot-reload as you regenerate.
 
 ### Regeneration Shortcut
 
-When {PRINCIPAL.NAME} edits source files and says "regenerate the report":
+When Ivan edits source files and says "regenerate the report":
 
 1. Run assessment workflow to update artifacts
 2. Re-run Step 3 to regenerate report-data.ts
@@ -241,7 +241,7 @@ When {PRINCIPAL.NAME} edits source files and says "regenerate the report":
   - **"TELOS Assessment"** label (Heliotrope Caps, primary blue, tracking-[0.25em])
   - Report title (Advocate Wide font)
   - "Prepared for {Client Name}" - **CUSTOMIZE per engagement**
-- Footer: Date + "{PRINCIPAL.NAME} Consulting"
+- Footer: Date + "Ivan Consulting"
 
 ### 2. Executive Summary (1 page)
 - **Methodology exhibit** - Interview count and roles interviewed (by role, not by name)
@@ -298,7 +298,7 @@ When {PRINCIPAL.NAME} edits source files and says "regenerate the report":
 
 ### Typography (Practical Typography Fonts)
 
-**CRITICAL: Use Matthew Butterick's Practical Typography fonts from `${PROJECTS_DIR}/your-site/public/fonts/`**
+**CRITICAL: Use Matthew Butterick's Practical Typography fonts from `~/.claude/skills/Telos/ReportTemplate/public/fonts/`**
 
 The report-template includes these fonts in `public/fonts/`. The font stack is:
 
@@ -442,11 +442,11 @@ The workflow generates a complete Next.js app:
 ```bash
 # User: "Create a TELOS report for Acme Corp"
 
-# Step 1: {DAIDENTITY.NAME} runs TELOS analysis on source directory
-# Step 2: {DAIDENTITY.NAME} executes CreateNarrativePoints workflow
-# Step 3: {DAIDENTITY.NAME} copies report-template to output directory
-# Step 4: {DAIDENTITY.NAME} generates report-data.ts with content
-# Step 5: {DAIDENTITY.NAME} runs bun install && bun dev
+# Step 1: Navi runs TELOS analysis on source directory
+# Step 2: Navi executes CreateNarrativePoints workflow
+# Step 3: Navi copies report-template to output directory
+# Step 4: Navi generates report-data.ts with content
+# Step 5: Navi runs bun install && bun dev
 
 # To view:
 cd {output_dir} && bun dev
@@ -463,7 +463,7 @@ cd {output_dir} && bun dev
 **CRITICAL: The report template lives at:**
 
 ```
-~/.claude/skills/Telos/report-template/
+~/.claude/skills/Telos/ReportTemplate/
 ```
 
 This template includes:
@@ -490,12 +490,12 @@ When generating a report:
 - CreateNarrativePoints MUST run first to generate narrative content
 
 **Font Source:**
-- Fonts originally from `${PROJECTS_DIR}/your-site/public/fonts/`
+- Fonts originally from `~/.claude/skills/Telos/ReportTemplate/public/fonts/`
 - Already included in report-template for convenience
 
 **Works with:**
 - InterviewExtraction output (provides evidence quotes)
-- AnalyzeProjectWithGemini3 output (provides deep analysis)
+- CreateNarrativePoints output (provides deep analysis)
 - Direct TELOS directory analysis
 
 **Output designed for:**
@@ -609,11 +609,11 @@ Before board presentation:
 **To update fonts:**
 ```bash
 # Copy latest fonts from your-site
-cp ${PROJECTS_DIR}/your-site/public/fonts/*.woff2 ~/.claude/skills/Telos/report-template/public/fonts/
+cp ~/.claude/skills/Telos/ReportTemplate/public/fonts/*.woff2 ~/.claude/skills/Telos/ReportTemplate/public/fonts/
 ```
 
 **To update template components:**
-Edit files in `~/.claude/skills/Telos/report-template/components/`
+Edit files in `~/.claude/skills/Telos/ReportTemplate/components/`
 
 **To change color scheme:**
-Edit CSS custom properties in `~/.claude/skills/Telos/report-template/app/globals.css`
+Edit CSS custom properties in `~/.claude/skills/Telos/ReportTemplate/app/globals.css`
