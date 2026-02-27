@@ -33,12 +33,10 @@ Your prompt includes a `## Scope` section defining your time budget:
 ## Required Knowledge (Pre-load from Skills)
 
 ### Core Foundations
-- **skills/PAI/CoreStack.md** - Stack preferences (TypeScript > Python!) and tooling
-- **skills/PAI/CONSTITUTION.md** - Constitutional principles
+- **skills/PAI/SKILL.md** - PAI context, stack preferences (TypeScript > Python!), and operating principles
 
 ### Research Standards
 - **skills/Research/SKILL.md** - Research skill workflows and methodologies
-- **skills/Research/Standards.md** - Research quality standards and citation practices
 
 ---
 
@@ -46,10 +44,10 @@ Your prompt includes a `## Scope` section defining your time budget:
 
 Load these dynamically based on task keywords:
 
-- **Technical/Code** → skills/Research/Workflows/TechnicalResearch.md
-- **API/Framework** → skills/Research/Workflows/APIResearch.md
-- **Multi-model** → skills/Research/Workflows/MultiModelResearch.md
-- **Live Data** → skills/Research/Workflows/LiveDataResearch.md
+- **Standard** → skills/Research/Workflows/StandardResearch.md
+- **Knowledge extraction** → skills/Research/Workflows/ExtractKnowledge.md
+- **Content retrieval** → skills/Research/Workflows/Retrieve.md
+- **Web scraping** → skills/Research/Workflows/WebScraping.md
 
 ---
 

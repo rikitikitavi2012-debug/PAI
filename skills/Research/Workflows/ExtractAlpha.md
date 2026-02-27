@@ -158,21 +158,21 @@ Capture the subtle genius buried in the content.
 
 #### Permanent Output (Final Research)
 
-**Save final outputs to permanent history:**
+**Save final outputs to permanent research archive:**
 
 ```bash
-~/.claude/History/research/YYYY-MM-DD_description/
+~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/
 ```
 
-**What goes in history/research/:**
+**What goes in MEMORY/RESEARCH/:**
 - **extract_alpha.md** - The final 24-30 insights (formatted output)
 - **deep thinking-analysis.md** - Full deep thinking deep analysis (all 10 dimensions)
 - **README.md** - Documentation of the research session
 - Source metadata (URL, title, date analyzed, content type)
 
-**Example history structure:**
+**Example research structure:**
 ```
-~/.claude/History/research/2025-10-26_podcast-analysis/
+~/.claude/MEMORY/RESEARCH/2025-10/2025-10-26_podcast-analysis/
 ├── README.md                  # Research session documentation
 ├── extract_alpha.md           # Final 24-30 insights
 ├── deep thinking-analysis.md     # Full deep analysis
@@ -181,7 +181,7 @@ Capture the subtle genius buried in the content.
 
 #### README.md Template
 
-Create a README.md in the history directory documenting the research:
+Create a README.md in the research directory documenting the research:
 
 ```markdown
 # Extract Alpha - [Content Title]
@@ -214,17 +214,17 @@ Create a README.md in the history directory documenting the research:
 
 1. **Check if hooks captured the output:**
    ```bash
-   # Check most recent history entries
-   ls -lt ~/.claude/History/research/ | head -5
+   # Check most recent research entries
+   ls -lt ~/.claude/MEMORY/RESEARCH/ | head -5
 
    # Verify your research directory exists
-   ls ~/.claude/History/research/YYYY-MM-DD_description/
+   ls ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/
    ```
 
 2. **If hooks did NOT capture automatically:**
    ```bash
    # Create directory structure manually
-   mkdir -p ~/.claude/History/research/YYYY-MM-DD_description/
+   mkdir -p ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/
 
    # Save extract_alpha.md (final insights)
    # Save deep thinking-analysis.md (full analysis)
@@ -234,7 +234,7 @@ Create a README.md in the history directory documenting the research:
 
 3. **Confirm all files saved:**
    ```bash
-   ls -lah ~/.claude/History/research/YYYY-MM-DD_description/
+   ls -lah ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/
    # Should show: README.md, extract_alpha.md, deep thinking-analysis.md, metadata.json
    ```
 
@@ -257,17 +257,17 @@ fabric -y "YOUTUBE_URL" > raw-transcript.txt
 # 5. Extract insights
 # [Extract 24-30 insights from deep thinking analysis, draft in scratch]
 
-# 6. Create permanent history directory
-mkdir -p ~/.claude/History/research/$(date +%Y-%m-%d)_podcast-analysis/
+# 6. Create permanent research directory
+mkdir -p ~/.claude/MEMORY/RESEARCH/$(date +%Y-%m)/$(date +%Y-%m-%d)_podcast-analysis/
 
-# 7. Save final outputs to history
+# 7. Save final outputs to research archive
 # - extract_alpha.md (final insights)
 # - deep thinking-analysis.md (full deep thinking)
 # - README.md (documentation)
 # - metadata.json (source info)
 
 # 8. Verify hooks captured it
-ls -lah ~/.claude/History/research/$(date +%Y-%m-%d)_podcast-analysis/
+ls -lah ~/.claude/MEMORY/RESEARCH/$(date +%Y-%m)/$(date +%Y-%m-%d)_podcast-analysis/
 
 # 9. Note: scratch/ artifacts remain tied to work item for learning
 # (Don't delete scratch - it provides context for the work item)
@@ -382,7 +382,7 @@ When this skill activates, PAI should:
 3. **Create scratch workspace** - Work in `~/.claude/MEMORY/WORK/{work_dir}/scratch/`
 4. **Engage deep thinking mode** - Deep extended thinking through all 10 dimensions
 5. **Extract insights** - Extract 24-30 highest-alpha ideas focusing on low-probability brilliant insights
-6. **Save to history** - Final outputs to `~/.claude/History/research/YYYY-MM-DD_description/`
+6. **Save to research** - Final outputs to `~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/`
 7. **Verify capture** - Ensure hooks captured or manually save all files
 8. **Output simple list** - Unformatted markdown, Paul Graham style, 8-12 words each
 9. **Prioritize surprise** - Novel ideas over obvious takeaways

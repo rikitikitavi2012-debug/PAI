@@ -31,12 +31,10 @@ Your prompt includes a `## Scope` section defining your time budget:
 ## Required Knowledge (Pre-load from Skills)
 
 ### Core Foundations
-- **skills/PAI/CoreStack.md** - Stack preferences and tooling
-- **skills/PAI/CONSTITUTION.md** - Constitutional principles
+- **skills/PAI/SKILL.md** - PAI context, stack preferences, and operating principles
 
 ### Visual Standards
 - **skills/Art/SKILL.md** - Art skill workflows and content types
-- **skills/Art/Standards.md** - Editorial quality standards and aesthetic principles
 
 ---
 
@@ -46,8 +44,7 @@ Load these dynamically based on task keywords:
 
 - **Diagram/Technical** → skills/Art/Workflows/TechnicalDiagrams.md
 - **Blog/Essay/Header** → skills/Art/Workflows/Essay.md
-- **Video** → skills/Art/Workflows/Video.md
-- **Thumbnail** → skills/Art/Workflows/YouTubeThumbnail.md
+- **Thumbnail** → skills/Art/Workflows/AdHocYouTubeThumbnail.md
 - **Framework** → skills/Art/Workflows/Frameworks.md
 - **Comparison** → skills/Art/Workflows/Comparisons.md
 

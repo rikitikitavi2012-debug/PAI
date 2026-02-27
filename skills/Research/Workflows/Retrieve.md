@@ -419,7 +419,7 @@ mcp__Apify__apify-slash-rag-web-browser({
    - **Ties retrieval artifacts to work item for learning**
 
 2. **History (Permanent Archive):**
-   - Move to `~/.claude/History/research/YYYY-MM-DD_[description]/` when complete
+   - Move to `~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_[description]/` when complete
    - Include: `README.md`, final extracted content, metadata
    - Archive for future reference and reuse
 
@@ -447,7 +447,7 @@ mcp__Apify__apify-slash-rag-web-browser({
 
 **History (permanent archive):**
 ```
-~/.claude/History/research/2025-10-26_react19-documentation/
+~/.claude/MEMORY/RESEARCH/2025-10/2025-10-26_react19-documentation/
 ├── README.md (retrieval documentation)
 ├── content.md (final extracted content)
 ├── metadata.json (sources, layers used, timestamps)

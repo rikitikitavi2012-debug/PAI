@@ -14,9 +14,9 @@ compatibility:
 
 | User Says | Action |
 |-----------|--------|
-| "research" / "do research" / "research this" | → Standard mode (3 agents) |
+| "research" / "do research" / "research this" | → Standard mode (2 agents) |
 | "quick research" / "minor research" | → Quick mode (1 agent) |
-| "extensive research" / "deep research" | → Extensive mode (12 agents) |
+| "extensive research" / "deep research" | → Extensive mode (9 agents) |
 | "deep investigation" / "investigate [topic]" / "map the [X] landscape" | → Deep Investigation (iterative) |
 
 **"Research" alone = Standard mode. No exceptions.**
@@ -68,9 +68,9 @@ Route to the appropriate workflow based on the request.
 **CRITICAL:** For due diligence, company/person background checks, or vetting -> **INVOKE OSINT SKILL INSTEAD**
 
 ### Research Modes (Primary Workflows)
-- Quick/minor research (1 Perplexity, 1 query) -> `Workflows/QuickResearch.md`
-- Standard research - DEFAULT (3 agents: Perplexity + Claude + Gemini) -> `Workflows/StandardResearch.md`
-- Extensive research (4 types x 3 threads = 12 agents) -> `Workflows/ExtensiveResearch.md`
+- Quick/minor research (1 ClaudeResearcher, 1 query) -> `Workflows/QuickResearch.md`
+- Standard research - DEFAULT (2 agents: Claude + Gemini) -> `Workflows/StandardResearch.md`
+- Extensive research (3 types x 3 threads = 9 agents) -> `Workflows/ExtensiveResearch.md`
 - Deep investigation / iterative research (progressive deepening, loop-compatible) -> `Workflows/DeepInvestigation.md`
 
 ### Deep Content Analysis
@@ -102,9 +102,9 @@ Route to the appropriate workflow based on the request.
 
 | Trigger | Mode | Speed |
 |---------|------|-------|
-| "quick research" | 1 Perplexity agent | ~10-15s |
-| "do research" | 3 agents (default) | ~15-30s |
-| "extensive research" | 12 agents | ~60-90s |
+| "quick research" | 1 ClaudeResearcher | ~10-15s |
+| "do research" | 2 agents (default) | ~15-30s |
+| "extensive research" | 9 agents | ~60-90s |
 | "deep investigation" | Progressive iteration | ~3-60min |
 
 ---
@@ -157,4 +157,4 @@ See `Workflows/DeepInvestigation.md` for full workflow details.
 - All iterative work artifacts go in the current work item's scratch/ subdirectory
 - This ties research artifacts to the work item for learning and context
 
-**History (permanent):** `~/.claude/History/research/YYYY-MM/YYYY-MM-DD_[topic]/`
+**Research (permanent):** `~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_[topic]/`
