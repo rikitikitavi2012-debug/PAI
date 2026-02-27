@@ -70,7 +70,7 @@ Route to the appropriate workflow based on the request.
 ### Research Modes (Primary Workflows)
 - Quick/minor research (1 ClaudeResearcher, 1 query) -> `Workflows/QuickResearch.md`
 - Standard research - DEFAULT (2 agents: Claude + Gemini) -> `Workflows/StandardResearch.md`
-- Extensive research (3 types x 3 threads = 9 agents) -> `Workflows/ExtensiveResearch.md`
+- Extensive research (3 types x 3 threads = 9 agents: Claude + Gemini + Grok) -> `Workflows/ExtensiveResearch.md`
 - Deep investigation / iterative research (progressive deepening, loop-compatible) -> `Workflows/DeepInvestigation.md`
 
 ### Deep Content Analysis
@@ -82,8 +82,7 @@ Route to the appropriate workflow based on the request.
 - Web scraping -> `Workflows/WebScraping.md`
 
 ### Specific Research Types
-- Claude WebSearch only (free, no API keys) -> `Workflows/ClaudeResearch.md`
-- Perplexity API research (use Quick for single-agent) -> `Workflows/QuickResearch.md`
+- Claude WebSearch only / single-agent research (uses ClaudeResearcher) -> `Workflows/QuickResearch.md`
 - Interview preparation (Tyler Cowen style) -> `Workflows/InterviewResearch.md`
 - AI trends analysis -> `Workflows/AnalyzeAiTrends.md`
 

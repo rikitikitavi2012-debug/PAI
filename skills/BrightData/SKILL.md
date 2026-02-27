@@ -181,6 +181,6 @@ Skill Response:
 
 **Related Documentation:**
 - `~/.claude/skills/PAI/SkillSystem.md` - Canonical structure guide
-- `~/.claude/skills/PAI/CONSTITUTION.md` - Overall PAI philosophy
+- `~/.claude/skills/PAI/SKILL.md` - Overall PAI philosophy and principles
 
 **Last Updated:** 2025-11-23

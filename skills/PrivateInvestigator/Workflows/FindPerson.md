@@ -112,14 +112,6 @@ Search for mentions, tagged posts, location-based posts.
 Check for any public posts mentioning [LOCATION] or [CONTEXT].
 ```
 
-**Agent 6: CodexResearcher - Username Enumeration**
-```
-Prompt: If we find any username, enumerate across platforms.
-Try common patterns: [first][last], [first].[last], [first][last][birthyear]
-Conceptually search: Instagram, TikTok, Reddit, GitHub.
-Cross-reference any found usernames across platforms.
-```
-
 ---
 
 #### CATEGORY 3: Public Records & News (3 agents minimum)

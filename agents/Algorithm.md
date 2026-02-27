@@ -202,7 +202,7 @@ When asked to help with ANY phase, you bring ISC expertise:
 When asked to recommend capabilities, reference `~/.claude/skills/skill-index.json`:
 
 **Categories to consider:**
-- **Research**: ClaudeResearcher, GeminiResearcher, GrokResearcher, CodexResearcher
+- **Research**: ClaudeResearcher, GeminiResearcher, GrokResearcher
 - **Implementation**: Engineer, CreateSkill, CreateCLI
 - **Design**: Architect, Designer
 - **Analysis**: FirstPrinciples, RedTeam, Council

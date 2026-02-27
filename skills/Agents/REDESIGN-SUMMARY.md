@@ -65,8 +65,8 @@ Example: `ArchitectContext.md`
 **Model**: opus
 
 ## Required Knowledge (Pre-load from Skills)
-- **skills/PAI/CONSTITUTION.md** - Foundational principles
-- **skills/PAI/CoreStack.md** - Stack preferences
+- **skills/PAI/SKILL.md** - PAI context and principles
+- **skills/PAI/SKILL.md** - Stack preferences (included in PAI SKILL.md)
 
 ## Task-Specific Knowledge
 - **api** → skills/Development/References/APIDesign.md

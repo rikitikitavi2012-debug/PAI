@@ -9,7 +9,7 @@
 
 ## Agent Prompt Injection
 
-When spawning any research agent (ClaudeResearcher, GeminiResearcher, PerplexityResearcher, CodexResearcher, GrokResearcher), append to every prompt:
+When spawning any research agent (ClaudeResearcher, GeminiResearcher, PerplexityResearcher, GrokResearcher), append to every prompt:
 
 ```
 IMPORTANT: Respond in Russian (русский язык). Technical terms and proper nouns may remain in English. All analysis, summaries, and conclusions must be in Russian.
