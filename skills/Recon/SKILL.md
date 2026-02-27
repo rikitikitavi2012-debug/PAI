@@ -205,18 +205,8 @@ Network range reconnaissance:
 **Output:** Netblock scan report
 **Authorization:** Required for active scanning
 
-### 5. `AsnRecon.md` - Autonomous System Investigation
-ASN and BGP reconnaissance:
-- ASN to CIDR range mapping
-- Organization information
-- All IP ranges owned by ASN
-- BGP peer relationships
-- Geographic distribution
-- Hosting/ISP identification
-
-**Input:** ASN number (e.g., AS15169)
-**Output:** ASN mapping report
-**Authorization:** None required (passive data)
+### 5. ASN Investigation (planned — not yet implemented)
+<!-- AsnRecon.md workflow not yet created. ASN input (AS####) currently unsupported. -->
 
 ## Tool Integration
 
@@ -289,17 +279,7 @@ Located in `tools/` directory:
 - Range validation
 - IP address generation from CIDR
 
-**cert-transparency.ts**
-- crt.sh API client
-- Certificate search
-- Subdomain extraction from certificates
-- Historical certificate data
-
-**report-generator.ts**
-- Markdown report formatting
-- JSON output generation
-- Structured data presentation
-- Integration with OSINT reports
+<!-- cert-transparency.ts and report-generator.ts: planned but not yet implemented -->
 
 ## Output Formats
 
@@ -479,7 +459,7 @@ Assistant: Activating OSINT skill...
 - Input matches IP pattern (x.x.x.x) → `IpRecon.md`
 - Input matches domain pattern → `DomainRecon.md`
 - Input matches CIDR pattern (x.x.x.x/y) → `NetblockRecon.md`
-- Input matches ASN pattern (AS####) → `AsnRecon.md`
+- Input matches ASN pattern (AS####) → not yet implemented (use `NetblockRecon.md` for CIDR ranges)
 - User specifies "passive only" → `PassiveRecon.md`
 
 **User can override:**

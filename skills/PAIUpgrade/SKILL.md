@@ -67,8 +67,6 @@ Thread 1: USER CONTEXT     Thread 2: SOURCE COLLECTION    Thread 3: INTERNAL REF
 | **MineReflections** | "mine reflections", "check reflections", "what have we learned", "internal improvements", "reflection insights" | `Workflows/MineReflections.md` |
 | **AlgorithmUpgrade** | "algorithm upgrade", "upgrade algorithm", "improve the algorithm", "algorithm improvements", "fix the algorithm" | `Workflows/AlgorithmUpgrade.md` |
 | **ResearchUpgrade** | "research this upgrade", "deep dive on [feature]", "further research" | `Workflows/ResearchUpgrade.md` |
-| **FindSources** | "find upgrade sources", "find new sources", "discover channels" | `Workflows/FindSources.md` |
-
 **Default workflow:** If user says "upgrade" or "check for upgrades" without specifics, run the **Upgrade** workflow. The Upgrade workflow automatically includes internal reflection mining as Thread 3.
 
 ---
@@ -461,7 +459,6 @@ User: "check Anthropic only"
 
 - **Upgrade.md** - Primary workflow: full two-thread analysis with prioritized recommendations
 - **ResearchUpgrade.md** - Deep dive on a specific upgrade opportunity
-- **FindSources.md** - Discover and evaluate new sources to monitor
 
 ---
 

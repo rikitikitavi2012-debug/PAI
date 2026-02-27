@@ -31,7 +31,7 @@ Takes a sales narrative or value proposition and creates a matching visual asset
 | **Deep expertise/insight** | CONTEMPLATION | 50:50 |
 | **Team/collaboration** | CONNECTION | 90:10 |
 
-**Read full vocabulary:** `~/.claude/skills/PAI/Aesthetic.md`
+**Read full vocabulary:** `~/.claude/skills/WriteStory/AestheticProfiles.md`
 
 ### Step 3: Derive Visual Concept
 
