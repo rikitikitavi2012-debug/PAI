@@ -70,7 +70,7 @@ function getKittyEnv(sessionId?: string): { listenOn: string | null; windowId: s
 
 /**
  * Persist a session's Kitty environment for later hook lookups.
- * Called by StartupGreeting at session start.
+ * Called by KittyEnvPersist at session start.
  *
  * Each session gets its own file: kitty-sessions/{sessionId}.json
  * - No shared mutable state (concurrent session starts are safe)
@@ -244,10 +244,10 @@ const SESSION_NOISE = new Set([
 ]);
 
 /**
- * Extract two representative words from a session name.
- * "Tab Title Upgrade" → "TAB TITLE", "Security Redesign" → "SECURITY REDESIGN"
- * "Fix Activity Dashboard" → "ACTIVITY DASHBOARD"
- * Returns uppercase. Falls back to first two words if all are noise.
+ * Extract up to 4 representative words from a session name.
+ * "Surface Filter Bar Redesign" → "SURFACE FILTER BAR REDESIGN"
+ * "Voice Server Phase Announcements" → "VOICE SERVER PHASE ANNOUNCEMENTS"
+ * Returns uppercase. Filters noise words but keeps up to 4 meaningful ones.
  */
 export function getSessionOneWord(sessionId: string): string | null {
   try {
@@ -260,19 +260,18 @@ export function getSessionOneWord(sessionId: string): string | null {
     const words = fullName.split(/\s+/).filter((w: string) => w.length > 0);
     if (words.length === 0) return null;
 
-    // Collect up to 2 non-noise words
+    // Collect up to 4 non-noise words
     const meaningful = words.filter((w: string) => !SESSION_NOISE.has(w.toLowerCase()));
     if (meaningful.length >= 2) {
-      return `${meaningful[0]} ${meaningful[1]}`.toUpperCase();
+      return meaningful.slice(0, 4).join(' ').toUpperCase();
     } else if (meaningful.length === 1) {
-      // One meaningful word — grab the next word (even if noise) for context
+      // One meaningful word — grab surrounding words for context
       const idx = words.indexOf(meaningful[0]);
-      const next = words[idx + 1];
-      if (next) return `${meaningful[0]} ${next}`.toUpperCase();
-      return meaningful[0].toUpperCase();
+      const nearby = words.slice(Math.max(0, idx - 1), idx + 3).filter((w: string) => w.length > 0);
+      return nearby.slice(0, 4).join(' ').toUpperCase();
     }
-    // All noise — take first two
-    return words.slice(0, 2).join(' ').toUpperCase();
+    // All noise — take first four
+    return words.slice(0, 4).join(' ').toUpperCase();
   } catch {
     return null;
   }
@@ -283,7 +282,7 @@ export function getSessionOneWord(sessionId: string): string | null {
  * Active format:    {SYMBOL} {ONE_WORD} | {PHASE}
  * Complete format:  {ONE_WORD} | {summary}
  *
- * Called by AlgorithmTracker on phase transitions.
+ * Called on algorithm phase transitions.
  */
 export function setPhaseTab(phase: AlgorithmTabPhase, sessionId: string, summary?: string): void {
   const config = PHASE_TAB_CONFIG[phase];

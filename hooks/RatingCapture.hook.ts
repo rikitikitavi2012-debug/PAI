@@ -4,21 +4,18 @@
  *
  * PURPOSE:
  * Single hook for all rating capture. Handles both explicit ratings (1-10 pattern)
- * and implicit sentiment detection (AI inference). Also outputs the Algorithm
- * format reminder (absorbed from AlgorithmEnforcement.hook.ts).
+ * and implicit sentiment detection (AI inference).
  *
  * TRIGGER: UserPromptSubmit
  *
  * FLOW:
- * 1. Output algorithm format reminder (instant, stdout — non-blocking)
- * 2. Parse input from stdin
- * 3. Check for explicit rating pattern → if found, write and exit
- * 4. If no explicit rating, run AI sentiment inference (Haiku, ~1s)
- * 5. Write result to ratings.jsonl
- * 6. Capture learnings for low ratings (<6), full failure capture for <=3
+ * 1. Parse input from stdin
+ * 2. Check for explicit rating pattern → if found, write and exit
+ * 3. If no explicit rating, run AI sentiment inference (Haiku, ~1s)
+ * 4. Write result to ratings.jsonl
+ * 5. Capture learnings for low ratings (<6), full failure capture for <=3
  *
  * OUTPUT:
- * - stdout: <user-prompt-submit-hook> algorithm reminder (instant)
  * - exit(0): Normal completion
  *
  * SIDE EFFECTS:
@@ -27,54 +24,19 @@
  * - Triggers: TrendingAnalysis.ts update (fire-and-forget)
  * - API call: Haiku inference for implicit sentiment (fast/cheap)
  *
- * INTER-HOOK RELATIONSHIPS:
- * - DEPENDS ON: None
- * - COORDINATES WITH: None (self-contained — replaces ExplicitRatingCapture + ImplicitSentimentCapture)
- *
  * PERFORMANCE:
- * - Algorithm reminder: <1ms (immediate stdout)
  * - Explicit rating path: <50ms (no inference)
  * - Implicit sentiment path: 0.5-1.5s (Haiku inference)
- *
- * HISTORY:
- * - Consolidated from ExplicitRatingCapture + ImplicitSentimentCapture + AlgorithmEnforcement
- * - Removes ~200 lines of duplicated code (shared writeRating, captureLearning, trending)
  */
 
-import { appendFileSync, mkdirSync, existsSync, readFileSync, writeFileSync, openSync } from 'fs';
+import { appendFileSync, mkdirSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { inference } from '../skills/PAI/Tools/Inference';
+import { inference } from '../PAI/Tools/Inference';
 import { getIdentity, getPrincipal, getPrincipalName } from './lib/identity';
 import { getLearningCategory } from './lib/learning-utils';
 import { getISOTimestamp, getPSTComponents } from './lib/time';
-import { captureFailure } from '../skills/PAI/Tools/FailureCapture';
+import { captureFailure } from '../PAI/Tools/FailureCapture';
 
-// ── Algorithm Format Reminder (absorbed from AlgorithmEnforcement) ──
-// Output IMMEDIATELY before any async work — this is blocking stdout injection.
-// Read Algorithm version dynamically from LATEST file (never hardcode)
-const ALGO_VERSION = (() => {
-  try {
-    const paiDir = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
-    return readFileSync(join(paiDir, 'skills', 'PAI', 'Components', 'Algorithm', 'LATEST'), 'utf-8').trim();
-  } catch { return 'v?.?.?'; }
-})();
-const ALGORITHM_REMINDER = `<user-prompt-submit-hook>
-\u{1F6A8} ALGORITHM FORMAT REQUIRED - EVERY RESPONSE \u{1F6A8}
-
-START WITH:
-\u{267B}\u{FE0F} Entering the PAI ALGORITHM\u{2026} (${ALGO_VERSION} | github.com/danielmiessler/TheAlgorithm) \u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}
-
-EXECUTE VOICE CURLS at each phase (OBSERVE, THINK, PLAN, BUILD, EXECUTE, VERIFY, LEARN)
-
-USE TaskCreate for ISC criteria. USE TaskList to display them. NEVER manual tables.
-
-END WITH:
-\u{1F5E3}\u{FE0F} Navi: [12-24 word spoken summary]
-
-For MINIMAL tasks (pure greetings, ratings): Use abbreviated format but STILL include header and voice line.
-</user-prompt-submit-hook>`;
-
-console.log(ALGORITHM_REMINDER);
 
 // ── Shared Types ──
 
@@ -91,9 +53,10 @@ interface RatingEntry {
   rating: number;
   session_id: string;
   comment?: string;
-  source?: 'implicit' | 'explicit';
+  source?: 'implicit';
   sentiment_summary?: string;
   confidence?: number;
+  response_preview?: string;  // Truncated last response that was rated (from cache)
 }
 
 // ── Shared Constants ──
@@ -102,21 +65,20 @@ const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
 const SIGNALS_DIR = join(BASE_DIR, 'MEMORY', 'LEARNING', 'SIGNALS');
 const RATINGS_FILE = join(SIGNALS_DIR, 'ratings.jsonl');
 const TRENDING_SCRIPT = join(BASE_DIR, 'tools', 'TrendingAnalysis.ts');
-const DEBUG_DIR = join(BASE_DIR, 'MEMORY', 'LEARNING', 'DEBUG');
-
-/** Open append-mode file descriptor for fire-and-forget stderr logging */
-function openDebugLog(toolName: string): number | 'ignore' {
-  try {
-    if (!existsSync(DEBUG_DIR)) mkdirSync(DEBUG_DIR, { recursive: true });
-    return openSync(join(DEBUG_DIR, `${toolName}.log`), 'a');
-  } catch {
-    return 'ignore';
-  }
-}
-
+const LAST_RESPONSE_CACHE = join(BASE_DIR, 'MEMORY', 'STATE', 'last-response.txt');
 const MIN_PROMPT_LENGTH = 3;
 const MIN_CONFIDENCE = 0.5;
-const ANALYSIS_TIMEOUT = 15000;
+
+/**
+ * Read cached last response written by LastResponseCache.hook.ts.
+ * Stop fires before next UserPromptSubmit, so cache is always fresh.
+ */
+function getLastResponse(): string {
+  try {
+    if (existsSync(LAST_RESPONSE_CACHE)) return readFileSync(LAST_RESPONSE_CACHE, 'utf-8');
+  } catch {}
+  return '';
+}
 
 // ── Stdin Reader ──
 
@@ -139,22 +101,29 @@ async function readStdinWithTimeout(timeout: number = 5000): Promise<string> {
  */
 function parseExplicitRating(prompt: string): { rating: number; comment?: string } | null {
   const trimmed = prompt.trim();
+  // Rating must be: number alone, or number followed by whitespace/dash/colon then comment
+  // Reject: "10/10", "3.5", "7th", "5x" — number followed by non-separator chars
   const ratingPattern = /^(10|[1-9])(?:\s*[-:]\s*|\s+)?(.*)$/;
   const match = trimmed.match(ratingPattern);
   if (!match) return null;
 
   const rating = parseInt(match[1], 10);
-  const comment = match[2]?.trim() || undefined;
+  const rest = match[2]?.trim() || undefined;
 
   if (rating < 1 || rating > 10) return null;
 
+  // Reject if the character immediately after the number is not a separator
+  // This catches "10/10", "3.5", "7th", "5x", etc.
+  const afterNumber = trimmed.slice(match[1].length);
+  if (afterNumber.length > 0 && /^[/.\dA-Za-z]/.test(afterNumber)) return null;
+
   // Reject if comment starts with words indicating a sentence, not a rating
-  if (comment) {
+  if (rest) {
     const sentenceStarters = /^(items?|things?|steps?|files?|lines?|bugs?|issues?|errors?|times?|minutes?|hours?|days?|seconds?|percent|%|th\b|st\b|nd\b|rd\b|of\b|in\b|at\b|to\b|the\b|a\b|an\b)/i;
-    if (sentenceStarters.test(comment)) return null;
+    if (sentenceStarters.test(rest)) return null;
   }
 
-  return { rating, comment };
+  return { rating, comment: rest };
 }
 
 // ── Implicit Sentiment Analysis ──
@@ -165,6 +134,7 @@ const ASSISTANT_NAME = getIdentity().name;
 const SENTIMENT_SYSTEM_PROMPT = `Analyze ${PRINCIPAL_NAME}'s message for emotional sentiment toward ${ASSISTANT_NAME} (the AI assistant).
 
 CONTEXT: This is a personal AI system. ${PRINCIPAL_NAME} is the ONLY user. Never say "users" - always "${PRINCIPAL_NAME}."
+IMPORTANT: Ratings come ONLY from ${PRINCIPAL_NAME}'s messages. ${ASSISTANT_NAME} must NEVER self-rate. If the message being analyzed is from ${ASSISTANT_NAME} (not ${PRINCIPAL_NAME}), return null.
 
 OUTPUT FORMAT (JSON only):
 {
@@ -201,6 +171,30 @@ CRITICAL DISTINCTIONS:
 - Context is KEY: Is the emotion directed AT ${ASSISTANT_NAME}'s work?
 - Sarcasm: "Oh great, another error" = negative despite "great"
 
+SHORT POSITIVE EXPRESSIONS (CRITICAL — DO NOT UNDER-RATE):
+When ${PRINCIPAL_NAME} gives short, direct praise like "great job", "nice work", "well done", "love it", "nailed it", "perfect", "awesome" — these are STRONG APPROVAL (8-9). ${PRINCIPAL_NAME} went out of his way to express satisfaction. Do NOT rate these as 6-7. Short praise = high signal. Rate 8 minimum.
+
+IMPLIED SENTIMENT (CRITICAL — THESE ARE NOT NEUTRAL):
+Most of ${PRINCIPAL_NAME}'s feedback is IMPLIED, not explicit. Use CONTEXT to detect these patterns:
+
+Implied NEGATIVE (rate 2-4, never null):
+- CORRECTIONS: "No, I meant..." / "That's not what I said" / "I said X not Y" → 3-4
+- REPEATED REQUESTS: Having to ask the same thing twice → 2-3 (${ASSISTANT_NAME} failed to listen)
+- TERSE REDIRECTS: ${ASSISTANT_NAME} gives long output, ${PRINCIPAL_NAME} responds with short redirect ignoring it → 4
+- BEHAVIORAL CORRECTIONS: "Don't do that" / "Stop doing X" / "Never X" → 3 (past behavior was wrong)
+- EXASPERATED QUESTIONS: "Why is this still broken?" / "How many times..." / "This is still happening" → 2-3
+- SHORT DISMISSALS: "whatever" / "fine" / "just do it" / "never mind" → 3-4
+- POINTING OUT OMISSIONS: "What about X?" (when X was obviously required) → 4
+- ESCALATING FRUSTRATION: "after 20 attempts" / "I keep telling you" → 1-2
+
+Implied POSITIVE (rate 6-8, never null):
+- TRUST SIGNALS: "Alright, fix all of it" / "Go ahead" (after analysis) → 7
+- BUILDING ON WORK: "Now also add..." / "Next, do..." (accepting prior result) → 6-7
+- ENGAGED FOLLOW-UPS: "What about X?" (exploring, not correcting) → 6
+- MOVING FORWARD: Accepting output and immediately giving next task → 6
+
+RULE: If ${PRINCIPAL_NAME}'s message is a RESPONSE to ${ASSISTANT_NAME}'s work (check CONTEXT), it almost always carries sentiment. Pure neutral is RARE in responses. Default to detecting signal, not returning null.
+
 WHEN TO RETURN null FOR RATING:
 - Neutral technical questions ("Can you check the logs?")
 - Simple commands ("Do it", "Yes", "Continue")
@@ -214,11 +208,26 @@ ${PRINCIPAL_NAME}: "What the fuck, why did you delete my file?"
 ${PRINCIPAL_NAME}: "Oh my god, this is fucking incredible, you nailed it!"
 -> {"rating": 10, "sentiment": "positive", "confidence": 0.95, "summary": "Extremely impressed with result", "detailed_context": "..."}
 
+${PRINCIPAL_NAME}: "great job"
+-> {"rating": 8, "sentiment": "positive", "confidence": 0.9, "summary": "Direct praise for completed work", "detailed_context": "..."}
+
 ${PRINCIPAL_NAME}: "Fix the auth bug"
 -> {"rating": null, "sentiment": "neutral", "confidence": 0.9, "summary": "Neutral command, no sentiment", "detailed_context": ""}
 
 ${PRINCIPAL_NAME}: "Hmm, that's not quite right"
--> {"rating": 4, "sentiment": "negative", "confidence": 0.6, "summary": "Mild dissatisfaction", "detailed_context": "..."}`;
+-> {"rating": 4, "sentiment": "negative", "confidence": 0.6, "summary": "Mild dissatisfaction", "detailed_context": "..."}
+
+${PRINCIPAL_NAME}: "No, I said rename them, not delete them"
+-> {"rating": 3, "sentiment": "negative", "confidence": 0.8, "summary": "Correction — assistant misunderstood instruction", "detailed_context": "..."}
+
+${PRINCIPAL_NAME}: "This is still happening after I asked you to fix it"
+-> {"rating": 2, "sentiment": "negative", "confidence": 0.9, "summary": "Frustrated — repeated failure on same issue", "detailed_context": "..."}
+
+${PRINCIPAL_NAME}: "Alright, fix all of it"
+-> {"rating": 7, "sentiment": "positive", "confidence": 0.7, "summary": "Trusts analysis, approves proceeding", "detailed_context": "..."}
+
+${PRINCIPAL_NAME}: "What about X?" (after ${ASSISTANT_NAME} presented complete work)
+-> {"rating": 4, "sentiment": "negative", "confidence": 0.65, "summary": "Pointed out omission in delivered work", "detailed_context": "..."}`;
 
 interface SentimentResult {
   rating: number | null;
@@ -293,6 +302,7 @@ function writeRating(entry: RatingEntry): void {
   if (!existsSync(SIGNALS_DIR)) mkdirSync(SIGNALS_DIR, { recursive: true });
   appendFileSync(RATINGS_FILE, JSON.stringify(entry) + '\n', 'utf-8');
   const source = entry.source === 'implicit' ? 'implicit' : 'explicit';
+
   console.error(`[RatingCapture] Wrote ${source} rating ${entry.rating} to ${RATINGS_FILE}`);
 }
 
@@ -300,7 +310,7 @@ function writeRating(entry: RatingEntry): void {
 
 function triggerTrending(): void {
   if (existsSync(TRENDING_SCRIPT)) {
-    Bun.spawn(['bun', TRENDING_SCRIPT, '--force'], { stdout: 'ignore', stderr: openDebugLog('TrendingAnalysis') });
+    Bun.spawn(['bun', TRENDING_SCRIPT, '--force'], { stdout: 'ignore', stderr: 'ignore' });
     console.error('[RatingCapture] Triggered TrendingAnalysis update');
   }
 }
@@ -380,42 +390,21 @@ async function main() {
     if (explicitResult) {
       console.error(`[RatingCapture] Explicit rating: ${explicitResult.rating}${explicitResult.comment ? ` - ${explicitResult.comment}` : ''}`);
 
+      const cachedResponse = getLastResponse();
       const entry: RatingEntry = {
         timestamp: getISOTimestamp(),
         rating: explicitResult.rating,
         session_id: data.session_id,
-        source: 'explicit',
       };
       if (explicitResult.comment) entry.comment = explicitResult.comment;
+      if (cachedResponse) entry.response_preview = cachedResponse.slice(0, 500);
 
       writeRating(entry);
       triggerTrending();
 
       if (explicitResult.rating < 5) {
-        // Get last response for context
-        let responseContext = '';
-        try {
-          if (data.transcript_path && existsSync(data.transcript_path)) {
-            const content = readFileSync(data.transcript_path, 'utf-8');
-            const lines = content.trim().split('\n');
-            let lastAssistant = '';
-            for (const line of lines) {
-              try {
-                const e = JSON.parse(line);
-                if (e.type === 'assistant' && e.message?.content) {
-                  const text = typeof e.message.content === 'string'
-                    ? e.message.content
-                    : Array.isArray(e.message.content)
-                      ? e.message.content.filter((c: any) => c.type === 'text').map((c: any) => c.text).join(' ')
-                      : '';
-                  if (text) lastAssistant = text;
-                }
-              } catch {}
-            }
-            const summaryMatch = lastAssistant.match(/SUMMARY:\s*([^\n]+)/i);
-            responseContext = summaryMatch ? summaryMatch[1].trim() : lastAssistant.slice(0, 500);
-          }
-        } catch {}
+        // Read cached last response (written by LastResponseCache.hook.ts on previous Stop event)
+        const responseContext = getLastResponse();
 
         captureLowRatingLearning(explicitResult.rating, explicitResult.comment || '', responseContext, 'explicit');
 
@@ -438,15 +427,61 @@ async function main() {
       process.exit(0);
     }
 
-    // ── Path 2: Implicit Sentiment (fire-and-forget) ──
-    // Don't block the prompt — run inference in background
+    // ── Path 2: Implicit Sentiment ──
+
     if (prompt.length < MIN_PROMPT_LENGTH) {
       console.error('[RatingCapture] Prompt too short for sentiment, exiting');
       process.exit(0);
     }
 
+    // BUG FIX: Filter system-injected text before wasting inference on it
+    // These are not {PRINCIPAL.NAME}'s messages — they're system notifications, task completions, etc.
+    const SYSTEM_TEXT_PATTERNS = [
+      /^<task-notification>/i,
+      /^<system-reminder>/i,
+      /^This session is being continued from a previous conversation/i,
+      /^Please continue the conversation/i,
+      /^Note:.*was read before/i,
+    ];
+    if (SYSTEM_TEXT_PATTERNS.some(re => re.test(prompt.trim()))) {
+      console.error('[RatingCapture] System-injected text detected, skipping sentiment analysis');
+      process.exit(0);
+    }
+
+    // BUG FIX: Positive word fast-path — short praise gets rating 8 directly
+    // Prevents inference timeout from dropping positive signals (the "Excellent!" bug)
+    const POSITIVE_PRAISE_WORDS = new Set([
+      'excellent', 'amazing', 'brilliant', 'fantastic', 'wonderful', 'beautiful',
+      'incredible', 'awesome', 'perfect', 'great', 'nice', 'superb', 'outstanding',
+      'magnificent', 'stellar', 'phenomenal', 'remarkable', 'terrific', 'splendid',
+    ]);
+    const POSITIVE_PHRASES = new Set([
+      'great job', 'good job', 'nice work', 'well done', 'nice job', 'good work',
+      'love it', 'nailed it', 'looks great', 'looks good', 'thats great', 'that works',
+    ]);
+    const normalizedPrompt = prompt.trim().toLowerCase().replace(/[.!?,'"]/g, '');
+    const promptWords = normalizedPrompt.split(/\s+/);
+    if (promptWords.length <= 2) {
+      if (POSITIVE_PRAISE_WORDS.has(normalizedPrompt) || POSITIVE_PHRASES.has(normalizedPrompt)
+          || (promptWords.length === 2 && promptWords.every(w => POSITIVE_PRAISE_WORDS.has(w)))) {
+        console.error(`[RatingCapture] Positive praise fast-path: "${prompt.trim()}" → rating 8`);
+        const cachedResponse = getLastResponse();
+        writeRating({
+          timestamp: getISOTimestamp(),
+          rating: 8,
+          session_id: data.session_id,
+          source: 'implicit',
+          sentiment_summary: `Direct praise: "${prompt.trim()}"`,
+          confidence: 0.95,
+          ...(cachedResponse ? { response_preview: cachedResponse.slice(0, 500) } : {}),
+        });
+        triggerTrending();
+        process.exit(0);
+      }
+    }
+
     // Await sentiment analysis — must complete before process exits
-    const context = getRecentContext(data.transcript_path);
+    const context = getRecentContext(data.transcript_path, 6);  // BUG FIX: 6 turns instead of 3
     console.error('[RatingCapture] Running implicit sentiment analysis...');
 
     try {
@@ -456,21 +491,20 @@ async function main() {
         process.exit(0);
       }
 
-      if (sentiment.rating === null) sentiment.rating = 5;
+      // BUG FIX: null means "no sentiment detected" — skip, don't convert to 5
+      // Previously null→5 inflated neutral count (60% of all entries were noise)
+      if (sentiment.rating === null) {
+        console.error('[RatingCapture] Sentiment returned null rating (no sentiment), skipping write');
+        process.exit(0);
+      }
       if (sentiment.confidence < MIN_CONFIDENCE) {
         console.error(`[RatingCapture] Confidence ${sentiment.confidence} below ${MIN_CONFIDENCE}, skipping`);
         process.exit(0);
       }
 
-      console.error(`[RatingCapture] Implicit: ${sentiment.rating}/10 (conf: ${sentiment.confidence}) sentiment=${sentiment.sentiment} - ${sentiment.summary}`);
+      console.error(`[RatingCapture] Implicit: ${sentiment.rating}/10 (conf: ${sentiment.confidence}) - ${sentiment.summary}`);
 
-      // Skip neutral interactions — they are noise, not signal.
-      // Positive and negative carry learning value even at mid ratings.
-      if (sentiment.sentiment === 'neutral') {
-        console.error('[RatingCapture] Neutral sentiment — skipping write (no learning signal)');
-        process.exit(0);
-      }
-
+      const implicitCachedResponse = getLastResponse();
       const entry: RatingEntry = {
         timestamp: getISOTimestamp(),
         rating: sentiment.rating,
@@ -479,6 +513,7 @@ async function main() {
         sentiment_summary: sentiment.summary,
         confidence: sentiment.confidence,
       };
+      if (implicitCachedResponse) entry.response_preview = implicitCachedResponse.slice(0, 500);
 
       writeRating(entry);
       triggerTrending();
@@ -502,7 +537,20 @@ async function main() {
         }
       }
     } catch (err) {
+      // BUG FIX: Log failures visibly — write a marker entry so inference failures show up in the data
       console.error(`[RatingCapture] Sentiment error: ${err}`);
+      const failedPromptPreview = prompt.trim().slice(0, 80);
+      console.error(`[RatingCapture] FAILED for prompt: "${failedPromptPreview}"`);
+      // Write a visible failure marker so we can track inference reliability
+      writeRating({
+        timestamp: getISOTimestamp(),
+        rating: 5,
+        session_id: data.session_id,
+        source: 'implicit',
+        sentiment_summary: `INFERENCE_FAILED: "${failedPromptPreview}"`,
+        confidence: 0,
+      });
+      triggerTrending();
     }
 
     process.exit(0);

@@ -34,7 +34,7 @@ Hooks are TypeScript scripts that execute at specific lifecycle events in Claude
 1. **Non-blocking by default**: Hooks should not delay the user experience
 2. **Fail gracefully**: Errors in one hook must not crash the session
 3. **Single responsibility**: Each hook does one thing well
-4. **Orchestration over duplication**: Use StopOrchestrator for shared data needs
+4. **Shared utilities over duplication**: Use `hooks/lib/hook-io.ts` for stdin reading
 
 ### Execution Model
 
@@ -43,12 +43,10 @@ Hooks are TypeScript scripts that execute at specific lifecycle events in Claude
 │                        Claude Code Session                          │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
-│  SessionStart ──┬──► StartupGreeting (banner + stats)               │
-│                 ├──► LoadContext (PAI skill injection)             │
-│                 └──► CheckVersion (update notification)             │
+│  SessionStart ──┬──► KittyEnvPersist (terminal env + tab reset)     │
+│                 └──► LoadContext (dynamic context injection)         │
 │                                                                     │
-│  UserPromptSubmit ──┬──► RatingCapture (algo reminder + ratings)    │
-│                     ├──► AutoWorkCreation (work directory setup)    │
+│  UserPromptSubmit ──┬──► RatingCapture (explicit + implicit ratings) │
 │                     ├──► UpdateTabTitle (tab + voice announcement)  │
 │                     └──► SessionAutoName (session naming)           │
 │                                                                     │
@@ -57,15 +55,17 @@ Hooks are TypeScript scripts that execute at specific lifecycle events in Claude
 │               ├──► AgentExecutionGuard (Task)                       │
 │               └──► SkillGuard (Skill)                               │
 │                                                                     │
-│  PostToolUse ──┬──► AlgorithmTracker (phase + criteria tracking)    │
-│                └──► QuestionAnswered (AskUserQuestion)               │
+│  PostToolUse ──┬──► QuestionAnswered (AskUserQuestion)              │
+│                └──► PRDSync (PRD → work.json sync)                  │
 │                                                                     │
-│  Stop ──► StopOrchestrator ──┬──► VoiceNotification                 │
-│                              ├──► TabState                          │
-│                              └──► RebuildSkill                      │
+│  Stop ──┬──► LastResponseCache (cache response for ratings)         │
+│         ├──► ResponseTabReset (tab title/color reset)              │
+│         ├──► VoiceCompletion (TTS voice line)                      │
+│         ├──► DocIntegrity (cross-ref checks)                       │
+│         └──► AlgorithmTab (phase + progress in tab)                │
 │                                                                     │
 │  SessionEnd ──┬──► WorkCompletionLearning (insight extraction)      │
-│               ├──► SessionSummary (work directory completion)       │
+│               ├──► SessionCleanup (work completion + state clear)   │
 │               ├──► RelationshipMemory (relationship notes)          │
 │               ├──► UpdateCounts (system counts + usage cache)       │
 │               └──► IntegrityCheck (PAI + doc drift detection)       │
@@ -123,16 +123,14 @@ interface StopPayload extends BasePayload {
 
 | Hook | Purpose | Blocking | Dependencies |
 |------|---------|----------|--------------|
-| `StartupGreeting.hook.ts` | Display PAI banner with system stats | No | None |
-| `LoadContext.hook.ts` | Inject PAI skill into context | Yes (stdout) | `skills/PAI/SKILL.md` |
-| `CheckVersion.hook.ts` | Notify if CC update available | No | npm registry |
+| `KittyEnvPersist.hook.ts` | Persist Kitty env vars + tab reset | No | None |
+| `LoadContext.hook.ts` | Inject dynamic context (relationship, learning, work) | Yes (stdout) | `settings.json`, `MEMORY/` |
 
 ### UserPromptSubmit Hooks
 
 | Hook | Purpose | Blocking | Dependencies |
 |------|---------|----------|--------------|
-| `RatingCapture.hook.ts` | Algorithm format reminder + explicit/implicit rating capture | Yes (stdout) | Inference API, `ratings.jsonl` |
-| `AutoWorkCreation.hook.ts` | Create/update work directories | No | `MEMORY/STATE/current-work.json` |
+| `RatingCapture.hook.ts` | Explicit/implicit rating capture + sentiment analysis | Yes (stdout) | Inference API, `ratings.jsonl` |
 | `UpdateTabTitle.hook.ts` | Set tab title + voice announcement | No | Inference API, Voice Server |
 | `SessionAutoName.hook.ts` | Name session on first prompt | No | Inference API, `session-names.json` |
 
@@ -149,21 +147,25 @@ interface StopPayload extends BasePayload {
 
 | Hook | Purpose | Blocking | Dependencies |
 |------|---------|----------|--------------|
-| `AlgorithmTracker.hook.ts` | Real-time phase tracking + ISC criteria tracking | No | `lib/algorithm-state.ts` |
 | `QuestionAnswered.hook.ts` | Reset tab state after question answered | No | Kitty terminal |
+| `PRDSync.hook.ts` | Sync PRD frontmatter → work.json | No | `MEMORY/WORK/`, `work.json` |
 
 ### Stop Hooks
 
 | Hook | Purpose | Blocking | Dependencies |
 |------|---------|----------|--------------|
-| `StopOrchestrator.hook.ts` | Coordinate all Stop handlers | No | Voice Server, Kitty |
+| `LastResponseCache.hook.ts` | Cache last response for RatingCapture bridge | No | None |
+| `ResponseTabReset.hook.ts` | Reset Kitty tab title/color after response | No | Kitty terminal |
+| `VoiceCompletion.hook.ts` | Send 🗣️ voice line to TTS server | No | Voice Server |
+| `AlgorithmTab.hook.ts` | Show Algorithm phase + progress in tab | No | `work.json` |
+| `DocIntegrity.hook.ts` | Cross-ref + semantic drift checks | No | Inference API |
 
 ### SessionEnd Hooks
 
 | Hook | Purpose | Blocking | Dependencies |
 |------|---------|----------|--------------|
 | `WorkCompletionLearning.hook.ts` | Extract learnings from work | No | Inference API, `MEMORY/LEARNING/` |
-| `SessionSummary.hook.ts` | Mark work as completed | No | `MEMORY/WORK/`, `current-work.json` |
+| `SessionCleanup.hook.ts` | Mark work complete + clear state | No | `MEMORY/WORK/`, `current-work.json` |
 | `RelationshipMemory.hook.ts` | Capture relationship notes | No | `MEMORY/RELATIONSHIP/` |
 | `UpdateCounts.hook.ts` | Update system counts + usage cache | No | `settings.json`, Anthropic API |
 | `IntegrityCheck.hook.ts` | PAI change detection + doc drift detection | No | `MEMORY/STATE/integrity-state.json`, handlers/ |
@@ -199,7 +201,7 @@ RatingCapture ─── explicit "8 - great work"? ──► write + exit
 SessionStart
     │
     ▼
-UserPromptSubmit ─► AutoWorkCreation ─► Creates WORK/<date>/<session>/
+Algorithm (AI) ─► Creates WORK/<slug>/PRD.md directly
     │                                          │
     │                                          ▼
     │                               current-work.json (state)
@@ -207,10 +209,10 @@ UserPromptSubmit ─► AutoWorkCreation ─► Creates WORK/<date>/<session>/
     ▼                                          │
 SessionEnd ─┬─► WorkCompletionLearning ────────┤
             │                                  │
-            └─► SessionSummary ─► Marks as COMPLETED
+            └─► SessionCleanup ─► Marks as COMPLETED
 ```
 
-**Coordination**: `current-work.json` is the shared state file. AutoWorkCreation creates it, SessionSummary clears it.
+**Coordination**: `current-work.json` is the shared state file. The AI creates it during Algorithm execution, SessionCleanup clears it.
 
 ### Security Validation Flow
 
@@ -252,9 +254,9 @@ SetQuestionTab ─► Sets tab to AMBER (#604800) ─► Shows question summary
 Stop
     │
     ▼
-StopOrchestrator
-    ├─► Resets tab to DEFAULT (UL blue)
-    └─► Voice announces completion
+Stop hooks:
+    ├─► ResponseTabReset → DEFAULT (brand color)
+    └─► VoiceCompletion → Voice announces completion
 ```
 
 ---
@@ -281,10 +283,10 @@ StopOrchestrator
 ┌───────┴─────────────────┴──────────────────────┴─────────────────┐
 │                        HOOKS                                     │
 │                                                                  │
-│  AutoWorkCreation ──────────────────────────► current-work.json  │
+│  PRDSync ──────────────────────────────────► work.json          │
 │  RatingCapture ────────────────────────────► ratings.jsonl      │
 │  WorkCompletionLearning ────────────────────► LEARNING/          │
-│  SessionSummary ────────────────────────────► WORK/ + state      │
+│  SessionCleanup ────────────────────────────► WORK/ + state      │
 │                                                                  │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -302,6 +304,7 @@ Located in `hooks/lib/`:
 | `paths.ts` | Canonical path construction | Work hooks, security |
 | `notifications.ts` | ntfy push notifications | SessionEnd hooks, UpdateTabTitle |
 | `output-validators.ts` | Tab title + voice output validation | UpdateTabTitle, TabState, VoiceNotification, SetQuestionTab |
+| `hook-io.ts` | Shared stdin reader + transcript parser | All Stop hooks |
 | `learning-utils.ts` | Learning categorization | Rating hooks, WorkCompletion |
 | `change-detection.ts` | Detect file/code changes | IntegrityCheck |
 | `tab-constants.ts` | Tab title colors and states | tab-setter.ts |
@@ -319,7 +322,7 @@ Hooks are configured in `settings.json` under the `hooks` key:
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "${PAI_DIR}/hooks/StartupGreeting.hook.ts" },
+          { "type": "command", "command": "${PAI_DIR}/hooks/KittyEnvPersist.hook.ts" },
           { "type": "command", "command": "${PAI_DIR}/hooks/LoadContext.hook.ts" }
         ]
       }
@@ -477,5 +480,5 @@ Use this checklist when adding or modifying hooks:
 
 ---
 
-*Last updated: 2026-02-09*
-*Hooks count: 20 | Events: 6 | Shared libs: 10*
+*Last updated: 2026-02-25*
+*Hooks count: 22 | Events: 6 | Shared libs: 13*

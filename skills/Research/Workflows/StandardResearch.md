@@ -30,19 +30,17 @@ Create ONE focused query optimized for each researcher's strengths:
 
 **SINGLE message with 2 Task calls:**
 
-**IMPORTANT:** Check `~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Research/PREFERENCES.md` for language and persistence preferences. Inject language directive into every agent prompt.
-
 ```typescript
 Task({
   subagent_type: "ClaudeResearcher",
   description: "[topic] analysis",
-  prompt: "Do ONE search for: [query optimized for depth/analysis]. Return findings immediately. IMPORTANT: Respond in Russian (русский язык). Technical terms may stay in English."
+  prompt: "Do ONE search for: [query optimized for depth/analysis]. Return findings immediately."
 })
 
 Task({
   subagent_type: "GeminiResearcher",
   description: "[topic] perspectives",
-  prompt: "Do ONE search for: [query optimized for breadth/perspectives]. Return findings immediately. IMPORTANT: Respond in Russian (русский язык). Technical terms may stay in English."
+  prompt: "Do ONE search for: [query optimized for breadth/perspectives]. Return findings immediately."
 })
 ```
 
@@ -78,21 +76,7 @@ WebFetch(url, "Confirm article exists and summarize main point")
 - Verify the replacement URL
 - NEVER include unverified URLs
 
-### Step 5: Save Results to Disk (MANDATORY)
-
-**Before returning, persist the synthesis:**
-
-```bash
-# Create directory
-mkdir -p ~/.claude/MEMORY/RESEARCH/YYYY-MM/
-
-# Write report
-Write file: ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_{topic-slug}/RESEARCH_REPORT.md
-```
-
-Content: the full synthesis from Step 3 in markdown format with sources.
-
-### Step 6: Return Results
+### Step 5: Return Results
 
 ```markdown
 📋 SUMMARY: Research on [topic]
@@ -101,7 +85,6 @@ Content: the full synthesis from Step 3 in markdown format with sources.
 ✅ RESULTS: [Synthesized answer]
 📊 STATUS: Standard mode - 2 agents, 1 query each
 📁 CAPTURE: [Key facts]
-📁 SAVED: ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_{topic-slug}/
 ➡️ NEXT: [Suggest extensive if more depth needed]
 📖 STORY EXPLANATION: [5-8 numbered points]
 🎯 COMPLETED: Research on [topic] complete

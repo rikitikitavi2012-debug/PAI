@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "ISC-C4: Fabric skill has zero phantom refs to nonexistent files",
+  "description": "Check all file references in Fabric SKILL.md and workflows. Verify: Grep + existence check",
+  "activeForm": "Checking Fabric phantom refs",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

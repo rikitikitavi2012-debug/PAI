@@ -15,7 +15,7 @@
  *
  * OUTPUT:
  * - Writes to: MEMORY/RELATIONSHIP/YYYY-MM/YYYY-MM-DD.md
- * - May update: skills/PAI/USER/ABOUT_USER.md (significant learnings)
+ * - May update: PAI/USER/ABOUT_DANIEL.md (significant learnings)
  *
  * RELATIONSHIP NOTE TYPES:
  * - W (World): Objective facts about {PRINCIPAL.NAME}'s situation
@@ -28,15 +28,17 @@
  * - O(c=0.85) @Principal: Appreciates when I admit mistakes early
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, appendFileSync } from 'fs';
 import { join } from 'path';
 import { getPaiDir } from './lib/paths';
-import { getISOTimestamp, getPSTComponents } from './lib/time';
+import { getPSTComponents } from './lib/time';
 import { getDAName, getPrincipalName } from './lib/identity';
+import { parseTranscript } from '../PAI/Tools/TranscriptParser';
 
 interface HookInput {
   session_id: string;
   transcript_path?: string;
+  last_assistant_message?: string;  // v2.1.47+ — final response text
 }
 
 interface RelationshipNote {
@@ -48,9 +50,7 @@ interface RelationshipNote {
 
 interface TranscriptEntry {
   type: 'user' | 'assistant';
-  message?: {
-    content: string | Array<{ type: string; text?: string }>;
-  };
+  text: string;
 }
 
 /**
@@ -67,46 +67,21 @@ async function readStdinWithTimeout(timeout: number = 5000): Promise<string> {
 }
 
 /**
- * Extract text content from transcript entry
+ * Read transcript using shared TranscriptParser
  */
-function extractText(entry: TranscriptEntry): string {
-  if (!entry.message?.content) return '';
-
-  if (typeof entry.message.content === 'string') {
-    return entry.message.content;
-  }
-
-  if (Array.isArray(entry.message.content)) {
-    return entry.message.content
-      .filter((c) => c.type === 'text' && c.text)
-      .map((c) => c.text)
-      .join(' ');
-  }
-
-  return '';
-}
-
-/**
- * Read and parse transcript
- */
-function readTranscript(path: string): TranscriptEntry[] {
+function readTranscriptEntries(path: string): TranscriptEntry[] {
   if (!path || !existsSync(path)) return [];
 
   try {
-    const content = readFileSync(path, 'utf-8');
+    const parsed = parseTranscript(path);
+    // Combine user prompts and assistant completions into entry pairs
     const entries: TranscriptEntry[] = [];
-
-    for (const line of content.trim().split('\n')) {
-      try {
-        const entry = JSON.parse(line);
-        if (entry.type === 'user' || entry.type === 'assistant') {
-          entries.push(entry);
-        }
-      } catch {
-        // Skip invalid lines
-      }
+    if (parsed.userPrompt) {
+      entries.push({ type: 'user', text: parsed.userPrompt });
     }
-
+    if (parsed.plainCompletion) {
+      entries.push({ type: 'assistant', text: parsed.plainCompletion });
+    }
     return entries;
   } catch {
     return [];
@@ -130,12 +105,12 @@ function analyzeForRelationship(entries: TranscriptEntry[]): RelationshipNote[] 
 
   // Track what happened this session
   let sessionSummary: string[] = [];
-  let userPreferences: string[] = [];
+  let danielPreferences: string[] = [];
   let frustrations: string[] = [];
   let positives: string[] = [];
 
   for (const entry of entries) {
-    const text = extractText(entry);
+    const text = entry.text;
     if (!text || text.length < 10) continue;
 
     // User messages might reveal preferences
@@ -143,7 +118,7 @@ function analyzeForRelationship(entries: TranscriptEntry[]): RelationshipNote[] 
       if (patterns.preference.test(text)) {
         // Extract preference (simplified - would benefit from LLM analysis)
         const snippet = text.slice(0, 200);
-        userPreferences.push(snippet);
+        danielPreferences.push(snippet);
       }
 
       if (patterns.frustration.test(text)) {
@@ -271,8 +246,11 @@ async function main() {
       process.exit(0);
     }
 
-    // Read and analyze transcript
-    const entries = readTranscript(data.transcript_path);
+    // Read and analyze transcript — prefer last_assistant_message over full parse
+    const entries = readTranscriptEntries(data.transcript_path);
+    if (data.last_assistant_message) {
+      entries.push({ type: 'assistant', text: data.last_assistant_message });
+    }
     if (entries.length === 0) {
       console.error('[RelationshipMemory] No transcript entries, exiting');
       process.exit(0);

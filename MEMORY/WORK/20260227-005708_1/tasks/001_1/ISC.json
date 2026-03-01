@@ -1,0 +1,125 @@
+{
+  "taskId": "001_1",
+  "status": "COMPLETE",
+  "effortLevel": "STANDARD",
+  "criteria": [
+    {
+      "id": "ISC-C1",
+      "text": "DynamicAgent.hbs instructions localized to Russian language",
+      "description": "Template instructions should be in Russian (operational guidelines, response format descriptions) consistent with buildSavedAgentBody and PAI's Russian-default policy. | Verify: Grep: search for English-only instruction phrases in template",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "DynamicAgent.hbs has mandatory startup voice notification section",
+      "description": "buildSavedAgentBody has startup voice curl (\"Агент X загружает контекст\"), but DynamicAgent.hbs has none. Add startup section. | Verify: Grep: search for startup curl pattern in template",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Voice messages explicitly require Russian language in template",
+      "description": "buildSavedAgentBody says \"ALWAYS in Russian\". DynamicAgent.hbs has no language specification for voice messages. | Verify: Grep: search for \"Russian\" or \"русск\" in template",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Line 11 references Ivan not generic \"the user\"",
+      "description": "\"the user's experience\" on line 11 should be personalized or use principal name. Template should pass principal context. | Verify: Grep: no \"the user\" in template",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "buildSavedAgentBody curl includes voice_settings passthrough",
+      "description": "DynamicAgent.hbs correctly passes voice_settings, but buildSavedAgentBody's curl only sends message, voice_id, title — missing voice_settings, voice_enabled, volume. This is a reverse bug. | Verify: Grep: voice_settings in buildSavedAgentBody curl",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C6",
+      "text": "Handlebars template compiles without errors after all changes",
+      "description": "After modifications, template must still compile. Run ComposeAgent.ts with test traits to verify. | Verify: CLI: bun ComposeAgent.ts --traits analytical",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Default voice name is valid registry entry not placeholder",
+      "description": "Line 123: default: \"{PRINCIPAL.NAME}\" is an unresolved placeholder. Should be a real voice name from the registry (e.g. \"Daniel\"). | Verify: Grep: no {PRINCIPAL in Traits.yaml",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Voice IDs in mappings match voice_registry entries exactly",
+      "description": "Cross-reference every voice_id in mappings/fallbacks against voice_registry. Any mismatch = agent gets wrong voice. | Verify: CLI: script to compare",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "All defined expertise traits have keywords for auto-inference",
+      "description": "ComposeAgent.ts inferTraitsFromTask depends on keywords. Missing keywords = trait never auto-selected. | Verify: Read: check each expertise has keywords array",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Fallback traits cover all defined personality and approach keys",
+      "description": "Personality keys: skeptical, analytical, enthusiastic. Approach: thorough, rapid, systematic. Each should have fallback voice. | Verify: Grep: each key in fallbacks section",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "Traits.yaml parses without YAML errors after all changes",
+      "description": "After fixes, YAML must still parse cleanly. | Verify: CLI: bun ComposeAgent.ts --list",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "No unresolved placeholder strings in AgentPersonalities.md file",
+      "description": "Replace all {PRINCIPAL.NAME} with Ivan and {DAIDENTITY.NAME} with Navi. | Verify: Grep: no PRINCIPAL or DAIDENTITY in file",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Available traits list matches actual Traits.yaml definitions",
+      "description": "Lines 145-147 list traits that don't exist in Traits.yaml. Update to match actual. | Verify: Read: compare lists",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Source of truth statement reflects current architecture accurately",
+      "description": "Line 3 says \"canonical source\" but line 163 says migrated to agent files. Clarify that agents/*.md is canonical for voice/persona, this file is reference. | Verify: Read: header section",
+      "status": "completed"
+    }
+  ],
+  "antiCriteria": [
+    {
+      "id": "ISC-A1",
+      "text": "No English-only instructional blocks remain in DynamicAgent.hbs",
+      "description": "Anti-criterion: template should not have English-only operational instructions (some English for code/tech terms is fine). | Verify: Read: manual review of template sections",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A2",
+      "text": "No broken Handlebars expressions after template modifications",
+      "description": "Anti-criterion: no unclosed {{}} or mismatched #if/#each blocks. | Verify: CLI: compile test",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "No unresolved placeholder strings remain in Traits.yaml",
+      "description": "Anti-criterion: no {PRINCIPAL.NAME}, {DAIDENTITY.NAME}, or similar placeholders. | Verify: Grep: pattern matching curly-brace placeholders",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "No stale references to non-existent traits remain",
+      "description": "Anti-criterion: traits listed in docs must exist in Traits.yaml. | Verify: Grep: cross-check",
+      "status": "completed"
+    }
+  ],
+  "satisfaction": {
+    "total": 18,
+    "satisfied": 18,
+    "partial": 0,
+    "failed": 0
+  },
+  "createdAt": "2026-02-27T00:57:08+03:00",
+  "updatedAt": "2026-02-27T01:38:59+03:00"
+}

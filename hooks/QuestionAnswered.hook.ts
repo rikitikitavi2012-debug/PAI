@@ -45,13 +45,13 @@ async function main() {
     try {
       const raw = await Promise.race([
         Bun.stdin.text(),
-        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('stdin timeout')), 2000)),
       ]);
       if (raw.trim()) {
         const parsed = JSON.parse(raw);
         sessionId = parsed.session_id;
       }
-    } catch { /* stdin parse failed or timed out — continue without session_id */ }
+    } catch { /* stdin timeout or parse failed — continue without session_id */ }
 
     // Read previous working title saved by SetQuestionTab
     const currentState = readTabState(sessionId);
@@ -65,7 +65,7 @@ async function main() {
       }
     }
 
-    setTabState({ title: '⚙️ ' + restoredTitle, state: 'working', sessionId });
+    setTabState({ title: '⚙️' + restoredTitle, state: 'working', sessionId });
 
     console.error('[QuestionAnswered] Tab reset to working state (orange on inactive only)');
   } catch (error) {

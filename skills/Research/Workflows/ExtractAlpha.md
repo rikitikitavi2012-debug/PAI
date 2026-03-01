@@ -14,7 +14,7 @@ the most important and surprising insights without missing subtle but profound i
 
 **Before starting any task with this skill, load complete PAI context:**
 
-`read ~/.claude/skills/PAI/SKILL.md`
+`read ~/.claude/PAI/SKILL.md`
 
 ## Core Philosophy
 
@@ -124,18 +124,18 @@ Capture the subtle genius buried in the content.
 
 #### Working Files (Temporary Analysis)
 
-**Use the current work item's scratch/ directory for all working files during analysis:**
+**Use the current work item directory for all working files during analysis:**
 
 ```bash
-~/.claude/MEMORY/WORK/{current_work}/scratch/
+~/.claude/MEMORY/WORK/{current_work}/
 ```
 
 **To get the current work directory:**
 1. Read `~/.claude/MEMORY/STATE/current-work.json`
 2. Extract the `work_dir` value
-3. Use `~/.claude/MEMORY/WORK/{work_dir}/scratch/` for temporary artifacts
+3. Use `~/.claude/MEMORY/WORK/{work_dir}/` for temporary artifacts
 
-**What goes in scratch/:**
+**What goes in the work item directory:**
 - Raw transcripts from fabric -y
 - Intermediate analysis notes
 - deep thinking working thoughts
@@ -145,11 +145,11 @@ Capture the subtle genius buried in the content.
 **Why this pattern:**
 - Ties iterative work artifacts to the work item for learning
 - System can analyze how research progresses over time
-- Scratch artifacts provide context for the final outputs
+- Working artifacts provide context for the final outputs
 
-**Example scratch structure:**
+**Example work item structure:**
 ```
-~/.claude/MEMORY/WORK/20260111-172408_extract-alpha-analysis/scratch/
+~/.claude/MEMORY/WORK/20260111-172408_extract-alpha-analysis/
 ├── raw-transcript.txt
 ├── deep thinking-notes.md
 ├── draft-insights.md
@@ -158,21 +158,21 @@ Capture the subtle genius buried in the content.
 
 #### Permanent Output (Final Research)
 
-**Save final outputs to permanent research archive:**
+**Save final outputs to permanent history:**
 
 ```bash
-~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/
+~/.claude/History/research/YYYY-MM-DD_description/
 ```
 
-**What goes in MEMORY/RESEARCH/:**
+**What goes in history/research/:**
 - **extract_alpha.md** - The final 24-30 insights (formatted output)
 - **deep thinking-analysis.md** - Full deep thinking deep analysis (all 10 dimensions)
 - **README.md** - Documentation of the research session
 - Source metadata (URL, title, date analyzed, content type)
 
-**Example research structure:**
+**Example history structure:**
 ```
-~/.claude/MEMORY/RESEARCH/2025-10/2025-10-26_podcast-analysis/
+~/.claude/History/research/2025-10-26_podcast-analysis/
 ├── README.md                  # Research session documentation
 ├── extract_alpha.md           # Final 24-30 insights
 ├── deep thinking-analysis.md     # Full deep analysis
@@ -181,7 +181,7 @@ Capture the subtle genius buried in the content.
 
 #### README.md Template
 
-Create a README.md in the research directory documenting the research:
+Create a README.md in the history directory documenting the research:
 
 ```markdown
 # Extract Alpha - [Content Title]
@@ -214,17 +214,17 @@ Create a README.md in the research directory documenting the research:
 
 1. **Check if hooks captured the output:**
    ```bash
-   # Check most recent research entries
-   ls -lt ~/.claude/MEMORY/RESEARCH/ | head -5
+   # Check most recent history entries
+   ls -lt ~/.claude/History/research/ | head -5
 
    # Verify your research directory exists
-   ls ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/
+   ls ~/.claude/History/research/YYYY-MM-DD_description/
    ```
 
 2. **If hooks did NOT capture automatically:**
    ```bash
    # Create directory structure manually
-   mkdir -p ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/
+   mkdir -p ~/.claude/History/research/YYYY-MM-DD_description/
 
    # Save extract_alpha.md (final insights)
    # Save deep thinking-analysis.md (full analysis)
@@ -234,7 +234,7 @@ Create a README.md in the research directory documenting the research:
 
 3. **Confirm all files saved:**
    ```bash
-   ls -lah ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/
+   ls -lah ~/.claude/History/research/YYYY-MM-DD_description/
    # Should show: README.md, extract_alpha.md, deep thinking-analysis.md, metadata.json
    ```
 
@@ -244,40 +244,39 @@ Create a README.md in the research directory documenting the research:
 # 1. Get current work directory
 WORK_DIR=$(jq -r '.work_dir' ~/.claude/MEMORY/STATE/current-work.json)
 
-# 2. Create scratch workspace in current work item
-mkdir -p ~/.claude/MEMORY/WORK/${WORK_DIR}/scratch/
-cd ~/.claude/MEMORY/WORK/${WORK_DIR}/scratch/
+# 2. Work in current work item directory
+cd ~/.claude/MEMORY/WORK/${WORK_DIR}/
 
-# 3. Extract content to scratch
+# 3. Extract content to work item directory
 fabric -y "YOUTUBE_URL" > raw-transcript.txt
 
-# 4. Perform deep thinking analysis (working notes in scratch)
-# [Deep thinking happens here, notes saved to scratch]
+# 4. Perform deep thinking analysis (working notes in work item directory)
+# [Deep thinking happens here, notes saved to work item directory]
 
 # 5. Extract insights
-# [Extract 24-30 insights from deep thinking analysis, draft in scratch]
+# [Extract 24-30 insights from deep thinking analysis, draft in work item directory]
 
-# 6. Create permanent research directory
-mkdir -p ~/.claude/MEMORY/RESEARCH/$(date +%Y-%m)/$(date +%Y-%m-%d)_podcast-analysis/
+# 6. Create permanent history directory
+mkdir -p ~/.claude/History/research/$(date +%Y-%m-%d)_podcast-analysis/
 
-# 7. Save final outputs to research archive
+# 7. Save final outputs to history
 # - extract_alpha.md (final insights)
 # - deep thinking-analysis.md (full deep thinking)
 # - README.md (documentation)
 # - metadata.json (source info)
 
 # 8. Verify hooks captured it
-ls -lah ~/.claude/MEMORY/RESEARCH/$(date +%Y-%m)/$(date +%Y-%m-%d)_podcast-analysis/
+ls -lah ~/.claude/History/research/$(date +%Y-%m-%d)_podcast-analysis/
 
-# 9. Note: scratch/ artifacts remain tied to work item for learning
-# (Don't delete scratch - it provides context for the work item)
+# 9. Note: working artifacts remain tied to work item for learning
+# (Don't delete working files - they provide context for the work item)
 ```
 
 #### Why This Pattern Matters
 
-1. **Work item integration:** Scratch artifacts are tied to the work item for learning
+1. **Work item integration:** Working artifacts are tied to the work item for learning
 2. **System intelligence:** PAI can analyze how research progresses over time
-3. **Context preservation:** Scratch provides context for final outputs
+3. **Context preservation:** Working files provide context for final outputs
 4. **Proper documentation:** README ensures context is preserved in history
 5. **Hook verification:** Ensures nothing is lost if hooks fail
 6. **deep thinking preservation:** Full deep analysis is saved, not just final insights
@@ -379,10 +378,10 @@ When this skill activates, PAI should:
 
 1. **Load content** via appropriate method (fabric -y, WebFetch, Read, or paste)
 2. **Get current work directory** - Read `~/.claude/MEMORY/STATE/current-work.json` for `work_dir`
-3. **Create scratch workspace** - Work in `~/.claude/MEMORY/WORK/{work_dir}/scratch/`
+3. **Use work item directory** - Work in `~/.claude/MEMORY/WORK/{work_dir}/`
 4. **Engage deep thinking mode** - Deep extended thinking through all 10 dimensions
 5. **Extract insights** - Extract 24-30 highest-alpha ideas focusing on low-probability brilliant insights
-6. **Save to research** - Final outputs to `~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_description/`
+6. **Save to history** - Final outputs to `~/.claude/History/research/YYYY-MM-DD_description/`
 7. **Verify capture** - Ensure hooks captured or manually save all files
 8. **Output simple list** - Unformatted markdown, Paul Graham style, 8-12 words each
 9. **Prioritize surprise** - Novel ideas over obvious takeaways
@@ -500,9 +499,9 @@ You've succeeded with this skill when:
 
 **Four-step process:**
 1. Extract content (fabric -y, WebFetch, Read, paste)
-2. Deep deep thinking (10-dimension analysis) - work in scratch/
+2. Deep deep thinking (10-dimension analysis) - work in work item directory
 3. Extract insights (24-30 highest-alpha ideas, 8-12 words)
-4. Save to history (verify hooks captured output) - scratch artifacts stay with work item
+4. Save to history (verify hooks captured output) - working artifacts stay with work item
 
 **Output format:**
 - Simple markdown list with blank lines between items

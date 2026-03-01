@@ -7,33 +7,13 @@
  * When the Task tool is called without run_in_background: true and the
  * timing context is not "fast", injects a warning system-reminder.
  *
- * This is the enforcement layer that v0.2.27-v0.2.30 lacked.
- * The CapabilityRecommender hook SUGGESTS background execution.
- * This hook ENFORCES it at the point of action.
- *
  * TRIGGER: PreToolUse (matcher: Task)
- *
- * INPUT:
- * - stdin: Hook input JSON with tool_input containing Task parameters
- *   - tool_input.run_in_background: boolean (should be true)
- *   - tool_input.subagent_type: string (agent type being spawned)
- *   - tool_input.description: string (task description)
- *   - tool_input.model: string (optional model override)
- *
- * OUTPUT:
- * - If foreground violation detected: system-reminder warning
- * - If background correctly set: silent pass (exit 0)
  *
  * DECISION LOGIC:
  * - run_in_background: true → PASS (correct usage)
  * - run_in_background: false/missing AND model is "haiku" → PASS (fast-tier inline)
  * - run_in_background: false/missing AND subagent_type is "Explore" → PASS (quick lookups)
  * - All other cases → WARNING (inject system-reminder)
- *
- * INTER-HOOK RELATIONSHIPS:
- * - DEPENDS ON: CapabilityRecommender (timing classification context)
- * - COORDINATES WITH: StopOrchestrator (handles post-execution cleanup)
- * - MUST RUN BEFORE: Task tool execution
  *
  * PERFORMANCE:
  * - Non-blocking: Yes (warning only, never blocks)
@@ -110,7 +90,7 @@ run_in_background is NOT set to true. This will BLOCK the user interface.
 
 FIX: Add run_in_background: true to this Task call.
 
-The Algorithm (v0.2.31) requires ALL non-fast agents to run in background:
+The Algorithm requires ALL non-fast agents to run in background:
 - Spawn with run_in_background: true
 - Report immediately: "Spawned [type] in background..."
 - Poll with TaskOutput(block=false) every 15-30s

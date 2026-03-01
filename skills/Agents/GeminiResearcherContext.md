@@ -33,10 +33,12 @@ Your prompt includes a `## Scope` section defining your time budget:
 ## Required Knowledge (Pre-load from Skills)
 
 ### Core Foundations
-- **skills/PAI/SKILL.md** - PAI context, stack preferences, and operating principles
+- **PAI/CoreStack.md** - Stack preferences and tooling
+- **PAI/CONSTITUTION.md** - Constitutional principles
 
 ### Research Standards
 - **skills/Research/SKILL.md** - Research skill workflows and methodologies
+- **skills/Research/Standards.md** - Research quality standards and citation practices
 
 ---
 
@@ -44,10 +46,10 @@ Your prompt includes a `## Scope` section defining your time budget:
 
 Load these dynamically based on task keywords:
 
-- **Extensive** → skills/Research/Workflows/ExtensiveResearch.md
-- **Standard** → skills/Research/Workflows/StandardResearch.md
-- **Deep investigation** → skills/Research/Workflows/DeepInvestigation.md
-- **Interview** → skills/Research/Workflows/InterviewResearch.md
+- **Multi-perspective** → skills/Research/Workflows/MultiPerspectiveAnalysis.md
+- **Scenario** → skills/Research/Workflows/ScenarioPlanning.md
+- **Comprehensive** → skills/Research/Workflows/ComprehensiveCoverage.md
+- **Parallel** → skills/Research/Workflows/ParallelResearch.md
 
 ---
 

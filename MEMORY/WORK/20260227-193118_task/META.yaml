@@ -1,0 +1,11 @@
+id: "20260227-193118_task"
+title: "Помоги разобраться с китти терминалом как правильн"
+session_id: "e13f0ab8-9f93-44c2-8b28-059354c12e96"
+created_at: "2026-02-27T19:31:18+03:00"
+completed_at: "2026-02-28T11:46:02+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

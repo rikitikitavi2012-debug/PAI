@@ -1,0 +1,11 @@
+id: "20260301-105807_task"
+title: "что свап прошел удачно?"
+session_id: "bf27aa41-795d-4a59-a970-4e85989f71b5"
+created_at: "2026-03-01T10:58:07+03:00"
+completed_at: "2026-03-01T14:56:19+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

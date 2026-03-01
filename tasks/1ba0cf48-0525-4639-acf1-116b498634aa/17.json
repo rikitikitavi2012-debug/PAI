@@ -1,0 +1,9 @@
+{
+  "id": "17",
+  "subject": "ISC-C17: CLAUDE.md сгенерирован из template через BuildCLAUDE",
+  "description": "Verify: CLI: bun PAI/Tools/BuildCLAUDE.ts from staging",
+  "activeForm": "Генерация CLAUDE.md",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -3,7 +3,7 @@
 #
 # This file provides MINIMAL working examples for the Agents skill.
 # For full customization, add your own Traits.yaml to:
-#   ~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml
+#   ~/.claude/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml
 #
 # The ComposeAgent tool merges: base + user (user takes priority)
 #
@@ -120,7 +120,7 @@ approach:
 # Extend/override in USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml
 # ==============================================================================
 voice_mappings:
-  default: "Daniel"
+  default: "{PRINCIPAL.NAME}"
   default_voice_id: "onwK4e9ZLuTAKqWW03F9"
 
   # ============================================================================
@@ -172,7 +172,7 @@ voice_mappings:
       characteristics: ["gruff", "veteran", "weathered"]
       description: "War veteran voice, gruff and experienced"
 
-    Daniel:
+    {PRINCIPAL.NAME}:
       voice_id: "onwK4e9ZLuTAKqWW03F9"
       gender: "male"
       characteristics: ["authoritative", "measured", "intellectual", "british"]
@@ -406,7 +406,7 @@ voice_mappings:
   mappings:
     # Authoritative/Professional combinations
     - traits: ["skeptical", "analytical"]
-      voice: "Daniel"
+      voice: "{PRINCIPAL.NAME}"
       voice_id: "onwK4e9ZLuTAKqWW03F9"
       reason: "Skeptical analysis suits authoritative British delivery"
 
@@ -473,18 +473,14 @@ voice_mappings:
   # ============================================================================
   fallbacks:
     # Analysis/Technical traits
-    skeptical: "Daniel"
+    skeptical: "{PRINCIPAL.NAME}"
     skeptical_voice_id: "onwK4e9ZLuTAKqWW03F9"
-    analytical: "Daniel"
+    analytical: "{PRINCIPAL.NAME}"
     analytical_voice_id: "onwK4e9ZLuTAKqWW03F9"
     technical: "James"
     technical_voice_id: "ZQe5CZNOzWyzPSCn5a3c"
     intellectual: "Alice"
     intellectual_voice_id: "Xb7hH8MSUJpSbSDYk0k2"
-
-    # Expertise traits
-    security: "Callum"
-    security_voice_id: "N2lVS1w4EtoT3dr4eOWO"
 
     # Energy traits
     enthusiastic: "Jeremy"
@@ -521,14 +517,6 @@ voice_mappings:
     dramatic_voice_id: "N2lVS1w4EtoT3dr4eOWO"
     playful: "Gigi"
     playful_voice_id: "jBpfuIE2acCO8z3wKNLl"
-
-    # Approach traits
-    thorough: "George"
-    thorough_voice_id: "JBFqnCBsd6RMkjVDRZzb"
-    rapid: "Jeremy"
-    rapid_voice_id: "bVMeCyTHy58xNoL34h3p"
-    systematic: "James"
-    systematic_voice_id: "ZQe5CZNOzWyzPSCn5a3c"
 
     # Research/Content traits
     research: "Rachel"

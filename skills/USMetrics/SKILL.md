@@ -1,14 +1,12 @@
 ---
 name: USMetrics
-description: US economic indicators. USE WHEN GDP, inflation, unemployment, economic metrics, gas prices. SkillSearch('usmetrics') for docs.
-compatibility:
-  min_model: haiku
+description: 68 US economic indicators from FRED, EIA, Treasury, BLS, Census APIs with trend analysis and cross-metric correlation. Updates Substrate dataset, produces economic overviews. USE WHEN GDP, inflation, unemployment, economic metrics, gas prices, how is the economy, update data, refresh data, get current state, economic overview, FRED, fetch FRED series, generate analysis, update substrate metrics, US metrics, economic trends.
 ---
 
 ## Customization
 
 **Before executing, check for user customizations at:**
-`~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/USMetrics/`
+`~/.claude/PAI/USER/SKILLCUSTOMIZATIONS/USMetrics/`
 
 If this directory exists, load and apply any PREFERENCES.md, configurations, or resources found there. These override default behavior. If the directory does not exist, proceed with skill defaults.
 
@@ -70,7 +68,7 @@ Running the **WorkflowName** workflow in the **USMetrics** skill to ACTION...
 
 **Execution:**
 ```bash
-bun ~/.claude/skills/USMetrics/Tools/update-substrate-metrics.ts
+bun ~/.claude/skills/USMetrics/Tools/UpdateSubstrateMetrics.ts
 ```
 
 **Outputs:**
@@ -126,8 +124,8 @@ For live data fetching:
 
 | Tool | Purpose |
 |------|---------|
-| `tools/update-substrate-metrics.ts` | **Primary** - Fetch all metrics, update Substrate files |
-| `tools/fetch-fred-series.ts` | Fetch historical data from FRED API |
+| `tools/UpdateSubstrateMetrics.ts` | **Primary** - Fetch all metrics, update Substrate files |
+| `Tools/FetchFredSeries.ts` | Fetch historical data from FRED API |
 | `tools/GenerateAnalysis.ts` | Generate analysis report from Substrate data |
 
 ## Example Usage

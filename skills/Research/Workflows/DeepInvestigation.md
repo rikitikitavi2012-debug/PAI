@@ -42,7 +42,7 @@ All artifacts persist at:
 ~/.claude/MEMORY/RESEARCH/{YYYY-MM}/{YYYY-MM-DD}_{topic-slug}/
 ```
 
-Read `~/.claude/MEMORY/STATE/current-work.json` for the active work directory. If a work item exists, also symlink the vault into `{work_dir}/scratch/research-vault/`.
+Read `~/.claude/MEMORY/STATE/current-work.json` for the active work directory.
 
 ---
 
@@ -203,10 +203,8 @@ Check ENTITIES.md for categories with fewer than 3 entities. For each thin categ
 **Launch 2-3 targeted researcher agents:**
 ```
 Task({
-  subagent_type: "GrokResearcher",
+  subagent_type: "PerplexityResearcher",
   prompt: "Find 3-5 notable {entity_category} in the {domain} space.
-           Take a contrarian angle — look for overlooked players, latest news,
-           and entities the mainstream narrative misses.
            For each: name, one-line description, why they matter.
            Already known: {list existing entities in this category}.
            Find NEW ones not in that list."
@@ -239,12 +237,10 @@ Task({
 })
 
 Task({
-  subagent_type: "GrokResearcher",
-  prompt: "Find recent and contrarian information about {entity_name}:
+  subagent_type: "PerplexityResearcher",
+  prompt: "Find recent information about {entity_name}:
            latest news, funding, product launches, key hires, partnerships.
-           Focus on developments in the last 12 months.
-           Look for angles and developments others might miss — breaking news,
-           controversial takes, underreported moves."
+           Focus on developments in the last 12 months."
 })
 
 Task({

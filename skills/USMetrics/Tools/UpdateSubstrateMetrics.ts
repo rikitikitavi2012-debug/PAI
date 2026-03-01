@@ -13,9 +13,9 @@
  *   EIA_API_KEY - Required for gas prices
  *
  * Output files:
- *   - ${PROJECTS_DIR}/your-data-project/Data/US-Common-Metrics/US-Common-Metrics.md (updated values)
- *   - ${PROJECTS_DIR}/your-data-project/Data/US-Common-Metrics/us-metrics-current.csv (current snapshot)
- *   - ${PROJECTS_DIR}/your-data-project/Data/US-Common-Metrics/us-metrics-historical.csv (appended)
+ *   - ${PROJECTS_DIR}/Substrate/Data/US-Common-Metrics/US-Common-Metrics.md (updated values)
+ *   - ${PROJECTS_DIR}/Substrate/Data/US-Common-Metrics/us-metrics-current.csv (current snapshot)
+ *   - ${PROJECTS_DIR}/Substrate/Data/US-Common-Metrics/us-metrics-historical.csv (appended)
  */
 
 import { parseArgs } from "util";
@@ -26,7 +26,7 @@ import { join } from "path";
 // CONFIGURATION
 // ============================================================================
 
-const SUBSTRATE_PATH = join(process.env.PROJECTS_DIR || join(process.env.HOME || "", "Projects"), "your-data-project/Data/US-Common-Metrics");
+const SUBSTRATE_PATH = join(process.env.HOME || "", "Projects/Substrate/Data/US-Common-Metrics");
 const FRED_API_KEY = process.env.FRED_API_KEY;
 const EIA_API_KEY = process.env.EIA_API_KEY;
 
@@ -425,7 +425,7 @@ Environment:
   EIA_API_KEY    Required for gas prices
 
 Output:
-  ${PROJECTS_DIR}/your-data-project/Data/US-Common-Metrics/
+  ${PROJECTS_DIR}/Substrate/Data/US-Common-Metrics/
     - US-Common-Metrics.md (updated)
     - us-metrics-current.csv (current snapshot)
     - us-metrics-historical.csv (appended)

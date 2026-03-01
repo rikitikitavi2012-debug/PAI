@@ -189,6 +189,18 @@ export function getDefaultPrincipal(): Principal {
 }
 
 /**
+ * Get algorithm voice settings from settings.json → daidentity.voices.algorithm
+ * Returns { voiceId, voiceName, stability, similarity_boost, style, speed, use_speaker_boost, volume }
+ * or null if not configured.
+ */
+export function getAlgorithmVoice(): { voiceId: string; voiceName: string; stability: number; similarity_boost: number; style: number; speed: number; use_speaker_boost: boolean; volume?: number } | null {
+  const settings = loadSettings();
+  const voices = (settings.daidentity as any)?.voices;
+  if (!voices?.algorithm?.voiceId) return null;
+  return voices.algorithm;
+}
+
+/**
  * Get voice prosody settings (convenience function) - legacy ElevenLabs
  */
 export function getVoiceProsody(): VoiceProsody | undefined {

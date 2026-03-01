@@ -1,0 +1,9 @@
+{
+  "id": "62",
+  "subject": "ISC-C3: Наши кастомные наработки сохранены без потерь после миграции",
+  "description": "MEMORY/, settings.json, custom-agents/, аудит-фиксы, VoiceServer | Verify: Grep: ключевые файлы на месте",
+  "activeForm": "Проверяю сохранность наработок",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

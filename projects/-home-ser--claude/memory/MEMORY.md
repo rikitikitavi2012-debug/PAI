@@ -14,9 +14,25 @@
 - Context: loadAtStartup (3 files) + CONTEXT_ROUTING.md (on-demand)
 - API keys: ~/.config/PAI/.env (symlinked from ~/.claude/.env)
 
-## Known Issues
-- Wisdom extraction pipeline disconnected (ratings flow but don't update WISDOM/*.json)
-- RelationshipMemory moved from SessionEnd to Stop event (2026-03-01)
+## Known Issues (resolved 2026-03-01)
+- ~~Wisdom pipeline disconnected~~ → WisdomSync.hook.ts created, ratings → WISDOM + FRAMES
+- ~~RelationshipMemory wrong event~~ → moved from SessionEnd to Stop
+- ~~TrendingAnalysis.ts missing~~ → restored from v3 backup to tools/
+- ~~.env symlink missing~~ → restored ~/.claude/.env → ~/.config/PAI/.env
+- ~~WISDOM/FRAMES/ missing~~ → 5 frames bootstrapped from JSON
+
+## Git & Community (CRITICAL — always follow)
+- **Всегда коммитить** изменения при работе над PAI
+- **Вносить вклад в сообщество**: баги, фичи → PR/issues в upstream PAI repo
+- **Следить за сообществом**: проверять PRs, issues, discussions в PAI repo и anthropics/claude-code
+- **GitHub account**: rikitikitavi2012-debug, gh auth active
+- **Repo structure** (настроена 2026-03-01):
+  - Remote: origin → github.com/rikitikitavi2012-debug/PAI (public)
+  - `main` branch — tracks origin/main (community, 552 commits)
+  - `master` branch — локальная конфигурация (25 commits, НЕ пушить — personal data)
+  - PRs: feature branches от main через worktree (git worktree add)
+  - NEVER push MEMORY/, USER/, WISDOM/ to public repo
+- **PR #1**: feat/mode-classifier-hook — ModeClassifier hook (OPEN)
 
 ## Session Patterns
 - Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10)

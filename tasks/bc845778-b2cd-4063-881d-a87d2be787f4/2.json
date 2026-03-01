@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "ISC-C2: Browser skill has zero phantom refs to nonexistent files",
+  "description": "Check all file references in Browser SKILL.md and workflows — every referenced file/path must exist. Verify: Grep for file refs, check each with ls/stat",
+  "activeForm": "Checking Browser phantom refs",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

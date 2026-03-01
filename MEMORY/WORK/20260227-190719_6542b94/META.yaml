@@ -1,0 +1,11 @@
+id: "20260227-190719_6542b94"
+title: "6542b94"
+session_id: "bc845778-b2cd-4063-881d-a87d2be787f4"
+created_at: "2026-02-27T19:07:19+03:00"
+completed_at: "2026-02-28T11:46:02+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

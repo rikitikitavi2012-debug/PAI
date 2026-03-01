@@ -145,7 +145,7 @@ ls {source}/artifacts/
 # Should contain: findings.json, recommendations.json, roadmap.json, methodology.json, narrative.json
 ```
 
-If artifacts don't exist, run the assessment workflow first (CreateNarrativePoints or CreateNarrativePoints).
+If artifacts don't exist, run the assessment workflow first (CreateNarrativePoints or AnalyzeProjectWithGemini3).
 
 ### Step 2: Copy Report Template
 
@@ -224,7 +224,7 @@ The report will hot-reload as you regenerate.
 
 ### Regeneration Shortcut
 
-When Ivan edits source files and says "regenerate the report":
+When {PRINCIPAL.NAME} edits source files and says "regenerate the report":
 
 1. Run assessment workflow to update artifacts
 2. Re-run Step 3 to regenerate report-data.ts
@@ -237,11 +237,11 @@ When Ivan edits source files and says "regenerate the report":
 ### 1. Cover Page
 - Confidential classification at top (Heliotrope Caps, red)
 - **Centered content block:**
-  - **UL logo** (125x125, left-justified with -ml-4) - `/ul-icon.png`
+  - **{YOUR_LOGO}** (125x125, left-justified with -ml-4) - `/your-logo.png`
   - **"TELOS Assessment"** label (Heliotrope Caps, primary blue, tracking-[0.25em])
   - Report title (Advocate Wide font)
   - "Prepared for {Client Name}" - **CUSTOMIZE per engagement**
-- Footer: Date + "Ivan Consulting"
+- Footer: Date + "{YOUR_BUSINESS_NAME} Consulting"
 
 ### 2. Executive Summary (1 page)
 - **Methodology exhibit** - Interview count and roles interviewed (by role, not by name)
@@ -298,7 +298,7 @@ When Ivan edits source files and says "regenerate the report":
 
 ### Typography (Practical Typography Fonts)
 
-**CRITICAL: Use Matthew Butterick's Practical Typography fonts from `~/.claude/skills/Telos/ReportTemplate/public/fonts/`**
+**CRITICAL: Use Matthew Butterick's Practical Typography fonts from `${PROJECTS_DIR}/YourSite/public/fonts/`**
 
 The report-template includes these fonts in `public/fonts/`. The font stack is:
 
@@ -325,7 +325,7 @@ The report-template includes these fonts in `public/fonts/`. The font stack is:
 
 ```
 public/
-├── ul-icon.png                    # UL connected nodes logo (blue)
+├── your-logo.png                  # Your brand logo
 ```
 
 **Font Files Required:**
@@ -442,11 +442,11 @@ The workflow generates a complete Next.js app:
 ```bash
 # User: "Create a TELOS report for Acme Corp"
 
-# Step 1: Navi runs TELOS analysis on source directory
-# Step 2: Navi executes CreateNarrativePoints workflow
-# Step 3: Navi copies report-template to output directory
-# Step 4: Navi generates report-data.ts with content
-# Step 5: Navi runs bun install && bun dev
+# Step 1: {DAIDENTITY.NAME} runs TELOS analysis on source directory
+# Step 2: {DAIDENTITY.NAME} executes CreateNarrativePoints workflow
+# Step 3: {DAIDENTITY.NAME} copies report-template to output directory
+# Step 4: {DAIDENTITY.NAME} generates report-data.ts with content
+# Step 5: {DAIDENTITY.NAME} runs bun install && bun dev
 
 # To view:
 cd {output_dir} && bun dev
@@ -490,12 +490,12 @@ When generating a report:
 - CreateNarrativePoints MUST run first to generate narrative content
 
 **Font Source:**
-- Fonts originally from `~/.claude/skills/Telos/ReportTemplate/public/fonts/`
+- Fonts originally from `${PROJECTS_DIR}/YourSite/public/fonts/`
 - Already included in report-template for convenience
 
 **Works with:**
 - InterviewExtraction output (provides evidence quotes)
-- CreateNarrativePoints output (provides deep analysis)
+- AnalyzeProjectWithGemini3 output (provides deep analysis)
 - Direct TELOS directory analysis
 
 **Output designed for:**
@@ -511,7 +511,7 @@ When generating a report:
 
 Before finalizing the report:
 
-- [ ] UL logo displays correctly (125x125, left-justified)
+- [ ] Logo displays correctly (125x125, left-justified)
 - [ ] "TELOS Assessment" label visible above title
 - [ ] Cover page has correct client name and date
 - [ ] Cover title uses Advocate Wide font
@@ -608,8 +608,8 @@ Before board presentation:
 
 **To update fonts:**
 ```bash
-# Copy latest fonts from your-site
-cp ~/.claude/skills/Telos/ReportTemplate/public/fonts/*.woff2 ~/.claude/skills/Telos/ReportTemplate/public/fonts/
+# Copy your custom fonts to this directory
+# Copy your custom fonts to the report template fonts directory
 ```
 
 **To update template components:**

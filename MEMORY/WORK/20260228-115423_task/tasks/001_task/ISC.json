@@ -1,0 +1,407 @@
+{
+  "taskId": "001_task",
+  "status": "IN_PROGRESS",
+  "effortLevel": "STANDARD",
+  "criteria": [
+    {
+      "id": "ISC-C1",
+      "text": "Карта покрытия аудитом включает все 45 скиллов системы",
+      "description": "PRD содержит 14 аудированных + 26 неаудированных + 5 .md-only = 45 скиллов",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Паттерны багов из прошлых аудитов систематизированы с частотой",
+      "description": "9 категорий багов с частотой, примерами и grep-командами",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Приоритизация 21 скилла основана на risk-impact матрице",
+      "description": "Матрица 26 скиллов × (файлы, сложность, зависимости, проблемы). 3 группы приоритета.",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Стратегия батчирования группирует скиллы по зависимостям",
+      "description": "6 батчей, группировка по сложности и зависимостям с обоснованием порядка",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "Чеклист аудита унифицирован на основе найденных паттернов",
+      "description": "11 проверок (CH-1..CH-11) с grep-командами, основаны на 9 паттернах багов",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C6",
+      "text": "Оценка трудоёмкости каждого батча в effort-level тирах",
+      "description": "Каждый батч: effort level (Standard/Extended) + время + кол-во агентов. Total ~155 мин = 3-4 сессии",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C7",
+      "text": "План включает стратегию боевого тестирования каждого скилла",
+      "description": "Конкретный prompt для боевого теста каждого из 26 скиллов. API-зависимые помечены \"только аудит\"",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C8",
+      "text": "Известные проблемы зависимостей задокументированы с решениями",
+      "description": "11 зависимостей: dig, fabric, ffuf, nmap, holehe, sherlock, wrangler, remotion, pytesseract, FRED API, Apify API — с apt/pip/npm командами",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Понимание PRD-loop pipeline подтверждено с примером команды",
+      "description": "Объяснение как PRD файл используется для loop mode. Verify: Read — содержит команду запуска",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Готовый промпт для loop-сессии содержит весь контекст",
+      "description": "Промпт включает путь к PRD, инструкции по батчам, стратегию коммитов. Verify: Read — промпт самодостаточен",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "PRD обновлён стратегией промежуточных коммитов на контрольных точках",
+      "description": "Добавлены checkpoint commits после каждого батча. Verify: Read PRD — секция COMMIT STRATEGY",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Стратегия коммитов включает формат для upstream PR",
+      "description": "Формат коммитов и PR description для contribution в community. Verify: Read — PR template",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Ivan понимает 7 фаз Algorithm и их назначение",
+      "description": "Ivan может назвать 7 фаз и объяснить зачем каждая нужна",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Ivan понимает что ISC это и критерии и верификация",
+      "description": "Dual purpose ISC: создаются как идеальное состояние, используются как верификация",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Ivan знает где PRD хранятся и как именуются",
+      "description": "MEMORY/WORK/{slug}/PRD-{date}-{slug}.md — структура и логика",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Ivan понимает механику чтения PRD при старте сессии",
+      "description": "Как PRD загружается — через промпт, не автоматически через хуки",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "Ivan понимает разницу interactive и loop mode",
+      "description": "Interactive = человек в цикле, loop = автономные итерации по PRD",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C6",
+      "text": "Ivan понимает dual-tracking рабочая память плюс диск",
+      "description": "TaskCreate = рабочая память (умирает с сессией), PRD = диск (живёт вечно)",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C7",
+      "text": "Ivan понимает effort levels и как они влияют на глубину",
+      "description": "7 уровней от Instant до Loop, определяют количество ISC и фаз",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C8",
+      "text": "Ivan понимает роль capabilities и агентов в системе",
+      "description": "25 capabilities, агенты для параллелизации, skills для домен-специфичной работы",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Ivan понимает назначение каждого из 14 полей frontmatter",
+      "description": "Все 14 полей объяснены с примерами значений",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Ivan понимает когда и кто меняет каждое поле",
+      "description": "Lifecycle каждого поля — в какой фазе Algorithm обновляется",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Ivan знает какие поля он может менять сам",
+      "description": "Разделение: что трогает только Navi, что может Ivan",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Формат интерактивный с вопросами между блоками",
+      "description": "Не монолог — после каждого блока пауза для вопросов",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Ivan понимает 4 основные зоны памяти и их назначение",
+      "description": "WORK, WISDOM, LEARNING, STATE — что где",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Ivan понимает как Wisdom Frames накапливают знания",
+      "description": "Двойной цикл: OBSERVE читает, LEARN пишет",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Ivan понимает как Algorithm рефлексии улучшают работу",
+      "description": "JSONL файл рефлексий, Q1-Q3, как влияет на следующие сессии",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Ivan понимает что живёт между сессиями а что умирает",
+      "description": "Disk vs working memory, что переживает рестарт",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Ivan понимает что такое хуки и 7 типов событий",
+      "description": "Хуки = автоматические скрипты на события. 7 событий в Claude Code.",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Ivan знает все 22 хука и их назначение",
+      "description": "Полная карта хуков с группировкой по назначению",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Ivan понимает что починили в аудите хуков",
+      "description": "13 файлов изменено, конкретные баги — Cyrillic, regex, paths",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Ivan понимает что все хуки из v3.0 без новых",
+      "description": "22 хука пришли с v3.0, мы чинили а не добавляли",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Ivan понимает что агент это отдельный процесс Claude",
+      "description": "Агент = subprocess с изолированным контекстом",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Ivan знает типы агентов и когда какой использовать",
+      "description": "Engineer, Explore, Algorithm, Architect и др — разные инструменты",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Ivan понимает параллелизацию и worktree isolation",
+      "description": "Почему агенты работают быстрее, как избежать конфликтов",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Ivan понимает agent teams и как ими управлять",
+      "description": "Swarm mode, team lead, shared task list",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Ivan понимает структуру скилла SKILL.md Workflows Tools",
+      "description": "Анатомия скилла — 3 обязательные части",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Ivan понимает как skill-index роутит запрос к скиллу",
+      "description": "Triggers, tier (always/deferred), как Navi находит нужный скилл",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Ivan знает категории скиллов и примеры каждой",
+      "description": "Thinking, agents, security, content, integration — 5 категорий",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Ivan понимает как вызвать скилл и создать свой",
+      "description": "Явный вызов vs автоматический, CreateSkill для новых",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Понятно почему Miessler выбрал Kitty для PAI",
+      "description": "Преимущества Kitty для AI workflow — remote control, tabs, scripting",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Найден контент Miessler про Kitty плюс PAI использование",
+      "description": "Видео, блог, GitHub — что нашли",
+      "status": "in_progress"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Описана интеграция Kitty в PAI хуки и табы",
+      "description": "Как PAI использует Kitty — tab colors, titles, session tracking",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Практический план использования Kitty на WSL2",
+      "description": "Конкретные шаги — установка, конфиг, интеграция с PAI на WSL2",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Причины перехода Miessler с Kitty на Ghostty документированы",
+      "description": "3 причины: macOS нативность, Ghostty вышел конец 2024 и стал популярен, Vim-like pane navigation. Miessler не публиковал явное объяснение перехода.",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Сравнение Ghostty и Kitty по ключевым параметрам готово",
+      "description": "7 параметров сравнены: Remote Control, Tab scripting, Sessions, GPU, WSL2, Windows native, macOS native, PAI hooks",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Совместимость Ghostty с WSL2 проверена фактами",
+      "description": "Ghostty работает на WSL2 с ограничениями (resize баги, config reload). Native Windows поддержка планируется v1.4-1.5. Источник: GitHub Discussion #2563",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Конкретная рекомендация для Ivan с обоснованием дана",
+      "description": "Рекомендация: оставаться на Kitty. 5 аргументов: уже установлен, PAI хуки, Remote Control API, WSL2 работает, Ghostty без Remote Control",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Полный бэкап текущей системы создан перед миграцией",
+      "description": "cp -r ~/.claude ~/.claude-v3-backup-YYYYMMDD с верификацией | Verify: CLI: ls backup dir",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Карта различий между v3.0 и v4.0.1 составлена полностью",
+      "description": "Карта: 13 общих хуков, 4 портировать, 3 анализ, 2 дроп, 7 новых от v4.0.1. Скиллы: полная замена 44→11. Данные: 6 директорий копируются as-is.",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Наши кастомные наработки сохранены без потерь после миграции",
+      "description": "MEMORY/, settings.json, custom-agents/, аудит-фиксы, VoiceServer | Verify: Grep: ключевые файлы на месте",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Хуки работают корректно после миграции на v4.0.1",
+      "description": "Все 20+ хуков запускаются без ошибок | Verify: CLI: bun run hooks test",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "Наши уникальные хуки портированы в v4.0.1 формат",
+      "description": "AlgorithmTracker, StartupGreeting, StopOrchestrator и другие наши хуки | Verify: Read: хуки существуют и совместимы",
+      "status": "pending"
+    }
+  ],
+  "antiCriteria": [
+    {
+      "id": "ISC-A1",
+      "text": "План не содержит немедленного выполнения аудита скиллов",
+      "description": "PRD — чистый документ планирования. Ноль патчей кода. Только 3 валидационных grep в EXECUTE.",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A2",
+      "text": "Приоритизация не игнорирует специализированные и нишевые скиллы",
+      "description": "Все 26 скиллов покрыты батчами, включая нишевые (Aphorisms, PrivateInvestigator, Apify и др.)",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Промпт не содержит лишнего контекста затрудняющего понимание",
+      "description": "Промпт лаконичный, самодостаточный, copy-paste ready. Verify: Custom — промпт < 50 строк",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Объяснение не содержит кода или технического жаргона без контекста",
+      "description": "Всё должно быть понятно без чтения исходного кода",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Не объяснять все 14 полей сразу одним блоком",
+      "description": "Разбить на группы по 3-4 поля, пауза после каждой группы",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Не перегружать информацией о вспомогательных папках",
+      "description": "AUDIT, SECURITY, VOICE, RELATIONSHIP — упомянуть кратко, не углубляться",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Объяснение не перегружает кодом реализации хуков",
+      "description": "Показываем ЧТО делает, не КАК реализовано",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Не углубляться в код Task tool и внутреннее API",
+      "description": "Фокус на концепции и практике, не на реализации",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Не перечислять все 45 скиллов поштучно",
+      "description": "Группировать по категориям, примеры из каждой, не полный список",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Рекомендация учитывает что Ivan на WSL2 не macOS",
+      "description": "Miessler на macOS, у нас WSL2 — есть нюансы",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Рекомендация не игнорирует что PAI хуки заточены под Kitty",
+      "description": "В рекомендации явно указано: 10+ хуков используют kitty @, переход потребует переписать все хуки, даже Miessler оставил Kitty хуки в PAI v4.0",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Миграция не затрагивает MEMORY директорию с историей работы",
+      "description": "MEMORY/ только копируется, никогда не перезаписывается | Verify: CLI: diff backup vs new MEMORY",
+      "status": "pending"
+    }
+  ],
+  "satisfaction": {
+    "total": 65,
+    "satisfied": 55,
+    "partial": 1,
+    "failed": 0
+  },
+  "createdAt": "2026-02-28T11:54:23+03:00",
+  "updatedAt": "2026-02-28T22:12:39+03:00"
+}

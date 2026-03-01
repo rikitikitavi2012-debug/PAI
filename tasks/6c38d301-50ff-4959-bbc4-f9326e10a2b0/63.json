@@ -1,0 +1,9 @@
+{
+  "id": "63",
+  "subject": "ISC-C4: Хуки работают корректно после миграции на v4.0.1",
+  "description": "Все 20+ хуков запускаются без ошибок | Verify: CLI: bun run hooks test",
+  "activeForm": "Тестирую хуки",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

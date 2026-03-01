@@ -1,0 +1,9 @@
+{
+  "id": "20",
+  "subject": "ISC-A2: Персональные данные из settings.json не потеряны",
+  "description": "Verify: Read: daidentity.name = \"Navi\", principal.name = \"Ivan\" in merged settings",
+  "activeForm": "Проверка персональных данных",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

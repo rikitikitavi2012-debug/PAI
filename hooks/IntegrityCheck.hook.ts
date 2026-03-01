@@ -2,17 +2,15 @@
 /**
  * IntegrityCheck.hook.ts - PAI Integrity Check (SessionEnd)
  *
- * System integrity — detects PAI system file changes, spawns background maintenance
- * Note: Doc cross-ref integrity runs via StopOrchestrator.hook.ts (Stop event)
+ * Runs system integrity check — detects PAI system file changes, spawns background maintenance.
+ * Doc cross-ref integrity is handled by DocIntegrity.hook.ts (Stop event) to avoid double execution.
  *
  * TRIGGER: SessionEnd
- * PERFORMANCE: ~50ms (single transcript parse, two handler calls). Non-blocking.
+ * PERFORMANCE: ~50ms (single transcript parse, one handler call). Non-blocking.
  */
 
-import { parseTranscript } from '../skills/PAI/Tools/TranscriptParser';
+import { parseTranscript } from '../PAI/Tools/TranscriptParser';
 import { handleSystemIntegrity } from './handlers/SystemIntegrity';
-// DocCrossRefIntegrity removed — already called by StopOrchestrator.hook.ts (Stop event)
-// Keeping only SystemIntegrity here to avoid duplicate handler execution
 
 interface HookInput {
   session_id: string;
@@ -45,7 +43,7 @@ async function main() {
 
   const parsed = parseTranscript(hookInput.transcript_path);
 
-  // Run SystemIntegrity only — DocCrossRefIntegrity runs via StopOrchestrator
+  // Run system integrity check (doc cross-ref is handled by DocIntegrity.hook.ts)
   await handleSystemIntegrity(parsed, hookInput);
 
   process.exit(0);

@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "ISC-C1: Browser skill has zero placeholder variables in all files",
+  "description": "Audit Browser skill for {PRINCIPAL.NAME}, {DAIDENTITY.NAME}, YOUR_VOICE_ID and other placeholder leaks. All must be replaced with actual values. Verify: Grep for placeholder patterns across all files in skills/Browser/",
+  "activeForm": "Auditing Browser skill placeholders",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,9 @@
+{
+  "id": "57",
+  "subject": "ISC-C3: Совместимость Ghostty с WSL2 проверена фактами",
+  "description": "Ghostty работает на WSL2 с ограничениями (resize баги, config reload). Native Windows поддержка планируется v1.4-1.5. Источник: GitHub Discussion #2563",
+  "activeForm": "Проверяю Ghostty на WSL2",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,11 @@
+id: "20260226-011105_task"
+title: "проверь конфиг китти все там в порядке с серверми,"
+session_id: "8aabe577-7eb9-409a-9950-02aa10a1e82e"
+created_at: "2026-02-26T01:11:05+03:00"
+completed_at: "2026-02-26T22:39:41+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

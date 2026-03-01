@@ -1,8 +1,20 @@
 ---
 name: Agents
-description: Dynamic agent composition and management system. USE WHEN user says create custom agents, spin up custom agents, specialized agents, OR asks for agent personalities, available traits, agent voices. Handles custom agent creation, personality assignment, voice mapping, and parallel agent orchestration.
-compatibility:
-  min_model: sonnet
+description: Compose CUSTOM agents from Base Traits + Voice + Specialization for specialized perspectives. USE WHEN create custom agents, spin up agents, specialized agents, agent personalities, available traits, list traits, agent voices, compose agent, load agent context, agent profile, spawn parallel agents, launch agents. NOT for agent teams/swarms (use Delegation skill → TeamCreate).
+---
+
+## 🚨 SCOPE BOUNDARY — This Skill vs Agent Teams
+
+| {PRINCIPAL.NAME} Says | Which System | NOT This Skill? |
+|-------------|-------------|-----------------|
+| "**custom agents**", "spin up agents", "launch agents" | **THIS SKILL** (Agents) → ComposeAgent → `Task(subagent_type="general-purpose")` | |
+| "**create an agent team**", "**agent team**", "**swarm**" | **Delegation skill** → `TeamCreate` tool | **YES — NOT this skill** |
+
+**If {PRINCIPAL.NAME} says "agent team" or "swarm", do NOT use this skill. Use the Delegation skill which routes to `TeamCreate`.**
+
+- **This skill** = one-shot parallel workers with unique identities, NO shared state, fire-and-forget
+- **Agent teams** (Delegation → TeamCreate) = persistent coordinated teams with shared task lists, messaging, multi-turn collaboration
+
 ---
 
 ## 🚨 MANDATORY: Voice Notification (REQUIRED BEFORE ANY ACTION)
@@ -27,6 +39,7 @@ compatibility:
 # Agents - Custom Agent Composition System
 
 **Auto-routes when user mentions custom agents, agent creation, or specialized personalities.**
+**Does NOT handle agent teams/swarms — that's Delegation skill → TeamCreate.**
 
 ## Configuration: Base + User Merge
 
@@ -43,7 +56,7 @@ The Agents skill uses the standard PAI SYSTEM/USER two-tier pattern:
 
 Create your customizations at:
 ```
-~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Agents/
+~/.claude/PAI/USER/SKILLCUSTOMIZATIONS/Agents/
 ├── Traits.yaml       # Your traits, voices, prosody settings
 ├── NamedAgents.md    # Your named agent backstories (optional)
 └── VoiceConfig.json  # Voice server configuration (optional)
@@ -83,7 +96,7 @@ voice_mappings:
         use_speaker_boost: true
 
     # Override prosody for an existing base voice
-    YourVoiceName:
+    {PRINCIPAL.NAME}:
       prosody:
         stability: 0.65
         style: 0.10
@@ -126,7 +139,7 @@ The Agents skill is a complete agent composition and management system:
 | "agents", "launch agents", "bunch of agents" | SpawnParallel workflow | Same identity, parallel grunt work |
 | "use [named agent]" | Named agent | Pre-defined personality from USER config |
 
-**NEVER use static agent types (Intern, Architect, Engineer, etc.) for custom agents.**
+**NEVER use static agent types (Architect, Engineer, etc.) for custom agents — always use `general-purpose` with ComposeAgent prompts.**
 
 ## Components
 
@@ -166,8 +179,8 @@ bun run ~/.claude/skills/Agents/Tools/ComposeAgent.ts --output json
 ```json
 {
   "name": "Security Expert Skeptical Thorough",
-  "voice": "YourVoiceName",
-  "voice_id": "pNInz6obpgDQGcFmaJgB",
+  "voice": "{PRINCIPAL.NAME}",
+  "voice_id": "onwK4e9ZLuTAKqWW03F9",
   "voice_settings": {
     "stability": 0.70,
     "similarity_boost": 0.85,

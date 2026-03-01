@@ -10,10 +10,9 @@ Successfully migrated 4 research commands to the research skill's workflows dire
 
 ## Files Migrated
 
-### 1. Claude WebSearch Research (REMOVED - consolidated into QuickResearch.md)
+### 1. Claude WebSearch Research
 - **Source:** `~/.claude/commands/perform-claude-research.md`
-- **Original Destination:** `~/.claude/skills/Research/Workflows/ClaudeResearch.md` (deleted 2026-02)
-- **Current Destination:** `~/.claude/skills/Research/Workflows/QuickResearch.md` (uses Claude WebSearch natively)
+- **Destination:** `~/.claude/skills/Research/Workflows/ClaudeResearch.md`
 - **Size:** 3.6K
 - **Description:** Intelligent query decomposition with Claude's WebSearch tool (free, no API keys)
 - **Triggers:** "claude research", "use websearch", "claude only"
@@ -47,7 +46,7 @@ Successfully migrated 4 research commands to the research skill's workflows dire
 
 **Current Workflows:** 13
 - `AnalyzeAiTrends.md` - AI industry trend analysis
-- `ClaudeResearch.md` - Claude WebSearch only (REMOVED - consolidated into QuickResearch.md)
+- `ClaudeResearch.md` - Claude WebSearch only
 - `Enhance.md` - Content enhancement
 - `ExtensiveResearch.md` - 12-agent parallel research
 - `ExtractAlpha.md` - Deep insight extraction
@@ -71,7 +70,7 @@ Based on the type of research request, route to the appropriate workflow:
 1. **Quick Research (Single Perplexity)** - `Workflows/QuickResearch.md`
 2. **Standard Research (Default)** - `Workflows/StandardResearch.md`
 3. **Extensive Research (12 agents)** - `Workflows/ExtensiveResearch.md`
-4. **Claude WebSearch Research** - `Workflows/QuickResearch.md` (formerly ClaudeResearch.md, removed 2026-02)
+4. **Claude WebSearch Research** - `Workflows/ClaudeResearch.md`
 5. **Interview Preparation** - `Workflows/InterviewResearch.md`
 6. **AI Trends Analysis** - `Workflows/AnalyzeAiTrends.md`
 

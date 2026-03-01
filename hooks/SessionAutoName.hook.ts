@@ -3,32 +3,43 @@
  * SessionAutoName.hook.ts - Auto-generate concise session names
  *
  * PURPOSE:
- * Generates a 2-3 word session title on the FIRST user prompt in a session,
+ * Generates a 4-word session title on the FIRST user prompt in a session,
  * so the status line always shows a meaningful descriptive name.
  *
  * TRIGGER: UserPromptSubmit
  *
- * WHY UserPromptSubmit (not Stop):
- * - The user's first prompt IS the best naming signal
- * - On first prompt: no name exists → generate one from the prompt text
- * - On every subsequent prompt: name exists → skip immediately (no-op)
- * - Avoids repeated no-op invocations on every Stop event
- * - No transcript parsing needed — we have the raw prompt directly
+ * ARCHITECTURE (v2 — fast-exit):
+ * - FIRST PROMPT (no name exists):
+ *   1. Read stdin via process.stdin (Node.js events — proven reliable)
+ *   2. Generate deterministic 4-word name from prompt keywords
+ *   3. Store to session-names.json + cache
+ *   4. Spawn detached background process to upgrade name via inference (standard/Sonnet)
+ *   5. EXIT IMMEDIATELY — background process writes upgrade async, <100ms sync path
  *
- * LOGIC:
- * - If session has a customTitle in sessions-index.json (set by /rename) → use that
- * - If session already has a name in session-names.json → skip (no overwrite)
- * - If no name exists → generate one via fast inference → store it
- * - Names persist across session lifecycle, surviving compaction/restore
+ * - SUBSEQUENT PROMPTS (name exists):
+ *   1. Check for customTitle from /rename (authoritative override)
+ *   2. Check for rework (completed work → new task in same session)
+ *   3. If rework → re-generate with inference upgrade
+ *   4. Otherwise → skip (no-op)
  *
- * The authoritative session name is customTitle from Claude Code's sessions-index.
- * This hook generates a fallback name only when no customTitle exists.
+ * WHY NO INFERENCE ON FIRST PROMPT:
+ * - Inference spawns a claude subprocess (5-15s) — blocks prompt processing
+ * - Deterministic name from keywords is good enough for initial display
+ * - The long pause users experienced was from inference blocking
+ *
+ * WHY process.stdin INSTEAD OF Bun.stdin.stream():
+ * - All other working hooks (RatingCapture, UpdateTabTitle)
+ *   use process.stdin.on('data') — proven reliable with Claude Code piping
+ * - Bun.stdin.stream().getReader() has different buffering behavior that
+ *   caused silent failures with large piped inputs
  */
 
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, rmdirSync, renameSync, statSync } from 'fs';
 import { dirname } from 'path';
+import { spawn as nodeSpawn } from 'child_process';
 import { paiPath } from './lib/paths';
-import { inference } from '../skills/PAI/Tools/Inference';
+import { inference } from '../PAI/Tools/Inference';
+import { updateSessionNameInWorkJson, upsertSession } from './lib/prd-utils';
 
 interface HookInput {
   session_id: string;
@@ -37,9 +48,38 @@ interface HookInput {
 }
 
 const SESSION_NAMES_PATH = paiPath('MEMORY', 'STATE', 'session-names.json');
+const LOCK_PATH = SESSION_NAMES_PATH + '.lock';
+const LOCK_TIMEOUT = 3000;  // 3s max wait
+const LOCK_STALE = 10000;   // 10s = stale lock
 
 interface SessionNames {
   [sessionId: string]: string;
+}
+
+/** Acquire mkdir-based lock (atomic on POSIX). Returns true if acquired. */
+function acquireLock(): boolean {
+  const deadline = Date.now() + LOCK_TIMEOUT;
+  while (Date.now() < deadline) {
+    try {
+      mkdirSync(LOCK_PATH);
+      return true;
+    } catch {
+      // Lock exists — check if stale
+      try {
+        const stat = statSync(LOCK_PATH);
+        if (Date.now() - stat.mtimeMs > LOCK_STALE) {
+          try { rmdirSync(LOCK_PATH); } catch {}
+          continue;
+        }
+      } catch {}
+      Bun.sleepSync(50);
+    }
+  }
+  return false;
+}
+
+function releaseLock(): void {
+  try { rmdirSync(LOCK_PATH); } catch {}
 }
 
 function readSessionNames(): SessionNames {
@@ -48,39 +88,64 @@ function readSessionNames(): SessionNames {
       return JSON.parse(readFileSync(SESSION_NAMES_PATH, 'utf-8'));
     }
   } catch {
-    // Corrupted file — start fresh
+    // Corrupted file — try backup
+    try {
+      const bakPath = SESSION_NAMES_PATH + '.bak';
+      if (existsSync(bakPath)) {
+        console.error('[SessionAutoName] Primary corrupted, reading backup');
+        return JSON.parse(readFileSync(bakPath, 'utf-8'));
+      }
+    } catch {}
   }
   return {};
 }
 
+/** Atomic write: tmp file → rename (prevents partial reads by concurrent sessions) */
 function writeSessionNames(names: SessionNames): void {
   const dir = dirname(SESSION_NAMES_PATH);
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
-  writeFileSync(SESSION_NAMES_PATH, JSON.stringify(names, null, 2), 'utf-8');
+  // Backup current before overwrite
+  try {
+    if (existsSync(SESSION_NAMES_PATH)) {
+      writeFileSync(SESSION_NAMES_PATH + '.bak', readFileSync(SESSION_NAMES_PATH), 'utf-8');
+    }
+  } catch {}
+  // Atomic: write tmp, rename
+  const tmpPath = SESSION_NAMES_PATH + '.tmp.' + process.pid;
+  writeFileSync(tmpPath, JSON.stringify(names, null, 2), 'utf-8');
+  renameSync(tmpPath, SESSION_NAMES_PATH);
 }
 
-const NAME_PROMPT = `You are labeling a folder. Give this conversation a 2-3 word Topic Case title.
+const NAME_PROMPT = `You are naming a work session. Generate an EXACTLY 4-word title that reads like a short news headline or task description.
 
-Think: "If someone saw this label on a folder, would they immediately know what's inside?"
+Think: "What is the single most important thing being worked on? Describe it in 4 words like a newspaper headline."
 
 RULES:
-1. EXACTLY 2-3 real English words. Every word must be a common dictionary word (3+ letters each).
-2. Must be a coherent noun phrase that a human would actually write — like a meeting topic or project name.
-3. SYNTHESIZE the topic. Do NOT just grab words from the message.
-4. No verbs, no articles, no sentences, no questions. Just a noun phrase.
-5. Ignore all technical noise (IDs, paths, XML, hex codes). Name the SUBJECT, not the artifacts.
+1. EXACTLY 4 words in Title Case. Every word must be a real English word (3+ letters).
+2. Must describe the SPECIFIC action or task — verbs are encouraged. "Fix Session Name Generation" beats "Session Name Generation Thing".
+3. Use the user's intent, not just their literal words — infer what they're actually trying to do.
+4. No articles (a/an/the). Verbs, nouns, adjectives all welcome.
+5. Prefer concrete specifics: system names, feature names, what's being fixed/built/changed.
+6. Ignore technical noise (IDs, paths, XML, hex codes). Name the TASK, not the artifacts.
 
-GOOD examples (coherent topics a human would write):
-"Voice Server Fix", "Dashboard Redesign", "Algorithm Upgrade", "Session Naming", "Security Architecture", "Hook Permissions", "Feed Schema Design", "Tab Title Sync"
+GOOD examples (headline-style, specific, verb-forward):
+"Fix Session Name Generation", "Deploy Voice Server Update", "Debug Surface Filter Bar", "Upgrade Browser Automation System", "Session Naming System Broken", "Voice Phase Announcement Fix", "Label Scoring Algorithm Update", "Surface Deploy Button Missing", "Feed Pipeline Processing Error", "Algorithm ISC Quality Gate"
 
-BAD examples (incoherent, word salad, or fragments):
-"Built Bunch", "Commands R", "Didn Anything Sudden", "Notification Ede Output", "Reply Number Session", "Research Guys Shady", "Ahead Repo Started", "State Pai Installer"
+BAD examples (too vague or word-salad):
+"Through Different Discussions Ones" (random words), "I'm Not Going" (fragment), "Else Session" (meaningless), "Things Need Fixing Now" (generic)
 
-WHY the bad ones are bad: they are random words strung together that don't describe a topic. A human would never label a folder that way.
+BAD examples (too short or wrong count):
+"Dashboard Redesign" (2 words), "Voice Server Fix" (3 words)
 
-Output ONLY the 2-3 word title. Nothing else.`;
+Output ONLY the 4-word title. Nothing else.`;
+
+// ── Lightweight mode classification (same logic as RatingCapture, zero-cost) ──
+const ALGO_ACTION_RE = /\b(implement|build|create|architect|design|migrate|deploy|refactor)\b/i;
+function isNativeMode(prompt: string): boolean {
+  return !ALGO_ACTION_RE.test(prompt.trim());
+}
 
 // Common noise words to skip during relevance checking and keyword extraction
 const NOISE_WORDS = new Set([
@@ -107,6 +172,16 @@ const NOISE_WORDS = new Set([
   'question', 'answer', 'figure', 'out', 'off', 'tell', 'show', 'give',
   'start', 'stop', 'keep', 'move', 'turn', 'pull', 'push', 'open', 'close',
   'used', 'using', 'called', 'mean', 'means', 'guess', 'maybe', 'probably',
+  // Tool/system artifacts that leak from system-reminders into session names
+  'output', 'file', 'result', 'tool', 'input', 'content', 'contents', 'invoke',
+  // Profanity — {PRINCIPAL.NAME} cusses during work, these should never appear in session names
+  'fuck', 'fucking', 'fucked', 'shit', 'shitty', 'damn', 'damned', 'damnit',
+  'ass', 'asshole', 'hell', 'crap', 'crappy', 'bitch', 'bullshit', 'retard',
+  'dumb', 'dumbass', 'stupid', 'idiot', 'wtf', 'lmao', 'omg',
+  // Additional non-topic words that leak into names
+  'separate', 'another', 'issue', 'problem', 'currently', 'continue',
+  'continues', 'submitted', 'multiple', 'requests', 'case', 'because',
+  'again', 'always', 'never', 'everything', 'nothing', 'anything',
 ]);
 
 /**
@@ -116,8 +191,15 @@ const NOISE_WORDS = new Set([
  */
 function sanitizePromptForNaming(prompt: string): string {
   return prompt
-    // Remove XML-style tags and their attributes (task-notification, task-id, etc.)
+    // Remove entire system-reminder blocks INCLUDING content (not just tags)
+    .replace(/<system-reminder>[\s\S]*?<\/system-reminder>/gi, ' ')
+    // Remove entire task-notification blocks INCLUDING content
+    .replace(/<task-notification>[\s\S]*?<\/task-notification>/gi, ' ')
+    // Remove any remaining XML-style tags and their attributes
     .replace(/<[^>]+>/g, ' ')
+    // Remove "Read tool" / "Read Output File" artifacts from tool call summaries
+    .replace(/(?:called|result of calling)\s+the\s+\w+\s+tool[^.]*\./gi, ' ')
+    .replace(/\bread\s+(?:the\s+)?output\s+file\b/gi, ' ')
     // Remove UUIDs: 8-4-4-4-12 hex pattern
     .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, ' ')
     // Remove hex strings of 7+ characters (task IDs, commit hashes, etc.)
@@ -130,44 +212,46 @@ function sanitizePromptForNaming(prompt: string): string {
 }
 
 /**
- * Deterministic fallback: find the single most meaningful noun from the prompt
- * and pair it with "Session". This is intentionally conservative — a boring but
- * coherent name like "Voice Session" is infinitely better than word salad like
- * "Commands R" or "Didn Anything Sudden".
+ * Deterministic fallback: extract the 4 most meaningful nouns from the prompt.
+ * Produces a 4-word Topic Case name. If fewer than 4 meaningful words exist,
+ * pads with generic context words to always hit exactly 4.
  */
 function extractFallbackName(prompt: string): string | null {
   const words = prompt
     .replace(/[^a-zA-Z\s]/g, ' ')
     .split(/\s+/)
-    .filter(w => w.length >= 4 && !NOISE_WORDS.has(w.toLowerCase()));
+    .filter(w => w.length >= 3 && !NOISE_WORDS.has(w.toLowerCase()));
 
   if (words.length === 0) return null;
 
-  // Pick the first substantial word and make a safe label
-  const topic = words[0].charAt(0).toUpperCase() + words[0].slice(1).toLowerCase();
-  return `${topic} Session`;
+  // Deduplicate while preserving order
+  const seen = new Set<string>();
+  const unique: string[] = [];
+  for (const w of words) {
+    const lower = w.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      unique.push(w);
+    }
+    if (unique.length >= 4) break;
+  }
+
+  // Pad to 4 words if we don't have enough
+  const PAD_WORDS = ['Session', 'Work', 'Task', 'Context'];
+  while (unique.length < 4) {
+    const pad = PAD_WORDS[unique.length - 1] || 'Session';
+    unique.push(pad);
+  }
+
+  return unique.slice(0, 4)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
 }
 
 /**
- * Check if a generated session name is relevant to the user's prompt.
- */
-function isNameRelevantToPrompt(name: string, prompt: string): boolean {
-  const nameWords = name.split(/\s+/)
-    .map(w => w.toLowerCase().replace(/[^a-z]/g, ''))
-    .filter(w => w.length > 2 && !NOISE_WORDS.has(w));
-
-  if (nameWords.length === 0) return true;
-
-  const promptLower = prompt.toLowerCase();
-  return nameWords.some(word =>
-    promptLower.includes(word) || promptLower.includes(word.slice(0, Math.max(4, Math.floor(word.length * 0.6))))
-  );
-}
-
-/**
- * Check if this session has a customTitle in Claude Code's sessions-index.json.
- * customTitle is set by /rename and is the authoritative session name.
- * NOTE: Claude Code uses lowercase "projects/" dir (not uppercase "Projects/").
+ * Check if this session has a customTitle set by /rename.
+ * /rename writes a {"type":"custom-title","customTitle":"..."} entry into the session JSONL.
+ * We read the last such entry directly — no sessions-index.json needed (it goes stale).
  */
 function getCustomTitle(sessionId: string): string | null {
   try {
@@ -180,21 +264,27 @@ function getCustomTitle(sessionId: string): string | null {
     for (const projectsDir of searchDirs) {
       if (!existsSync(projectsDir)) continue;
 
-      const entries = Bun.spawnSync(['grep', '-rl', sessionId, projectsDir], {
-        stdout: 'pipe', stderr: 'pipe', timeout: 2000,
-      });
-      const indexFiles = entries.stdout.toString().trim().split('\n')
-        .filter(f => f.endsWith('sessions-index.json'));
+      // Find the session's JSONL file under any project subdir (maxdepth 2)
+      const findResult = Bun.spawnSync(
+        ['find', projectsDir, '-maxdepth', '2', '-name', `${sessionId}.jsonl`],
+        { stdout: 'pipe', stderr: 'pipe', timeout: 2000 },
+      );
+      const jsonlPath = findResult.stdout.toString().trim().split('\n')[0];
+      if (!jsonlPath || !existsSync(jsonlPath)) continue;
 
-      for (const indexFile of indexFiles) {
-        const content = readFileSync(indexFile, 'utf-8');
-        const idPos = content.indexOf(`"sessionId": "${sessionId}"`);
-        if (idPos === -1) continue;
-
-        const chunk = content.slice(idPos, idPos + 500);
-        const match = chunk.match(/"customTitle":\s*"([^"]+)"/);
-        if (match) return match[1];
+      // Scan JSONL for last custom-title entry (written by /rename)
+      const lines = readFileSync(jsonlPath, 'utf-8').split('\n');
+      let lastCustomTitle: string | null = null;
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const entry = JSON.parse(line);
+          if (entry.type === 'custom-title' && entry.customTitle) {
+            lastCustomTitle = entry.customTitle;
+          }
+        } catch {}
       }
+      if (lastCustomTitle) return lastCustomTitle;
     }
   } catch (error) {
     console.error('[SessionAutoName] Failed to check customTitle:', error);
@@ -202,28 +292,46 @@ function getCustomTitle(sessionId: string): string | null {
   return null;
 }
 
-async function readStdin(): Promise<HookInput | null> {
+/**
+ * Read stdin using Node.js process.stdin events.
+ * This is the PROVEN approach used by all other working hooks
+ * (RatingCapture, UpdateTabTitle).
+ *
+ * Bun.stdin.stream().getReader() has different buffering behavior
+ * that silently fails with large piped inputs from Claude Code.
+ */
+async function readStdin(timeout: number = 5000): Promise<HookInput | null> {
   try {
-    const decoder = new TextDecoder();
-    const reader = Bun.stdin.stream().getReader();
-    let input = '';
-
-    const timeoutPromise = new Promise<void>((resolve) => {
-      setTimeout(() => resolve(), 2000);
+    const raw = await new Promise<string>((resolve, reject) => {
+      let data = '';
+      const timer = setTimeout(() => {
+        // Timeout — resolve with whatever we have (don't reject, to allow partial extraction)
+        resolve(data);
+      }, timeout);
+      process.stdin.on('data', (chunk) => { data += chunk.toString(); });
+      process.stdin.on('end', () => { clearTimeout(timer); resolve(data); });
+      process.stdin.on('error', (err) => { clearTimeout(timer); reject(err); });
     });
 
-    const readPromise = (async () => {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        input += decoder.decode(value, { stream: true });
+    if (!raw.trim()) return null;
+
+    // Try full JSON parse first
+    try {
+      return JSON.parse(raw) as HookInput;
+    } catch {
+      // Partial read (large prompt) — extract fields via regex
+      const sessionMatch = raw.match(/"session_id"\s*:\s*"([^"]+)"/);
+      const promptMatch = raw.match(/"(?:prompt|user_prompt)"\s*:\s*"([\s\S]{0,2000})/);
+      if (sessionMatch) {
+        console.error(`[SessionAutoName] Partial stdin (${raw.length} bytes) — regex extraction`);
+        return {
+          session_id: sessionMatch[1],
+          prompt: promptMatch
+            ? promptMatch[1].replace(/\\"/g, '"').replace(/\\n/g, ' ').replace(/\\t/g, ' ')
+            : undefined,
+        };
       }
-    })();
-
-    await Promise.race([readPromise, timeoutPromise]);
-
-    if (input.trim()) {
-      return JSON.parse(input) as HookInput;
+      console.error(`[SessionAutoName] stdin parse failed, regex extraction failed (${raw.length} bytes)`);
     }
   } catch (error) {
     console.error('[SessionAutoName] Error reading stdin:', error);
@@ -231,106 +339,45 @@ async function readStdin(): Promise<HookInput | null> {
   return null;
 }
 
-async function main() {
-  const hookInput = await readStdin();
-
-  if (!hookInput?.session_id) {
-    process.exit(0);
-  }
-
-  const sessionId = hookInput.session_id;
-  const names = readSessionNames();
-
-  // Always check for customTitle from /rename (authoritative source).
-  // This runs on every prompt to catch renames that happen mid-session.
-  const customTitle = getCustomTitle(sessionId);
-  if (customTitle && names[sessionId] !== customTitle) {
-    names[sessionId] = customTitle;
-    writeSessionNames(names);
-    const cacheContent = `cached_session_id='${sessionId}'\ncached_session_label='${customTitle}'\n`;
-    const cachePath = paiPath('MEMORY', 'STATE', 'session-name-cache.sh');
-    writeFileSync(cachePath, cacheContent, 'utf-8');
-    console.error(`[SessionAutoName] Synced customTitle: "${customTitle}"`);
-    process.exit(0);
-  }
-
-  // Check for rework: if session already has a name AND the algorithm state
-  // shows completed work (COMPLETE/LEARN/IDLE), this prompt starts NEW work.
-  // Re-generate the session name to reflect the new task.
-  const rawPrompt = hookInput.prompt || hookInput.user_prompt || '';
-  const prompt = sanitizePromptForNaming(rawPrompt);
-  let isRework = false;
-
-  if (names[sessionId]) {
-    // Check algorithm state for rework signal
-    try {
-      const algoStatePath = paiPath('MEMORY', 'STATE', 'algorithms', `${sessionId}.json`);
-      if (existsSync(algoStatePath)) {
-        const algoState = JSON.parse(readFileSync(algoStatePath, 'utf-8'));
-        const isComplete = !algoState.active ||
-          algoState.currentPhase === 'COMPLETE' ||
-          algoState.currentPhase === 'LEARN' ||
-          algoState.currentPhase === 'IDLE';
-        const hadWork = (algoState.criteria && algoState.criteria.length > 0) || !!algoState.summary;
-
-        if (isComplete && hadWork && prompt) {
-          // Rework detected — allow re-naming
-          isRework = true;
-          console.error(`[SessionAutoName] Rework detected — previous name: "${names[sessionId]}", re-generating from new prompt`);
-        } else {
-          // Normal subsequent prompt in active session — keep existing name
-          process.exit(0);
-        }
-      } else {
-        // No algorithm state yet — keep existing name
-        process.exit(0);
-      }
-    } catch {
-      // Error reading state — keep existing name (safe default)
-      process.exit(0);
-    }
-  }
-
-  if (!prompt) {
-    process.exit(0);
-  }
-
-  /** Store the name and update cache, tracking rework history */
-  function storeName(label: string, source: string): void {
-    // On rework, record the previous name in algorithm state for dashboard display
-    if (isRework && names[sessionId]) {
-      try {
-        const algoStatePath = paiPath('MEMORY', 'STATE', 'algorithms', `${sessionId}.json`);
-        if (existsSync(algoStatePath)) {
-          const algoState = JSON.parse(readFileSync(algoStatePath, 'utf-8'));
-          if (!algoState.previousNames) algoState.previousNames = [];
-          algoState.previousNames.push({
-            name: names[sessionId],
-            changedAt: new Date().toISOString(),
-          });
-          writeFileSync(algoStatePath, JSON.stringify(algoState, null, 2));
-          console.error(`[SessionAutoName] Archived previous name: "${names[sessionId]}"`);
-        }
-      } catch (err) {
-        console.error(`[SessionAutoName] Failed to archive previous name:`, err);
-      }
-    }
-
+/** Store the name with locked read-modify-write (prevents concurrent session clobber) */
+function storeName(sessionId: string, label: string, source: string): void {
+  const locked = acquireLock();
+  if (!locked) console.error('[SessionAutoName] Lock timeout — writing anyway');
+  try {
+    const names = readSessionNames(); // Fresh read under lock
     names[sessionId] = label;
     writeSessionNames(names);
-    const cacheContent = `cached_session_id='${sessionId}'\ncached_session_label='${label}'\n`;
-    const cachePath = paiPath('MEMORY', 'STATE', 'session-name-cache.sh');
-    writeFileSync(cachePath, cacheContent, 'utf-8');
-    console.error(`[SessionAutoName] ${isRework ? 'Rejuvenated' : 'Named'} session: "${label}" (${source})`);
+  } finally {
+    if (locked) releaseLock();
   }
+  // Cache update is session-local, no lock needed
+  const cacheContent = `cached_session_id='${sessionId}'\ncached_session_label='${label}'\n`;
+  const cachePath = paiPath('MEMORY', 'STATE', 'session-name-cache.sh');
+  writeFileSync(cachePath, cacheContent, 'utf-8');
+  // Propagate to work.json so admin dashboard stays in sync
+  updateSessionNameInWorkJson(sessionId, label);
+  console.error(`[SessionAutoName] Named session: "${label}" (${source})`);
+}
 
-  // Try AI-generated name first
-  let named = false;
+/**
+ * Background upgrade mode: called via --upgrade flag from a detached subprocess.
+ * Runs inference to generate a better 4-word name, then overwrites the deterministic one.
+ */
+async function upgradeWithInference(sessionId: string, promptB64: string, expectedName?: string): Promise<void> {
   try {
+    // Version guard: if the name has changed since we were spawned, skip.
+    const currentNames = readSessionNames();
+    const currentName = currentNames[sessionId] || '';
+    if (expectedName !== undefined && currentName !== expectedName) {
+      console.error(`[SessionAutoName] Background upgrade skipped — name already changed from "${expectedName}" to "${currentName}"`);
+      return;
+    }
+
+    const promptText = Buffer.from(promptB64, 'base64').toString('utf-8');
     const result = await inference({
       systemPrompt: NAME_PROMPT,
-      userPrompt: prompt.slice(0, 800),
-      level: 'fast',
+      userPrompt: promptText,
+      level: 'standard',
       timeout: 10000,
     });
 
@@ -340,38 +387,133 @@ async function main() {
         .replace(/[.!?,;:]/g, '')
         .trim();
 
-      const words = label.split(/\s+/).slice(0, 3);
+      const words = label.split(/\s+/).slice(0, 4);
       label = words
         .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
         .join(' ');
 
       const allWordsSubstantial = words.every(w => w.length >= 3);
-      if (label && words.length >= 2 && words.length <= 3 && allWordsSubstantial) {
-        if (!isNameRelevantToPrompt(label, prompt)) {
-          console.error(`[SessionAutoName] Rejected contaminated name: "${label}" — topic not in prompt`);
-        } else {
-          storeName(label, 'inference');
-          named = true;
+      if (label && words.length === 4 && allWordsSubstantial) {
+        // Locked version-guarded write
+        const locked = acquireLock();
+        if (!locked) console.error('[SessionAutoName] Lock timeout on upgrade');
+        try {
+          const freshNames = readSessionNames();
+          const freshName = freshNames[sessionId] || '';
+          if (expectedName !== undefined && freshName !== expectedName) {
+            console.error(`[SessionAutoName] Background upgrade skipped at write — name changed to "${freshName}"`);
+            return;
+          }
+          freshNames[sessionId] = label;
+          writeSessionNames(freshNames);
+        } finally {
+          if (locked) releaseLock();
         }
-      } else if (!allWordsSubstantial) {
-        console.error(`[SessionAutoName] Rejected short word in: "${result.output}"`);
+        // Update cache outside lock
+        const cacheContent = `cached_session_id='${sessionId}'\ncached_session_label='${label}'\n`;
+        const cachePath = paiPath('MEMORY', 'STATE', 'session-name-cache.sh');
+        writeFileSync(cachePath, cacheContent, 'utf-8');
+        console.error(`[SessionAutoName] Background upgrade: "${label}"`);
       } else {
-        console.error(`[SessionAutoName] Bad label from inference: "${result.output}"`);
+        console.error(`[SessionAutoName] Background upgrade rejected: "${result.output}"`);
       }
     }
   } catch (error) {
-    console.error('[SessionAutoName] Inference failed:', error);
+    console.error('[SessionAutoName] Background upgrade failed:', error);
+  }
+}
+
+async function main() {
+  // ── Background upgrade mode (called by detached subprocess) ──
+  if (process.argv[2] === '--upgrade') {
+    const upgradeSessionId = process.argv[3];
+    const upgradePromptB64 = process.argv[4];
+    const upgradeExpectedName = process.argv[5];  // Version guard: name at spawn time
+    if (upgradeSessionId && upgradePromptB64) {
+      await upgradeWithInference(upgradeSessionId, upgradePromptB64, upgradeExpectedName);
+    }
+    process.exit(0);
   }
 
-  // Conservative fallback: single topic word + "Session"
-  if (!named) {
+  // ── Normal hook mode (called by Claude Code on UserPromptSubmit) ──
+  const hookInput = await readStdin();
+
+  if (!hookInput?.session_id) {
+    console.error('[SessionAutoName] No session_id in stdin — exiting');
+    process.exit(0);
+  }
+
+  const sessionId = hookInput.session_id;
+  const existingNames = readSessionNames();
+  const rawPrompt = hookInput.prompt || hookInput.user_prompt || '';
+  const prompt = sanitizePromptForNaming(rawPrompt);
+
+  // ══════════════════════════════════════════════════════════════════
+  // FAST PATH: First prompt in session — no name exists yet
+  // 1. Generate deterministic name instantly (<10ms)
+  // 2. Spawn detached background process to upgrade with inference
+  // 3. EXIT IMMEDIATELY — background process writes upgrade async
+  // ══════════════════════════════════════════════════════════════════
+  if (!existingNames[sessionId]) {
+    if (!prompt) {
+      console.error('[SessionAutoName] No prompt text for new session — skipping');
+      process.exit(0);
+    }
+
     const fallback = extractFallbackName(prompt);
     if (fallback) {
-      storeName(fallback, 'fallback');
+      storeName(sessionId, fallback, 'deterministic');
     } else {
       console.error('[SessionAutoName] No meaningful keywords in prompt — skipping');
     }
+
+    // Track ALL sessions in work.json so the activity dashboard shows them immediately.
+    // Native sessions stay as-is. Algorithm sessions get a 'starting' placeholder
+    // that PRDSync replaces when the PRD.md is written (30-120s later).
+    const sessionMode = isNativeMode(rawPrompt) ? 'native' : 'starting';
+    upsertSession(sessionId, fallback || '', prompt.slice(0, 120), sessionMode);
+    console.error(`[SessionAutoName] Created ${sessionMode} session entry in work.json`);
+
+    // Fire-and-forget: spawn detached process to upgrade name with inference
+    // This runs AFTER we've already stored the deterministic name and exited
+    if (prompt) {
+      try {
+        const promptB64 = Buffer.from(prompt.slice(0, 800)).toString('base64');
+        const expectedName = fallback || '';  // What name exists now — upgrade only if unchanged
+        const env = { ...process.env };
+        delete env.CLAUDECODE; // Prevent nested session guard in inference
+        const child = nodeSpawn('bun', [
+          import.meta.filename,
+          '--upgrade', sessionId, promptB64, expectedName,
+        ], {
+          detached: true,
+          stdio: 'ignore',
+          env,
+        });
+        child.unref();
+        console.error('[SessionAutoName] Spawned background inference upgrade');
+      } catch {
+        // Non-critical — deterministic name is already stored
+      }
+    }
+
+    process.exit(0);
   }
+
+  // ══════════════════════════════════════════════════════════════════
+  // SUBSEQUENT PROMPTS: Name already exists — only sync /rename
+  // The name is set once on the first prompt. After that, the only
+  // thing that can change it is an explicit /rename command.
+  // ══════════════════════════════════════════════════════════════════
+
+  const customTitle = getCustomTitle(sessionId);
+  if (customTitle && existingNames[sessionId] !== customTitle) {
+    storeName(sessionId, customTitle, 'custom-title');
+  }
+
+  // Keep sessions alive in work.json (bump updatedAt on each prompt)
+  const sessionMode = isNativeMode(rawPrompt) ? 'native' : 'starting';
+  upsertSession(sessionId, existingNames[sessionId] || '', '', sessionMode);
 
   process.exit(0);
 }

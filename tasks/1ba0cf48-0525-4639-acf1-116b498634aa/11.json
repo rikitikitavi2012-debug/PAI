@@ -1,0 +1,9 @@
+{
+  "id": "11",
+  "subject": "ISC-C11: settings.json hooks содержит все портированные хуки",
+  "description": "Verify: Grep: count hook entries in settings.json hooks section",
+  "activeForm": "Верификация hooks в settings.json",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

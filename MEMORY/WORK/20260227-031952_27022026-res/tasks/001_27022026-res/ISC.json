@@ -1,0 +1,77 @@
+{
+  "taskId": "001_27022026-res",
+  "status": "IN_PROGRESS",
+  "effortLevel": "STANDARD",
+  "criteria": [
+    {
+      "id": "ISC-C1",
+      "text": "CodexResearcher.md agent file deleted from agents directory",
+      "description": "Delete /home/ser/.claude/agents/CodexResearcher.md — orphaned agent, codex CLI not installed. Verify: Glob for CodexResearcher.md in agents/",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "CodexResearcherContext.md deleted from skills Agents directory",
+      "description": "Delete /home/ser/.claude/skills/Agents/CodexResearcherContext.md. Verify: Glob for CodexResearcherContext.md",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Zero references to CodexResearcher in any skill file",
+      "description": "Grep all skills/ and agents/ for CodexResearcher — must return zero matches. Verify: Grep CodexResearcher across repo",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "PerplexityResearcher.md has no stale workflow reference",
+      "description": "Line 171 references non-existent PerplexityResearch.md workflow. Fix to reflect actual tool (WebSearch). Verify: Read file, check no stale path",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "DeepInvestigation.md uses only active researcher types",
+      "description": "Lines 206 and 240 reference PerplexityResearcher — replace with GrokResearcher (completing the Claude+Gemini+Grok trio). Verify: Grep PerplexityResearcher in DeepInvestigation.md",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C6",
+      "text": "ClaudeResearch.md workflow either fixed or removed",
+      "description": "TypeScript in .md with broken ${PAI_DIR}/commands/ path. QuickResearch already covers this use case. Decision: delete if redundant. Verify: Check SKILL.md routing consistency",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C7",
+      "text": "REDESIGN-SUMMARY.md has zero stale phantom references",
+      "description": "Contains CoreStack.md and CONSTITUTION.md references. Update to current file paths. Verify: Grep CoreStack|CONSTITUTION in REDESIGN-SUMMARY.md",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C8",
+      "text": "Research SKILL.md agent counts match actual researcher count",
+      "description": "After CodexResearcher removal: 4 researcher types remain (Claude, Gemini, Grok, Perplexity). Verify agent counts in SKILL.md are accurate. Verify: Read SKILL.md trigger table",
+      "status": "pending"
+    }
+  ],
+  "antiCriteria": [
+    {
+      "id": "ISC-A1",
+      "text": "No working Research skill functionality broken by changes",
+      "description": "VERIFIED: Quick (1 ClaudeResearcher), Standard (Claude+Gemini), Extensive (3×Claude+3×Gemini+3×Grok=9). All subagent_types valid. No broken routing.",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A2",
+      "text": "No phantom references to deleted files remain anywhere",
+      "description": "VERIFIED: Grep sweep for CodexResearcher, CONSTITUTION.md, CoreStack.md, PerplexityResearch.md across skills/ and agents/ — zero matches. BrightData/SKILL.md phantom ref also fixed. MigrationNotes.md entries are historical annotations (not phantom refs).",
+      "status": "completed"
+    }
+  ],
+  "satisfaction": {
+    "total": 10,
+    "satisfied": 2,
+    "partial": 0,
+    "failed": 0
+  },
+  "createdAt": "2026-02-27T03:19:52+03:00",
+  "updatedAt": "2026-02-27T04:02:47+03:00"
+}

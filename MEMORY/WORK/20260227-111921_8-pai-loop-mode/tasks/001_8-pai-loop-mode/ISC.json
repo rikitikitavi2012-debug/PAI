@@ -1,0 +1,167 @@
+{
+  "taskId": "001_8-pai-loop-mode",
+  "status": "IN_PROGRESS",
+  "effortLevel": "STANDARD",
+  "criteria": [
+    {
+      "id": "ISC-PH-1",
+      "text": "All {PRINCIPAL.NAME} in skills replaced with Ivan",
+      "description": "Every occurrence of {PRINCIPAL.NAME} across 8 audited skills replaced with Ivan. Verify: Grep",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-PH-2",
+      "text": "All {DAIDENTITY.NAME} in skills replaced with Navi",
+      "description": "Every occurrence of {DAIDENTITY.NAME} across 8 audited skills replaced with Navi. Verify: Grep",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-PH-3",
+      "text": "All YOUR_VOICE_ID_HERE replaced with actual voice ID",
+      "description": "Every occurrence of YOUR_VOICE_ID_HERE across skills replaced with pNInz6obpgDQGcFmaJgB. Verify: Grep",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-INT-1",
+      "text": "Agents skill has zero phantom refs or broken paths",
+      "description": "All file references, workflow names, and imports in Agents skill point to existing targets. Verify: Grep + Read",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-INT-2",
+      "text": "ExtractWisdom skill has zero phantom refs or broken paths",
+      "description": "All references in ExtractWisdom skill point to existing targets. Verify: Grep + Read",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-INT-3",
+      "text": "WorldThreatModelHarness has zero phantom refs or broken paths",
+      "description": "All references in WTMH skill point to existing targets. Verify: Grep + Read",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-INT-4",
+      "text": "Recon skill has zero phantom refs or broken paths",
+      "description": "All references in Recon skill point to existing targets. Verify: Grep + Read",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-INT-5",
+      "text": "PromptInjection skill has zero phantom refs or broken paths",
+      "description": "All references in PromptInjection skill point to existing targets. Verify: Grep + Read",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-INT-6",
+      "text": "Parser skill has zero phantom refs or broken paths",
+      "description": "All references in Parser skill point to existing targets. Verify: Grep + Read",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-INT-7",
+      "text": "Sales skill has zero phantom refs or broken paths",
+      "description": "All references in Sales skill point to existing targets. Verify: Grep + Read",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-INT-8",
+      "text": "PAIUpgrade skill has zero phantom refs or broken paths",
+      "description": "All references in PAIUpgrade skill point to existing targets. Verify: Grep + Read",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-INF-1",
+      "text": "PAI Tools intentional placeholders kept, non-intentional fixed",
+      "description": "RelationshipReflect.ts and OpinionTracker.ts — intentional template placeholders preserved, actual bugs fixed. Verify: Read + context analysis",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-INF-2",
+      "text": "PAI docs THEHOOKSYSTEM and THENOTIFICATIONSYSTEM placeholders resolved",
+      "description": "Non-intentional placeholders in PAI documentation files fixed. Verify: Grep",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-INF-3",
+      "text": "PAI Components placeholders in format and routing resolved",
+      "description": "Placeholders in 15-format-mode-selection.md and 30-workflow-routing.md fixed. Verify: Grep",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-V-1",
+      "text": "Global grep returns only RebuildPAI.ts mapping entries",
+      "description": "grep -r for {PRINCIPAL.NAME}, {DAIDENTITY.NAME}, YOUR_VOICE_ID_HERE in skills/ returns ONLY RebuildPAI.ts lines 29-42. Verify: CLI grep",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-V-2",
+      "text": "Zero LESSONS.md references remain across all audited skills",
+      "description": "No references to LESSONS.md (should be LEARNED.md) in any of the 8 skills. Verify: Grep",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-D-1",
+      "text": "Git commit created with all audit fixes",
+      "description": "Single commit with message: fix: audit 8 PAI skills — N bugs fixed. Verify: git log",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-D-2",
+      "text": "GitHub Issue created in danielmiessler/PAI with report",
+      "description": "Issue with table of skills, bug counts, types. References prior audits. Verify: gh issue view",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "ExtractWisdom WRITINGSTYLE.md phantom ref resolved correctly",
+      "description": "Reference to non-existent WRITINGSTYLE.md either removed or redirected to existing style source. Verify: Grep",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Recon phantom refs for AsnRecon and tools resolved",
+      "description": "References to AsnRecon.md, cert-transparency.ts, report-generator.ts either removed or corrected. Verify: Grep+Read",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Sales Aesthetic.md phantom ref resolved correctly",
+      "description": "Reference to non-existent Aesthetic.md either removed or redirected. Verify: Grep",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "PAIUpgrade FindSources.md phantom ref resolved correctly",
+      "description": "Reference to non-existent FindSources.md either removed from routing or corrected. Verify: Grep+Read",
+      "status": "completed"
+    }
+  ],
+  "antiCriteria": [
+    {
+      "id": "ISC-A-1",
+      "text": "RebuildPAI.ts mapping lines 29-42 remain completely unchanged",
+      "description": "Anti-criterion: The placeholder mapping in RebuildPAI.ts must not be modified. Verify: git diff on that file",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A-2",
+      "text": "No functional code changes beyond placeholder and ref fixes",
+      "description": "Anti-criterion: Only placeholder replacements, phantom ref fixes, path corrections. No refactoring or new features. Verify: git diff review",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "No existing working functionality removed or broken",
+      "description": "Anti-criterion: Only phantom refs fixed, no working features removed. Verify: Read diff",
+      "status": "completed"
+    }
+  ],
+  "satisfaction": {
+    "total": 25,
+    "satisfied": 16,
+    "partial": 0,
+    "failed": 0
+  },
+  "createdAt": "2026-02-27T11:19:21+03:00",
+  "updatedAt": "2026-02-27T13:13:50+03:00"
+}

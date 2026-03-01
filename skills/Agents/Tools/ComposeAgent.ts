@@ -8,7 +8,7 @@
  *
  * Configuration files:
  *   Base:  ~/.claude/skills/Agents/Data/Traits.yaml
- *   User:  ~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml
+ *   User:  ~/.claude/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml
  *
  * Usage:
  *   # Infer traits from task description
@@ -35,21 +35,9 @@ import Handlebars from "handlebars";
 // Paths
 const HOME = process.env.HOME || "~";
 const BASE_TRAITS_PATH = `${HOME}/.claude/skills/Agents/Data/Traits.yaml`;
-const USER_TRAITS_PATH = `${HOME}/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml`;
+const USER_TRAITS_PATH = `${HOME}/.claude/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml`;
 const TEMPLATE_PATH = `${HOME}/.claude/skills/Agents/Templates/DynamicAgent.hbs`;
 const CUSTOM_AGENTS_DIR = `${HOME}/.claude/custom-agents`;
-const SETTINGS_PATH = `${HOME}/.claude/settings.json`;
-
-// Load principal name from settings
-function getPrincipalName(): string {
-  try {
-    const raw = readFileSync(SETTINGS_PATH, "utf-8");
-    const settings = JSON.parse(raw);
-    return settings?.principal?.name || "Ivan";
-  } catch {
-    return "Ivan";
-  }
-}
 
 // Types
 interface ProsodySettings {
@@ -205,7 +193,7 @@ function loadTraits(): TraitsData {
       personality: deepMerge(base.personality || {}, user.personality || {}),
       approach: deepMerge(base.approach || {}, user.approach || {}),
       voice_mappings: {
-        default: user.voice_mappings?.default || base.voice_mappings?.default || "Ivan",
+        default: user.voice_mappings?.default || base.voice_mappings?.default || "{PRINCIPAL.NAME}",
         default_voice_id:
           user.voice_mappings?.default_voice_id ||
           base.voice_mappings?.default_voice_id ||
@@ -432,7 +420,6 @@ function composeAgent(
   } : {};
 
   const template = loadTemplate();
-  const principalName = getPrincipalName();
   const prompt = template({
     name,
     task,
@@ -443,7 +430,6 @@ function composeAgent(
     voiceId,
     voiceSettings,
     color,
-    principalName,
     ...timingData,
   });
 
@@ -666,9 +652,9 @@ ${approachBlock}
 
 1. **Send voice notification that you're loading:**
 \`\`\`bash
-curl -s -X POST http://localhost:8888/notify \\
+curl -X POST http://localhost:8888/notify \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"Агент ${agent.name} загружает контекст","voice_id":"${agent.voiceId}","title":"${agent.name}","voice_enabled":true,"voice_settings":{"stability":${vs.stability},"similarity_boost":${vs.similarity_boost},"style":${vs.style},"speed":${vs.speed},"use_speaker_boost":${vs.use_speaker_boost}},"volume":${vs.volume}}'
+  -d '{"message":"${agent.name} loading and ready to work","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
 \`\`\`
 
 2. **Then proceed with your task**
@@ -682,23 +668,23 @@ curl -s -X POST http://localhost:8888/notify \\
 **YOU MUST SEND VOICE NOTIFICATION BEFORE EVERY RESPONSE:**
 
 \`\`\`bash
-curl -s -X POST http://localhost:8888/notify \\
+curl -X POST http://localhost:8888/notify \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"${agent.voiceId}","title":"${agent.name}","voice_enabled":true,"voice_settings":{"stability":${vs.stability},"similarity_boost":${vs.similarity_boost},"style":${vs.style},"speed":${vs.speed},"use_speaker_boost":${vs.use_speaker_boost}},"volume":${vs.volume}}'
+  -d '{"message":"Your COMPLETED line content here","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
 \`\`\`
 
 **Voice Requirements:**
 - Your voice_id is: \`${agent.voiceId}\`
-- Message should be your 🎯 COMPLETED line (8-16 words, ALWAYS in Russian)
-- Must be grammatically correct and speakable IN RUSSIAN
+- Message should be your 🎯 COMPLETED line (8-16 words optimal)
+- Must be grammatically correct and speakable
 - Send BEFORE writing your response
-- DO NOT SKIP - Ivan needs to hear you speak
+- DO NOT SKIP - {PRINCIPAL.NAME} needs to hear you speak
 
 ---
 
 ## 🚨 MANDATORY OUTPUT FORMAT
 
-**USE THE PAI FORMAT FOR ALL RESPONSES:**
+**USE THE PAI FORMAT FROM PAI FOR ALL RESPONSES:**
 
 \`\`\`
 📋 SUMMARY: [One sentence - what this response is about]
@@ -905,7 +891,7 @@ OPTIONS:
 
 CONFIGURATION:
   Base traits:    ~/.claude/skills/Agents/Data/Traits.yaml
-  User traits:    ~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml
+  User traits:    ~/.claude/PAI/USER/SKILLCUSTOMIZATIONS/Agents/Traits.yaml
   Custom agents:  ~/.claude/custom-agents/
 
   User traits are merged over base (user takes priority).

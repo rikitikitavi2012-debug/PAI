@@ -8,7 +8,7 @@
  * The deterministic layer detects WHAT changed. The inference layer understands
  * HOW docs need updating — generating surgical edit pairs, never full rewrites.
  *
- * TRIGGER: Stop hook (via StopOrchestrator)
+ * TRIGGER: Stop hook (via DocIntegrity.hook.ts)
  *
  * PATTERN TYPES CHECKED (deterministic):
  * 1. Hook file references (*.hook.ts) - diff against disk
@@ -28,14 +28,16 @@
  * - Updates timestamps, counts (deterministic)
  * - Applies surgical text edits (inference-generated)
  * - Saves drift report to MEMORY/STATE/doc-drift-state.json
+ * - Emits doc.integrity event to events.jsonl
  * - Adds unfixable items to MEMORY/STATE/doc-review-queue.json
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'fs';
 import { join, basename, dirname } from 'path';
 import { paiPath, getPaiDir } from '../lib/paths';
-import { inference } from '../../skills/PAI/Tools/Inference';
-import type { ParsedTranscript } from '../../skills/PAI/Tools/TranscriptParser';
+import { inference } from '../../PAI/Tools/Inference';
+import type { ParsedTranscript } from '../../PAI/Tools/TranscriptParser';
+
 
 // ============================================================================
 // Types
@@ -66,7 +68,7 @@ interface DriftReport {
 // Constants
 // ============================================================================
 
-const SYSTEM_DIR = paiPath('skills', 'PAI');
+const SYSTEM_DIR = paiPath('PAI');
 const HOOKS_DIR = paiPath('hooks');
 const HANDLERS_DIR = join(HOOKS_DIR, 'handlers');
 const LIB_DIR = join(HOOKS_DIR, 'lib');
@@ -144,7 +146,7 @@ function getModifiedFiles(transcriptPath: string): Set<string> {
 
 function isSystemDocModified(modifiedFiles: Set<string>): boolean {
   for (const path of modifiedFiles) {
-    if (path.includes('skills/PAI/') && path.endsWith('.md')) return true;
+    if (path.includes('PAI/') && path.endsWith('.md')) return true;
   }
   return false;
 }
@@ -160,11 +162,11 @@ function isHookModified(modifiedFiles: Set<string>): boolean {
  * Check if ANY meaningful PAI system file was modified.
  * This is the broader gate — catches skills, hooks, tools, config, components,
  * workflows, and SYSTEM docs. Excludes MEMORY/WORK, MEMORY/LEARNING, MEMORY/STATE,
- * scratch, and other non-system paths.
+ * and other non-system paths.
  */
 function isSystemFileModified(modifiedFiles: Set<string>): boolean {
   const PAI_DIR = getPaiDir();
-  const EXCLUDED = ['MEMORY/WORK/', 'MEMORY/LEARNING/', 'MEMORY/STATE/', 'scratch/', 'Plans/', 'projects/', '.git/', 'node_modules/', 'ShellSnapshots/', 'Projects/', 'MEMORY/VOICE/', 'MEMORY/RELATIONSHIP/', 'history.jsonl', '.quote-cache'];
+  const EXCLUDED = ['MEMORY/WORK/', 'MEMORY/LEARNING/', 'MEMORY/STATE/', 'Plans/', 'projects/', '.git/', 'node_modules/', 'ShellSnapshots/', 'Projects/', 'MEMORY/VOICE/', 'MEMORY/RELATIONSHIP/', 'history.jsonl', '.quote-cache'];
 
   for (const filePath of modifiedFiles) {
     // Normalize to relative path for checking
@@ -178,11 +180,11 @@ function isSystemFileModified(modifiedFiles: Set<string>): boolean {
     // Skip excluded paths
     if (EXCLUDED.some(ex => relPath.includes(ex))) continue;
 
-    // Match meaningful system files (skills includes PAI root MDs, SYSTEM docs, USER dir, Components, Tools, Workflows)
-    if (relPath.includes('skills/') && (relPath.endsWith('.md') || relPath.endsWith('.ts') || relPath.endsWith('.yaml') || relPath.endsWith('.yml'))) return true;
+    // Match meaningful system files (PAI root MDs, SYSTEM docs, USER dir, Algorithm, Tools, Workflows, skills)
+    if ((relPath.startsWith('PAI/') || relPath.includes('skills/')) && (relPath.endsWith('.md') || relPath.endsWith('.ts') || relPath.endsWith('.yaml') || relPath.endsWith('.yml'))) return true;
     if (relPath.includes('hooks/') && relPath.endsWith('.ts')) return true;
     if (relPath.endsWith('settings.json')) return true;
-    if (relPath.includes('PAI/Components/') && relPath.endsWith('.md')) return true;
+    if (relPath.includes('PAI/Algorithm/') && relPath.endsWith('.md')) return true;
     if (relPath.includes('/Tools/') && relPath.endsWith('.ts')) return true;
     if (relPath.includes('/Workflows/') && relPath.endsWith('.md')) return true;
     if (relPath.startsWith('agents/') && relPath.endsWith('.md')) return true;
@@ -291,8 +293,8 @@ function checkLibFileRefs(docsToCheck: string[], libsOnDisk: Set<string>): Drift
  */
 function checkSystemDocRefs(docsToCheck: string[], systemDocsOnDisk: Set<string>): DriftItem[] {
   const drift: DriftItem[] = [];
-  // Match backtick-wrapped or plain SYSTEM/ references
-  const sysDocRefRegex = /(?:`|'|")(?:~\/\.claude\/skills\/PAI\/)?SYSTEM\/([\w/]+\.md)(?:`|'|")/g;
+  // Match backtick-wrapped or plain doc references in PAI/ (both old skills/PAI/ and new PAI/ paths)
+  const sysDocRefRegex = /(?:`|'|")(?:~\/\.claude\/)?(?:skills\/)?PAI\/([\w/]+\.md)(?:`|'|")/g;
 
   for (const docFile of docsToCheck) {
     const docPath = join(SYSTEM_DIR, docFile);
@@ -310,8 +312,8 @@ function checkSystemDocRefs(docsToCheck: string[], systemDocsOnDisk: Set<string>
         drift.push({
           doc: docFile,
           pattern: 'system_doc_ref',
-          reference: `SYSTEM/${refTarget}`,
-          issue: `References "SYSTEM/${refTarget}" but file does not exist`,
+          reference: `PAI/${refTarget}`,
+          issue: `References "PAI/${refTarget}" but file does not exist`,
         });
       }
     }
@@ -357,15 +359,12 @@ function checkHookCounts(docsToCheck: string[], actualCount: number): DriftItem[
 
 async function notifyVoice(message: string): Promise<void> {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
     await fetch('http://localhost:8888/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({ message, voice_id: 'pNInz6obpgDQGcFmaJgB' }),
+      signal: AbortSignal.timeout(3000),
+      body: JSON.stringify({ message, voice_id: 'fTtv3eikoepIosk8dTZ5' }),
     });
-    clearTimeout(timeout);
   } catch {
     // Voice server may not be running — silent fail
   }
@@ -460,6 +459,7 @@ function buildInferenceContext(
   // Collect modified system files with their content — must match isSystemFileModified scope
   const relevantFiles = Array.from(modifiedFiles).filter(f =>
     f.includes('/hooks/') ||
+    f.includes('/PAI/') ||
     f.includes('skills/') ||
     f.endsWith('settings.json') ||
     f.includes('/agents/') ||
@@ -811,7 +811,7 @@ export async function handleDocCrossRefIntegrity(
 
   // Update Last Updated timestamps for modified SYSTEM docs
   for (const path of modifiedFiles) {
-    if (path.includes('skills/PAI/') && path.endsWith('.md')) {
+    if (path.includes('PAI/') && path.endsWith('.md')) {
       const docFile = basename(path);
       const result = updateLastUpdatedTimestamp(docFile);
       if (result) {
@@ -880,7 +880,7 @@ export async function handleDocCrossRefIntegrity(
   // Step 10: Voice notification — ONLY when actual documentation edits were applied
   // No voice for "queued for review" or "in sync" — that's noise
   if (updatesApplied.length > 0) {
-    // Delay 3s so the main 🗣️ {DA_NAME} voice line plays first
+    // Delay 3s so the main 🗣️ {DAIDENTITY.NAME} voice line plays first
     await new Promise(resolve => setTimeout(resolve, 3000));
 
     const affectedDocs = new Set<string>();

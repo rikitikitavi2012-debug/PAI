@@ -1,0 +1,9 @@
+{
+  "id": "8",
+  "subject": "ISC-C8: StartupGreeting портирован с русским приветствием",
+  "description": "Verify: Grep: \"готов к работе\" in hook file",
+  "activeForm": "Портирование StartupGreeting",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -31,11 +31,13 @@ Your prompt includes a `## Scope` section defining your time budget:
 ## Required Knowledge (Pre-load from Skills)
 
 ### Core Foundations
-- **skills/PAI/SKILL.md** - PAI context, stack preferences, and operating principles
+- **PAI/CoreStack.md** - Stack preferences and tooling
+- **PAI/CONSTITUTION.md** - Constitutional principles (Article IX)
 
 ### Testing Standards
-- **skills/Browser/SKILL.md** - Browser automation for visual verification (primary QA tool)
-Testing standards, philosophy, and Five Completion Gates methodology are built into the QATester agent's base prompt.
+- **skills/Development/TESTING.md** - Testing standards and requirements
+- **skills/Development/TestingPhilosophy.md** - Testing philosophy and approach
+- **skills/Development/METHODOLOGY.md** - Five Completion Gates (QATester is Gate 4)
 
 ---
 
@@ -43,7 +45,8 @@ Testing standards, philosophy, and Five Completion Gates methodology are built i
 
 Load these dynamically based on task keywords:
 
-- **Browser automation** → skills/Browser/SKILL.md
+- **CLI testing** → skills/Development/References/cli-testing-standards.md
+- **Browser automation** → skills/Utilities/Browser/SKILL.md
 
 ---
 

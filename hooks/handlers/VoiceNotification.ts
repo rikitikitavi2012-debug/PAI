@@ -6,7 +6,7 @@
  * Extracts the 🗣️ voice line from responses and sends to ElevenLabs via voice server.
  *
  * Pure handler: receives pre-parsed transcript data, sends to voice server.
- * No I/O for transcript reading - that's done by orchestrator.
+ * No I/O for transcript reading - that's done by VoiceCompletion.hook.ts.
  */
 
 import { existsSync, readFileSync, appendFileSync, mkdirSync } from 'fs';
@@ -15,7 +15,8 @@ import { paiPath } from '../lib/paths';
 import { getIdentity, type VoicePersonality } from '../lib/identity';
 import { getISOTimestamp } from '../lib/time';
 import { isValidVoiceCompletion, getVoiceFallback } from '../lib/output-validators';
-import type { ParsedTranscript } from '../../skills/PAI/Tools/TranscriptParser';
+
+import type { ParsedTranscript } from '../../PAI/Tools/TranscriptParser';
 
 const DA_IDENTITY = getIdentity();
 
@@ -100,16 +101,13 @@ async function sendNotification(payload: ElevenLabsNotificationPayload, sessionI
     voice_id: voiceId,
   };
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 3000); // 3s timeout - voice shouldn't block Stop hook
-
   try {
     // Use ElevenLabs voice server /notify endpoint
     const response = await fetch('http://localhost:8888/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      signal: controller.signal,
+      signal: AbortSignal.timeout(10000), // 10s timeout - ElevenLabs TTS takes ~4s, need headroom
     });
 
     if (!response.ok) {
@@ -126,6 +124,7 @@ async function sendNotification(payload: ElevenLabsNotificationPayload, sessionI
         event_type: 'sent',
         status_code: response.status,
       });
+
     }
   } catch (error) {
     console.error('[Voice] Failed to send:', error);
@@ -134,8 +133,6 @@ async function sendNotification(payload: ElevenLabsNotificationPayload, sessionI
       event_type: 'failed',
       error: error instanceof Error ? error.message : String(error),
     });
-  } finally {
-    clearTimeout(timeout);
   }
 }
 

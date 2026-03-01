@@ -17,19 +17,19 @@ Running **CreateCustomAgent** in **Agents**...
 
 ## When to Use
 
-Ivan says:
+{PRINCIPAL.NAME} says:
 - "Create custom agents to do X"
 - "Spin up custom agents for Y"
 - "I need specialized agents with Z expertise"
 - "Generate N custom agents to analyze..."
 
-**KEY TRIGGER: The word "custom" means truly unique agents - NOT static types (Intern, Architect, Engineer, etc.)**
+**KEY TRIGGER: The word "custom" means truly unique agents - NOT static types (Architect, Engineer, etc.) — always use `general-purpose` with ComposeAgent prompts.**
 
 ## The Workflow
 
 ### Step 1: Determine Agent Count & Requirements
 
-Extract from Ivan's request:
+Extract from {PRINCIPAL.NAME}'s request:
 - How many agents? (Default: 1 if not specified)
 - What's the task?
 - Are specific traits mentioned? (security, legal, skeptical, thorough, etc.)
@@ -80,7 +80,7 @@ ComposeAgent returns JSON with:
 
 **Use a SINGLE message with MULTIPLE Task calls for parallel execution.**
 
-**CRITICAL: Use `subagent_type: "general-purpose"` - NEVER use static types like "Intern", "Architect", or "Engineer" for custom agents.**
+**CRITICAL: Use `subagent_type: "general-purpose"` - NEVER use static types like "Architect" or "Engineer" for custom agents.**
 
 ```typescript
 // Send all in ONE message:
@@ -178,9 +178,9 @@ If `--timing` is omitted, agents get no scope section (backward compatible).
 
 ## Example Execution
 
-**Ivan:** "Create 5 custom science agents to analyze this climate data"
+**{PRINCIPAL.NAME}:** "Create 5 custom science agents to analyze this climate data"
 
-**Navi's Internal Execution:**
+**{DAIDENTITY.NAME}'s Internal Execution:**
 ```bash
 # Agent 1 - Climate Science Enthusiast
 bun run ComposeAgent.ts --traits "research,enthusiastic,thorough" --task "Analyze climate data patterns" --output json
@@ -188,7 +188,7 @@ bun run ComposeAgent.ts --traits "research,enthusiastic,thorough" --task "Analyz
 
 # Agent 2 - Skeptical Data Analyst
 bun run ComposeAgent.ts --traits "data,skeptical,systematic" --task "Analyze climate data patterns" --output json
-# Returns: voice="Ivan", voice_id="pNInz6obpgDQGcFmaJgB"
+# Returns: voice="{PRINCIPAL.NAME}", voice_id="onwK4e9ZLuTAKqWW03F9"
 
 # Agent 3 - Creative Pattern Finder
 bun run ComposeAgent.ts --traits "data,creative,exploratory" --task "Analyze climate data patterns" --output json
@@ -261,7 +261,7 @@ ComposeAgent automatically maps trait combinations to voices:
    - `research` → Adam (narratorial)
 
 4. **Default** (no matches)
-   - Daniel (BBC anchor authority)
+   - {PRINCIPAL.NAME} (BBC anchor authority)
 
 ## Related Workflows
 

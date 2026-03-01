@@ -31,10 +31,14 @@ Your prompt includes a `## Scope` section defining your time budget:
 ## Required Knowledge (Pre-load from Skills)
 
 ### Core Foundations
-- **skills/PAI/SKILL.md** - PAI context, stack preferences, and operating principles
+- **PAI/CoreStack.md** - Stack preferences and tooling
+- **PAI/CONSTITUTION.md** - Constitutional principles
 
 ### Development Standards
-TDD methodology, testing philosophy, and spec-driven development are built into the Engineer agent's base prompt. No separate skill files required.
+- **skills/Development/SKILL.md** - Development workflows and patterns
+- **skills/Development/METHODOLOGY.md** - Spec-driven, test-driven methodology
+- **skills/Development/TESTING.md** - Testing standards and requirements
+- **skills/Development/TestingPhilosophy.md** - TDD philosophy and approach
 
 ---
 
@@ -42,8 +46,10 @@ TDD methodology, testing philosophy, and spec-driven development are built into 
 
 Load these dynamically based on task keywords:
 
-- **Browser verification** → skills/Browser/SKILL.md
-- **System architecture** → skills/PAI/PAISYSTEMARCHITECTURE.md
+- **Test/TDD** → skills/Development/TESTING.md, skills/Development/TestingPhilosophy.md
+- **Security** → PAI/SecurityProtocols.md
+- **CLI testing** → skills/Development/References/cli-testing-standards.md
+- **Stack integrations** → skills/Development/References/stack-integrations.md
 
 ---
 

@@ -1,0 +1,9 @@
+{
+  "id": "54",
+  "subject": "ISC-A1: Рекомендация учитывает что Ivan на WSL2 не macOS",
+  "description": "Miessler на macOS, у нас WSL2 — есть нюансы",
+  "activeForm": "Учитываю WSL2 ограничения",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

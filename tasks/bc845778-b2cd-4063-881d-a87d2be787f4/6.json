@@ -1,0 +1,9 @@
+{
+  "id": "6",
+  "subject": "ISC-C6: RedTeam skill has zero placeholders and phantom refs",
+  "description": "Full audit of RedTeam skill. Verify: Grep for placeholders + ref existence check",
+  "activeForm": "Auditing RedTeam skill",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

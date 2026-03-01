@@ -1,0 +1,9 @@
+{
+  "id": "52",
+  "subject": "ISC-C3: Описана интеграция Kitty в PAI хуки и табы",
+  "description": "Как PAI использует Kitty — tab colors, titles, session tracking",
+  "activeForm": "Описываю интеграцию",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

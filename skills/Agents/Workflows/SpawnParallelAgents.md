@@ -17,7 +17,7 @@ Running **SpawnParallelAgents** in **Agents**...
 
 ## When to Use
 
-Ivan says:
+{PRINCIPAL.NAME} says:
 - "Launch 5 agents to research these companies"
 - "Spin up agents to process this list"
 - "Create agents to analyze these files" (no "custom")
@@ -79,19 +79,19 @@ Company A: Acme AI Security Corp
 Task({
   description: "Research Company A",
   prompt: agent1Prompt,
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "haiku"  // or "sonnet" depending on complexity
 })
 Task({
   description: "Research Company B",
   prompt: agent2Prompt,
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "haiku"
 })
 Task({
   description: "Research Company C",
   prompt: agent3Prompt,
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "haiku"
 })
 // ... up to N agents
@@ -119,7 +119,7 @@ Check for:
 4. Recommendations for follow-up research
 
 Provide a brief assessment and any issues found.`,
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "haiku"
 })
 ```
@@ -146,39 +146,39 @@ Provide a brief assessment and any issues found.`,
 
 ## Example: Research 5 Companies
 
-**Ivan:** "Launch agents to research these 5 AI security companies"
+**{PRINCIPAL.NAME}:** "Launch agents to research these 5 AI security companies"
 
-**Navi's Execution:**
+**{DAIDENTITY.NAME}'s Execution:**
 ```typescript
 // Single message with 5 Task calls:
 Task({
   description: "Research Acme AI Security",
   prompt: "Research Acme AI Security Corp: products, market, partnerships, tech stack",
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "sonnet"
 })
 Task({
   description: "Research Bolt Security AI",
   prompt: "Research Bolt Security AI: products, market, partnerships, tech stack",
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "sonnet"
 })
 Task({
   description: "Research Cipher AI Defense",
   prompt: "Research Cipher AI Defense: products, market, partnerships, tech stack",
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "sonnet"
 })
 Task({
   description: "Research Delta Threat Intel",
   prompt: "Research Delta Threat Intelligence: products, market, partnerships, tech stack",
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "sonnet"
 })
 Task({
   description: "Research Echo AI Protection",
   prompt: "Research Echo AI Protection Systems: products, market, partnerships, tech stack",
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "sonnet"
 })
 
@@ -186,7 +186,7 @@ Task({
 Task({
   description: "Spotcheck company research",
   prompt: "Review these 5 company research results for consistency and gaps: [results]",
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "haiku"
 })
 ```
@@ -209,7 +209,7 @@ items.forEach(item => {
   Task({
     description: `Process ${item}`,
     prompt: `Analyze ${item} for: [criteria]`,
-    subagent_type: "Intern",
+    subagent_type: "general-purpose",
     model: "haiku"
   });
 });
@@ -229,7 +229,7 @@ files.forEach(file => {
   Task({
     description: `Analyze ${file}`,
     prompt: `Review ${file} for security issues, focusing on: [checklist]`,
-    subagent_type: "Intern",
+    subagent_type: "general-purpose",
     model: "sonnet"
   });
 });
@@ -255,7 +255,7 @@ questions.forEach(q => {
   Task({
     description: `Research: ${q}`,
     prompt: `Find reliable answer to: ${q}. Include sources.`,
-    subagent_type: "Intern",
+    subagent_type: "general-purpose",
     model: "haiku"
   });
 });
@@ -284,7 +284,7 @@ Verify:
 - No conflicting data
 
 Flag any issues for follow-up.`,
-  subagent_type: "Intern",
+  subagent_type: "general-purpose",
   model: "haiku"  // Fast spotcheck
 })
 ```
@@ -308,21 +308,28 @@ Task({ ... })  // Agent 3
 // All run simultaneously
 ```
 
-**❌ WRONG: Using ComposeAgent for generic agents**
-```bash
-# Overkill for simple parallel work
-bun run ComposeAgent.ts --traits "research,analytical"
-```
-
-**✅ RIGHT: Direct Intern launch**
+**❌ WRONG: Using the deprecated Intern agent type**
 ```typescript
-// Simple and fast
+// Intern type has been removed from the system
 Task({
   description: "Research X",
   prompt: "Research X and report findings",
-  subagent_type: "Intern",
+  subagent_type: "Intern",  // DOES NOT EXIST — removed from system
   model: "haiku"
 })
+```
+
+**✅ RIGHT: Use general-purpose agents or agents composed via ComposeAgent**
+```typescript
+// For simple parallel work, use general-purpose type
+Task({
+  description: "Research X",
+  prompt: "Research X and report findings",
+  subagent_type: "general-purpose",
+  model: "haiku"
+})
+// For specialized parallel work, compose a custom agent first via ComposeAgent
+// or use a specialized type like "Engineer", "Architect", etc.
 ```
 
 **❌ WRONG: Skipping spotcheck**

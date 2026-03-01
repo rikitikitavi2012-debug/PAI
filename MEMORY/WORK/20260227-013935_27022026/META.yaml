@@ -1,0 +1,11 @@
+id: "20260227-013935_27022026"
+title: "27022026"
+session_id: "a474233d-6abc-4d56-848b-6996c0ed6dd7"
+created_at: "2026-02-27T01:39:35+03:00"
+completed_at: "2026-02-27T03:18:53+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -1,0 +1,47 @@
+{
+  "taskId": "001_task",
+  "status": "IN_PROGRESS",
+  "effortLevel": "STANDARD",
+  "criteria": [
+    {
+      "id": "ISC-C1",
+      "text": "Kitty преимущества для Claude Code ясно перечислены",
+      "description": "Перечислены конкретные фишки Kitty терминала для работы с Claude Code: графический протокол, GPU рендеринг, скорость, tabs/layouts, шрифты | Verify: Custom: ответ содержит 5+ конкретных преимуществ",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Проблема скриншотов Windows→WSL диагностирована и решена",
+      "description": "Объяснено почему копипаст скриншотов не работает и дано решение: симлинк/маунт или альтернатива | Verify: Custom: решение содержит конкретную команду",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Рекомендации по монтированию Windows папок в WSL даны",
+      "description": "Объяснено когда стоит/не стоит монтировать, симлинки vs bind mount, производительность | Verify: Custom: даны конкретные рекомендации с командами",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Kitty vs Shell сравнение с чёткой рекомендацией",
+      "description": "Kitty terminal vs другие варианты (Windows Terminal, claude.ai web) — когда что лучше, с рекомендацией | Verify: Custom: есть финальная рекомендация",
+      "status": "pending"
+    }
+  ],
+  "antiCriteria": [
+    {
+      "id": "ISC-A1",
+      "text": "Не предложены решения ломающие существующую WSL конфигурацию",
+      "description": "Решения безопасны, не трогают системные маунты, не ломают пути | Verify: Custom: все команды обратимы",
+      "status": "pending"
+    }
+  ],
+  "satisfaction": {
+    "total": 5,
+    "satisfied": 0,
+    "partial": 0,
+    "failed": 0
+  },
+  "createdAt": "2026-02-27T19:31:18+03:00",
+  "updatedAt": "2026-02-28T11:46:00+03:00"
+}

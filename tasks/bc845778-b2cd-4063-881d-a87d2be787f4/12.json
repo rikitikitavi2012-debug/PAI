@@ -1,0 +1,9 @@
+{
+  "id": "12",
+  "subject": "ISC-C12: All 8 audited skills have correct voice curl format",
+  "description": "Voice curls must use correct voiceId and localhost:8888 endpoint. Verify: Grep for curl patterns",
+  "activeForm": "Checking voice curl formats",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

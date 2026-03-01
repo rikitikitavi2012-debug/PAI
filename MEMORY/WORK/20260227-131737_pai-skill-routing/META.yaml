@@ -1,0 +1,11 @@
+id: "20260227-131737_pai-skill-routing"
+title: "PAI skill routing"
+session_id: "630c3480-28c3-4f4d-8dcf-580a9506b388"
+created_at: "2026-02-27T13:17:37+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

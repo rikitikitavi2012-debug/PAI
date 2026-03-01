@@ -60,7 +60,6 @@ const EXCLUDED_PATHS = [
   'MEMORY/WORK/',
   'MEMORY/LEARNING/',
   'MEMORY/STATE/',
-  'scratch/',
   'Plans/',
   'projects/',
   '.git/',
@@ -70,8 +69,7 @@ const EXCLUDED_PATHS = [
 
 // High-priority paths that always warrant documentation
 const HIGH_PRIORITY_PATHS = [
-  'skills/PAI/',
-  'skills/PAI/USER/',
+  'PAI/',
   'PAISYSTEMARCHITECTURE.md',
   'SKILLSYSTEM.md',
   'MEMORYSYSTEM.md',
@@ -83,8 +81,7 @@ const HIGH_PRIORITY_PATHS = [
 
 // Philosophical/architectural patterns in paths
 const PHILOSOPHICAL_PATTERNS = [
-  /PAI\/SYSTEM\//i,
-  /PAI\/USER\//i,
+  /PAI\//i,
   /ARCHITECTURE/i,
   /PRINCIPLES/i,
   /FOUNDING/i,
@@ -225,7 +222,7 @@ export function categorizeChange(path: string): ChangeCategory | null {
     const skillMatch = path.match(/skills\/(_[^/]+)/);
     if (skillMatch) return null;
     if (path.includes('/Workflows/')) return 'workflow';
-    if (path.includes('skills/PAI/')) return 'core-system';
+    if (path.match(/PAI\/(?:PAISYSTEM|THEHOOKSYSTEM|THEDELEGATION|MEMORYSYSTEM|AISTEERINGRULES)/)) return 'core-system';
     return 'skill';
   }
 
@@ -279,8 +276,9 @@ export function isSignificantChange(changes: FileChange[]): boolean {
     return true;
   }
 
-  // Significant if multiple system files changed
-  if (systemChanges.length >= 2) {
+  // Significant if multiple files in same domain
+  const categories = new Set(systemChanges.map(c => c.category));
+  if (categories.size >= 1 && systemChanges.length >= 2) {
     return true;
   }
 
@@ -511,7 +509,7 @@ export function generateDescriptiveTitle(changes: FileChange[]): string {
   const hasTools = paths.some(p => p.includes('/Tools/') && p.endsWith('.ts'));
   const hasHooks = paths.some(p => p.includes('hooks/'));
   const hasConfig = paths.some(p => p.endsWith('settings.json'));
-  const hasCoreSystem = paths.some(p => p.includes('skills/PAI/'));
+  const hasCoreSystem = paths.some(p => p.match(/PAI\/(?:PAISYSTEM|THEHOOKSYSTEM|THEDELEGATION|MEMORYSYSTEM|AISTEERINGRULES)/));
   const hasCoreUser = paths.some(p => p.includes('PAI/USER/'));
 
   let title = '';
@@ -568,7 +566,7 @@ export function generateDescriptiveTitle(changes: FileChange[]): string {
   // Core system changes
   else if (hasCoreSystem) {
     const docNames = paths
-      .filter(p => p.includes('skills/PAI/'))
+      .filter(p => p.match(/PAI\/(?:PAISYSTEM|THEHOOKSYSTEM|THEDELEGATION|MEMORYSYSTEM|AISTEERINGRULES)/))
       .map(p => basename(p, '.md'));
     if (docNames.length === 1) {
       title = `${docNames[0]} Documentation Updated`;

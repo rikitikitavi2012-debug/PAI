@@ -1,0 +1,9 @@
+{
+  "id": "19",
+  "subject": "ISC-A1: MEMORY не перезаписана и не модифицирована при миграции",
+  "description": "Verify: CLI: diff checksums of MEMORY between source and staging",
+  "activeForm": "Проверка целостности MEMORY",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

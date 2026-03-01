@@ -18,8 +18,8 @@ export function CoverPage({
       <div className="flex-1 flex flex-col justify-center">
         {/* Logo - left-justified above title */}
         <img
-          src="/ul-icon.png"
-          alt="Report"
+          src="/your-logo.png"
+          alt="{YOUR_BUSINESS_NAME}"
           width={125}
           height={125}
           className="mb-6 -ml-4"
@@ -34,7 +34,7 @@ export function CoverPage({
       <div className="cover-meta">
         <p className="cover-date">{reportDate}</p>
         <p className="text-muted-dark text-sm mt-2">
-          Ivan Consulting
+          {YOUR_BUSINESS_NAME} Consulting
         </p>
       </div>
     </div>

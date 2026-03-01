@@ -1,0 +1,11 @@
+id: "20260228-115423_task"
+title: "Просмотри последние коммиты над нашего аудита сист"
+session_id: "6c38d301-50ff-4959-bbc4-f9326e10a2b0"
+created_at: "2026-02-28T11:54:23+03:00"
+completed_at: "2026-02-28T22:12:43+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

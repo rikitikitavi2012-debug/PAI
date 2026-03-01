@@ -1,0 +1,9 @@
+{
+  "id": "56",
+  "subject": "ISC-C2: Сравнение Ghostty и Kitty по ключевым параметрам готово",
+  "description": "7 параметров сравнены: Remote Control, Tab scripting, Sessions, GPU, WSL2, Windows native, macOS native, PAI hooks",
+  "activeForm": "Сравниваю Ghostty и Kitty",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

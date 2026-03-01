@@ -1,11 +1,6 @@
 ---
 name: Research
-description: Comprehensive research, analysis, and content extraction system. USE WHEN user says 'research' (ANY form - this is the MANDATORY trigger), 'do research', 'extensive research', 'quick research', 'minor research', 'research this', 'find information', 'investigate', 'extract wisdom', 'extract alpha', 'analyze content', 'can't get this content', 'use fabric', OR requests any web/content research. Supports three research modes (quick/standard/extensive), deep content analysis, intelligent retrieval, and 242+ Fabric patterns. NOTE: For due diligence, OSINT, or background checks, use OSINT skill instead.
-implements: Science
-science_cycle_time: meso
-context: fork
-compatibility:
-  min_model: sonnet
+description: Comprehensive research and content extraction — quick/standard/extensive/deep modes with multi-agent parallel research, content retrieval, AI trends analysis, and 242+ Fabric patterns. USE WHEN research, do research, quick research, extensive research, deep investigation, find information, investigate, extract alpha, analyze content, retrieve content, use fabric, AI trends, Claude research, enhance content, extract knowledge, interview research, web scraping, YouTube extraction, standard research.
 ---
 
 ## ⚠️ MANDATORY TRIGGER
@@ -14,9 +9,9 @@ compatibility:
 
 | User Says | Action |
 |-----------|--------|
-| "research" / "do research" / "research this" | → Standard mode (2 agents) |
+| "research" / "do research" / "research this" | → Standard mode (3 agents) |
 | "quick research" / "minor research" | → Quick mode (1 agent) |
-| "extensive research" / "deep research" | → Extensive mode (9 agents) |
+| "extensive research" / "deep research" | → Extensive mode (12 agents) |
 | "deep investigation" / "investigate [topic]" / "map the [X] landscape" | → Deep Investigation (iterative) |
 
 **"Research" alone = Standard mode. No exceptions.**
@@ -24,7 +19,7 @@ compatibility:
 ## Customization
 
 **Before executing, check for user customizations at:**
-`~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Research/`
+`~/.claude/PAI/USER/SKILLCUSTOMIZATIONS/Research/`
 
 If this directory exists, load and apply any PREFERENCES.md, configurations, or resources found there. These override default behavior. If the directory does not exist, proceed with skill defaults.
 
@@ -68,9 +63,9 @@ Route to the appropriate workflow based on the request.
 **CRITICAL:** For due diligence, company/person background checks, or vetting -> **INVOKE OSINT SKILL INSTEAD**
 
 ### Research Modes (Primary Workflows)
-- Quick/minor research (1 ClaudeResearcher, 1 query) -> `Workflows/QuickResearch.md`
-- Standard research - DEFAULT (2 agents: Claude + Gemini) -> `Workflows/StandardResearch.md`
-- Extensive research (3 types x 3 threads = 9 agents: Claude + Gemini + Grok) -> `Workflows/ExtensiveResearch.md`
+- Quick/minor research (1 Perplexity, 1 query) -> `Workflows/QuickResearch.md`
+- Standard research - DEFAULT (3 agents: Perplexity + Claude + Gemini) -> `Workflows/StandardResearch.md`
+- Extensive research (4 types x 3 threads = 12 agents) -> `Workflows/ExtensiveResearch.md`
 - Deep investigation / iterative research (progressive deepening, loop-compatible) -> `Workflows/DeepInvestigation.md`
 
 ### Deep Content Analysis
@@ -82,7 +77,8 @@ Route to the appropriate workflow based on the request.
 - Web scraping -> `Workflows/WebScraping.md`
 
 ### Specific Research Types
-- Claude WebSearch only / single-agent research (uses ClaudeResearcher) -> `Workflows/QuickResearch.md`
+- Claude WebSearch only (free, no API keys) -> `Workflows/ClaudeResearch.md`
+- Perplexity API research (use Quick for single-agent) -> `Workflows/QuickResearch.md`
 - Interview preparation (Tyler Cowen style) -> `Workflows/InterviewResearch.md`
 - AI trends analysis -> `Workflows/AnalyzeAiTrends.md`
 
@@ -101,9 +97,9 @@ Route to the appropriate workflow based on the request.
 
 | Trigger | Mode | Speed |
 |---------|------|-------|
-| "quick research" | 1 ClaudeResearcher | ~10-15s |
-| "do research" | 2 agents (default) | ~15-30s |
-| "extensive research" | 9 agents | ~60-90s |
+| "quick research" | 1 Perplexity agent | ~10-15s |
+| "do research" | 3 agents (default) | ~15-30s |
+| "extensive research" | 12 agents | ~60-90s |
 | "deep investigation" | Progressive iteration | ~3-60min |
 
 ---
@@ -151,9 +147,9 @@ See `Workflows/DeepInvestigation.md` for full workflow details.
 
 ## File Organization
 
-**Scratch (temporary work artifacts):** `~/.claude/MEMORY/WORK/{current_work}/scratch/`
+**Working files (temporary work artifacts):** `~/.claude/MEMORY/WORK/{current_work}/`
 - Read `~/.claude/MEMORY/STATE/current-work.json` to get the `work_dir` value
-- All iterative work artifacts go in the current work item's scratch/ subdirectory
+- All iterative work artifacts go in the current work item directory
 - This ties research artifacts to the work item for learning and context
 
-**Research (permanent):** `~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_[topic]/`
+**History (permanent):** `~/.claude/History/research/YYYY-MM/YYYY-MM-DD_[topic]/`

@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "ISC-C2: v4.0.1 скачан в staging директорию без ошибок",
+  "description": "Verify: CLI: ls ~/.claude-v4-staging/CLAUDE.md.template",
+  "activeForm": "Скачивание v4.0.1",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

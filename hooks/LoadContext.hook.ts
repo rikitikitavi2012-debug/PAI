@@ -1,92 +1,68 @@
 #!/usr/bin/env bun
 /**
- * LoadContext.hook.ts - Inject PAI context into Claude's Context (SessionStart)
+ * LoadContext.hook.ts - Inject PAI dynamic context into Claude's Context (SessionStart)
  *
- * PURPOSE:
- * The foundational context injection hook. Reads the PAI SKILL.md plus
- * AI Steering Rules (SYSTEM and USER) and outputs them as a <system-reminder>
- * to stdout.
+ * PAI v4.0: Core context (identity, rules, format) is now in CLAUDE.md and loaded
+ * natively by Claude Code. This hook injects DYNAMIC context only:
+ * - Relationship context (recent opinions + notes)
+ * - Learning readback (signals, wisdom, failure patterns)
+ * - Active work summary (last 48h sessions + tracked projects)
  *
  * TRIGGER: SessionStart
  *
  * INPUT:
- * - Environment: PAI_DIR, TIME_ZONE
- * - Files: skills/PAI/SKILL.md, skills/PAI/AISTEERINGRULES.md,
- *          skills/PAI/USER/AISTEERINGRULES.md, MEMORY/STATE/progress/*.json
+ * - Environment: PAI_DIR
+ * - Files: PAI/USER/OPINIONS.md, MEMORY/RELATIONSHIP/*, MEMORY/LEARNING/*,
+ *          MEMORY/WORK/*, MEMORY/STATE/progress/*.json
  *
  * OUTPUT:
- * - stdout: <system-reminder> containing SKILL.md + AI Steering Rules
+ * - stdout: <system-reminder> containing dynamic context (relationship + learning)
  * - stdout: Active work summary if previous sessions have pending work
  * - stderr: Status messages and errors
  * - exit(0): Normal completion
- * - exit(1): Critical failure (SKILL.md not found)
  *
- * DESIGN PHILOSOPHY:
- * Load SKILL.md and AI Steering Rules at session start. These are critical for
- * consistent behavior. Other context (USER docs, SYSTEM docs) loads dynamically
- * based on the Context Loading section in SKILL.md.
- *
- * ERROR HANDLING:
- * - Missing SKILL.md: Fatal error, exits with code 1
- * - Missing steering rules: Logged warning, continues (non-fatal)
- * - Progress file errors: Logged, continues (non-fatal)
- * - Date command failure: Falls back to ISO timestamp
+ * DESIGN (v4.0):
+ * CLAUDE.md handles static identity/format (loaded natively by Claude Code).
+ * This hook force-loads startup files (settings.json → loadAtStartup) and
+ * injects dynamic, session-specific context (relationship, learning, work).
  *
  * PERFORMANCE:
  * - Blocking: Yes (context is essential)
- * - Typical execution: <50ms
- * - Skipped for subagents: Yes (they get context differently)
+ * - Typical execution: <50ms (no SKILL.md rebuild needed)
+ * - Skipped for subagents: Yes
  */
 
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
-import { execSync } from 'child_process';
 import { getPaiDir } from './lib/paths';
 import { recordSessionStart } from './lib/notifications';
-import { setTabState, readTabState } from './lib/tab-setter';
-import { getDAName, getPrincipal } from './lib/identity';
+import { loadLearningDigest, loadWisdomFrames, loadFailurePatterns, loadSignalTrends } from './lib/learning-readback';
 
-/**
- * Reset tab title to clean state at session start.
- * Preserves working/thinking state to survive context compaction.
- * Context compaction fires SessionStart but shouldn't reset active tabs.
- */
-function resetTabTitle(sessionId?: string): void {
-  try {
-    // Check if tab is currently active (working or thinking).
-    // Context compaction fires SessionStart mid-session — resetting
-    // would blow away the working title and show "Kai ready…" during work.
-    const current = readTabState(sessionId);
-    if (current && (current.state === 'working' || current.state === 'thinking')) {
-      console.error(`🔄 Tab in ${current.state} state — preserving title through compaction`);
-      return;
-    }
-
-    setTabState({ title: `${getDAName()} ready…`, state: 'idle', sessionId });
-    console.error('\uD83D\uDD04 Tab title reset to clean state');
-  } catch (err) {
-    console.error(`\u26A0\uFE0F Failed to reset tab title: ${err}`);
-    // Non-fatal, continue with session
-  }
+interface DynamicContextConfig {
+  relationshipContext?: boolean;
+  learningReadback?: boolean;
+  activeWorkSummary?: boolean;
 }
 
-async function getCurrentDate(): Promise<string> {
-  try {
-    const proc = Bun.spawn(['date', '+%Y-%m-%d %H:%M:%S %Z'], {
-      stdout: 'pipe',
-      env: { ...process.env, TZ: process.env.TIME_ZONE || getPrincipal().timezone }
-    });
-    const output = await new Response(proc.stdout).text();
-    return output.trim();
-  } catch (error) {
-    console.error('Failed to get current date:', error);
-    return new Date().toISOString();
-  }
+interface LoadAtStartupConfig {
+  _docs?: string;
+  files?: string[];
 }
 
 interface Settings {
-  contextFiles?: string[];
+  dynamicContext?: DynamicContextConfig;
+  loadAtStartup?: LoadAtStartupConfig;
   [key: string]: unknown;
+}
+
+/**
+ * Check if a dynamic context section is enabled.
+ * Defaults to true if not configured (backward compatible).
+ */
+function isDynamicEnabled(settings: Settings, key: keyof DynamicContextConfig): boolean {
+  if (!settings.dynamicContext) return true;
+  const val = settings.dynamicContext[key];
+  return val !== false;
 }
 
 /**
@@ -105,41 +81,31 @@ function loadSettings(paiDir: string): Settings {
 }
 
 /**
- * Load context files from settings.json contextFiles array.
- * Falls back to hardcoded paths if array not defined.
+ * Load files listed in settings.json → loadAtStartup.files
+ * Reads each file and injects as a system-reminder block.
  */
-function loadContextFiles(paiDir: string, settings: Settings): string {
-  const defaultFiles = [
-    'skills/PAI/SKILL.md',
-    'skills/PAI/AISTEERINGRULES.md',
-    'skills/PAI/USER/AISTEERINGRULES.md'
-  ];
+function loadStartupFiles(paiDir: string, settings: Settings): string | null {
+  const config = settings.loadAtStartup;
+  if (!config?.files || config.files.length === 0) return null;
 
-  const contextFiles = settings.contextFiles || defaultFiles;
-  let combinedContent = '';
-
-  for (const relativePath of contextFiles) {
-    const fullPath = join(paiDir, relativePath);
-    if (existsSync(fullPath)) {
-      const content = readFileSync(fullPath, 'utf-8');
-      if (combinedContent) combinedContent += '\n\n---\n\n';
-      combinedContent += content;
-      console.error(`✅ Loaded ${relativePath} (${content.length} chars)`);
-    } else {
-      console.error(`⚠️ Context file not found: ${relativePath}`);
+  const parts: string[] = [];
+  for (const relPath of config.files) {
+    const fullPath = join(paiDir, relPath);
+    if (!existsSync(fullPath)) {
+      console.error(`⚠️ loadAtStartup: file not found: ${relPath}`);
+      continue;
+    }
+    try {
+      const content = readFileSync(fullPath, 'utf-8').trim();
+      parts.push(content);
+      console.error(`📄 Force-loaded: ${relPath} (${content.length} chars)`);
+    } catch (err) {
+      console.error(`⚠️ loadAtStartup: failed to read ${relPath}: ${err}`);
     }
   }
 
-  return combinedContent;
-}
-
-interface ProgressFile {
-  project: string;
-  status: string;
-  updated: string;
-  objectives: string[];
-  next_steps: string[];
-  handoff_notes: string;
+  if (parts.length === 0) return null;
+  return parts.join('\n\n---\n\n');
 }
 
 /**
@@ -150,13 +116,12 @@ function loadRelationshipContext(paiDir: string): string | null {
   const parts: string[] = [];
 
   // Load high-confidence opinions (>0.85) from OPINIONS.md
-  const opinionsPath = join(paiDir, 'skills/PAI/USER/OPINIONS.md');
+  const opinionsPath = join(paiDir, 'PAI/USER/OPINIONS.md');
   if (existsSync(opinionsPath)) {
     try {
       const content = readFileSync(opinionsPath, 'utf-8');
       const highConfidence: string[] = [];
 
-      // Extract opinions with confidence >= 0.85
       const opinionBlocks = content.split(/^### /gm).slice(1);
       for (const block of opinionBlocks) {
         const lines = block.split('\n');
@@ -197,11 +162,10 @@ function loadRelationshipContext(paiDir: string): string | null {
     if (existsSync(notePath)) {
       try {
         const content = readFileSync(notePath, 'utf-8');
-        // Extract just the note lines (starting with -)
         const notes = content
           .split('\n')
           .filter(line => line.trim().startsWith('- '))
-          .slice(0, 5); // Last 5 notes per day
+          .slice(0, 5);
         if (notes.length > 0) {
           recentNotes.push(`*${formatDate(date)}:*`);
           recentNotes.push(...notes);
@@ -223,7 +187,7 @@ function loadRelationshipContext(paiDir: string): string | null {
 
 ${parts.join('\n')}
 
-*Full details: USER/OPINIONS.md, MEMORY/RELATIONSHIP/*
+*Full details: PAI/USER/OPINIONS.md, MEMORY/RELATIONSHIP/*
 `;
 }
 
@@ -242,13 +206,11 @@ interface WorkSession {
 
 /**
  * Scan recent WORK/ directories (last 48h) for active sessions.
- * Only reads the most recent 20 dirs (sorted by timestamp in dirname).
  */
 function getRecentWorkSessions(paiDir: string): WorkSession[] {
   const workDir = join(paiDir, 'MEMORY', 'WORK');
   if (!existsSync(workDir)) return [];
 
-  // Load session name mapping for clean English titles
   let sessionNames: Record<string, string> = {};
   const namesPath = join(paiDir, 'MEMORY', 'STATE', 'session-names.json');
   try {
@@ -260,69 +222,88 @@ function getRecentWorkSessions(paiDir: string): WorkSession[] {
   const sessions: WorkSession[] = [];
   const now = Date.now();
   const cutoff48h = 48 * 60 * 60 * 1000;
-  const seenSessionIds = new Set<string>(); // Dedupe sessions with same ID
+  const seenSessionIds = new Set<string>();
 
   try {
-    // Dirs are named YYYYMMDD-HHMMSS_slug — reverse sort = newest first
     const allDirs = readdirSync(workDir, { withFileTypes: true })
       .filter(d => d.isDirectory() && /^\d{8}-\d{6}_/.test(d.name))
       .map(d => d.name)
       .sort()
       .reverse()
-      .slice(0, 30); // Check last 30 (some will be filtered)
+      .slice(0, 30);
 
     for (const dirName of allDirs) {
-      // Parse timestamp from dirname: YYYYMMDD-HHMMSS
       const match = dirName.match(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})_(.+)$/);
       if (!match) continue;
 
       const [, y, mo, d, h, mi, s, slug] = match;
       const dirTime = new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}`).getTime();
 
-      // Skip if older than 48h
-      if (now - dirTime > cutoff48h) break; // Sorted newest-first, so we can break
+      if (now - dirTime > cutoff48h) break;
 
       const dirPath = join(workDir, dirName);
+
+      // Read metadata from PRD.md frontmatter (v4.0 consolidated) or META.yaml (legacy)
+      let status = 'UNKNOWN';
+      let rawTitle = slug.replace(/-/g, ' ');
+      let sessionId: string | undefined;
+      const prdPath = join(dirPath, 'PRD.md');
       const metaPath = join(dirPath, 'META.yaml');
 
-      if (!existsSync(metaPath)) continue;
+      if (existsSync(prdPath)) {
+        // v4.0: Read from PRD.md frontmatter
+        try {
+          const prdHead = readFileSync(prdPath, 'utf-8').substring(0, 600);
+          const statusMatch = prdHead.match(/^status:\s*"?(\w+)"?/m);
+          const titleMatch = prdHead.match(/^title:\s*"?(.+?)"?\s*$/m);
+          const sessionIdMatch = prdHead.match(/^session_id:\s*"?(.+?)"?\s*$/m);
+          if (statusMatch) status = statusMatch[1];
+          if (titleMatch) rawTitle = titleMatch[1];
+          if (sessionIdMatch) sessionId = sessionIdMatch[1]?.trim();
+        } catch { /* skip */ }
+      } else if (existsSync(metaPath)) {
+        // Legacy: Read from META.yaml
+        try {
+          const meta = readFileSync(metaPath, 'utf-8');
+          const statusMatch = meta.match(/^status:\s*"?(\w+)"?/m);
+          const titleMatch = meta.match(/^title:\s*"?(.+?)"?\s*$/m);
+          const sessionIdMatch = meta.match(/^session_id:\s*"?(.+?)"?\s*$/m);
+          if (statusMatch) status = statusMatch[1];
+          if (titleMatch) rawTitle = titleMatch[1];
+          if (sessionIdMatch) sessionId = sessionIdMatch[1]?.trim();
+        } catch { /* skip */ }
+      } else {
+        continue; // No PRD.md or META.yaml — skip
+      }
 
       try {
-        const meta = readFileSync(metaPath, 'utf-8');
-        const statusMatch = meta.match(/^status:\s*"?(\w+)"?/m);
-        const titleMatch = meta.match(/^title:\s*"?(.+?)"?\s*$/m);
-        const sessionIdMatch = meta.match(/^session_id:\s*"?(.+?)"?\s*$/m);
-        const status = statusMatch?.[1] || 'UNKNOWN';
-        const rawTitle = titleMatch?.[1] || slug.replace(/-/g, ' ');
-        const sessionId = sessionIdMatch?.[1]?.trim();
 
-        // Skip completed sessions — only show ACTIVE
         if (status === 'COMPLETED') continue;
-
-        // Skip noise entries (task notifications, very short titles, no session_id)
         if (rawTitle.toLowerCase().startsWith('tasknotification') || rawTitle.length < 10) continue;
-
-        // Dedupe: only show the FIRST (most recent) work dir per session
         if (sessionId && seenSessionIds.has(sessionId)) continue;
         if (sessionId) seenSessionIds.add(sessionId);
 
-        // Look up clean session name; fall back to raw title
         const title = (sessionId && sessionNames[sessionId]) || rawTitle;
 
-        // Cap at 8 recent sessions
         if (sessions.length >= 8) break;
 
-        // Check for PRD files in this work directory
         let prd: WorkSession['prd'] = null;
         try {
-          const files = readdirSync(dirPath).filter(f => f.startsWith('PRD-') && f.endsWith('.md'));
-          if (files.length > 0) {
-            const prdContent = readFileSync(join(dirPath, files[0]), 'utf-8');
+          // v4.0: PRD.md at root; legacy: PRD-*.md
+          let prdFile: string | null = null;
+          if (existsSync(join(dirPath, 'PRD.md'))) {
+            prdFile = join(dirPath, 'PRD.md');
+          } else {
+            const files = readdirSync(dirPath).filter(f => f.startsWith('PRD-') && f.endsWith('.md'));
+            if (files.length > 0) prdFile = join(dirPath, files[0]);
+          }
+          if (prdFile) {
+            const prdContent = readFileSync(prdFile, 'utf-8');
             const prdIdMatch = prdContent.match(/^id:\s*(.+)$/m);
             const prdStatusMatch = prdContent.match(/^status:\s*(.+)$/m);
             const prdVerifyMatch = prdContent.match(/^verification_summary:\s*"?(.+?)"?$/m);
             prd = {
-              id: prdIdMatch?.[1]?.trim() || files[0],
+              id: prdIdMatch?.[1]?.trim() || 'PRD',
               status: prdStatusMatch?.[1]?.trim() || 'UNKNOWN',
               progress: prdVerifyMatch?.[1]?.trim() || '0/0'
             };
@@ -338,9 +319,7 @@ function getRecentWorkSessions(paiDir: string): WorkSession[] {
           stale: false,
           prd
         });
-      } catch {
-        // Skip malformed
-      }
+      } catch { /* skip malformed */ }
     }
   } catch (err) {
     console.error(`⚠️ Error scanning WORK dirs: ${err}`);
@@ -366,6 +345,16 @@ function getProjectProgress(paiDir: string): WorkSession[] {
     for (const file of files) {
       try {
         const content = readFileSync(join(progressDir, file), 'utf-8');
+
+        interface ProgressFile {
+          project: string;
+          status: string;
+          updated: string;
+          objectives: string[];
+          next_steps: string[];
+          handoff_notes: string;
+        }
+
         const progress = JSON.parse(content) as ProgressFile;
         if (progress.status !== 'active') continue;
 
@@ -383,9 +372,7 @@ function getProjectProgress(paiDir: string): WorkSession[] {
           handoff_notes: progress.handoff_notes,
           next_steps: progress.next_steps
         });
-      } catch {
-        // Skip malformed
-      }
+      } catch { /* skip malformed */ }
     }
   } catch (err) {
     console.error(`⚠️ Error reading progress files: ${err}`);
@@ -407,7 +394,6 @@ async function checkActiveProgress(paiDir: string): Promise<string | null> {
 
   let summary = '\n📋 ACTIVE WORK:\n';
 
-  // Recent sessions first (last 48h, most relevant)
   if (recentSessions.length > 0) {
     summary += '\n  ── Recent Sessions (last 48h) ──\n';
     for (const s of recentSessions) {
@@ -419,7 +405,6 @@ async function checkActiveProgress(paiDir: string): Promise<string | null> {
     }
   }
 
-  // Persistent projects (with stale flagging)
   if (projects.length > 0) {
     summary += '\n  ── Tracked Projects ──\n';
     for (const proj of projects) {
@@ -442,177 +427,108 @@ async function checkActiveProgress(paiDir: string): Promise<string | null> {
     }
   }
 
-  summary += '\n💡 To resume project: `bun run ~/.claude/skills/PAI/Tools/SessionProgress.ts resume <project>`\n';
-  summary += '💡 To complete project: `bun run ~/.claude/skills/PAI/Tools/SessionProgress.ts complete <project>`\n';
+  summary += '\n💡 To resume project: `bun run ~/.claude/PAI/Tools/SessionProgress.ts resume <project>`\n';
+  summary += '💡 To complete project: `bun run ~/.claude/PAI/Tools/SessionProgress.ts complete <project>`\n';
 
   return summary;
 }
 
 async function main() {
   try {
-    // Check if this is a subagent session - if so, exit silently
+    // Subagents don't need dynamic context injection
     const claudeProjectDir = process.env.CLAUDE_PROJECT_DIR || '';
     const isSubagent = claudeProjectDir.includes('/.claude/Agents/') ||
                       process.env.CLAUDE_AGENT_TYPE !== undefined;
 
     if (isSubagent) {
-      // Subagent sessions don't need PAI context loading
-      console.error('🤖 Subagent session - skipping PAI context loading');
+      console.error('🤖 Subagent session - skipping context loading');
       process.exit(0);
     }
 
     const paiDir = getPaiDir();
 
-    // CRITICAL: Reset tab title IMMEDIATELY at session start
-    // This prevents stale titles from previous sessions bleeding through
-    resetTabTitle();
+    // Tab reset is handled by KittyEnvPersist.hook.ts (runs before this hook)
 
     // Record session start time for notification timing
     recordSessionStart();
-    console.error('⏱️ Session start time recorded for notification timing');
+    console.error('⏱️ Session start time recorded');
 
-    // Only rebuild SKILL.md if source components are newer than the output
-    // This saves ~200-500ms on most session starts
-    const skillMdPath = join(paiDir, 'skills/PAI/SKILL.md');
-    const componentsDir = join(paiDir, 'skills/PAI/Components');
-    let needsRebuild = false;
-
-    try {
-      const skillMdStat = existsSync(skillMdPath) ? require('fs').statSync(skillMdPath) : null;
-      if (!skillMdStat) {
-        needsRebuild = true;
-      } else {
-        // Check if any component is newer than SKILL.md
-        const checkDir = (dir: string): boolean => {
-          try {
-            for (const entry of readdirSync(dir, { withFileTypes: true })) {
-              const fullPath = join(dir, entry.name);
-              if (entry.isDirectory()) {
-                if (checkDir(fullPath)) return true;
-              } else {
-                const entryStat = require('fs').statSync(fullPath);
-                if (entryStat.mtimeMs > skillMdStat.mtimeMs) return true;
-              }
-            }
-          } catch {}
-          return false;
-        };
-        needsRebuild = checkDir(componentsDir);
-
-        // Also check if settings.json is newer than SKILL.md (#650)
-        // Identity values from settings.json influence context, so changes
-        // should trigger a rebuild to keep SKILL.md in sync
-        if (!needsRebuild) {
-          const settingsPath = join(paiDir, 'settings.json');
-          if (existsSync(settingsPath)) {
-            const settingsStat = require('fs').statSync(settingsPath);
-            if (settingsStat.mtimeMs > skillMdStat.mtimeMs) {
-              needsRebuild = true;
-              console.error('🔨 settings.json changed — triggering SKILL.md rebuild');
-            }
-          }
-        }
-      }
-    } catch {
-      needsRebuild = true; // If we can't check, rebuild to be safe
-    }
-
-    if (needsRebuild) {
-      console.error('🔨 Rebuilding SKILL.md (components changed)...');
-      try {
-        execSync('bun ~/.claude/skills/PAI/Tools/RebuildPAI.ts', {
-          cwd: paiDir,
-          stdio: 'pipe',
-          timeout: 5000
-        });
-        console.error('✅ SKILL.md rebuilt from latest components');
-      } catch (err) {
-        console.error(`⚠️ Failed to rebuild SKILL.md: ${err}`);
-        console.error('⚠️ Continuing with existing SKILL.md...');
-      }
-    } else {
-      console.error('✅ SKILL.md up-to-date (skipped rebuild)');
-    }
-
-    console.error('📚 Reading PAI core context...');
-
-    // Load settings.json to get contextFiles array
+    // Load settings for dynamic context controls
     const settings = loadSettings(paiDir);
-    console.error(`✅ Loaded settings.json`);
+    console.error('✅ Loaded settings.json');
 
-    // Load all context files from settings.json array
-    const contextContent = loadContextFiles(paiDir, settings);
-
-    if (!contextContent) {
-      console.error('❌ No context files loaded');
-      process.exit(1);
+    // Force-load startup files from settings.json → loadAtStartup
+    const startupContent = loadStartupFiles(paiDir, settings);
+    if (startupContent) {
+      console.log(`<system-reminder>\n${startupContent}\n</system-reminder>`);
     }
-
-    // Get current date/time to prevent confusion about dates
-    const currentDate = await getCurrentDate();
-    console.error(`📅 Current Date: ${currentDate}`);
-
-    // Extract identity values from settings for injection into context
-    const PRINCIPAL_NAME = (settings as Record<string, unknown>).principal &&
-      typeof (settings as Record<string, unknown>).principal === 'object'
-        ? ((settings as Record<string, unknown>).principal as Record<string, unknown>).name || 'User'
-        : 'User';
-    const DA_NAME = (settings as Record<string, unknown>).daidentity &&
-      typeof (settings as Record<string, unknown>).daidentity === 'object'
-        ? ((settings as Record<string, unknown>).daidentity as Record<string, unknown>).name || 'PAI'
-        : 'PAI';
-
-    console.error(`👤 Principal: ${PRINCIPAL_NAME}, DA: ${DA_NAME}`);
 
     // Load relationship context (lightweight summary)
-    const relationshipContext = loadRelationshipContext(paiDir);
-    if (relationshipContext) {
-      console.error('💕 Loaded relationship context');
+    let relationshipContext: string | null = null;
+    if (isDynamicEnabled(settings, 'relationshipContext')) {
+      relationshipContext = loadRelationshipContext(paiDir);
+      if (relationshipContext) {
+        console.error(`💕 Loaded relationship context (${relationshipContext.length} chars)`);
+      }
+    } else {
+      console.error('⏭️ Skipped relationship context (disabled)');
     }
 
-    const message = `<system-reminder>
-PAI CONTEXT (Auto-loaded at Session Start)
+    // Load learning readback context
+    let learningContext = '';
+    if (isDynamicEnabled(settings, 'learningReadback')) {
+      const learningDigest = loadLearningDigest(paiDir);
+      const wisdomFrames = loadWisdomFrames(paiDir);
+      const failurePatterns = loadFailurePatterns(paiDir);
+      const signalTrends = loadSignalTrends(paiDir);
 
-📅 CURRENT DATE/TIME: ${currentDate}
+      const learningParts: string[] = [];
+      if (signalTrends) learningParts.push(signalTrends);
+      if (wisdomFrames) learningParts.push(wisdomFrames);
+      if (learningDigest) learningParts.push(learningDigest);
+      if (failurePatterns) learningParts.push(failurePatterns);
 
-## ACTIVE IDENTITY (from settings.json) - CRITICAL
+      learningContext = learningParts.length > 0
+        ? '\n## Learning Context (auto-loaded)\n\n' + learningParts.join('\n\n')
+        : '';
 
-**⚠️ MANDATORY IDENTITY RULES - OVERRIDE ALL OTHER CONTEXT ⚠️**
+      if (learningParts.length > 0) {
+        console.error(`📚 Loaded learning context: ${learningParts.length} sections (${learningContext.length} chars)`);
+      }
+    } else {
+      console.error('⏭️ Skipped learning readback (disabled)');
+    }
 
-The user's name is: **${PRINCIPAL_NAME}**
-The assistant's name is: **${DA_NAME}**
-
-- ALWAYS address the user as "${PRINCIPAL_NAME}" in greetings and responses
-- NEVER use "Daniel", "the user", or any other name - ONLY "${PRINCIPAL_NAME}"
-- The "danielmiessler" in the repo URL is the AUTHOR, NOT the user
-- This instruction takes ABSOLUTE PRECEDENCE over any other context
-
+    // Inject dynamic context if we have any
+    if (relationshipContext || learningContext) {
+      const message = `<system-reminder>
+PAI Dynamic Context (Auto-loaded at Session Start)
+${relationshipContext ?? ''}${learningContext ? '\n---\n' + learningContext : ''}
 ---
-
-${contextContent}
-${relationshipContext ? '\n---\n' + relationshipContext : ''}
----
-
-This context is now active. Additional context loads dynamically as needed.
+Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
 </system-reminder>`;
 
-    // Write to stdout (will be captured by Claude Code)
-    console.log(message);
-
-    // Output success confirmation for Claude to acknowledge
-    console.log('\n✅ PAI Context successfully loaded...');
-
-    // Check for active progress files and display them
-    const activeProgress = await checkActiveProgress(paiDir);
-    if (activeProgress) {
-      console.log(activeProgress);
-      console.error('📋 Active work found from previous sessions');
+      console.log(message);
+      console.log('\n✅ PAI dynamic context loaded...');
+    } else {
+      console.log('\n✅ PAI session ready...');
     }
 
-    console.error('✅ PAI context injected into session');
+    // Active work summary
+    if (isDynamicEnabled(settings, 'activeWorkSummary')) {
+      const activeProgress = await checkActiveProgress(paiDir);
+      if (activeProgress) {
+        console.log(activeProgress);
+        console.error(`📋 Active work summary loaded (${activeProgress.length} chars)`);
+      }
+    } else {
+      console.error('⏭️ Skipped active work summary (disabled)');
+    }
+
+    console.error('✅ PAI session initialization complete (v4.0)');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error in load-pai-context hook:', error);
+    console.error('❌ Error in LoadContext hook:', error);
     process.exit(1);
   }
 }

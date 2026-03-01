@@ -1,0 +1,83 @@
+{
+  "taskId": "001_task",
+  "status": "COMPLETE",
+  "effortLevel": "STANDARD",
+  "criteria": [
+    {
+      "id": "ISC-C1",
+      "text": "Объяснена архитектура Fabric — паттерны, воркфлоу, файлы",
+      "description": "Описана структура скилла: SKILL.md, Workflows/, Patterns/ (237 штук)",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Показан механизм вызова — нативный без CLI",
+      "description": "Объяснено что паттерны выполняются нативно через чтение system.md, не через fabric CLI",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Показан конкретный пример паттерна system.md",
+      "description": "Показано содержимое реального system.md (extract_wisdom) — IDENTITY, STEPS, OUTPUT",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Объяснено как пользователь триггерит Fabric",
+      "description": "Показаны триггер-фразы и примеры использования",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "Указан статус fabric CLI на системе",
+      "description": "fabric CLI не установлен — но это не проблема, паттерны работают нативно",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C1",
+      "text": "Steering rule добавлен для автоприменения Fabric паттернов",
+      "description": "Правило в USER/AISTEERINGRULES.md: когда контент подходит под паттерн — применять автоматически без запроса",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Показаны топ паттерны простым языком для Ivan",
+      "description": "Не технические имена, а описание задачи → паттерн, на русском",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Правило содержит чёткие критерии когда применять",
+      "description": "Не спамит паттернами — есть конкретные ситуации: получен контент для анализа, статья, видео, код и т.д.",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Правило в формате существующих steering rules",
+      "description": "Statement/Bad/Correct формат как остальные правила в файле",
+      "status": "completed"
+    }
+  ],
+  "antiCriteria": [
+    {
+      "id": "ISC-A1",
+      "text": "Объяснение не перегружено техническими деталями",
+      "description": "Объяснение понятное, не дамп документации",
+      "status": "completed"
+    },
+    {
+      "id": "ISC-A1",
+      "text": "Правило не спамит паттернами на каждый запрос",
+      "description": "Есть защита — применять только когда реально полезно, не на код-задачи и не на простые вопросы",
+      "status": "completed"
+    }
+  ],
+  "satisfaction": {
+    "total": 11,
+    "satisfied": 11,
+    "partial": 0,
+    "failed": 0
+  },
+  "createdAt": "2026-02-26T16:52:03+03:00",
+  "updatedAt": "2026-02-26T21:44:55+03:00"
+}

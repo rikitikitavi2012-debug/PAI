@@ -6,7 +6,7 @@
  * Banner and statusline then read from settings.json (instant, no execution).
  *
  * ARCHITECTURE:
- * Stop hook → UpdateCounts → settings.json
+ * SessionEnd hook → UpdateCounts → settings.json
  * Session start → Banner reads settings.json (instant)
  * Session start → Statusline reads settings.json (instant)
  *
@@ -16,10 +16,11 @@
  * - Single source of truth in settings.json
  */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync, statSync, mkdirSync, copyFileSync, unlinkSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, statSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
 import { getPaiDir, getSettingsPath } from '../lib/paths';
+
 
 interface Counts {
   skills: number;
@@ -79,38 +80,26 @@ function countWorkflowFiles(dir: string): number {
 }
 
 /**
- * Count skills (directories with SKILL.md file, including nested like Documents/Pdf)
- * Matches skill-index.json totalSkills which includes nested skills.
- * Excludes PAI and CORE (infrastructure dirs, not user-facing skills).
+ * Count skills (directories with SKILL.md file)
  */
 function countSkills(paiDir: string): number {
-  const EXCLUDED_DIRS = new Set(['PAI', 'CORE']);
   let count = 0;
   const skillsDir = join(paiDir, 'skills');
-
-  function walkSkills(dir: string, depth: number) {
-    try {
-      for (const entry of readdirSync(dir, { withFileTypes: true })) {
-        const isDirectory = entry.isDirectory() ||
-          (entry.isSymbolicLink() && statSync(join(dir, entry.name)).isDirectory());
-        if (isDirectory) {
-          // Skip infrastructure dirs at top level
-          if (depth === 0 && EXCLUDED_DIRS.has(entry.name)) continue;
-          const fullPath = join(dir, entry.name);
-          const skillFile = join(fullPath, 'SKILL.md');
-          if (existsSync(skillFile)) {
-            count++;
-          }
-          // Recurse into subdirs to find nested skills (e.g. Documents/Pdf/SKILL.md)
-          walkSkills(fullPath, depth + 1);
+  try {
+    for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
+      // Handle both real directories and symlinks to directories
+      const isDir = entry.isDirectory() ||
+        (entry.isSymbolicLink() && statSync(join(skillsDir, entry.name)).isDirectory());
+      if (isDir) {
+        const skillFile = join(skillsDir, entry.name, 'SKILL.md');
+        if (existsSync(skillFile)) {
+          count++;
         }
       }
-    } catch {
-      // directory doesn't exist or not readable
     }
+  } catch {
+    // skills directory doesn't exist
   }
-
-  walkSkills(skillsDir, 0);
   return count;
 }
 
@@ -165,7 +154,7 @@ function getCounts(paiDir: string): Counts {
     workflows: countWorkflowFiles(join(paiDir, 'skills')),
     hooks: countHooks(paiDir),
     signals: countFilesRecursive(join(paiDir, 'MEMORY/LEARNING'), '.md'),
-    files: countFilesRecursive(join(paiDir, 'skills/PAI/USER')),
+    files: countFilesRecursive(join(paiDir, 'PAI/USER')),
     work: countSubdirs(join(paiDir, 'MEMORY/WORK')),
     sessions: countFilesRecursive(join(paiDir, 'MEMORY'), '.jsonl'),
     research: countFilesRecursive(join(paiDir, 'MEMORY/RESEARCH'), '.md') +
@@ -254,34 +243,13 @@ async function refreshUsageCache(paiDir: string): Promise<void> {
 }
 
 /**
- * Handler called by StopOrchestrator
+ * Handler called by UpdateCounts.hook.ts
  */
 export async function handleUpdateCounts(): Promise<void> {
   const paiDir = getPaiDir();
   const settingsPath = getSettingsPath();
 
   try {
-    // Backup settings.json before modifying (keep last 5 backups)
-    const backupDir = join(paiDir, 'backups');
-    try {
-      mkdirSync(backupDir, { recursive: true });
-      const dateStr = new Date().toISOString().slice(0, 10);
-      const backupPath = join(backupDir, `settings.json.${dateStr}`);
-      if (!existsSync(backupPath)) {
-        copyFileSync(settingsPath, backupPath);
-      }
-      // Prune old backups (keep last 5)
-      const backups = readdirSync(backupDir)
-        .filter(f => f.startsWith('settings.json.'))
-        .sort()
-        .reverse();
-      for (const old of backups.slice(5)) {
-        try { unlinkSync(join(backupDir, old)); } catch {}
-      }
-    } catch {
-      // Non-fatal — backup failure shouldn't block counts update
-    }
-
     // Run counts + usage refresh in parallel
     const [counts] = await Promise.all([
       Promise.resolve(getCounts(paiDir)),
@@ -296,7 +264,6 @@ export async function handleUpdateCounts(): Promise<void> {
 
     // Write back
     writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
-
     console.error(`[UpdateCounts] Updated: SK:${counts.skills} WF:${counts.workflows} HK:${counts.hooks} SIG:${counts.signals} F:${counts.files} W:${counts.work} SESS:${counts.sessions} RES:${counts.research} RAT:${counts.ratings}`);
   } catch (error) {
     console.error('[UpdateCounts] Failed to update counts:', error);

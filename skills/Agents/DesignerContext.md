@@ -31,10 +31,12 @@ Your prompt includes a `## Scope` section defining your time budget:
 ## Required Knowledge (Pre-load from Skills)
 
 ### Core Foundations
-- **skills/PAI/SKILL.md** - PAI context, stack preferences, and operating principles
+- **PAI/CoreStack.md** - Stack preferences and tooling
+- **PAI/CONSTITUTION.md** - Constitutional principles
 
 ### Design Standards
-Design system standards and frontend patterns are built into the Designer agent's base prompt.
+- **skills/FrontendDesign/SKILL.md** - Frontend design workflows and patterns
+- **skills/FrontendDesign/Standards.md** - Design system standards and principles
 
 ---
 
@@ -42,8 +44,10 @@ Design system standards and frontend patterns are built into the Designer agent'
 
 Load these dynamically based on task keywords:
 
-- **Browser verification** → skills/Browser/SKILL.md
-- **Visual content** → skills/Art/SKILL.md
+- **Accessibility** → skills/FrontendDesign/References/AccessibilityGuidelines.md
+- **Responsive** → skills/FrontendDesign/References/ResponsivePatterns.md
+- **Component** → skills/FrontendDesign/References/ComponentPatterns.md
+- **Review** → skills/FrontendDesign/Workflows/DesignReview.md
 
 ---
 

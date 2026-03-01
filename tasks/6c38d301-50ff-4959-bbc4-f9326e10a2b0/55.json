@@ -1,0 +1,9 @@
+{
+  "id": "55",
+  "subject": "ISC-C1: Причины перехода Miessler с Kitty на Ghostty документированы",
+  "description": "3 причины: macOS нативность, Ghostty вышел конец 2024 и стал популярен, Vim-like pane navigation. Miessler не публиковал явное объяснение перехода.",
+  "activeForm": "Исследую причины перехода Miessler",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

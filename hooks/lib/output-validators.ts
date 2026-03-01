@@ -45,7 +45,7 @@ export function isValidVoiceCompletion(text: string): boolean {
   if (!text || text.length < 10) return false;
   const wordCount = text.trim().split(/\s+/).length;
   if (wordCount === 1) {
-    const lower = text.toLowerCase().replace(/[^a-zа-яё]/g, '');
+    const lower = text.toLowerCase().replace(/[^a-z]/g, '');
     if (SINGLE_WORD_BLOCKLIST.has(lower) || lower.length < 10) return false;
   }
   for (const p of GARBAGE_PATTERNS) if (p.test(text)) return false;
@@ -57,16 +57,21 @@ export function isValidVoiceCompletion(text: string): boolean {
 }
 
 export function getVoiceFallback(): string {
-  return '';
+  return ''; // Intentionally empty — invalid voice completions should be skipped, not spoken
 }
 
 // ─── Tab Title Validation ───────────────────────────────────────
 
-// Incomplete endings — dangling articles, prepositions, conjunctions
+// Incomplete endings — dangling articles, prepositions, conjunctions, adverbs
 const INCOMPLETE_ENDINGS = new Set([
+  // Articles & prepositions
   'the', 'a', 'an', 'to', 'for', 'with', 'of',
   'in', 'on', 'at', 'by', 'from', 'into', 'about',
+  // Conjunctions
   'and', 'or', 'but', 'that', 'which',
+  // Temporal/filler adverbs — always dangle when ending a 2-4 word title
+  'now', 'then', 'still', 'also', 'just', 'only', 'even',
+  'very', 'quite', 'rather', 'really', 'here', 'there',
 ]);
 
 /**
@@ -83,7 +88,7 @@ function isValidTitleBase(text: string): { valid: boolean; firstWord: string } {
   const firstWord = words[0].toLowerCase();
 
   // Reject generic garbage (both gerund and past-tense forms)
-  if (/^(completed?|proces{1,2}e?d|processing|handled|handling|finished|finishing|worked|working|done) (the |on )?(task|request|work|it)$/i.test(content)) {
+  if (/^(completed?|proces{1,2}e?d|processing|handled|handling|finished|finishing|worked|working|done|analyzed?) (the |on )?(task|request|work|it|input)$/i.test(content)) {
     return { valid: false, firstWord };
   }
 
@@ -93,31 +98,30 @@ function isValidTitleBase(text: string): { valid: boolean; firstWord: string } {
     return { valid: false, firstWord };
   }
 
-  // Reject dangling/incomplete endings (support Latin + Cyrillic)
-  const lastWord = words[words.length - 1].toLowerCase().replace(/[^a-zа-яё]/g, '');
+  // Reject dangling/incomplete endings
+  const lastWord = words[words.length - 1].toLowerCase().replace(/[^a-z]/g, '');
   if (INCOMPLETE_ENDINGS.has(lastWord)) return { valid: false, firstWord };
+
+  // Reject single-character last words — always a truncation artifact (e.g., "V" from "V 3.0.4")
+  if (lastWord.length <= 1) return { valid: false, firstWord };
+
+  // Reject long adverbs ending in "-ly" — truncation artifacts (e.g., "progressively" from a longer phrase)
+  // Short "-ly" words (≤5 chars like "early", "daily") are often adjectives/nouns, so exempt.
+  if (lastWord.endsWith('ly') && lastWord.length > 5) return { valid: false, firstWord };
 
   return { valid: true, firstWord };
 }
 
 /**
- * Working-phase title: MUST start with gerund (-ing verb) or Russian verbal noun.
+ * Working-phase title: MUST start with gerund (-ing verb).
  * Used by UpdateTabTitle for 🧠/⚙️ titles.
- * Russian verbal nouns: -ние, -ка, -ция, -тие (Исправление, Проверка, Настройка, Обновление)
  */
 export function isValidWorkingTitle(text: string): boolean {
   const { valid, firstWord } = isValidTitleBase(text);
   if (!valid) return false;
-  // English gerund
-  if (firstWord.endsWith('ing')) return true;
-  // Russian verbal noun endings (отглагольные существительные)
-  if (/[а-яё]/.test(firstWord)) {
-    return /(ние|нье|ка|ция|тие|зка|жка|вка)$/i.test(firstWord);
-  }
-  return false;
+  return firstWord.endsWith('ing');
 }
 
-// Removed: isValidTabSummary (deprecated alias, 0 consumers)
 
 /**
  * Completion-phase title: must NOT start with gerund.
@@ -145,10 +149,32 @@ export function isValidQuestionTitle(text: string): boolean {
   return true;
 }
 
+// ─── Progressive Title Trimming ─────────────────────────────────
+
+/**
+ * Try progressively shorter word counts (from maxWords down to 2) until valid.
+ * Returns the first valid title, or null if none work.
+ * This prevents truncation artifacts like "Upgrading Algorithm to V."
+ * by falling back to "Upgrading Algorithm." instead of "Analyzing input."
+ */
+export function trimToValidTitle(
+  words: string[],
+  validator: (text: string) => boolean,
+  maxWords: number = 4
+): string | null {
+  const limit = Math.min(words.length, maxWords);
+  for (let n = limit; n >= 2; n--) {
+    let candidate = words.slice(0, n).join(' ').replace(/[,;:!?\-\u2014]+$/, '').trim();
+    if (!candidate.endsWith('.')) candidate += '.';
+    if (validator(candidate)) return candidate;
+  }
+  return null;
+}
+
 // ─── Fallbacks ──────────────────────────────────────────────────
 
 export function getWorkingFallback(): string {
-  return 'Processing request.';
+  return 'Analyzing input.';
 }
 
 export function getCompletionFallback(): string {
@@ -159,29 +185,14 @@ export function getQuestionFallback(): string {
   return 'Awaiting input';
 }
 
-/** @deprecated Use getWorkingFallback or getCompletionFallback */
-export function getTabFallback(stage: 'start' | 'end' = 'start'): string {
-  return stage === 'end' ? getCompletionFallback() : getWorkingFallback();
-}
 
 // ─── Past Tense Conversion ─────────────────────────────────────
 
 const IRREGULAR_PAST: Record<string, string> = {
   building: 'Built', running: 'Ran', writing: 'Wrote', reading: 'Read',
   making: 'Made', finding: 'Found', getting: 'Got', setting: 'Set',
-  doing: 'Did', going: 'Went', taking: 'Took', giving: 'Gave',
-  seeing: 'Saw', sending: 'Sent', thinking: 'Thought', bringing: 'Brought',
-  beginning: 'Began', breaking: 'Broke', choosing: 'Chose', drawing: 'Drew',
-  driving: 'Drove', eating: 'Ate', falling: 'Fell', flying: 'Flew',
-  growing: 'Grew', hiding: 'Hid', holding: 'Held', keeping: 'Kept',
-  knowing: 'Knew', leading: 'Led', leaving: 'Left', lending: 'Lent',
-  letting: 'Let', losing: 'Lost', meeting: 'Met', paying: 'Paid',
-  putting: 'Put', riding: 'Rode', rising: 'Rose', saying: 'Said',
-  selling: 'Sold', showing: 'Showed', singing: 'Sang', sitting: 'Sat',
-  sleeping: 'Slept', speaking: 'Spoke', spending: 'Spent', standing: 'Stood',
-  stealing: 'Stole', striking: 'Struck', sweeping: 'Swept', swimming: 'Swam',
-  teaching: 'Taught', telling: 'Told', throwing: 'Threw', wearing: 'Wore',
-  winning: 'Won', understanding: 'Understood',
+  doing: 'Did', sending: 'Sent', keeping: 'Kept', putting: 'Put',
+  losing: 'Lost', telling: 'Told', understanding: 'Understood',
 };
 
 /**

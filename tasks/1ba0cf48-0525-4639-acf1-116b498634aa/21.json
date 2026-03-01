@@ -1,0 +1,9 @@
+{
+  "id": "21",
+  "subject": "ISC-A3: VoiceServer конфигурация не нарушена в staging",
+  "description": "Verify: CLI: ls VoiceServer/ in staging and compare",
+  "activeForm": "Проверка VoiceServer",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -30,12 +30,14 @@ Your prompt includes a `## Scope` section defining your time budget:
 
 ## Required Knowledge (Pre-load from Skills)
 
-### Core Foundations
-- **skills/PAI/SKILL.md** - PAI context, stack preferences (TypeScript > Python, bun > npm), and operating principles
-- **skills/PAI/PAISYSTEMARCHITECTURE.md** - PAI system architecture patterns
+### Constitutional Foundation
+- **PAI/CONSTITUTION.md** - Foundational architectural principles
+- **PAI/CoreStack.md** - Stack preferences (TypeScript > Python, bun > npm, etc.)
+- **PAI/Architecture.md** - PAI's system architecture patterns
 
 ### Development Methodology
-Spec-driven and test-driven methodology are built into the Architect agent's base prompt.
+- **skills/Development/METHODOLOGY.md** - Spec-driven, test-driven development approach
+- **skills/Development/SKILL.md** - Development skill workflows and patterns
 
 ### Planning & Decision-Making
 - Use **/plan mode** for non-trivial implementation tasks
@@ -47,8 +49,9 @@ Spec-driven and test-driven methodology are built into the Architect agent's bas
 
 Load these dynamically based on task keywords:
 
-- **Browser verification** → skills/Browser/SKILL.md
-- **Research** → skills/Research/SKILL.md
+- **Security** → PAI/SecurityProtocols.md
+- **Testing** → skills/Development/TESTING.md, skills/Development/TestingPhilosophy.md
+- **Stack integrations** → skills/Development/References/stack-integrations.md
 
 ---
 

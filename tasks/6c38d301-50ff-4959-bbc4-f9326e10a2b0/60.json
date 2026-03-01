@@ -1,0 +1,9 @@
+{
+  "id": "60",
+  "subject": "ISC-C1: Полный бэкап текущей системы создан перед миграцией",
+  "description": "cp -r ~/.claude ~/.claude-v3-backup-YYYYMMDD с верификацией | Verify: CLI: ls backup dir",
+  "activeForm": "Создаю бэкап",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -1,0 +1,9 @@
+{
+  "id": "53",
+  "subject": "ISC-C4: Практический план использования Kitty на WSL2",
+  "description": "Конкретные шаги — установка, конфиг, интеграция с PAI на WSL2",
+  "activeForm": "Составляю план для WSL2",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

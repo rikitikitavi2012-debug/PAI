@@ -35,27 +35,23 @@ Generate 3 unique angles per researcher type (9 total queries).
 
 ### Step 1: Launch All Research Agents in Parallel
 
-**Check `~/.claude/skills/PAI/USER/SKILLCUSTOMIZATIONS/Research/PREFERENCES.md` for language and persistence preferences.**
-
 **SINGLE message launching all 3 researcher types with 3 threads each:**
-
-**IMPORTANT:** Append to EVERY agent prompt: `"IMPORTANT: Respond in Russian (русский язык). Technical terms may stay in English."`
 
 ```typescript
 // Claude - 3 threads (academic, analytical, scholarly)
-Task({ subagent_type: "ClaudeResearcher", description: "[topic] angle 1", prompt: "Search for: [angle 1]. Return findings. IMPORTANT: Respond in Russian." })
-Task({ subagent_type: "ClaudeResearcher", description: "[topic] angle 2", prompt: "Search for: [angle 2]. Return findings. IMPORTANT: Respond in Russian." })
-Task({ subagent_type: "ClaudeResearcher", description: "[topic] angle 3", prompt: "Search for: [angle 3]. Return findings. IMPORTANT: Respond in Russian." })
+Task({ subagent_type: "ClaudeResearcher", description: "[topic] angle 1", prompt: "Search for: [angle 1]. Return findings." })
+Task({ subagent_type: "ClaudeResearcher", description: "[topic] angle 2", prompt: "Search for: [angle 2]. Return findings." })
+Task({ subagent_type: "ClaudeResearcher", description: "[topic] angle 3", prompt: "Search for: [angle 3]. Return findings." })
 
 // Gemini - 3 threads (multi-perspective, cross-domain)
-Task({ subagent_type: "GeminiResearcher", description: "[topic] angle 4", prompt: "Search for: [angle 4]. Return findings. IMPORTANT: Respond in Russian." })
-Task({ subagent_type: "GeminiResearcher", description: "[topic] angle 5", prompt: "Search for: [angle 5]. Return findings. IMPORTANT: Respond in Russian." })
-Task({ subagent_type: "GeminiResearcher", description: "[topic] angle 6", prompt: "Search for: [angle 6]. Return findings. IMPORTANT: Respond in Russian." })
+Task({ subagent_type: "GeminiResearcher", description: "[topic] angle 4", prompt: "Search for: [angle 4]. Return findings." })
+Task({ subagent_type: "GeminiResearcher", description: "[topic] angle 5", prompt: "Search for: [angle 5]. Return findings." })
+Task({ subagent_type: "GeminiResearcher", description: "[topic] angle 6", prompt: "Search for: [angle 6]. Return findings." })
 
 // Grok - 3 threads (contrarian, unbiased, fact-based)
-Task({ subagent_type: "GrokResearcher", description: "[topic] angle 7", prompt: "Search for: [angle 7]. Return findings. IMPORTANT: Respond in Russian." })
-Task({ subagent_type: "GrokResearcher", description: "[topic] angle 8", prompt: "Search for: [angle 8]. Return findings. IMPORTANT: Respond in Russian." })
-Task({ subagent_type: "GrokResearcher", description: "[topic] angle 9", prompt: "Search for: [angle 9]. Return findings. IMPORTANT: Respond in Russian." })
+Task({ subagent_type: "GrokResearcher", description: "[topic] angle 7", prompt: "Search for: [angle 7]. Return findings." })
+Task({ subagent_type: "GrokResearcher", description: "[topic] angle 8", prompt: "Search for: [angle 8]. Return findings." })
+Task({ subagent_type: "GrokResearcher", description: "[topic] angle 9", prompt: "Search for: [angle 9]. Return findings." })
 ```
 
 **Each agent:**
@@ -123,15 +119,7 @@ WebFetch(url, "Confirm article exists and summarize main point")
 
 **Extensive mode generates MANY URLs - allocate time for verification.**
 
-### Step 5: Save Results to Disk (MANDATORY)
-
-```bash
-mkdir -p ~/.claude/MEMORY/RESEARCH/YYYY-MM/
-# Write: ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_{topic-slug}/RESEARCH_REPORT.md
-# Content: full synthesis from Step 3 with all themes, sources, and metrics
-```
-
-### Step 6: Return Results
+### Step 5: Return Results
 
 ```markdown
 📋 SUMMARY: Extensive research on [topic]
@@ -140,7 +128,6 @@ mkdir -p ~/.claude/MEMORY/RESEARCH/YYYY-MM/
 ✅ RESULTS: [Full synthesized report]
 📊 STATUS: Extensive mode - 9 agents, 5 min timeout
 📁 CAPTURE: [Key discoveries]
-📁 SAVED: ~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_{topic-slug}/
 ➡️ NEXT: [Follow-up recommendations]
 📖 STORY EXPLANATION: [8 numbered points]
 🎯 COMPLETED: Extensive research on [topic] complete

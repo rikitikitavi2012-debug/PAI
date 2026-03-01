@@ -4,7 +4,7 @@
  * Detects PAI system changes from the transcript and spawns background
  * IntegrityMaintenance.ts to update references and document changes.
  *
- * TRIGGER: Stop hook (via StopOrchestrator)
+ * TRIGGER: SessionEnd hook (via IntegrityCheck.hook.ts)
  *
  * SIDE EFFECTS:
  * - Spawns background IntegrityMaintenance.ts process
@@ -19,6 +19,7 @@ import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { spawn } from 'child_process';
 import { join } from 'path';
 import { paiPath } from '../lib/paths';
+
 import {
   parseToolUseBlocks,
   isSignificantChange,
@@ -31,7 +32,7 @@ import {
   generateDescriptiveTitle,
   type FileChange,
 } from '../lib/change-detection';
-import type { ParsedTranscript } from '../../skills/PAI/Tools/TranscriptParser';
+import type { ParsedTranscript } from '../../PAI/Tools/TranscriptParser';
 
 interface HookInput {
   session_id: string;
@@ -41,7 +42,7 @@ interface HookInput {
 
 const STATE_DIR = paiPath('MEMORY', 'STATE');
 const STATE_FILE = join(STATE_DIR, 'integrity-state.json');
-const INTEGRITY_SCRIPT = paiPath('skills', 'PAI', 'Tools', 'IntegrityMaintenance.ts');
+const INTEGRITY_SCRIPT = paiPath('PAI', 'Tools', 'IntegrityMaintenance.ts');
 
 
 /**
@@ -128,7 +129,7 @@ function spawnIntegrityMaintenance(
  *
  * This handler:
  * 1. Parses the transcript for file modification tool_use blocks
- * 2. Filters for PAI system paths (excludes WORK/, LEARNING/, scratch/)
+ * 2. Filters for PAI system paths (excludes WORK/, LEARNING/)
  * 3. Checks throttle cooldown (max once per 5 min)
  * 4. Spawns background IntegrityMaintenance.ts if changes detected
  */
@@ -186,6 +187,5 @@ export async function handleSystemIntegrity(
 
   // Spawn background process
   spawnIntegrityMaintenance(systemChanges, hookInput);
-
   console.error('[SystemIntegrity] Background integrity check started');
 }

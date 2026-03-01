@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "ISC-C3: MEMORY директория скопирована полностью без изменений",
+  "description": "Verify: CLI: diff file counts between source and staging MEMORY",
+  "activeForm": "Копирование MEMORY",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": []
+}

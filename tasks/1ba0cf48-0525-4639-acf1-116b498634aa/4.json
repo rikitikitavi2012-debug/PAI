@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "ISC-C4: settings.json корректно смержен с обоими конфигами",
+  "description": "Verify: Read: ключи daidentity, principal, hooks все на месте",
+  "activeForm": "Мерж settings.json",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

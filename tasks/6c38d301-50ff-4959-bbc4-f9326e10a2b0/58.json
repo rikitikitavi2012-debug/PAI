@@ -1,0 +1,9 @@
+{
+  "id": "58",
+  "subject": "ISC-C4: Конкретная рекомендация для Ivan с обоснованием дана",
+  "description": "Рекомендация: оставаться на Kitty. 5 аргументов: уже установлен, PAI хуки, Remote Control API, WSL2 работает, Ghostty без Remote Control",
+  "activeForm": "Формирую рекомендацию",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -6,7 +6,7 @@ Intelligent multi-layer content retrieval system for DIFFICULT content retrieval
 
 **Before starting any task with this skill, load complete PAI context:**
 
-`read ~/.claude/skills/PAI/SKILL.md`
+`read ~/.claude/PAI/SKILL.md`
 
 This provides access to:
 - Complete contact list (Angela, Bunny, Saša, Greg, team members)
@@ -399,19 +399,19 @@ mcp__Apify__apify-slash-rag-web-browser({
 - Requires manual intervention or login
 - Legal/ethical concerns with scraping
 
-## 📁 Scratch → History Pattern
+## 📁 Working Files → History Pattern
 
-**Working Directory (Scratch):** `~/.claude/MEMORY/WORK/{current_work}/scratch/`
+**Working Directory:** `~/.claude/MEMORY/WORK/{current_work}/`
 
 **Getting Current Work Directory:**
 1. Read `~/.claude/MEMORY/STATE/current-work.json`
 2. Extract the `work_dir` value
-3. Use `~/.claude/MEMORY/WORK/{work_dir}/scratch/` for temporary artifacts
+3. Use `~/.claude/MEMORY/WORK/{work_dir}/` for temporary artifacts
 
 **Process:**
 
-1. **Scratch (Working Files - Temporary):**
-   - All retrieval work artifacts go in current work item's scratch/ subdirectory
+1. **Working Files (Temporary):**
+   - All retrieval work artifacts go in current work item directory
    - Store raw scraped content (HTML, markdown, JSON)
    - Keep intermediate processing notes
    - Save error logs and retry attempts
@@ -419,7 +419,8 @@ mcp__Apify__apify-slash-rag-web-browser({
    - **Ties retrieval artifacts to work item for learning**
 
 2. **History (Permanent Archive):**
-   - Move to `~/.claude/MEMORY/RESEARCH/YYYY-MM/YYYY-MM-DD_[description]/` when complete
+
+   - Move to `~/.claude/History/research/YYYY-MM-DD_[description]/` when complete
    - Include: `README.md`, final extracted content, metadata
    - Archive for future reference and reuse
 
@@ -427,13 +428,13 @@ mcp__Apify__apify-slash-rag-web-browser({
    - Check if hooks captured output to history automatically
    - If hooks failed, manually save to history
    - Confirm all files present in history directory
-   - **Note:** Scratch artifacts remain tied to work item (don't delete)
+   - **Note:** Working artifacts remain tied to work item (don't delete)
 
 **File Structure Example:**
 
-**Scratch (temporary workspace in current work item):**
+**Working files (in current work item directory):**
 ```
-~/.claude/MEMORY/WORK/20260111-172408_retrieve-react19-docs/scratch/
+~/.claude/MEMORY/WORK/20260111-172408_retrieve-react19-docs/
 ├── raw-content/
 │   ├── page1.md (Layer 2 output)
 │   ├── page2.md (Layer 2 output)
@@ -447,7 +448,7 @@ mcp__Apify__apify-slash-rag-web-browser({
 
 **History (permanent archive):**
 ```
-~/.claude/MEMORY/RESEARCH/2025-10/2025-10-26_react19-documentation/
+~/.claude/History/research/2025-10-26_react19-documentation/
 ├── README.md (retrieval documentation)
 ├── content.md (final extracted content)
 ├── metadata.json (sources, layers used, timestamps)
@@ -514,6 +515,6 @@ mcp__Apify__apify-slash-rag-web-browser({
 - Always try simplest approach first (Layer 1)
 - Escalate only when previous layer fails
 - Document which layers were used and why
-- Work artifacts go in current work item's scratch/
+- Work artifacts go in current work item directory
 - Final valuable content goes to history
-- Scratch artifacts stay tied to work item for learning
+- Working artifacts stay tied to work item for learning

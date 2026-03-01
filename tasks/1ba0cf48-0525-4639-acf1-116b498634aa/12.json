@@ -1,0 +1,9 @@
+{
+  "id": "12",
+  "subject": "ISC-C12: Все категории скиллов v4.0.1 присутствуют в staging",
+  "description": "Verify: CLI: ls skills/ directories in staging",
+  "activeForm": "Проверка скиллов",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

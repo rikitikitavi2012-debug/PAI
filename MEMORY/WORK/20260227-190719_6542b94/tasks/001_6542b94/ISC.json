@@ -1,0 +1,101 @@
+{
+  "taskId": "001_6542b94",
+  "status": "IN_PROGRESS",
+  "effortLevel": "STANDARD",
+  "criteria": [
+    {
+      "id": "ISC-C1",
+      "text": "Browser skill has zero placeholder variables in all files",
+      "description": "Audit Browser skill for {PRINCIPAL.NAME}, {DAIDENTITY.NAME}, YOUR_VOICE_ID and other placeholder leaks. All must be replaced with actual values. Verify: Grep for placeholder patterns across all files in skills/Browser/",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C2",
+      "text": "Browser skill has zero phantom refs to nonexistent files",
+      "description": "Check all file references in Browser SKILL.md and workflows — every referenced file/path must exist. Verify: Grep for file refs, check each with ls/stat",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C3",
+      "text": "Fabric skill has zero placeholder variables in all files",
+      "description": "Audit Fabric skill for placeholder leaks. Verify: Grep patterns",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C4",
+      "text": "Fabric skill has zero phantom refs to nonexistent files",
+      "description": "Check all file references in Fabric SKILL.md and workflows. Verify: Grep + existence check",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C5",
+      "text": "Council skill has zero placeholders and phantom refs",
+      "description": "Full audit of Council skill. Verify: Grep for placeholders + ref existence check",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C6",
+      "text": "RedTeam skill has zero placeholders and phantom refs",
+      "description": "Full audit of RedTeam skill. Verify: Grep for placeholders + ref existence check",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C7",
+      "text": "Art skill has zero placeholders and phantom refs",
+      "description": "Full audit of Art skill. Verify: Grep for placeholders + ref existence check",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C8",
+      "text": "Science skill has zero placeholders and phantom refs",
+      "description": "Full audit of Science skill. Verify: Grep for placeholders + ref existence check",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C9",
+      "text": "Evals skill has zero placeholders and phantom refs",
+      "description": "Full audit of Evals skill. Verify: Grep for placeholders + ref existence check",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C10",
+      "text": "CreateSkill skill has zero placeholders and phantom refs",
+      "description": "Full audit of CreateSkill skill. Verify: Grep for placeholders + ref existence check",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C11",
+      "text": "skill-index.json entries match actual skill directories on disk",
+      "description": "Every skill in skill-index.json must have a corresponding directory. No orphaned entries. Verify: Parse JSON, check each path",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-C12",
+      "text": "All 8 audited skills have correct voice curl format",
+      "description": "Voice curls must use correct voiceId and localhost:8888 endpoint. Verify: Grep for curl patterns",
+      "status": "pending"
+    }
+  ],
+  "antiCriteria": [
+    {
+      "id": "ISC-A1",
+      "text": "No generated files manually patched without fixing generator",
+      "description": "Anti-criterion: if any bug found in generated files (skill-index.json, skill-workflow-capabilities.json), fix the generator script not the output. Verify: Check if any fixes touch generated files without corresponding generator fix",
+      "status": "pending"
+    },
+    {
+      "id": "ISC-A2",
+      "text": "No regressions introduced in previously audited skills",
+      "description": "Anti-criterion: the 10 already-audited skills must remain clean. Verify: Spot-check 2-3 previously audited skills",
+      "status": "pending"
+    }
+  ],
+  "satisfaction": {
+    "total": 14,
+    "satisfied": 0,
+    "partial": 0,
+    "failed": 0
+  },
+  "createdAt": "2026-02-27T19:07:19+03:00",
+  "updatedAt": "2026-02-28T11:46:00+03:00"
+}

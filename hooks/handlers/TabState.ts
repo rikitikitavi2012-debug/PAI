@@ -7,12 +7,14 @@
  * falls back to voice line extraction, then generic fallback.
  *
  * Pure handler: receives pre-parsed transcript data, updates Kitty tab.
+ * Called by ResponseTabReset.hook.ts.
  */
 
 import { setTabState, readTabState, stripPrefix, setPhaseTab } from '../lib/tab-setter';
-import { isValidCompletionTitle, gerundToPastTense } from '../lib/output-validators';
+import { isValidCompletionTitle, gerundToPastTense, getWorkingFallback, trimToValidTitle } from '../lib/output-validators';
 import { getDAName } from '../lib/identity';
-import type { ParsedTranscript } from '../../skills/PAI/Tools/TranscriptParser';
+
+import type { ParsedTranscript } from '../../PAI/Tools/TranscriptParser';
 
 /**
  * Extract tab title from voice line. Takes first sentence, caps at 4 words.
@@ -22,12 +24,9 @@ import type { ParsedTranscript } from '../../skills/PAI/Tools/TranscriptParser';
 function extractTabTitle(voiceLine: string): string | null {
   if (!voiceLine || voiceLine.length < 3) return null;
 
-  const daName = getDAName();
-  const daPattern = new RegExp(`^${daName}:\\s*`, 'i');
-
   const cleaned = voiceLine
     .replace(/^🗣️\s*/, '')
-    .replace(daPattern, '')
+    .replace(new RegExp(`^${getDAName()}:\\s*`, 'i'), '')
     .replace(/^(Done\.?\s*)/i, '')
     .replace(/^(I've\s+|I\s+)/i, '')
     .trim();
@@ -46,15 +45,10 @@ function extractTabTitle(voiceLine: string): string | null {
     firstSentence = firstWords[0] + ' ' + nextWords.join(' ');
   }
 
-  const words = firstSentence.split(/\s+/).slice(0, 4);
-
+  const words = firstSentence.split(/\s+/);
   if (words.length === 0) return null;
 
-  let result = words.join(' ').replace(/[,;:!?\-\u2014]+$/, '').trim();
-  if (!result.endsWith('.')) result += '.';
-
-  if (!isValidCompletionTitle(result)) return null;
-  return result;
+  return trimToValidTitle(words, isValidCompletionTitle);
 }
 
 /**
@@ -99,11 +93,10 @@ function extractFromResponseContent(responseText: string): string | null {
   const summaryMatch = responseText.match(/📋\s*SUMMARY:\s*(.+?)(?:\n|$)/i);
   if (summaryMatch && summaryMatch[1]) {
     const summary = summaryMatch[1].trim().replace(/^\[?\d+\s*bullets?\]?\s*/i, '');
-    const words = summary.split(/\s+/).slice(0, 4);
+    const words = summary.split(/\s+/);
     if (words.length >= 2) {
-      let candidate = words.join(' ').replace(/[,;:!?\-\u2014]+$/, '').trim();
-      if (!candidate.endsWith('.')) candidate += '.';
-      if (isValidCompletionTitle(candidate)) return candidate;
+      const candidate = trimToValidTitle(words, isValidCompletionTitle);
+      if (candidate) return candidate;
     }
   }
 
@@ -128,7 +121,7 @@ export async function handleTabState(parsed: ParsedTranscript, sessionId?: strin
       if (pipeIdx !== -1) {
         rawTitle = rawTitle.slice(pipeIdx + 3);
       }
-      if (rawTitle && rawTitle !== 'Done.' && rawTitle !== 'Processing.' && rawTitle !== 'Processing request.' && !rawTitle.endsWith('ready\u2026')) {
+      if (rawTitle && rawTitle !== 'Done.' && rawTitle !== 'Processing.' && rawTitle !== 'Processing request.' && rawTitle !== getWorkingFallback() && !rawTitle.endsWith('ready\u2026')) {
         const words = rawTitle.replace(/\.$/, '').split(/\s+/);
         if (words.length >= 2 && words[0].toLowerCase().endsWith('ing')) {
           words[0] = gerundToPastTense(words[0]);
@@ -162,6 +155,7 @@ export async function handleTabState(parsed: ParsedTranscript, sessionId?: strin
     if (sessionId) {
       // Completion with session prefix: "NAME | summary"
       setPhaseTab('COMPLETE', sessionId, shortTitle?.replace(/\.$/, '') || undefined);
+
       console.error(`[TabState] Completion: "${shortTitle || '(session name fallback)'}"`);
     } else {
       // No session ID fallback: "✅ summary"

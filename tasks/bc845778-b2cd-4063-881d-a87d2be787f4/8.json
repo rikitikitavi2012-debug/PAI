@@ -1,0 +1,9 @@
+{
+  "id": "8",
+  "subject": "ISC-C8: Science skill has zero placeholders and phantom refs",
+  "description": "Full audit of Science skill. Verify: Grep for placeholders + ref existence check",
+  "activeForm": "Auditing Science skill",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

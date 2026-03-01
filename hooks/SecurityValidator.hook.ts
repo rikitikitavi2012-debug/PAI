@@ -156,6 +156,7 @@ interface PatternsConfig {
     principle: string;
   };
   bash: {
+    trusted: Pattern[];
     blocked: Pattern[];
     confirm: Pattern[];
     alert: Pattern[];
@@ -177,10 +178,10 @@ interface PatternsConfig {
 // ========================================
 
 // Pattern paths in priority order:
-// 1. skills/PAI/USER/PAISECURITYSYSTEM/patterns.yaml (user's custom rules)
-// 2. skills/PAI/PAISECURITYSYSTEM/patterns.example.yaml (default template)
-const USER_PATTERNS_PATH = paiPath('skills', 'PAI', 'USER', 'PAISECURITYSYSTEM', 'patterns.yaml');
-const SYSTEM_PATTERNS_PATH = paiPath('skills', 'PAI', 'PAISECURITYSYSTEM', 'patterns.example.yaml');
+// 1. PAI/USER/PAISECURITYSYSTEM/patterns.yaml (user's custom rules)
+// 2. PAI/PAISECURITYSYSTEM/patterns.example.yaml (default template)
+const USER_PATTERNS_PATH = paiPath('PAI', 'USER', 'PAISECURITYSYSTEM', 'patterns.yaml');
+const SYSTEM_PATTERNS_PATH = paiPath('PAI', 'PAISECURITYSYSTEM', 'patterns.example.yaml');
 
 let patternsCache: PatternsConfig | null = null;
 let patternsSource: 'user' | 'system' | 'none' = 'none';
@@ -213,7 +214,7 @@ function loadPatterns(): PatternsConfig {
     return {
       version: '0.0',
       philosophy: { mode: 'permissive', principle: 'No patterns loaded - fail open' },
-      bash: { blocked: [], confirm: [], alert: [] },
+      bash: { trusted: [], blocked: [], confirm: [], alert: [] },
       paths: { zeroAccess: [], readOnly: [], confirmWrite: [], noDelete: [] },
       projects: {}
     };
@@ -229,7 +230,7 @@ function loadPatterns(): PatternsConfig {
     return {
       version: '0.0',
       philosophy: { mode: 'permissive', principle: 'Parse error - fail open' },
-      bash: { blocked: [], confirm: [], alert: [] },
+      bash: { trusted: [], blocked: [], confirm: [], alert: [] },
       paths: { zeroAccess: [], readOnly: [], confirmWrite: [], noDelete: [] },
       projects: {}
     };
@@ -246,9 +247,6 @@ function loadPatterns(): PatternsConfig {
  * Also strips leading whitespace.
  */
 function stripEnvVarPrefix(command: string): string {
-  // Pattern: optional whitespace, then one or more VAR=value assignments
-  // VAR names: [A-Z_][A-Z0-9_]* (standard env var naming)
-  // Values: quoted ("..." or '...') or unquoted non-space sequences
   return command.replace(
     /^\s*(?:[A-Za-z_][A-Za-z0-9_]*=(?:"[^"]*"|'[^']*'|[^\s]*)\s+)*/,
     ''
@@ -312,6 +310,13 @@ function matchesPathPattern(filePath: string, pattern: string): boolean {
 
 function validateBashCommand(command: string): { action: 'allow' | 'block' | 'confirm' | 'alert'; reason?: string } {
   const patterns = loadPatterns();
+
+  // Check trusted patterns FIRST (fast-path allow, no logging)
+  for (const p of (patterns.bash.trusted || [])) {
+    if (matchesPattern(command, p.pattern)) {
+      return { action: 'allow' };
+    }
+  }
 
   // Check blocked patterns (hard block)
   for (const p of patterns.bash.blocked) {
@@ -456,7 +461,7 @@ function handleBash(input: HookInput): void {
   }
 }
 
-function handleEdit(input: HookInput): void {
+function handleFileWrite(input: HookInput, toolName: string): void {
   const filePath = typeof input.tool_input === 'string'
     ? input.tool_input
     : (input.tool_input?.file_path as string) || '';
@@ -474,7 +479,7 @@ function handleEdit(input: HookInput): void {
         timestamp: new Date().toISOString(),
         session_id: input.session_id,
         event_type: 'block',
-        tool: 'Edit',
+        tool: toolName,
         category: 'path_access',
         target: filePath,
         reason: result.reason,
@@ -490,58 +495,7 @@ function handleEdit(input: HookInput): void {
         timestamp: new Date().toISOString(),
         session_id: input.session_id,
         event_type: 'confirm',
-        tool: 'Edit',
-        category: 'path_access',
-        target: filePath,
-        reason: result.reason,
-        action_taken: 'Prompted user for confirmation'
-      });
-      console.log(JSON.stringify({
-        decision: 'ask',
-        message: `[PAI SECURITY] ⚠️ ${result.reason}\n\nPath: ${filePath}\n\nProceed?`
-      }));
-      break;
-
-    default:
-      console.log(JSON.stringify({ continue: true }));
-  }
-}
-
-function handleWrite(input: HookInput): void {
-  const filePath = typeof input.tool_input === 'string'
-    ? input.tool_input
-    : (input.tool_input?.file_path as string) || '';
-
-  if (!filePath) {
-    console.log(JSON.stringify({ continue: true }));
-    return;
-  }
-
-  const result = validatePath(filePath, 'write');
-
-  switch (result.action) {
-    case 'block':
-      logSecurityEvent({
-        timestamp: new Date().toISOString(),
-        session_id: input.session_id,
-        event_type: 'block',
-        tool: 'Write',
-        category: 'path_access',
-        target: filePath,
-        reason: result.reason,
-        action_taken: 'Hard block - exit 2'
-      });
-      console.error(`[PAI SECURITY] 🚨 BLOCKED: ${result.reason}`);
-      console.error(`Path: ${filePath}`);
-      process.exit(2);
-      break;
-
-    case 'confirm':
-      logSecurityEvent({
-        timestamp: new Date().toISOString(),
-        session_id: input.session_id,
-        event_type: 'confirm',
-        tool: 'Write',
+        tool: toolName,
         category: 'path_access',
         target: filePath,
         reason: result.reason,
@@ -644,10 +598,10 @@ async function main(): Promise<void> {
       break;
     case 'Edit':
     case 'MultiEdit':
-      handleEdit(input);
+      handleFileWrite(input, input.tool_name);
       break;
     case 'Write':
-      handleWrite(input);
+      handleFileWrite(input, 'Write');
       break;
     case 'Read':
       handleRead(input);

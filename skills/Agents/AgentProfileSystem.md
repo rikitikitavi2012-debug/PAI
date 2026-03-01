@@ -157,7 +157,7 @@ That's it. Simple. No elaborate profile system. Just a reading list.
 | **Architect** | ArchitectContext.md | Software architecture specialist |
 | **Engineer** | EngineerContext.md | Implementation specialist with TDD focus |
 | **Designer** | DesignerContext.md | UX/UI design specialist |
-| **Artist** | ArtistContext.md | Visual content creator for UL |
+| **Artist** | ArtistContext.md | Visual content creator |
 | **QATester** | QATesterContext.md | Quality assurance validation (Gate 4) |
 
 ---

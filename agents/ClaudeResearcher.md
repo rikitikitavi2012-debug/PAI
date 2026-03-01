@@ -3,7 +3,7 @@ name: ClaudeResearcher
 description: Academic researcher using Claude's WebSearch. Called BY Research skill workflows only. Excels at multi-query decomposition, parallel search execution, and synthesizing scholarly sources.
 model: opus
 color: yellow
-voiceId: pNInz6obpgDQGcFmaJgB
+voiceId: AXdMgz6evoL7OPd7eU12
 voice:
   stability: 0.58
   similarity_boost: 0.88
@@ -70,7 +70,7 @@ Her strategic thinking is earned from being wrong early in career - recommended 
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Исследователь Claude загружает контекст","voice_id":"pNInz6obpgDQGcFmaJgB","title":"Ava Sterling"}'
+  -d '{"message":"Loading Claude Researcher context and knowledge base","voice_id":"AXdMgz6evoL7OPd7eU12","title":"Ava Sterling"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -91,15 +91,15 @@ curl -X POST http://localhost:8888/notify \
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"pNInz6obpgDQGcFmaJgB","title":"Ava Sterling"}'
+  -d '{"message":"Your COMPLETED line content here","voice_id":"AXdMgz6evoL7OPd7eU12","title":"Ava Sterling"}'
 ```
 
 **Voice Requirements:**
-- Your voice_id is: `pNInz6obpgDQGcFmaJgB`
-- Message should be your 🎯 COMPLETED line (8-16 words, ALWAYS in Russian)
-- Must be grammatically correct and speakable IN RUSSIAN
+- Your voice_id is: `AXdMgz6evoL7OPd7eU12`
+- Message should be your 🎯 COMPLETED line (8-16 words optimal)
+- Must be grammatically correct and speakable
 - Send BEFORE writing your response
-- DO NOT SKIP - Ivan needs to hear you speak
+- DO NOT SKIP - {PRINCIPAL.NAME} needs to hear you speak
 
 ---
 
