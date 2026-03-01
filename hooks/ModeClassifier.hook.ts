@@ -53,22 +53,22 @@ interface Classification {
 const GREETING_EN = /^(hi|hello|hey|howdy|good\s+(morning|evening|night|afternoon)|gm|gn|sup|yo|hiya|greetings)\s*[!.?]*$/i;
 
 /** Russian greetings (comprehensive) */
-const GREETING_RU = /^(привет|приветик|здравствуй(те)?|добро(е|го)\s+(утро|день|вечер|ночи|суток)|добрый\s+(день|вечер|утро)|доброго\s+времени\s+суток|салют|хай|хей|даров|ку|хэй|здорово|здрасте|здрасьте)\s*[!.?!]*$/i;
+const GREETING_RU = /^(привет|приветик|приветствую|здравствуй(те)?|добро(е|го)\s+(утро|день|вечер|ночи|суток)|добрый\s+(день|вечер|утро)|доброй\s+(ночи)|доброго\s+времени\s+суток|салют|хай|хей|даров|ку|хэй|здорово|здарова|здрасте|здрасьте|дратути|йо)\s*[!.?!]*$/i;
 
 /**
  * Numeric ratings — matches:
  *   "9", "10", "9/10", "10/10", "8.5/10"
  *   "9/10 — хорошо", "8 - good work", "10 — отлично!"
- *   "9/10: great", "7/10 норм"
+ *   "9/10: great", "7/10 норм", "8/10 хорошо"
  * Does NOT match: "сделай 9 шагов" (no leading digit anchor with task context)
  */
-const RATING_PATTERN = /^\d{1,2}([.,]\d)?(\s*\/\s*10)?\s*([–\-—:]\s*.{0,80})?$/;
+const RATING_PATTERN = /^\d{1,2}([.,]\d)?(\s*\/\s*10)?\s*([–\-—:]\s*.{0,80}|\s+.{1,80})?$/;
 
 /** English thanks */
 const THANKS_EN = /^(thanks|thank\s+you|thx|ty|cheers|tks|tnx|many\s+thanks|much\s+appreciated)\s*[!.?]*$/i;
 
 /** Russian thanks */
-const THANKS_RU = /^(спасибо|спасибочки|спасибки|спс|благодарю|благодарен|благодарна|пасиба|сяб|мерси|сенкью|сэнкью)\s*[!.?!]*$/i;
+const THANKS_RU = /^(спасибо|спасибочки|спасибки|спс|благодарю|благодарен|благодарна|благодарочка|пасиба|сяб|мерси|сенк|сенкью|сэнкью)\s*[!.?!]*$/i;
 
 /**
  * English acknowledgments — short confirmations only.
@@ -80,10 +80,10 @@ const ACK_EN = /^(ok|okay|got\s+it|understood|sure|fine|great|perfect|done|noted
  * Russian acknowledgments — strict single-word/short confirmations.
  * "ок" matches, "ок, продолжай" does NOT (comma breaks the anchor).
  */
-const ACK_RU = /^(ок|окей|хорошо|понял|поняла|понятно|ясно|ладно|договорились|принял|приняла|норм|нормально|ага|угу|хм|ясно|чётко|четко|ок\.?|вс[её])\s*[!.?!]*$/i;
+const ACK_RU = /^(ок|окей|хорошо|понял|поняла|понятно|ясно|ладно|лан|ладушки|договорились|принял|приняла|норм|нормально|ага|угу|хм|чётко|четко|годится|збс|пон|вс[её])\s*[!.?!]*$/i;
 
 /** Short positive feedback without task content */
-const FEEDBACK_SHORT = /^(отлично|супер|класс|круто|хорошо|прекрасно|замечательно|excellent|perfect|great|good|nice|awesome|brilliant|fantastic|well\s+done|молодец|красавчик|огонь|топ|огонь|зачёт|зачет)\s*[!.?!]*$/i;
+const FEEDBACK_SHORT = /^(отлично|супер|класс|круто|хорошо|прекрасно|замечательно|excellent|perfect|great|good|nice|awesome|brilliant|fantastic|well\s+done|молодец|красавчик|огонь|топ|зачёт|зачет)\s*[!.?!]*$/i;
 
 // ── Classification Logic ──────────────────────────────────────────────────────
 
