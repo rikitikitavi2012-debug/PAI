@@ -741,7 +741,7 @@
   "spinnerTipsOverride": {
     "excludeDefault": true,
     "tips": [
-      "77 skills loaded. Type / to see them all.",
+      "21 skill categories, 338 workflows. Type / to see them all.",
       "/council spawns a multi-agent debate on any topic.",
       "/redteam runs 32 adversarial agents against your idea.",
       "/extract-wisdom adapts its sections to match the content.",
@@ -758,11 +758,25 @@
       "The Algorithm has 7 phases: Observe, Think, Plan, Build, Execute, Verify, Learn.",
       "ISC = Ideal State Criteria = Verification Criteria. They're the same thing.",
       "Every ISC criterion must be 8-12 words, state not action, binary testable.",
-      "Effort levels: Instant < Fast < Standard < Extended < Advanced < Deep < Comprehensive.",
+      "Effort levels: Standard < Extended < Advanced < Deep < Comprehensive. Five tiers.",
       "Standard is the default effort level (~2 min). Only escalate when demanded.",
       "PRDs persist ISC to disk. They survive across sessions. PRD on disk wins conflicts.",
       "Loop mode re-runs the Algorithm against failing PRD criteria until all pass.",
-      "Euphoric Surprise is the goal. Chase 9-10 ratings on every response."
+      "Euphoric Surprise is the goal. Chase 9-10 ratings on every response.",
+      "ISC count floors by effort tier: Standard 8, Extended 16, Advanced 24, Deep 40, Comprehensive 64.",
+      "Capability selection consults the skill listing in the system prompt. Invoke every selected capability via tool.",
+      "Selecting a capability creates a binding commitment to invoke it via Skill or Agent tool call.",
+      "BuildCLAUDE.ts composes CLAUDE.md from template at session start — modular, versionable.",
+      "LoadContext.hook.ts injects dynamic context (relationship, learning, work) at session start.",
+      "PRD frontmatter has 8 fields: task, slug, effort, phase, progress, mode, started, updated.",
+      "PRD body has 4 sections: Context, Criteria (ISC checkboxes), Decisions, Verification.",
+      "Voice announcements at Algorithm entry and every phase transition via localhost:8888/notify.",
+      "Only the primary agent makes voice curls. Subagents and teammates skip voice entirely.",
+      "PRDSync.hook.ts fires on Write/Edit of PRD.md and syncs frontmatter to work.json for the dashboard.",
+      "Context compaction at phase boundaries prevents context rot — the #1 cause of late-phase failures.",
+      "ISC Count Gate is mandatory. Cannot exit OBSERVE with fewer ISC than the effort tier floor.",
+      "Use PAI Tools (bun PAI/Tools/*.ts) and CLI tools. Don't improvise Bash chains.",
+      "26 hooks run across the session lifecycle — security, tracking, learning, naming."
     ]
   },
   "plansDirectory": "Plans/",
@@ -839,7 +853,7 @@
   "pai": {
     "repoUrl": "https://github.com/danielmiessler/PAI",
     "version": "4.0.2",
-    "algorithmVersion": "3.5.0"
+    "algorithmVersion": "3.6.0"
   },
   "preferences": {
     "temperatureUnit": "fahrenheit"
