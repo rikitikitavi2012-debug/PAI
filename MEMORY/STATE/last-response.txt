@@ -1,40 +1,31 @@
-Всё проверил. Вот полная картина:
-
 ```
 ════ PAI | NATIVE MODE ═══════════════════════
-🗒️ TASK: Финализация git workflow — статус и недоделки
-🔄 ITERATION on: Продолжение с прошлой сессии — настройка git remotes и workflow
+🗒️ TASK: Git aliases + коммит + бэкап в private
+🔄 ITERATION on: Финализация git workflow из прошлой сессии
 
-📃 CONTENT:
+🔧 CHANGE:
+  • 5 git aliases настроены в .git/config (fetchup, syncmain, backupmaster, pullup, pushup)
+  • Убрал дубли из глобального ~/.gitconfig
+  • Починил двойное экранирование `\\!` → `!bash -c`
+  • Закоммитил state файлы + очистил stale lock (48e3d3c)
+  • Запушил master → private remote
 
-## Текущий статус — всё в хорошей форме
+✅ VERIFY:
+  • `git fetchup` — работает, fetches upstream + origin
+  • `git syncmain` — работает, ff-merge + push to origin
+  • `git backupmaster` — работает, push to private
+  • Все 3 remote-а синхронизированы (SHA совпадают)
+  • Ветка master, tracking private/master
 
-┌─────────────────────────────────────────────────────────────┐
-│  UPSTREAM — Daniel (автор PAI)                              │
-│  github.com/danielmiessler/Personal_AI_Infrastructure       │
-│  remote: upstream                                           │
-│                                                             │
-│  main branch (552+ коммитов)                                │
-│  ✅ Синхронизирован с local main                            │
-│                                                             │
-│  Наши PR-ы (3 штуки, все OPEN):                             │
-│    #840 feat: ModeClassifier hook                           │
-│    #808 fix: algorithm.ts bugs                              │
-│    #800 fix: Inference.ts JSON parsing                      │
-└────────────────────────────────────────────────┬────────────┘
-                                                 │
-                    ↕ PR-ы и обновления           │
-                                                 │
-┌────────────────────────────────────────────────┴────────────┐
-│  ORIGIN — наш публичный форк                                │
-│  github.com/rikitikitavi2012-debug/PAI                      │
-│  remote: origin                                             │
-│                                                             │
-│  main      ✅ синхронизирован с upstream                    │
-│  feat/*    ✅ 3 ветки для PR-ов запушены                    │
-│                                                             │
-│  ⛔ master НИКОГДА не пушим сюда (репо ПУБЛИЧНЫЙ!)          │
-└─────────────────────────────────────────────────────────────┘
+🗣️ Navi: Git workflow готов. Команды: fetchup, syncmain, backupmaster, pullup, pushup.
+```
 
-┌─────────────────────────────────────────────────────────────┐
-│  PRIVATE — приватный бэкап       
+**Шпаргалка:**
+
+| Команда | Что делает |
+|---|---|
+| `git fetchup` | Скачать обновления upstream + origin |
+| `git syncmain` | Синхронизировать main с Daniel + push в origin |
+| `git backupmaster` | Бэкап master в приватный репо |
+| `git pullup` | Pull из upstream в текущую ветку |
+| `git pushup` | Push в upstream (для PR-ов) |
