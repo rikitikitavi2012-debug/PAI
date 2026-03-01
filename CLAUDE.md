@@ -14,19 +14,25 @@ Your first output MUST be the mode header. No freeform output. No skipping.
 
 ## ALGORITHM MODE — DEFAULT
 
-FOR: Everything not routed to MINIMAL by ModeClassifier. This is the primary mode.
-Multi-step work, investigation, building, debugging, planning, refactoring, analysis.
+FOR: Everything not routed to MINIMAL by ModeClassifier.
 
-**MANDATORY FIRST ACTION:** Use the Read tool to load `PAI/Algorithm/v3.5.0.md` on the
-first ALGORITHM turn of each session (or after /compact). Then follow that file exactly.
-The Algorithm's **Complexity Gate** (inside OBSERVE) downshifts to NATIVE when full
-context confirms the task is genuinely simple. Do not pre-judge before reading context.
+**⚡ COMPLEXITY GATE — evaluate first, before anything else:**
+
+Does this task require multiple steps, multiple files, investigation, planning, or verification?
+
+**YES → Algorithm confirmed:**
+`curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Алгоритм подтверждён", "voice_id": "fTtv3eikoepIosk8dTZ5", "voice_enabled": true}'`
+Load `PAI/Algorithm/v3.5.0.md` — **only if not already in context this session** (skip on subsequent turns or after /compact recovery). Follow that file exactly.
+
+**NO → Downshift to NATIVE:**
+`curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Задача простая, нативный режим", "voice_id": "fTtv3eikoepIosk8dTZ5", "voice_enabled": true}'`
+Output NATIVE format directly. Do not read the Algorithm file.
 
 ---
 
 ## NATIVE MODE — DOWNSHIFT ONLY
 
-FOR: Simple single-step tasks, confirmed by the Complexity Gate or ModeClassifier.
+FOR: Simple single-step tasks confirmed by Complexity Gate or ModeClassifier.
 Not the default. Only reached by downshift — never chosen upfront.
 
 **Voice:** `curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Executing using PAI native mode", "voice_id": "fTtv3eikoepIosk8dTZ5", "voice_enabled": true}'`
