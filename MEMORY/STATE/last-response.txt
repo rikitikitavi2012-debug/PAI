@@ -1,31 +1,68 @@
+Теперь у меня полная картина. Объясняю.
+
 ```
 ════ PAI | NATIVE MODE ═══════════════════════
-🗒️ TASK: Git aliases + коммит + бэкап в private
-🔄 ITERATION on: Финализация git workflow из прошлой сессии
+🗒️ TASK: Объяснение git workflow и стратегии синхронизации
 
-🔧 CHANGE:
-  • 5 git aliases настроены в .git/config (fetchup, syncmain, backupmaster, pullup, pushup)
-  • Убрал дубли из глобального ~/.gitconfig
-  • Починил двойное экранирование `\\!` → `!bash -c`
-  • Закоммитил state файлы + очистил stale lock (48e3d3c)
-  • Запушил master → private remote
+📃 CONTENT:
 
-✅ VERIFY:
-  • `git fetchup` — работает, fetches upstream + origin
-  • `git syncmain` — работает, ff-merge + push to origin
-  • `git backupmaster` — работает, push to private
-  • Все 3 remote-а синхронизированы (SHA совпадают)
-  • Ветка master, tracking private/master
+## Что мы изначально делали неправильно?
 
-🗣️ Navi: Git workflow готов. Команды: fetchup, syncmain, backupmaster, pullup, pushup.
+Да, была проблема. У тебя был один репо с одной веткой, куда
+шло ВСЁ — и код Daniel, и твои личные данные (MEMORY, USER, 
+WISDOM). Это значило:
+
+❌ Нельзя пушить — там пароли и личные данные
+❌ Нельзя делать PR — история загрязнена твоими коммитами
+❌ Нельзя обновляться — merge hell с Daniel-ом
+
+## Что настроили сейчас?
+
+Разделили на ДВА потока, которые живут параллельно:
+
+### Поток 1: ПУБЛИЧНЫЙ (main) — для сообщества
 ```
+Daniel (upstream) ←→ Наш форк (origin) ←→ Локальный main
+```
+- `main` — чистая копия кода Daniel, без наших данных
+- Сюда мы отправляем PR-ы (баги, фичи) 
+- Отсюда получаем обновления Daniel
+- 3 PR-а уже открыты (#840, #808, #800)
 
-**Шпаргалка:**
+### Поток 2: ПРИВАТНЫЙ (master) — наша версия Navi
+```
+Локальный master → private remote (PAI-personal)
+```
+- `master` — ВСЯ наша конфигурация, MEMORY, USER, хуки
+- Бэкапится в приватный GitHub репо
+- НИКОГДА не уходит в публичный origin
+- Это и есть «наш компьютер», но с бэкапом в облаке
 
-| Команда | Что делает |
-|---|---|
-| `git fetchup` | Скачать обновления upstream + origin |
-| `git syncmain` | Синхронизировать main с Daniel + push в origin |
-| `git backupmaster` | Бэкап master в приватный репо |
-| `git pullup` | Pull из upstream в текущую ветку |
-| `git pushup` | Push в upstream (для PR-ов) |
+### Эти ветки НЕ связаны
+У них нет общего предка (`merge-base` = пусто). Это две 
+независимые истории в одном репо. Это нормально и правильно.
+
+## Как не отставать от обновлений Daniel?
+
+Одна команда:
+  `git syncmain`   — скачает обновления Daniel, обновит main
+
+А дальше ты ВЫБИРАЕШЬ что забрать в master:
+  `git checkout master`
+  `git checkout main -- PAI/Algorithm/v3.5.0.md`  (конкретный файл)
+  Или: `git merge main` (всё, но аккуратно — будут конфликты)
+
+Рекомендация: забирать ФАЙЛАМИ, не merge целиком. Потому что
+Daniel обновляет CLAUDE.md, а у нас свой. Algorithm, Tools, 
+Skills — это безопасно забирать.
+
+## Как быть в курсе сообщества?
+
+Прямо сейчас у Daniel:
+- 10+ открытых PR-ов (в том числе 3 наших)
+- 10+ открытых issues (баги, фичи)
+- Активное сообщество — коммиты каждый день
+
+Чтобы следить, можно:
+
+1. **Разово проверить:**

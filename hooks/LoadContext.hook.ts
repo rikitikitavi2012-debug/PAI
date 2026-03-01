@@ -34,6 +34,7 @@
 
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
+import { spawnSync } from 'child_process';
 import { getPaiDir } from './lib/paths';
 import { recordSessionStart } from './lib/notifications';
 import { loadLearningDigest, loadWisdomFrames, loadFailurePatterns, loadSignalTrends } from './lib/learning-readback';
@@ -512,6 +513,25 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
       console.log('\n✅ PAI dynamic context loaded...');
     } else {
       console.log('\n✅ PAI session ready...');
+    }
+
+    // Community check — upstream PAI activity (non-blocking, brief mode)
+    try {
+      const communityScript = join(paiDir, 'PAI', 'Tools', 'CommunityCheck.ts');
+      if (existsSync(communityScript)) {
+        const ccResult = spawnSync('bun', ['run', communityScript, '--brief'], {
+          encoding: 'utf-8',
+          timeout: 20000,
+          env: { ...process.env, NO_COLOR: '1' },
+        });
+        if (ccResult.stdout?.trim()) {
+          console.log('\n🌐 COMMUNITY:');
+          console.log(ccResult.stdout.trim());
+        }
+        console.error('🌐 Community check completed');
+      }
+    } catch (err) {
+      console.error(`⚠️ Community check failed: ${err}`);
     }
 
     // Active work summary
