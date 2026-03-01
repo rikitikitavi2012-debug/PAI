@@ -71,15 +71,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/VoiceGate.hook.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
             "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts"
           }
         ]
@@ -184,6 +175,24 @@
             "command": "${PAI_DIR}/hooks/AlgorithmTracker.hook.ts"
           }
         ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/PRDSync.hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/PRDSync.hook.ts"
+          }
+        ]
       }
     ],
     "SessionEnd": [
@@ -195,11 +204,7 @@
           },
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/ISCSyncHook.hook.ts"
-          },
-          {
-            "type": "command",
-            "command": "${PAI_DIR}/hooks/SessionSummary.hook.ts"
+            "command": "${PAI_DIR}/hooks/SessionCleanup.hook.ts"
           },
           {
             "type": "command",
@@ -243,6 +248,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "${PAI_DIR}/hooks/KittyEnvPersist.hook.ts"
+          },
+          {
+            "type": "command",
             "command": "${PAI_DIR}/hooks/StartupGreeting.hook.ts"
           },
           {
@@ -251,7 +260,7 @@
           },
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/CheckVersion.hook.ts"
+            "command": "bun ${PAI_DIR}/hooks/handlers/BuildCLAUDE.ts"
           }
         ]
       },
@@ -270,17 +279,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/StopOrchestrator.hook.ts"
-          }
-        ]
-      }
-    ],
-    "ConfigChange": [
-      {
-        "hooks": [
+            "command": "${PAI_DIR}/hooks/LastResponseCache.hook.ts"
+          },
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts"
+            "command": "${PAI_DIR}/hooks/ResponseTabReset.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/VoiceCompletion.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/DocIntegrity.hook.ts"
           }
         ]
       }
@@ -719,22 +730,60 @@
       "Hydrogen-Sonata-playing"
     ]
   },
+  "spinnerTipsOverride": {
+    "excludeDefault": true,
+    "tips": [
+      "77 skills loaded. Type / to see them all.",
+      "/council spawns a multi-agent debate on any topic.",
+      "/redteam runs 32 adversarial agents against your idea.",
+      "/extract-wisdom adapts its sections to match the content.",
+      "/first-principles decomposes problems to root causes.",
+      "/iterative-depth explores a problem from 2-8 different angles.",
+      "/be-creative activates extended thinking mode for deep reasoning.",
+      "/telos is your Life OS \u2014 goals, projects, dependencies, books, movies.",
+      "/osint does open source intelligence and due diligence.",
+      "/recon runs security reconnaissance and attack surface mapping.",
+      "/fabric runs 240+ prompt patterns for content analysis and extraction.",
+      "/art creates visual content \u2014 illustrations, diagrams, mermaid charts, infographics.",
+      "/science applies the scientific method \u2014 hypothesis, test, analyze, iterate.",
+      "/world-threat-model-harness tests ideas against 11 time horizons (6mo to 50yr).",
+      "The Algorithm has 7 phases: Observe, Think, Plan, Build, Execute, Verify, Learn.",
+      "ISC = Ideal State Criteria = Verification Criteria. They're the same thing.",
+      "Every ISC criterion must be 8-12 words, state not action, binary testable.",
+      "Effort levels: Instant < Fast < Standard < Extended < Advanced < Deep < Comprehensive.",
+      "Standard is the default effort level (~2 min). Only escalate when demanded.",
+      "PRDs persist ISC to disk. They survive across sessions. PRD on disk wins conflicts.",
+      "Loop mode re-runs the Algorithm against failing PRD criteria until all pass.",
+      "Euphoric Surprise is the goal. Chase 9-10 ratings on every response."
+    ]
+  },
   "plansDirectory": "Plans/",
+  "loadAtStartup": {
+    "_docs": "Files force-loaded into session context at startup by LoadContext.hook.ts. Paths relative to PAI_DIR. Injected as <system-reminder> blocks.",
+    "files": [
+      "PAI/AISTEERINGRULES.md",
+      "PAI/USER/AISTEERINGRULES.md",
+      "PAI/USER/PROJECTS/PROJECTS.md"
+    ]
+  },
+  "dynamicContext": {
+    "_docs": "Dynamic context sections injected by LoadContext.hook.ts at session start. Set to false to disable.",
+    "relationshipContext": true,
+    "learningReadback": true,
+    "activeWorkSummary": true
+  },
+  "contextFiles": [],
+  "_contextFiles_docs": "v4.0: contextFiles is empty \u2014 core context is in CLAUDE.md (loaded natively by Claude Code). Dynamic context (relationship, learning, work) injected by LoadContext.hook.ts.",
   "teammateMode": "in-process",
-  "contextFiles": [
-    "skills/PAI/SKILL.md",
-    "skills/PAI/AISTEERINGRULES.md",
-    "skills/PAI/USER/AISTEERINGRULES.md",
-    "skills/PAI/USER/DAIDENTITY.md"
-  ],
   "daidentity": {
     "name": "Navi",
-    "fullName": "Navi — Personal AI",
+    "fullName": "Navi \u2014 Personal AI",
     "displayName": "NAVI",
     "color": "#3B82F6",
     "voices": {
       "main": {
         "voiceId": "pNInz6obpgDQGcFmaJgB",
+        "voiceName": "Navi",
         "stability": 0.35,
         "similarityBoost": 0.8,
         "style": 0.9,
@@ -742,6 +791,7 @@
       },
       "algorithm": {
         "voiceId": "pNInz6obpgDQGcFmaJgB",
+        "voiceName": "Algorithm Voice",
         "stability": 0.35,
         "similarityBoost": 0.8,
         "style": 0.9,
@@ -764,7 +814,7 @@
       "curiosity": 90,
       "playfulness": 45
     },
-    "startupCatchphrase": "Navi готов к работе",
+    "startupCatchphrase": "Navi \u0433\u043e\u0442\u043e\u0432 \u043a \u0440\u0430\u0431\u043e\u0442\u0435",
     "voiceId": "pNInz6obpgDQGcFmaJgB"
   },
   "principal": {
@@ -780,7 +830,11 @@
   },
   "pai": {
     "repoUrl": "https://github.com/danielmiessler/PAI",
-    "version": "3.0"
+    "version": "4.0.1",
+    "algorithmVersion": "3.5.0"
+  },
+  "preferences": {
+    "temperatureUnit": "fahrenheit"
   },
   "contextDisplay": {
     "compactionThreshold": 83,
@@ -843,16 +897,16 @@
     }
   },
   "counts": {
-    "skills": 45,
-    "workflows": 165,
+    "skills": 11,
+    "workflows": 164,
     "hooks": 22,
-    "signals": 25,
-    "files": 93,
-    "work": 6,
-    "sessions": 41,
-    "research": 1,
-    "ratings": 160,
-    "updatedAt": "2026-02-25T23:00:52.651Z"
+    "signals": 47,
+    "files": 96,
+    "work": 23,
+    "sessions": 40,
+    "research": 7,
+    "ratings": 188,
+    "updatedAt": "2026-02-28T19:12:39.137Z"
   },
   "mcpServers": {
     "supabase": {
@@ -870,6 +924,9 @@
       "env": {
         "EXA_API_KEY": "${EXA_API_KEY}"
       }
+    },
+    "cloudflare": {
+      "url": "https://mcp.cloudflare.com/mcp"
     }
   }
 }

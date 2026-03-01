@@ -70,7 +70,7 @@ DA_NAME="${DA_NAME:-Assistant}"
 PAI_VERSION="${PAI_VERSION:-—}"
 
 # Get Algorithm version from LATEST file (single source of truth)
-ALGO_LATEST_FILE="$PAI_DIR/skills/PAI/Components/Algorithm/LATEST"
+ALGO_LATEST_FILE="$PAI_DIR/PAI/Algorithm/LATEST"
 if [ -f "$ALGO_LATEST_FILE" ]; then
     ALGO_VERSION=$(cat "$ALGO_LATEST_FILE" 2>/dev/null | tr -d '[:space:]' | sed 's/^v//i')
 else
@@ -85,6 +85,7 @@ eval "$(echo "$input" | jq -r '
   "model_name=" + (.model.display_name // "unknown" | @sh) + "\n" +
   "cc_version_json=" + (.version // "" | @sh) + "\n" +
   "duration_ms=" + (.cost.total_duration_ms // 0 | tostring) + "\n" +
+  "session_cost_usd=" + (.cost.total_cost_usd // 0 | tostring) + "\n" +
   "context_max=" + (.context_window.context_window_size // 200000 | tostring) + "\n" +
   "context_pct=" + (.context_window.used_percentage // 0 | tostring) + "\n" +
   "context_remaining=" + (.context_window.remaining_percentage // 100 | tostring) + "\n" +
@@ -902,6 +903,12 @@ print(f\"clock_7d='{clock_time(r7d, \"weekly\")}'\")
     reset_5h_time="${clock_5h:-${reset_5h}}"
     reset_7d_time="${clock_7d:-${reset_7d}}"
 
+    # Session cost display (from .cost.total_cost_usd in statusLine callback)
+    session_cost_display=""
+    if [ -n "$session_cost_usd" ] && [ "$session_cost_usd" != "0" ] && [ "$session_cost_usd" != "0.0" ]; then
+        session_cost_display=$(python3 -c "print(f'S:\${float(\"$session_cost_usd\"):.4f}')" 2>/dev/null)
+    fi
+
     case "$MODE" in
         nano)
             printf "${USAGE_PRIMARY}▰${RESET} ${usage_5h_color}${usage_5h_int}%%${RESET}${USAGE_RESET}↻${reset_5h_time}${RESET} ${usage_7d_color}${usage_7d_int}%%${RESET}${USAGE_RESET}/wk${RESET}\n"
@@ -913,12 +920,14 @@ print(f\"clock_7d='{clock_time(r7d, \"weekly\")}'\")
             printf "${USAGE_PRIMARY}▰${RESET} ${USAGE_LABEL}USAGE:${RESET} ${USAGE_RESET}5H:${RESET} ${usage_5h_color}${usage_5h_int}%%${RESET} ${USAGE_RESET}↻${SLATE_500}${reset_5h_time}${RESET} ${SLATE_600}│${RESET} ${USAGE_RESET}WK:${RESET} ${usage_7d_color}${usage_7d_int}%%${RESET} ${USAGE_RESET}↻${SLATE_500}${reset_7d_time}${RESET}"
             [ -n "$extra_display" ] && printf " ${SLATE_600}│${RESET} ${USAGE_EXTRA}${extra_display}${RESET}"
             [ -n "$ws_display" ] && printf " ${SLATE_600}│${RESET} ${USAGE_EXTRA}${ws_display}${RESET}"
+            [ -n "$session_cost_display" ] && printf " ${SLATE_600}│${RESET} ${USAGE_EXTRA}${session_cost_display}${RESET}"
             printf "\n"
             ;;
         normal)
             printf "${USAGE_PRIMARY}▰${RESET} ${USAGE_LABEL}USAGE:${RESET} ${USAGE_RESET}5H:${RESET} ${usage_5h_color}${usage_5h_int}%%${RESET} ${USAGE_RESET}↻${SLATE_500}${reset_5h_time}${RESET} ${SLATE_600}│${RESET} ${USAGE_RESET}WK:${RESET} ${usage_7d_color}${usage_7d_int}%%${RESET} ${USAGE_RESET}↻${SLATE_500}${reset_7d_time}${RESET}"
             [ -n "$extra_display" ] && printf " ${SLATE_600}│${RESET} ${USAGE_EXTRA}${extra_display}${RESET}"
             [ -n "$ws_display" ] && printf " ${SLATE_600}│${RESET} ${USAGE_EXTRA}${ws_display}${RESET}"
+            [ -n "$session_cost_display" ] && printf " ${SLATE_600}│${RESET} ${USAGE_EXTRA}${session_cost_display}${RESET}"
             printf "\n"
             ;;
     esac
