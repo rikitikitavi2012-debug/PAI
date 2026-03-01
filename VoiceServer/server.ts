@@ -20,8 +20,10 @@ import { homedir } from "os";
 import { join } from "path";
 import { existsSync, readFileSync } from "fs";
 
-// Load .env from user home directory
-const envPath = join(homedir(), '.env');
+// Load .env from PAI config directory
+const envPath = process.env.PAI_CONFIG_DIR
+  ? join(process.env.PAI_CONFIG_DIR, '.env')
+  : join(homedir(), '.config', 'PAI', '.env');
 if (existsSync(envPath)) {
   const envContent = await Bun.file(envPath).text();
   envContent.split('\n').forEach(line => {

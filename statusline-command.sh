@@ -29,7 +29,7 @@ TREND_CACHE="$PAI_DIR/MEMORY/STATE/trending-cache.json"
 MODEL_CACHE="$PAI_DIR/MEMORY/STATE/model-cache.txt"
 QUOTE_CACHE="$PAI_DIR/.quote-cache"
 LOCATION_CACHE="$PAI_DIR/MEMORY/STATE/location-cache.json"
-WEATHER_CACHE="$PAI_DIR/MEMORY/STATE/weather-cache.json"
+WEATHER_CACHE="$PAI_DIR/MEMORY/STATE/weather-cache.txt"
 USAGE_CACHE="$PAI_DIR/MEMORY/STATE/usage-cache.json"
 
 # NOTE: context_window.used_percentage provides raw context usage from Claude Code.

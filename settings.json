@@ -208,10 +208,6 @@
           },
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/RelationshipMemory.hook.ts"
-          },
-          {
-            "type": "command",
             "command": "${PAI_DIR}/hooks/UpdateCounts.hook.ts"
           },
           {
@@ -296,6 +292,10 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/DocIntegrity.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/RelationshipMemory.hook.ts"
           }
         ]
       }
@@ -744,12 +744,12 @@
       "/first-principles decomposes problems to root causes.",
       "/iterative-depth explores a problem from 2-8 different angles.",
       "/be-creative activates extended thinking mode for deep reasoning.",
-      "/telos is your Life OS \u2014 goals, projects, dependencies, books, movies.",
+      "/telos is your Life OS — goals, projects, dependencies, books, movies.",
       "/osint does open source intelligence and due diligence.",
       "/recon runs security reconnaissance and attack surface mapping.",
       "/fabric runs 240+ prompt patterns for content analysis and extraction.",
-      "/art creates visual content \u2014 illustrations, diagrams, mermaid charts, infographics.",
-      "/science applies the scientific method \u2014 hypothesis, test, analyze, iterate.",
+      "/art creates visual content — illustrations, diagrams, mermaid charts, infographics.",
+      "/science applies the scientific method — hypothesis, test, analyze, iterate.",
       "/world-threat-model-harness tests ideas against 11 time horizons (6mo to 50yr).",
       "The Algorithm has 7 phases: Observe, Think, Plan, Build, Execute, Verify, Learn.",
       "ISC = Ideal State Criteria = Verification Criteria. They're the same thing.",
@@ -777,11 +777,11 @@
     "activeWorkSummary": true
   },
   "contextFiles": [],
-  "_contextFiles_docs": "v4.0: contextFiles is empty \u2014 core context is in CLAUDE.md (loaded natively by Claude Code). Dynamic context (relationship, learning, work) injected by LoadContext.hook.ts.",
+  "_contextFiles_docs": "v4.0: contextFiles is empty — core context is in CLAUDE.md (loaded natively by Claude Code). Dynamic context (relationship, learning, work) injected by LoadContext.hook.ts.",
   "teammateMode": "in-process",
   "daidentity": {
     "name": "Navi",
-    "fullName": "Navi \u2014 Personal AI",
+    "fullName": "Navi — Personal AI",
     "displayName": "NAVI",
     "color": "#3B82F6",
     "voices": {
@@ -818,7 +818,7 @@
       "curiosity": 90,
       "playfulness": 45
     },
-    "startupCatchphrase": "Navi \u0433\u043e\u0442\u043e\u0432 \u043a \u0440\u0430\u0431\u043e\u0442\u0435",
+    "startupCatchphrase": "Navi готов к работе",
     "voiceId": "pNInz6obpgDQGcFmaJgB"
   },
   "principal": {
@@ -901,16 +901,13 @@
     }
   },
   "counts": {
-    "skills": 11,
-    "workflows": 164,
-    "hooks": 22,
-    "signals": 47,
-    "files": 96,
-    "work": 23,
-    "sessions": 40,
-    "research": 7,
-    "ratings": 188,
-    "updatedAt": "2026-02-28T19:12:39.137Z"
+    "skills": 47,
+    "workflows": 158,
+    "hooks": 25,
+    "agents": 15,
+    "work": 31,
+    "ratings": 189,
+    "updatedAt": "2026-03-01T15:00:00.000Z"
   },
   "mcpServers": {
     "supabase": {
