@@ -226,6 +226,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "${PAI_DIR}/hooks/ModeClassifier.hook.ts"
+          },
+          {
+            "type": "command",
             "command": "${PAI_DIR}/hooks/RatingCapture.hook.ts"
           },
           {
