@@ -1,6 +1,6 @@
 {
   "domain": "system",
-  "updated": "2026-02-25T16:06:11.192Z",
+  "updated": "2026-03-01T14:59:48.570Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -55,6 +55,41 @@
       "observation": "When running multi-iteration loops, Ivan structures PRDs with per-iteration effort levels (Fast/Normal/Deep) — will likely ask to adjust pace mid-loop based on results",
       "timestamp": "2026-02-25T16:06:11.192Z",
       "session_id": "fe393342-197c-42f8-a5ea-442e8fb3bf2e",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Placeholder strings like  in agent configs silently pass through to production — need validation layer before deployment",
+      "timestamp": "2026-02-26T21:08:47.302Z",
+      "session_id": "66cf432d-f726-42e3-b555-25d6b1080662",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Agent system discrepancy: 5 researcher agents claim specialized APIs (Perplexity/Grok/Gemini) but actually use Claude WebSearch — Ivan notices and flags as accuracy issue",
+      "timestamp": "2026-02-26T21:56:34.207Z",
+      "session_id": "8ae31412-eb0a-4854-a82f-c1cd6a8c0df0",
+      "confirmed": 1
+    },
+    {
+      "type": "contextual-rule",
+      "observation": "When fixing subsystem bugs, Ivan audits ALL related agents/contexts for same pattern—not just the flagged file",
+      "timestamp": "2026-02-27T00:18:55.856Z",
+      "session_id": "a474233d-6abc-4d56-848b-6996c0ed6dd7",
+      "confirmed": 1
+    },
+    {
+      "type": "contextual-rule",
+      "observation": "Ivan needs detailed mechanical explanations of system changes before executing — abstract plans insufficient without 'how does this actually work' clarity",
+      "timestamp": "2026-02-28T19:12:48.943Z",
+      "session_id": "6c38d301-50ff-4959-bbc4-f9326e10a2b0",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Impressed by thorough, systematic audit with actionable findings",
+      "timestamp": "2026-02-26T23:14:29+03:00",
+      "session_id": "66cf432d-f726-42e3-b555-25d6b1080662",
       "confirmed": 1
     }
   ]

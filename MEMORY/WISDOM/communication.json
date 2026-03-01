@@ -1,12 +1,46 @@
 {
   "domain": "communication",
-  "updated": "2026-02-26T19:39:52.701Z",
+  "updated": "2026-03-01T14:59:48.564Z",
   "observations": [
     {
       "type": "contextual-rule",
       "observation": "Ivan uses Russian; asks rapid-fire follow-up questions when confused; needs simple, concrete examples over theoretical explanations",
       "timestamp": "2026-02-26T19:39:52.701Z",
       "session_id": "8aabe577-7eb9-409a-9950-02aa10a1e82e",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "When Ivan discovers configuration issues (voice IDs, language settings), he asks to fix ALL instances across the system, not just one",
+      "timestamp": "2026-02-26T21:08:47.234Z",
+      "session_id": "66cf432d-f726-42e3-b555-25d6b1080662",
+      "confirmed": 1
+    },
+    {
+      "type": "contextual-rule",
+      "observation": "Ivan shares audit results with community via GitHub Issues after validation — treats testing as documentation",
+      "timestamp": "2026-02-27T08:18:24.748Z",
+      "session_id": "c48c6a5f-eb0d-4698-8975-8910b0043c52",
+      "confirmed": 1
+    },
+    {
+      "type": "contextual-rule",
+      "observation": "Interactive block-then-question teaching format works well for Ivan — he asks targeted follow-ups when given space between blocks",
+      "timestamp": "2026-02-28T13:44:50.861Z",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration with unclear voice output behavior",
+      "timestamp": "2026-02-25T22:32:05+03:00",
+      "session_id": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration with incomplete audio output delivery",
+      "timestamp": "2026-02-25T23:21:05+03:00",
+      "session_id": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
       "confirmed": 1
     }
   ]

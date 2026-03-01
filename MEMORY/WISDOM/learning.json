@@ -1,12 +1,32 @@
 {
   "domain": "learning",
-  "updated": "2026-02-26T18:45:03.302Z",
+  "updated": "2026-03-01T14:59:48.571Z",
   "observations": [
     {
       "type": "anti-pattern",
       "observation": "Pure theoretical explanations don't satisfy Ivan — he wants live examples and concrete demonstrations of how tools work, not abstract architecture",
       "timestamp": "2026-02-26T18:45:03.302Z",
       "session_id": "b9de0178-e71b-4491-b6a8-ee0d7495e0fa",
+      "confirmed": 1
+    },
+    {
+      "type": "contextual-rule",
+      "observation": "Ivan responds well to 10-topic structured onboarding with cheat sheet at the end — covers full PAI architecture in one session",
+      "timestamp": "2026-02-28T17:32:18.084Z",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated about missing voice feedback after messages",
+      "timestamp": "2026-02-25T23:06:00+03:00",
+      "session_id": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Impressed with learning approach, wants deeper interactive exploration",
+      "timestamp": "2026-02-28T16:01:03+03:00",
+      "session_id": "6c38d301-50ff-4959-bbc4-f9326e10a2b0",
       "confirmed": 1
     }
   ]

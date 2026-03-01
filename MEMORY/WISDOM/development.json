@@ -1,6 +1,6 @@
 {
   "domain": "development",
-  "updated": "2026-02-26T19:54:14.980Z",
+  "updated": "2026-03-01T14:59:48.567Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -63,6 +63,76 @@
       "observation": "Agents produce false alarms when given only line numbers—require exact code snippets in audit report format to reduce verification overhead",
       "timestamp": "2026-02-26T19:54:14.980Z",
       "session_id": "6065d990-06d8-4289-a118-ed6fe1883180",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "After fixing templating bugs, Ivan asks to audit adjacent systems (e.g., after ComposeAgent.ts fix → checked DynamicAgent.hbs for same issues)",
+      "timestamp": "2026-02-26T21:56:34.187Z",
+      "session_id": "8ae31412-eb0a-4854-a82f-c1cd6a8c0df0",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "After fixing one subsystem bug, Ivan requests comprehensive cross-reference checks (e.g., voice_id consistency across YAML)",
+      "timestamp": "2026-02-26T22:39:04.380Z",
+      "session_id": "228c3f15-c47e-4c65-83e5-ac7196932ba2",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "After completing a fix round, Ivan commits changes and explicitly requests a continuation prompt documenting remaining work items",
+      "timestamp": "2026-02-27T00:18:55.876Z",
+      "session_id": "a474233d-6abc-4d56-848b-6996c0ed6dd7",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "After completing a skill audit, Ivan immediately asks about upstream contribution — will likely follow fix-then-upstream workflow pattern",
+      "timestamp": "2026-02-27T01:02:54.766Z",
+      "session_id": "ec6db2d9-f872-4b11-b797-e790adb12c19",
+      "confirmed": 1
+    },
+    {
+      "type": "contextual-rule",
+      "observation": "Ivan prefers comprehensive testing: loop mode + multi-agent + parallel workflows + commit results together",
+      "timestamp": "2026-02-27T08:18:24.728Z",
+      "session_id": "c48c6a5f-eb0d-4698-8975-8910b0043c52",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "After fixing phantom refs/placeholders, Ivan will ask for reflection on system improvements and gap analysis before next phase",
+      "timestamp": "2026-02-27T10:13:55.052Z",
+      "session_id": "ed4587fb-274a-4ba4-9afa-c822cd32c1c5",
+      "confirmed": 1
+    },
+    {
+      "type": "prediction",
+      "observation": "After creating migration plans, Ivan asks Navi to update all downstream artifacts (PRD, prompts, docs) to maintain consistency",
+      "timestamp": "2026-02-28T19:12:48.962Z",
+      "session_id": "6c38d301-50ff-4959-bbc4-f9326e10a2b0",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration with voice issues and hook errors",
+      "timestamp": "2026-02-19T02:37:12+03:00",
+      "session_id": "e2d4cda6-91ca-472d-992e-c9ac056e3473",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration with SystemAudit tool failures",
+      "timestamp": "2026-02-26T02:08:03+03:00",
+      "session_id": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Impressed with clean build, zero errors, all deliverables complete",
+      "timestamp": "2026-02-22T01:09:57+03:00",
+      "session_id": "5933d13a-1583-476f-8729-151b7d4a3048",
       "confirmed": 1
     }
   ]
