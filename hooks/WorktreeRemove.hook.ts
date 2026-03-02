@@ -3,34 +3,40 @@
  * WorktreeRemove.hook.ts - Worktree Cleanup (WorktreeRemove)
  *
  * PURPOSE:
- * Cleans up PAI state when a worktree is removed.
- * Logs the event and notifies the user.
+ * Removes a git worktree created by WorktreeCreate.hook.ts.
+ * Fires at session exit or when a subagent finishes.
+ *
+ * CONTRACT:
+ * - Receives worktree_path from Claude Code (the path WorktreeCreate printed)
+ * - Removes the git worktree and its branch
+ * - No decision control (cannot block removal)
+ * - Failures are logged only, non-blocking
  *
  * TRIGGER: WorktreeRemove
  *
- * INPUT:
- * - stdin: Hook input JSON (session_id, worktree_path, branch)
+ * INPUT (stdin JSON):
+ * - session_id: string
+ * - worktree_path: string (absolute path from WorktreeCreate stdout)
  *
  * OUTPUT:
  * - stdout: None
  * - stderr: Status messages
- * - exit(0): Always (non-blocking, fail-open)
+ * - exit(0): Always (fail-open)
  *
  * SIDE EFFECTS:
+ * - Removes: git worktree + branch
  * - Logs: worktree_remove event to events.jsonl
- * - Notifies: Voice notification about worktree removal
- *
- * PERFORMANCE:
- * - Non-blocking: Yes
- * - Typical execution: <50ms
+ * - Notifies: Voice notification (fire-and-forget)
  */
 
 import { appendEvent } from './lib/event-emitter';
+import { getPaiDir } from './lib/paths';
+import { basename } from 'path';
+import { existsSync } from 'fs';
 
 interface HookInput {
   session_id: string;
   worktree_path?: string;
-  branch?: string;
   [key: string]: unknown;
 }
 
@@ -41,13 +47,47 @@ async function main(): Promise<void> {
     const raw = await Bun.stdin.text();
     input = JSON.parse(raw);
   } catch {
-    // Fail-open: can't parse input, exit silently
     process.exit(0);
   }
 
+  const worktreePath = input.worktree_path;
+  if (!worktreePath) {
+    process.stderr.write('[WorktreeRemove] No worktree_path in input\n');
+    process.exit(0);
+  }
+
+  const branchName = basename(worktreePath);
+  const paiDir = getPaiDir();
+
   try {
-    const worktreePath = input.worktree_path || 'unknown';
-    const branch = input.branch || 'unknown';
+    // Remove git worktree
+    if (existsSync(worktreePath)) {
+      const removeProc = Bun.spawn(
+        ['git', 'worktree', 'remove', '--force', worktreePath],
+        {
+          cwd: paiDir,
+          stdout: 'pipe',
+          stderr: 'pipe',
+        }
+      );
+      await removeProc.exited;
+
+      if (removeProc.exitCode !== 0) {
+        const stderr = await new Response(removeProc.stderr).text();
+        process.stderr.write(`[WorktreeRemove] git worktree remove failed: ${stderr}\n`);
+      }
+    }
+
+    // Delete the branch (best-effort)
+    const branchProc = Bun.spawn(
+      ['git', 'branch', '-D', branchName],
+      {
+        cwd: paiDir,
+        stdout: 'pipe',
+        stderr: 'pipe',
+      }
+    );
+    await branchProc.exited;
 
     // Log event
     appendEvent({
@@ -55,29 +95,24 @@ async function main(): Promise<void> {
       type: 'worktree_remove',
       data: {
         worktree_path: worktreePath,
-        branch,
+        branch: branchName,
       },
     });
 
     // Voice notification (fire-and-forget)
-    try {
-      await fetch('http://localhost:8888/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: `Worktree удалён: ${branch}`,
-          voice_id: 'fTtv3eikoepIosk8dTZ5',
-          voice_enabled: true,
-        }),
-        signal: AbortSignal.timeout(2000),
-      });
-    } catch {
-      // Notification failure is non-critical
-    }
+    fetch('http://localhost:8888/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `Worktree удалён: ${branchName}`,
+        voice_id: 'fTtv3eikoepIosk8dTZ5',
+        voice_enabled: true,
+      }),
+      signal: AbortSignal.timeout(2000),
+    }).catch(() => {});
 
-    process.stderr.write(`[WorktreeRemove] Worktree cleaned: ${worktreePath} (${branch})\n`);
+    process.stderr.write(`[WorktreeRemove] Removed: ${worktreePath} (branch: ${branchName})\n`);
   } catch (err) {
-    // Fail-open
     process.stderr.write(`[WorktreeRemove] Error (non-blocking): ${err}\n`);
   }
 
