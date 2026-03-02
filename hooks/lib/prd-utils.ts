@@ -1,6 +1,6 @@
 // prd-utils.ts -- Shared PRD functions for hooks
 //
-// Used by: PRDSync.hook.ts (PostToolUse), PRDStateSync.hook.ts (Stop)
+// Used by: PRDSync.hook.ts (PostToolUse)
 //
 // Functions:
 //   findLatestPRD() -- scan MEMORY/WORK/[slug]/PRD.md by mtime

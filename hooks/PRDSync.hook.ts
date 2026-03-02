@@ -14,6 +14,7 @@
 import { readFileSync, existsSync } from 'fs';
 import {
   parseFrontmatter,
+  parseCriteriaList,
   syncToWorkJson,
   readRegistry,
 } from './lib/prd-utils';
@@ -45,20 +46,40 @@ async function main() {
   const fm = parseFrontmatter(content);
   if (!fm) return;
 
-  // Check existing phase before sync to detect phase changes
+  // Read existing registry for change detection
   const newPhase = (fm.phase || '').toUpperCase();
   let oldPhase = '';
+  let hasChanges = true; // default: sync (safe for new entries)
+
   if (fm.slug) {
     try {
       const registry = readRegistry();
       const existing = registry.sessions[fm.slug];
-      if (existing) oldPhase = (existing.phase || '').toUpperCase();
-    } catch { /* silent */ }
+      if (existing) {
+        oldPhase = (existing.phase || '').toUpperCase();
+
+        // Change detection: compare sync-relevant fields
+        const newCriteria = parseCriteriaList(content);
+        const criteriaSignature = newCriteria.map(c => `${c.id}:${c.status}`).join(',');
+        const existingSignature = (existing.criteria || []).map((c: any) => `${c.id}:${c.status}`).join(',');
+
+        const phaseMatch = (fm.phase || 'observe') === (existing.phase || 'observe');
+        const progressMatch = (fm.progress || '0/0') === (existing.progress || '0/0');
+        const taskMatch = (fm.task || '') === (existing.task || '');
+        const effortMatch = (fm.effort || 'standard') === (existing.effort || 'standard');
+        const criteriaMatch = criteriaSignature === existingSignature;
+
+        hasChanges = !(phaseMatch && progressMatch && taskMatch && effortMatch && criteriaMatch);
+      }
+      // No existing entry → hasChanges stays true (first sync for new slug)
+    } catch { /* silent — fail open, sync anyway */ }
   }
 
-  // Sync frontmatter + criteria to work.json (pass session_id for session name lookup)
-  syncToWorkJson(fm, prdPath, content, input.session_id);
-  appendEvent({ type: 'prd.synced', source: 'PRDSync', slug: fm.slug || '', phase: fm.phase, progress: fm.progress });
+  // Only sync + emit event when structural data actually changed
+  if (hasChanges) {
+    syncToWorkJson(fm, prdPath, content, input.session_id);
+    appendEvent({ type: 'prd.synced', source: 'PRDSync', slug: fm.slug || '', phase: fm.phase, progress: fm.progress });
+  }
 
   // Update tab color when algorithm phase changes
   const VALID_PHASES = new Set(['OBSERVE', 'THINK', 'PLAN', 'BUILD', 'EXECUTE', 'VERIFY', 'LEARN', 'COMPLETE']);
