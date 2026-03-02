@@ -238,7 +238,8 @@
 **Статус:** Активна (непрерывная)
 **Поддерживает:** M1 (Инновации), M3 (Техно-суверенитет)
 **Срок:** Непрерывный
-**Описание:** Регулярный вклад в upstream PAI (danielmiessler/Personal_AI_Infrastructure): PRs с фиксами и фичами, issues с багами, code review. Цель: стать постоянным контрибьютором, заработать репутацию в community.
+**Описание:** Регулярный вклад в upstream PAI (danielmiessler/Personal_AI_Infrastructure): PRs с фиксами и фичами, issues с багами, code review. **Цель: стать самым продуктивным контрибьютором** в PAI community. Конкурентное преимущество: за нами два AI-агента (Navi + Jules) — мы можем генерить quality PRs быстрее любого одиночного контрибьютора.
+**Ускоритель:** Jules подключён к PAI repo (main branch) — может генерить тесты, фиксы, документацию прямо в community ветки. Navi ревьюит и полирует перед отправкой.
 **Прогресс:**
 - [x] Fork настроен, git workflow рабочий (main/master/worktree)
 - [x] PR #800: fix Inference.ts JSON parsing (CLOSED merged)
@@ -253,6 +254,9 @@
 - [ ] Мониторинг upstream через CommunityCheck.ts
 - [ ] Участие в code review чужих PRs
 - [ ] Вклад в документацию
+- [ ] Jules → batch-генерация тестов для upstream hooks
+- [ ] Jules → security/performance scan upstream codebase
+- [ ] Gemini CLI + Jules extension → дополнительный канал работы
 
 ### G12: RU Metrics — экономические данные России
 **Статус:** Идея
