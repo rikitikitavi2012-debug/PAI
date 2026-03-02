@@ -15,7 +15,7 @@
  * @version 1.0.0
  */
 
-import { execSync } from 'child_process';
+import { execSync, spawnSync } from 'child_process';
 import { writeFileSync } from 'fs';
 
 const HELP = `
@@ -64,13 +64,19 @@ const outputFile = saveIndex !== -1 ? args[saveIndex + 1] : null;
 console.log(`📺 Extracting transcript from: ${url}`);
 
 try {
-  const transcript = execSync(`fabric -y "${url}"`, {
+  const spawnResult = spawnSync('fabric', ['-y', url], {
     encoding: 'utf-8',
     timeout: 120000, // 2 minute timeout
     maxBuffer: 10 * 1024 * 1024 // 10MB buffer for long transcripts
   });
 
-  if (!transcript.trim()) {
+  if (spawnResult.error) {
+    throw spawnResult.error;
+  }
+
+  const transcript = spawnResult.stdout;
+
+  if (!transcript || !transcript.trim()) {
     console.error('⚠️ No transcript available for this video');
     process.exit(1);
   }

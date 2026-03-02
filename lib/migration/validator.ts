@@ -6,7 +6,7 @@
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import { execSync } from 'child_process';
+import { execSync, spawnSync } from 'child_process';
 
 export interface ValidationCheck {
   name: string;
@@ -346,7 +346,11 @@ function validateRuntime(path: string): ValidationCheck[] {
 
   // Check bun is installed
   try {
-    const bunVersion = execSync('bun --version', { encoding: 'utf-8' }).trim();
+    const spawnResult = spawnSync('bun', ['--version'], { encoding: 'utf-8' });
+    const bunVersion = (spawnResult.stdout || '').trim();
+    if (spawnResult.error || spawnResult.status !== 0 || !bunVersion) {
+      throw new Error('Bun not found');
+    }
     checks.push({
       name: 'Bun runtime',
       category: 'runtime',
@@ -366,10 +370,11 @@ function validateRuntime(path: string): ValidationCheck[] {
 
   // Check Claude Code is installed
   try {
-    const claudeVersion = execSync('claude --version 2>/dev/null || echo "not found"', {
+    const spawnResult = spawnSync('claude', ['--version'], {
       encoding: 'utf-8',
-    }).trim();
-    const found = !claudeVersion.includes('not found');
+    });
+    const claudeVersion = (spawnResult.stdout || '').trim();
+    const found = spawnResult.status === 0 && claudeVersion.length > 0;
     checks.push({
       name: 'Claude Code CLI',
       category: 'runtime',

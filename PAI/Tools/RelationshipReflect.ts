@@ -27,7 +27,7 @@
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { execSync } from 'child_process';
+import { execSync, spawnSync } from 'child_process';
 
 const PAI_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
 
@@ -414,7 +414,7 @@ function sendNotification(message: string): void {
   try {
     const topic = process.env.NTFY_TOPIC;
     if (topic) {
-      execSync(`curl -s -d "${message}" ntfy.sh/${topic} 2>/dev/null || true`, {
+      spawnSync('curl', ['-s', '-d', message, `ntfy.sh/${topic}`], {
         stdio: 'ignore',
         timeout: 3000
       });
