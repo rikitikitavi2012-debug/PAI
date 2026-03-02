@@ -326,7 +326,7 @@ function captureLowRatingLearning(
   detailedContext: string,
   source: 'explicit' | 'implicit'
 ): void {
-  if (rating >= 5) return;  // 5 = neutral (no sentiment), only capture actual negatives (<=4)
+  if (rating >= 5) return;  // Only capture actual negatives (<=4). 5 = mild satisfaction.
   if (!detailedContext?.trim()) return;  // Skip if no meaningful context to learn from
 
   const { year, month, day, hours, minutes, seconds } = getPSTComponents();
@@ -497,7 +497,7 @@ async function main() {
 
       // BUG FIX: null means "no sentiment detected" — skip, don't convert to 5
       // Previously null→5 inflated neutral count (60% of all entries were noise)
-      if (sentiment.rating === null) {
+      if (sentiment.rating == null) {
         console.error('[RatingCapture] Sentiment returned null rating (no sentiment), skipping write');
         process.exit(0);
       }

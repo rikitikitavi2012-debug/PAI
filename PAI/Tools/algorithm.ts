@@ -730,11 +730,12 @@ async function runParallelIteration(
 
   // ── Per-agent results ──
   console.log(`  \x1b[1mAgent Results:\x1b[0m`);
+  const postCriteriaMap = new Map(postCriteria.criteria.map(c => [c.id, c]));
   for (const { assignment, exitCode } of results) {
     const cId = assignment.criteriaIds[0];
     const detail = assignment.criteriaDetails[0];
     const desc = detail.description.length > 40 ? detail.description.slice(0, 37) + "..." : detail.description;
-    const criterion = postCriteria.criteria.find(c => c.id === cId);
+    const criterion = postCriteriaMap.get(cId);
     const passed = criterion?.status === "passing";
     if (exitCode !== 0) {
       console.log(`  \x1b[31m  Agent ${assignment.agentId} ✗ CRASHED\x1b[0m  ${cId}: ${desc}`);
@@ -805,10 +806,11 @@ function appendPRDChangelog(
 
     const gained = postCriteria.passing - preCriteria.passing;
     const lost = Math.max(0, preCriteria.passing - postCriteria.passing + gained); // regressions
+    const postCriteriaMap = new Map(postCriteria.criteria.map(c => [c.id, c]));
     const regressions = preCriteria.criteria
       .filter(c => c.status === "passing")
       .filter(c => {
-        const post = postCriteria.criteria.find(p => p.id === c.id);
+        const post = postCriteriaMap.get(c.id);
         return post && post.status === "failing";
       })
       .map(c => c.id);
