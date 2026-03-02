@@ -7,10 +7,11 @@
 - Prefers automation over manual instructions
 - Values proactive bug detection and fixing
 
-## Architecture (v4.0.2)
+## Architecture (v4.0.3)
 - 3-layer mode classification: ModeClassifier hook (regex) -> Complexity Gate (LLM) -> Algorithm file
 - Hooks: 28 active, all defensive/fail-open, ALL must have chmod +x
 - Memory: MEMORY/ (LEARNING, WISDOM, RELATIONSHIP, WORK, STATE, SECURITY)
+- TELOS: PAI/USER/TELOS/ — 23 файла (MISSION, GOALS, CHALLENGES, STRATEGIES, BELIEFS, MODELS, NARRATIVES, PROJECTS, IDEAS, PREDICTIONS, STATUS, WISDOM, FRAMES, BOOKS, MOVIES, LEARNED, TRAUMAS, WRONG, PROBLEMS, README, updates). TELOS.md — только index/шаблон, данные в отдельных файлах!
 - Context: loadAtStartup (3 files) + CONTEXT_ROUTING.md (on-demand)
 - API keys: ~/.config/PAI/.env (symlinked from ~/.claude/.env)
 - Security: patterns.yaml in PAI/USER/PAISECURITYSYSTEM/ (REQUIRED for SecurityValidator)
@@ -48,6 +49,12 @@
 - **PR #840**: feat/mode-classifier-hook — ModeClassifier hook (OPEN)
 - **PR #859**: feat/hook-test-harness — Test harness + patterns.example.yaml (OPEN)
 - **PR #860**: fix/rating-false-positives — RatingCapture prompt fix, closes #842 (OPEN)
+- **PR #861**: fix/algorithm-stoploop-regex — stopLoop guard + regex escaping (OPEN)
+
+## Lessons Learned (CRITICAL)
+- **Директория ≠ один файл**: перед выводом о состоянии директории — ВСЕГДА `ls` сначала. TELOS.md — шаблон, данные в 22 файлах рядом
+- **Негативные выводы агентов перепроверять**: "X пустой/отсутствует/не работает" — проверить лично перед передачей Ivan
+- **Миграции фиксировать в памяти**: v3→v4 миграция TELOS (commit 74bb626) не была записана → новая сессия не знала
 
 ## Session Patterns
 - Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10)
