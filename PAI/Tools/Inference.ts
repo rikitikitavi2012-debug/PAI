@@ -35,7 +35,7 @@
 
 import { spawn } from "child_process";
 
-export type InferenceLevel = 'fast' | 'standard' | 'smart' | 'gemini';
+export type InferenceLevel = 'fast' | 'standard' | 'smart' | 'gemini' | 'glm5';
 
 export interface InferenceOptions {
   systemPrompt: string;
@@ -55,12 +55,94 @@ export interface InferenceResult {
 }
 
 // Level configurations
-const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: number; provider: 'claude' | 'gemini' }> = {
+const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: number; provider: 'claude' | 'gemini' | 'zai' }> = {
   fast: { model: 'haiku', defaultTimeout: 15000, provider: 'claude' },
   standard: { model: 'sonnet', defaultTimeout: 30000, provider: 'claude' },
   smart: { model: 'opus', defaultTimeout: 90000, provider: 'claude' },
   gemini: { model: 'gemini-pro', defaultTimeout: 30000, provider: 'gemini' },
+  glm5: { model: 'glm-5', defaultTimeout: 30000, provider: 'zai' },
 };
+
+/**
+ * Run inference via Z.AI (GLM-5) OpenAI-compatible API
+ */
+async function inferenceZai(options: InferenceOptions, level: InferenceLevel, timeout: number): Promise<InferenceResult> {
+  const startTime = Date.now();
+  const config = LEVEL_CONFIG[level];
+
+  // Load ZAI_API_KEY from PAI .env
+  const envPath = `${process.env.HOME}/.config/PAI/.env`;
+  let apiKey = process.env.ZAI_API_KEY || '';
+  if (!apiKey) {
+    try {
+      const envContent = require('fs').readFileSync(envPath, 'utf-8');
+      const match = envContent.match(/^ZAI_API_KEY=(.+)$/m);
+      if (match) apiKey = match[1].trim();
+    } catch {}
+  }
+
+  if (!apiKey) {
+    return { success: false, output: '', error: 'No ZAI_API_KEY found', latencyMs: Date.now() - startTime, level };
+  }
+
+  const baseUrl = 'https://api.z.ai/api/coding/paas/v4/chat/completions';
+  const messages: Array<{role: string; content: string}> = [];
+  if (options.systemPrompt) messages.push({ role: 'system', content: options.systemPrompt });
+  messages.push({ role: 'user', content: options.userPrompt });
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(baseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: config.model,
+        messages,
+        max_tokens: 2000,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    const latencyMs = Date.now() - startTime;
+
+    if (!response.ok) {
+      const errText = await response.text();
+      return { success: false, output: '', error: `Z.AI API ${response.status}: ${errText}`, latencyMs, level };
+    }
+
+    const data = await response.json() as any;
+    const choice = data.choices?.[0]?.message;
+    // GLM-5 uses reasoning_content for thinking, content for answer
+    const output = (choice?.content || choice?.reasoning_content || '').trim();
+
+    if (options.expectJson) {
+      const jsonMatch = output.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          return { success: true, output, parsed: JSON.parse(jsonMatch[0]), latencyMs, level };
+        } catch {
+          return { success: false, output, error: 'Failed to parse JSON from GLM-5', latencyMs, level };
+        }
+      }
+      return { success: false, output, error: 'No JSON found in GLM-5 response', latencyMs, level };
+    }
+
+    return { success: true, output, latencyMs, level };
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    const latencyMs = Date.now() - startTime;
+    if (err.name === 'AbortError') {
+      return { success: false, output: '', error: `Z.AI timeout after ${timeout}ms`, latencyMs, level };
+    }
+    return { success: false, output: '', error: err.message, latencyMs, level };
+  }
+}
 
 /**
  * Run inference via Gemini CLI
@@ -156,9 +238,12 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
   const config = LEVEL_CONFIG[level];
   const timeout = options.timeout || config.defaultTimeout;
 
-  // Route to Gemini provider
+  // Route to alternative providers
   if (config.provider === 'gemini') {
     return inferenceGemini(options, level, timeout);
+  }
+  if (config.provider === 'zai') {
+    return inferenceZai(options, level, timeout);
   }
 
   const startTime = Date.now();
@@ -302,7 +387,7 @@ async function main() {
       expectJson = true;
     } else if (args[i] === '--level' && args[i + 1]) {
       const requestedLevel = args[i + 1].toLowerCase();
-      if (['fast', 'standard', 'smart', 'gemini'].includes(requestedLevel)) {
+      if (['fast', 'standard', 'smart', 'gemini', 'glm5'].includes(requestedLevel)) {
         level = requestedLevel as InferenceLevel;
       } else {
         console.error(`Invalid level: ${args[i + 1]}. Use fast, standard, or smart.`);
@@ -318,7 +403,7 @@ async function main() {
   }
 
   if (positionalArgs.length < 2) {
-    console.error('Usage: bun Inference.ts [--level fast|standard|smart|gemini] [--json] [--timeout <ms>] <system_prompt> <user_prompt>');
+    console.error('Usage: bun Inference.ts [--level fast|standard|smart|gemini|glm5] [--json] [--timeout <ms>] <system_prompt> <user_prompt>');
     process.exit(1);
   }
 
