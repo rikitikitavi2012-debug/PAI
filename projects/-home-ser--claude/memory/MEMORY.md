@@ -9,14 +9,14 @@
 
 ## Architecture (v4.0.3)
 - 3-layer mode classification: ModeClassifier hook (regex) -> Complexity Gate (LLM) -> Algorithm file
-- Hooks: 29 files (.hook.ts), 23 registered in settings.json, all defensive/fail-open, ALL must have chmod +x
+- Hooks: 30 files (.hook.ts), all defensive/fail-open, ALL must have chmod +x. EventLogger.hook.ts handles SubagentStart/SubagentStop/TaskCompleted via routing table
 - Memory: MEMORY/ (LEARNING, WISDOM, RELATIONSHIP, WORK, STATE, SECURITY)
 - TELOS: PAI/USER/TELOS/ — 23 файла (MISSION, GOALS, CHALLENGES, STRATEGIES, BELIEFS, MODELS, NARRATIVES, PROJECTS, IDEAS, PREDICTIONS, STATUS, WISDOM, FRAMES, BOOKS, MOVIES, LEARNED, TRAUMAS, WRONG, PROBLEMS, README, updates). TELOS.md — только index/шаблон, данные в отдельных файлах!
 - Context: loadAtStartup (3 files) + CONTEXT_ROUTING.md (on-demand)
 - API keys: ~/.config/PAI/.env (symlinked from ~/.claude/.env)
 - Security: patterns.yaml in PAI/USER/PAISECURITYSYSTEM/ (REQUIRED for SecurityValidator)
-- Events: events.jsonl append-only log (121+ events from multiple hook sources)
-- Tests: hooks/tests/ with harness.ts, 76 tests across 12 suites (local), 18 tests for upstream PR
+- Events: events.jsonl append-only log (270+ events, 12 types). Consumer: `bun PAI/Tools/EventStats.ts` (types/daily/sources/recent/overview). PRDSync has change detection — only emits on real structural changes (phase/progress/task/effort/criteria)
+- Tests: hooks/tests/ with harness.ts, 84 tests across 13 suites (local), 18 tests for upstream PR
 
 ## Known Issues (resolved)
 - ~~Wisdom pipeline disconnected~~ → WisdomSync.hook.ts created, ratings → WISDOM + FRAMES
@@ -29,12 +29,29 @@
 - ~~SecurityValidator fail-open~~ → created patterns.yaml (2026-03-02)
 - ~~RatingCapture 52% false-positive 5s~~ → prompt fix + data cleanup, 192→92 entries (2026-03-02)
 - ~~settings.json in readOnly~~ → moved to confirmWrite in patterns.yaml (2026-03-02)
+- ~~PRDSync 40% event noise~~ → change detection added, only syncs on structural changes (2026-03-02, 037c79d)
 
 ## Development Patterns (CRITICAL)
 - **Always chmod +x** new .hook.ts files — shell executes them directly via shebang
 - **Always create patterns.yaml** when setting up SecurityValidator — без него система декоративна
-- **Always run `bun test hooks/tests/`** after hook changes — 76 tests across 12 suites verify nervous system
+- **Always run `bun test hooks/tests/`** after hook changes — 84 tests across 13 suites verify nervous system
 - **getPaiDir()** from lib/paths.ts — canonical way to get PAI base dir. 11 hooks migrated (2026-03-02). Only harness.ts and notifications.ts still use direct env access
+- **WorktreeCreate/Remove — FUNCTIONAL hooks** (не notification!). WorktreeCreate ЗАМЕНЯЕТ встроенный git worktree add. ОБЯЗАН: создать worktree + вывести путь на stdout. Пустой stdout = agent spawn failure. Починено 2026-03-02 (d376658)
+- **Pure event-only hooks → EventLogger**: Хуки которые ТОЛЬКО логируют в events.jsonl должны быть handlers в EventLogger.hook.ts, а не отдельные файлы. Routing table pattern: HANDLERS[hook_event_name] → handler function
+- **PostToolUseFailure НЕ существует** как Claude Code hook event. Tool failures обрабатываются через PostToolUse (2026-03-02)
+
+## Jules Integration (Google AI Coding Agent)
+- **API**: REST API at jules.googleapis.com/v1alpha/, key in JULES_API_KEY (.env)
+- **Repos**: PAI-personal (private, master), PAI (public, main), Construction-Orchestrator, Obsidian
+- **Workflow**: Navi (architect, complex) → Jules (async worker, tests/bugs/deps/TODOs) → PR → Navi reviews via gh CLI
+- **CLI tool**: `bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts` (sources|sessions|create|status|approve|message)
+- **AGENTS.md**: Created in repo root — tells Jules about Bun, hooks, test patterns, security boundaries
+- **Proactive features**: Enabled on PAI-personal (1/5 repos) — auto-finds TODOs, performance issues, security issues
+- **Limits**: Pro plan = 100 tasks/day, 15 concurrent. Failed tasks consume quota.
+- **Best for**: Writing tests (18 hooks uncovered), dependency updates, TODO resolution, security/performance scans
+- **NOT for**: Architecture, complex refactoring, MEMORY/USER files, settings.json, .env
+- **PR management**: `gh pr list/diff/merge --repo rikitikitavi2012-debug/PAI-personal`
+- **Can use on ANY repo**: Change JULES_REPO env var or specify repo in API call
 
 ## Git & Community (CRITICAL — always follow)
 - **Всегда коммитить** изменения при работе над PAI

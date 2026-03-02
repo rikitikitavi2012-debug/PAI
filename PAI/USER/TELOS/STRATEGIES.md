@@ -27,7 +27,8 @@
 2. Использовать Agent Zero для автономных задач
 3. Venice AI (через A0T стейкинг) — приватные LLM без цензуры
 4. Каждую повторяющуюся задачу автоматизировать через агента
-5. Test harness для хуков — сеть безопасности при изменениях
+5. Google Jules — async AI agent для рутинных задач (тесты, баги, TODO, dependency updates). API интеграция через JulesAPI.ts. Proactive scan включён на PAI-personal
+6. Test harness для хуков — сеть безопасности при изменениях
 6. Feedback loop: RatingCapture → WisdomSync → FRAMES — автоматическое обучение
 
 ### S2: Ступенчатый рост (Найм → Накопления → Инвестиции → Бизнес)
@@ -83,6 +84,7 @@
 3. Локальные фиксы → upstream PR (RatingCapture, algorithm, test harness)
 4. Code review чужих PRs для обучения и видимости
 5. Issues с документацией багов для тех что не можем пофиксить сами
+6. Jules для batch-генерации тестов и документации — PR в upstream PAI через feature branches
 **Результаты:** 6 PRs за 2 недели, contributor acknowledgment в release notes v4.0.3
 **Обоснование:** Ivan зависит от PAI как инфраструктуры. Влияние на upstream = контроль над направлением развития. Репутация контрибьютора = доверие community.
 

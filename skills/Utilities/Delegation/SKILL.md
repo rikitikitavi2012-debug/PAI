@@ -13,6 +13,7 @@ description: Parallelize work via background/foreground agents, built-in types, 
 |-------------|--------|------|-------------|
 | "**custom agents**", "spin up agents", "launch agents" | **Agents Skill** (ComposeAgent) | `Task(subagent_type="general-purpose", prompt=<ComposeAgent output>)` | Unique personalities, voices, colors via trait composition |
 | "**create an agent team**", "**agent team**", "**swarm**" | **Claude Code Teams** | `TeamCreate` → `TaskCreate` → `SendMessage` | Persistent team with shared task list, message coordination, multi-turn collaboration |
+| "**delegate to jules**", "jules task", "async task" | **Jules Skill** (JulesAPI) | `bun skills/Utilities/Jules/Tools/JulesAPI.ts create "prompt"` | Async cloud worker: creates task, Jules works independently, opens PR when done |
 
 **These are NOT the same thing:**
 - **Custom agents** = one-shot parallel workers with unique identities, launched via `Task()`, no shared state
@@ -187,3 +188,5 @@ Task(subagent_type="general-purpose", prompt="...")  # or specialized agent type
 - Don't send agents work without full context — they start fresh
 - Don't use built-in agent names for custom agents
 - Don't use full delegation for one-shot extraction/classification — use lightweight tier
+- Don't use Jules for architectural decisions or MEMORY/settings changes — use Claude Code
+- Don't forget to review Jules PRs before merging — treat as junior dev output

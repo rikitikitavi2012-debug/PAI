@@ -16,6 +16,7 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | Notification system | `PAI/THENOTIFICATIONSYSTEM.md` |
 | CLI architecture | `PAI/CLIFIRSTARCHITECTURE.md` |
 | Tools reference | `PAI/TOOLS.md` |
+| Jules integration | `skills/Utilities/Jules/SKILL.md` |
 | Actions & pipelines | `PAI/ACTIONS.md`, `PAI/PIPELINES.md` |
 | Flows | `PAI/FLOWS.md` |
 | Behavioral rules | `PAI/AISTEERINGRULES.md` |
