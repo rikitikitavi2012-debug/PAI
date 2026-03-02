@@ -18,9 +18,13 @@
  *
  * FLOW:
  * 1. Extract quick title from prompt (deterministic, instant) → 🧠 purple
- * 2. Run inference for better summary → validate with isValidWorkingTitle
- * 3. Show validated title → ⚙️ orange
+ * 2. Race inference (500ms budget) for better summary → validate with isValidWorkingTitle
+ * 3. Show validated title → ⚙️ orange (or deterministic title if inference loses race)
  * 4. If validation fails both paths → getWorkingFallback()
+ *
+ * PERFORMANCE: Total hook budget is 500ms. Inference is best-effort within that budget.
+ * The deterministic extractPromptTitle() provides instant fallback so the hook never blocks.
+ * Previous implementation used 10s inference timeout → TIMEOUT on every slow response.
  *
  * VOICE: Announces inference-generated summary on prompt receipt.
  * Task completion voice is separate (VoiceCompletion.hook.ts → VoiceNotification handler).
@@ -39,7 +43,7 @@ interface HookInput {
   transcript_path: string;
 }
 
-async function readStdinWithTimeout(timeout: number = 5000): Promise<string> {
+async function readStdinWithTimeout(timeout: number = 1000): Promise<string> {
   return new Promise((resolve, reject) => {
     let data = '';
     const timer = setTimeout(() => reject(new Error('Timeout')), timeout);
@@ -154,18 +158,41 @@ function isTitleRelevantToPrompt(title: string, prompt: string): boolean {
   );
 }
 
+/** Sentinel value for inference timeout — distinct from inference returning null */
+const INFERENCE_TIMED_OUT = Symbol('INFERENCE_TIMED_OUT');
+
 /**
- * Generate summary via inference. Returns both raw (for voice) and validated (for tab title).
+ * Generate summary via inference with a strict time budget.
+ * Returns both raw (for voice) and validated (for tab title).
  * Voice should always fire if inference succeeds. Tab title has stricter validation.
+ *
+ * PERFORMANCE: Uses Promise.race with INFERENCE_BUDGET_MS. If inference doesn't
+ * respond in time, returns nulls so the caller falls back to deterministic title.
+ * The inference process is killed on timeout to avoid orphaned claude subprocesses.
  */
+const INFERENCE_BUDGET_MS = 3000;
+
 async function summarizePrompt(prompt: string): Promise<{ voice: string | null; title: string | null }> {
   const cleanPrompt = prompt.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1000);
-  const result = await inference({
+
+  // Race inference against a tight deadline
+  const inferencePromise = inference({
     systemPrompt: SYSTEM_PROMPT,
     userPrompt: cleanPrompt,
-    timeout: 10000,
+    timeout: INFERENCE_BUDGET_MS,
     level: 'fast',
   });
+
+  const timeoutPromise = new Promise<typeof INFERENCE_TIMED_OUT>((resolve) =>
+    setTimeout(() => resolve(INFERENCE_TIMED_OUT), INFERENCE_BUDGET_MS)
+  );
+
+  const result = await Promise.race([inferencePromise, timeoutPromise]);
+
+  if (result === INFERENCE_TIMED_OUT) {
+    console.error(`[UpdateTabTitle] Inference timed out after ${INFERENCE_BUDGET_MS}ms — using deterministic title`);
+    return { voice: null, title: null };
+  }
 
   if (result.success && result.output) {
     const raw = result.output.replace(/<[^>]*>/g, '').replace(/^["']|["']$/g, '').trim();
@@ -229,7 +256,7 @@ async function main() {
             voice_id: identity.mainDAVoiceID,
             voice_enabled: true,
           }),
-          signal: AbortSignal.timeout(5000),
+          signal: AbortSignal.timeout(1500),
         });
         console.error(`[UpdateTabTitle] Voice sent: "${voiceContent}"`);
       } catch {

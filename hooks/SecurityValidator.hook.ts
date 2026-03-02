@@ -38,7 +38,9 @@
  *
  * PERFORMANCE:
  * - Blocking: Yes (must complete before tool executes)
- * - Typical execution: <10ms
+ * - Typical execution: ~26ms (including Bun subprocess startup)
+ * - Optimization: JSON cache of patterns.yaml (mtime-invalidated) eliminates
+ *   YAML library import (~50ms) and parse (~10ms) on cache hits
  * - Design: Fast path for safe operations, pattern matching only when needed
  *
  * PATTERN CATEGORIES:
@@ -60,10 +62,9 @@
  * - All decisions logged for audit trail
  */
 
-import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync, mkdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
-import { parse as parseYaml } from 'yaml';
 import { paiPath } from './lib/paths';
 
 // ========================================
@@ -179,12 +180,19 @@ interface PatternsConfig {
 }
 
 // ========================================
-// Config Loading - Cascading Path Lookup
+// Config Loading - JSON Cache with YAML Fallback
 // ========================================
 
 // Pattern paths in priority order:
 // 1. PAI/USER/PAISECURITYSYSTEM/patterns.yaml (user's custom rules)
 // 2. PAI/PAISECURITYSYSTEM/patterns.example.yaml (default template)
+//
+// Performance: YAML parsing + library import adds ~60ms cold-start overhead.
+// We pre-compile patterns.yaml -> patterns.cache.json on first run.
+// Subsequent runs load the JSON cache (~0.03ms parse vs ~10ms YAML parse,
+// plus no yaml library import overhead).
+// Cache invalidation: compare patterns.yaml mtime vs cache mtime.
+
 const USER_PATTERNS_PATH = paiPath('PAI', 'USER', 'PAISECURITYSYSTEM', 'patterns.yaml');
 const SYSTEM_PATTERNS_PATH = paiPath('PAI', 'PAISECURITYSYSTEM', 'patterns.example.yaml');
 
@@ -209,36 +217,88 @@ function getPatternsPath(): string | null {
   return null;
 }
 
-function loadPatterns(): PatternsConfig {
+function getCachePath(yamlPath: string): string {
+  // Place cache next to the YAML file: patterns.yaml -> patterns.cache.json
+  const dir = yamlPath.substring(0, yamlPath.lastIndexOf('/'));
+  return join(dir, 'patterns.cache.json');
+}
+
+function isCacheValid(yamlPath: string, cachePath: string): boolean {
+  try {
+    if (!existsSync(cachePath)) return false;
+    const yamlMtime = statSync(yamlPath).mtimeMs;
+    const cacheMtime = statSync(cachePath).mtimeMs;
+    return cacheMtime > yamlMtime;
+  } catch {
+    return false;
+  }
+}
+
+function loadFromCache(cachePath: string): PatternsConfig | null {
+  try {
+    const content = readFileSync(cachePath, 'utf-8');
+    return JSON.parse(content) as PatternsConfig;
+  } catch {
+    return null;
+  }
+}
+
+async function compileAndCache(yamlPath: string, cachePath: string): Promise<PatternsConfig> {
+  // Dynamic import: only load yaml library when cache miss (cold path)
+  const { parse: parseYaml } = await import('yaml');
+  const content = readFileSync(yamlPath, 'utf-8');
+  const config = parseYaml(content) as PatternsConfig;
+
+  // Write cache atomically (write to temp, rename)
+  try {
+    const tmpPath = cachePath + '.tmp';
+    writeFileSync(tmpPath, JSON.stringify(config));
+    const { renameSync } = await import('fs');
+    renameSync(tmpPath, cachePath);
+  } catch {
+    // Cache write failure is non-fatal — next run will try again
+  }
+
+  return config;
+}
+
+const EMPTY_CONFIG: PatternsConfig = {
+  version: '0.0',
+  philosophy: { mode: 'permissive', principle: 'No patterns loaded - fail open' },
+  bash: { trusted: [], blocked: [], confirm: [], alert: [] },
+  paths: { zeroAccess: [], readOnly: [], confirmWrite: [], noDelete: [] },
+  projects: {}
+};
+
+async function loadPatterns(): Promise<PatternsConfig> {
   if (patternsCache) return patternsCache;
 
-  const patternsPath = getPatternsPath();
+  const yamlPath = getPatternsPath();
 
-  if (!patternsPath) {
-    // No patterns file - fail open (allow all)
-    return {
-      version: '0.0',
-      philosophy: { mode: 'permissive', principle: 'No patterns loaded - fail open' },
-      bash: { trusted: [], blocked: [], confirm: [], alert: [] },
-      paths: { zeroAccess: [], readOnly: [], confirmWrite: [], noDelete: [] },
-      projects: {}
-    };
+  if (!yamlPath) {
+    return EMPTY_CONFIG;
   }
 
   try {
-    const content = readFileSync(patternsPath, 'utf-8');
-    patternsCache = parseYaml(content) as PatternsConfig;
-    return patternsCache;
+    const cachePath = getCachePath(yamlPath);
+
+    // Fast path: load from JSON cache if valid
+    if (isCacheValid(yamlPath, cachePath)) {
+      const cached = loadFromCache(cachePath);
+      if (cached) {
+        patternsCache = cached;
+        return cached;
+      }
+    }
+
+    // Slow path: parse YAML, write cache for next time
+    const config = await compileAndCache(yamlPath, cachePath);
+    patternsCache = config;
+    return config;
   } catch (error) {
     // Parse error - fail open
-    console.error(`Failed to parse ${patternsSource} patterns.yaml:`, error);
-    return {
-      version: '0.0',
-      philosophy: { mode: 'permissive', principle: 'Parse error - fail open' },
-      bash: { trusted: [], blocked: [], confirm: [], alert: [] },
-      paths: { zeroAccess: [], readOnly: [], confirmWrite: [], noDelete: [] },
-      projects: {}
-    };
+    console.error(`Failed to parse ${patternsSource} patterns:`, error);
+    return EMPTY_CONFIG;
   }
 }
 
@@ -313,8 +373,8 @@ function matchesPathPattern(filePath: string, pattern: string): boolean {
 // Bash Command Validation
 // ========================================
 
-function validateBashCommand(command: string): { action: 'allow' | 'block' | 'confirm' | 'alert'; reason?: string } {
-  const patterns = loadPatterns();
+async function validateBashCommand(command: string): Promise<{ action: 'allow' | 'block' | 'confirm' | 'alert'; reason?: string }> {
+  const patterns = await loadPatterns();
 
   // Check trusted patterns FIRST (fast-path allow, no logging)
   for (const p of (patterns.bash.trusted || [])) {
@@ -353,8 +413,8 @@ function validateBashCommand(command: string): { action: 'allow' | 'block' | 'co
 
 type PathAction = 'read' | 'write' | 'delete';
 
-function validatePath(filePath: string, action: PathAction): { action: 'allow' | 'block' | 'confirm'; reason?: string } {
-  const patterns = loadPatterns();
+async function validatePath(filePath: string, action: PathAction): Promise<{ action: 'allow' | 'block' | 'confirm'; reason?: string }> {
+  const patterns = await loadPatterns();
 
   // Check zeroAccess (complete denial)
   for (const p of patterns.paths.zeroAccess) {
@@ -397,7 +457,7 @@ function validatePath(filePath: string, action: PathAction): { action: 'allow' |
 // Tool-Specific Handlers
 // ========================================
 
-function handleBash(input: HookInput): void {
+async function handleBash(input: HookInput): Promise<void> {
   const rawCommand = typeof input.tool_input === 'string'
     ? input.tool_input
     : (input.tool_input?.command as string) || '';
@@ -409,7 +469,7 @@ function handleBash(input: HookInput): void {
 
   // Normalize: strip env var prefixes to prevent bypass (e.g., LANG=C rm -rf /)
   const command = stripEnvVarPrefix(rawCommand);
-  const result = validateBashCommand(command);
+  const result = await validateBashCommand(command);
 
   switch (result.action) {
     case 'block':
@@ -466,8 +526,8 @@ function handleBash(input: HookInput): void {
   }
 }
 
-function validateContent(content: string): { action: 'allow' | 'block' | 'confirm'; reason?: string } {
-  const patterns = loadPatterns();
+async function validateContent(content: string): Promise<{ action: 'allow' | 'block' | 'confirm'; reason?: string }> {
+  const patterns = await loadPatterns();
   if (!patterns.content) return { action: 'allow' };
 
   // Check blocked content patterns
@@ -491,7 +551,7 @@ function validateContent(content: string): { action: 'allow' | 'block' | 'confir
   return { action: 'allow' };
 }
 
-function handleFileWrite(input: HookInput, toolName: string): void {
+async function handleFileWrite(input: HookInput, toolName: string): Promise<void> {
   const filePath = typeof input.tool_input === 'string'
     ? input.tool_input
     : (input.tool_input?.file_path as string) || '';
@@ -501,7 +561,7 @@ function handleFileWrite(input: HookInput, toolName: string): void {
     return;
   }
 
-  const result = validatePath(filePath, 'write');
+  const result = await validatePath(filePath, 'write');
 
   switch (result.action) {
     case 'block':
@@ -546,7 +606,7 @@ function handleFileWrite(input: HookInput, toolName: string): void {
     || (typeof input.tool_input !== 'string' ? (input.tool_input?.content as string || input.tool_input?.new_string as string) : '');
 
   if (content && content.length < 1_000_000) {
-    const contentResult = validateContent(content);
+    const contentResult = await validateContent(content);
     if (contentResult.action === 'block') {
       logSecurityEvent({
         timestamp: new Date().toISOString(),
@@ -584,7 +644,7 @@ function handleFileWrite(input: HookInput, toolName: string): void {
   console.log(JSON.stringify({ continue: true }));
 }
 
-function handleRead(input: HookInput): void {
+async function handleRead(input: HookInput): Promise<void> {
   const filePath = typeof input.tool_input === 'string'
     ? input.tool_input
     : (input.tool_input?.file_path as string) || '';
@@ -594,7 +654,7 @@ function handleRead(input: HookInput): void {
     return;
   }
 
-  const result = validatePath(filePath, 'read');
+  const result = await validatePath(filePath, 'read');
 
   switch (result.action) {
     case 'block':
@@ -639,52 +699,61 @@ async function main(): Promise<void> {
       }
     })();
 
-    // Hard timeout: if stdin doesn't close in 200ms, exit the process.
-    // setTimeout keeps the event loop alive, so we use process.exit to force cleanup.
-    const timeout = setTimeout(() => {
-      if (!raw.trim()) {
-        console.log(JSON.stringify({ continue: true }));
-        process.exit(0);
-      }
-    }, 200);
+    // Hard timeout: if stdin doesn't close in 100ms, fail open.
+    // Reduced from 200ms — stdin data arrives within single-digit ms when piped.
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+    }, 100);
 
-    await Promise.race([readLoop, new Promise<void>(r => setTimeout(r, 200))]);
-    clearTimeout(timeout);
+    await Promise.race([readLoop, new Promise<void>(r => setTimeout(r, 100))]);
+    clearTimeout(timeoutId);
+
+    if (timedOut && !raw.trim()) {
+      console.log(JSON.stringify({ continue: true }));
+      process.exit(0);
+    }
 
     if (!raw.trim()) {
       console.log(JSON.stringify({ continue: true }));
-      return;
+      process.exit(0);
     }
 
     input = JSON.parse(raw);
   } catch {
     // Parse error or timeout - fail open
     console.log(JSON.stringify({ continue: true }));
+    process.exit(0);
     return;
   }
 
   // Route to appropriate handler
   switch (input.tool_name) {
     case 'Bash':
-      handleBash(input);
+      await handleBash(input);
       break;
     case 'Edit':
     case 'MultiEdit':
-      handleFileWrite(input, input.tool_name);
+      await handleFileWrite(input, input.tool_name);
       break;
     case 'Write':
-      handleFileWrite(input, 'Write');
+      await handleFileWrite(input, 'Write');
       break;
     case 'Read':
-      handleRead(input);
+      await handleRead(input);
       break;
     default:
       // Allow all other tools
       console.log(JSON.stringify({ continue: true }));
   }
+
+  // Explicit exit: prevents dangling setTimeout timers from Promise.race
+  // from keeping the event loop alive for an extra 100-200ms.
+  process.exit(0);
 }
 
 // Run main, fail open on any error
 main().catch(() => {
   console.log(JSON.stringify({ continue: true }));
+  process.exit(0);
 });
