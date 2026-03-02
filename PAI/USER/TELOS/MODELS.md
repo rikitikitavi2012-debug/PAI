@@ -4,7 +4,7 @@
 
 Ментальные модели — упрощённые представления сложных систем. Помогают предсказывать, решать и действовать.
 
-*Последнее обновление: 2026-02-20*
+*Последнее обновление: 2026-03-03*
 
 ---
 
@@ -88,9 +88,11 @@
 - **Jules (Google Gemini):** "Async-исполнитель". Рутинные задачи (тесты, баги, TODO, dependency updates), proactive scan, scheduled maintenance. Асинхронный, облачный. Работает пока Ivan спит.
 - **Agent Zero:** "Автономный исследователь". Тяжёлые вычисления, глубокий ресёрч, семантический анализ. Свой сервер, Docker, Venice AI.
 - **Gemini CLI:** "Второе мнение и инструмент Navi". Gemini Pro доступен как inference provider (`bun Inference.ts --level gemini`). Navi вызывает программно для cross-check кода, параллельного анализа, Google-специфичных знаний. Не агент — инструмент в руках архитектора.
-- **Интеграция:** Navi управляет Jules через REST API (`JulesAPI.ts`), Agent Zero через A2A, Gemini через CLI/Inference.ts. TELOS sync обеспечивает общий контекст. AGENTS.md в репо → контекст для Jules.
+- **GLM-5 (Z.AI):** "Тяжёлая артиллерия и стратегический резерв". 744B MoE, 77.8% SWE-bench, MIT license. Inference provider (`bun Inference.ts --level glm5`). OpenAI-compatible API, прямой доступ из РФ (китайская компания, без гео-блока). zai-cli — MCP tools (vision/search/read/repo). Двойная роль: bulk inference (дешевле Claude) + резерв если заблокируют Anthropic и Google.
+- **Интеграция:** Navi управляет Jules через REST API (`JulesAPI.ts`), Agent Zero через A2A, Gemini через CLI/Inference.ts, GLM-5 через Inference.ts (native fetch). TELOS sync обеспечивает общий контекст. AGENTS.md в репо → контекст для Jules.
 - **Ключевой принцип:** "Один человек работает как команда из 3-4 разработчиков." Делегируй рутину → фокусируйся на том что нельзя делегировать (доменная экспертиза, продажи, стратегия).
-- **Источник:** Эволюция S1. Подтверждено практикой 2026-03-03: Jules нашёл и починил 4 security-уязвимости за 7 минут, Navi отревьюил и замёрджил без участия Ivan.
+- **Три провайдера = суверенитет:** Anthropic (через прокси NL) + Google (через прокси NL) + Zhipu AI (прямой доступ). Если любые два заблокируют — третий работает. Unified API через `bun Inference.ts --level <fast|standard|smart|gemini|glm5>`.
+- **Источник:** Эволюция S1. Подтверждено практикой 2026-03-03: Jules нашёл и починил 4 security-уязвимости за 7 минут, Navi отревьюил и замёрджил без участия Ivan. GLM-5 интегрирован в тот же день.
 
 ---
 

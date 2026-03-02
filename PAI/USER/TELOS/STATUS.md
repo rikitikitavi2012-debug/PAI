@@ -65,7 +65,7 @@
 | PAI | Хуки | 30 | Все defensive/fail-open |
 | PAI | Тесты | 94 / 14 сюит | 100% pass |
 | PAI | AI Agents | 3+1 (Navi, Jules, A0, Gemini tool) | Оркестр работает |
-| PAI | Inference providers | 4 (Haiku, Sonnet, Opus, Gemini) | Unified tool |
+| PAI | Inference providers | 5 (Haiku, Sonnet, Opus, Gemini, GLM-5) | Unified tool, 3 AI компании |
 | PAI | Скиллы | 11 | Аудит по v4 (G10) |
 | PAI | Community PRs | 6 (4 open) | Регулярный вклад |
 | PAI | Рейтинги | 92 (avg ~6.8) | Тренд вверх |
@@ -73,7 +73,7 @@
 | Проекты | PAI Dashboard | 5 страниц | 10+ |
 | Карьера | Доход от проектов | 0 ₽ | > зарплаты (M0) |
 | Инфра | Серверы | 2 VPS (NL) | + Venice AI |
-| Инфра | CLI инструменты | Claude Code + Gemini CLI | Оба через прокси NL |
+| Инфра | CLI инструменты | Claude Code + Gemini CLI + zai-cli | 2 через прокси NL, 1 прямой |
 
 ---
 
@@ -100,6 +100,8 @@
 
 | Победа | Дата | Связано с |
 |--------|------|-----------|
+| Z.AI GLM-5 интегрирован: 5-й inference provider + zai-cli MCP (vision/search/read/repo) | 2026-03-03 | I3, S1, S3, MO9 |
+| 3 AI-провайдера: Anthropic + Google + Zhipu AI = полный суверенитет | 2026-03-03 | S3, M3, C2 |
 | AI Agent Orchestra запущен: Jules (async) + Gemini CLI (tool) + Navi (architect) + A0 (researcher) | 2026-03-03 | I3, MO9, S1 |
 | Jules: 4 security-уязвимости найдены и починены за 7 мин (0 кликов от Ivan) | 2026-03-03 | S1, G11 |
 | Gemini CLI установлен как inference provider: `bun Inference.ts --level gemini` | 2026-03-03 | S1, S3, MO9 |

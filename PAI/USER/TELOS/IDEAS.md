@@ -72,6 +72,7 @@
 - Первый pipeline: Jules нашёл 4 security-уязвимости → Navi отревьюил → применил → 0 кликов от Ivan
 - Scheduled Tasks доступны для автоматического maintenance
 - **Gemini CLI v0.31.0** — установлен как inference provider в PAI. `bun Inference.ts --level gemini`. Navi вызывает программно (второе мнение, cross-check, Google-знания). Прокси через Амстердам.
+- **Z.AI GLM-5** — 5-й inference provider. `bun Inference.ts --level glm5`. 744B MoE, OpenAI-compatible API, прямой доступ из РФ. Coding plan subscription. zai-cli v1.1.0 — MCP tools (vision, search, read, repo) как CLI и MCP server (Vision) в Claude Code.
 - **Jules extension** для Gemini CLI — MCP сервер для управления Jules из CLI
 - **18 хуков → Jules**: 3 батча тестов делегированы (6+6+6), Jules генерирует
 - **Hook perf optimized**: SecurityValidator 282→26ms, UpdateTabTitle 10s→<500ms (−33с/сессию)
@@ -81,6 +82,7 @@
 - Настроить GitHub Actions для auto-fix CI failures
 - Deeper Gemini integration: MCP server, автоматический выбор провайдера по задаче
 - Jules для community PR в upstream PAI (main branch)
+- Z.AI deeper integration: автоматический routing (cheap bulk → GLM-5, critical → Opus), Anthropic-compatible endpoint как запасной (api.z.ai/api/anthropic)
 **Связано с:** S1 (AI-автоматизация), MO9 (Agent Orchestra), M0 (независимость — работать как команда), M3 (два AI-провайдера = суверенитет)
 
 ---

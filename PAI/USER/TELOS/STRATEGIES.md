@@ -4,7 +4,7 @@
 
 Стратегии — это повторяемые методы, которые связаны с вызовами (C#) и целями (G#).
 
-*Последнее обновление: 2026-03-02*
+*Последнее обновление: 2026-03-03*
 
 ---
 
@@ -29,9 +29,10 @@
 4. Каждую повторяющуюся задачу автоматизировать через агента
 5. Google Jules — async AI agent для рутинных задач (тесты, баги, TODO, dependency updates). API интеграция через JulesAPI.ts. Proactive scan включён на PAI-personal
 6. Gemini CLI — Google's Gemini Pro как inference provider в PAI. `bun Inference.ts --level gemini "system" "user"`. Navi вызывает Gemini программно для: второго мнения, cross-check, параллельного анализа. 1000 req/day free, 5x с Pro подпиской
-7. Test harness для хуков — сеть безопасности при изменениях (94 теста / 14 сюит)
-8. Feedback loop: RatingCapture → WisdomSync → FRAMES — автоматическое обучение
-9. Hook performance optimization: SecurityValidator 282→26ms (JSON cache), UpdateTabTitle 10s→<500ms (budget cap). Суммарно −33с/сессию
+7. Z.AI GLM-5 — Zhipu AI (智谱, IPO 2026 HK) как inference provider. `bun Inference.ts --level glm5`. 744B MoE, 77.8% SWE-bench. OpenAI-compatible API, без прокси из РФ (китайская компания). zai-cli — MCP инструменты (vision, search, read, repo)
+8. Test harness для хуков — сеть безопасности при изменениях (94 теста / 14 сюит)
+9. Feedback loop: RatingCapture → WisdomSync → FRAMES — автоматическое обучение
+10. Hook performance optimization: SecurityValidator 282→26ms (JSON cache), UpdateTabTitle 10s→<500ms (budget cap). Суммарно −33с/сессию
 
 ### S2: Ступенчатый рост (Найм → Накопления → Инвестиции → Бизнес)
 **Адресует:** C2 (финансовая зависимость), G1, G3, M0
@@ -48,7 +49,8 @@
 **Реализация:**
 1. VPS Timeweb (Нидерланды) — 2 сервера: шлюз + Agent Zero
 2. A0T стейкинг → Venice AI API (приватные LLM, без блокировок)
-3. SSH-туннели + http-proxy-to-socks для обхода ограничений
+3. SSH-туннели + http-proxy-to-socks для обхода ограничений (Anthropic + Google)
+4. Z.AI (Zhipu AI, Китай) — прямой доступ без прокси. GLM-5 + MCP tools (vision, search, read). Стратегический резерв: если заблокируют Anthropic и Google — Zhipu остаётся
 4. Для дома в горах: FTTH Ростелеком + резервный Мегафон 4G + Peplink bonding
 
 ### S4: Диверсификация капитала

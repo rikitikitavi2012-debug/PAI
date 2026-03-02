@@ -995,15 +995,15 @@
   },
   "counts": {
     "skills": 11,
-    "workflows": 160,
-    "hooks": 29,
-    "signals": 49,
+    "workflows": 164,
+    "hooks": 30,
+    "signals": 50,
     "files": 109,
-    "work": 55,
-    "sessions": 117,
-    "research": 7,
-    "ratings": 93,
-    "updatedAt": "2026-03-02T17:39:28.363Z"
+    "work": 70,
+    "sessions": 185,
+    "research": 9,
+    "ratings": 101,
+    "updatedAt": "2026-03-02T22:45:42.167Z"
   },
   "mcpServers": {
     "supabase": {
@@ -1024,6 +1024,16 @@
     },
     "cloudflare": {
       "url": "https://mcp.cloudflare.com/mcp"
+    },
+    "zai-vision": {
+      "command": "npx",
+      "args": ["-y", "@z_ai/mcp-server@latest"],
+      "env": {
+        "Z_AI_API_KEY": "${ZAI_API_KEY}",
+        "Z_AI_BASE_URL": "https://api.z.ai/api/coding/paas/v4",
+        "Z_AI_MODE": "ZAI",
+        "PLATFORM_MODE": "ZAI"
+      }
     }
   }
 }
