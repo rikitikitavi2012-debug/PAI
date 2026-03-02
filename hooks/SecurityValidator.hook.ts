@@ -142,6 +142,7 @@ interface HookInput {
   session_id: string;
   tool_name: string;
   tool_input: Record<string, unknown> | string;
+  additionalContext?: string;
 }
 
 interface Pattern {
@@ -166,6 +167,10 @@ interface PatternsConfig {
     readOnly: string[];
     confirmWrite: string[];
     noDelete: string[];
+  };
+  content?: {
+    blocked?: Pattern[];
+    confirm?: Pattern[];
   };
   projects: Record<string, {
     path: string;
@@ -461,6 +466,31 @@ function handleBash(input: HookInput): void {
   }
 }
 
+function validateContent(content: string): { action: 'allow' | 'block' | 'confirm'; reason?: string } {
+  const patterns = loadPatterns();
+  if (!patterns.content) return { action: 'allow' };
+
+  // Check blocked content patterns
+  for (const p of (patterns.content.blocked || [])) {
+    try {
+      if (new RegExp(p.pattern).test(content)) {
+        return { action: 'block', reason: p.reason };
+      }
+    } catch { /* invalid regex — skip */ }
+  }
+
+  // Check confirm content patterns
+  for (const p of (patterns.content.confirm || [])) {
+    try {
+      if (new RegExp(p.pattern).test(content)) {
+        return { action: 'confirm', reason: p.reason };
+      }
+    } catch { /* invalid regex — skip */ }
+  }
+
+  return { action: 'allow' };
+}
+
 function handleFileWrite(input: HookInput, toolName: string): void {
   const filePath = typeof input.tool_input === 'string'
     ? input.tool_input
@@ -505,11 +535,53 @@ function handleFileWrite(input: HookInput, toolName: string): void {
         decision: 'ask',
         message: `[PAI SECURITY] ⚠️ ${result.reason}\n\nPath: ${filePath}\n\nProceed?`
       }));
-      break;
+      return;
 
     default:
-      console.log(JSON.stringify({ continue: true }));
+      break;
   }
+
+  // Content inspection via additionalContext (Edit/Write provide file content)
+  const content = input.additionalContext
+    || (typeof input.tool_input !== 'string' ? (input.tool_input?.content as string || input.tool_input?.new_string as string) : '');
+
+  if (content && content.length < 1_000_000) {
+    const contentResult = validateContent(content);
+    if (contentResult.action === 'block') {
+      logSecurityEvent({
+        timestamp: new Date().toISOString(),
+        session_id: input.session_id,
+        event_type: 'block',
+        tool: toolName,
+        category: 'content_pattern',
+        target: filePath,
+        reason: contentResult.reason!,
+        action_taken: 'Hard block - exit 2'
+      });
+      console.error(`[PAI SECURITY] 🚨 BLOCKED: ${contentResult.reason}`);
+      console.error(`Path: ${filePath}`);
+      process.exit(2);
+    }
+    if (contentResult.action === 'confirm') {
+      logSecurityEvent({
+        timestamp: new Date().toISOString(),
+        session_id: input.session_id,
+        event_type: 'confirm',
+        tool: toolName,
+        category: 'content_pattern',
+        target: filePath,
+        reason: contentResult.reason!,
+        action_taken: 'Prompted user for confirmation'
+      });
+      console.log(JSON.stringify({
+        decision: 'ask',
+        message: `[PAI SECURITY] ⚠️ ${contentResult.reason}\n\nPath: ${filePath}\n\nProceed?`
+      }));
+      return;
+    }
+  }
+
+  console.log(JSON.stringify({ continue: true }));
 }
 
 function handleRead(input: HookInput): void {

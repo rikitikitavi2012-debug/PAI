@@ -252,19 +252,23 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/KittyEnvPersist.hook.ts"
+            "command": "${PAI_DIR}/hooks/KittyEnvPersist.hook.ts",
+            "once": true
           },
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/StartupGreeting.hook.ts"
+            "command": "${PAI_DIR}/hooks/StartupGreeting.hook.ts",
+            "once": true
           },
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/LoadContext.hook.ts"
+            "command": "${PAI_DIR}/hooks/LoadContext.hook.ts",
+            "once": true
           },
           {
             "type": "command",
-            "command": "bun ${PAI_DIR}/hooks/handlers/BuildCLAUDE.ts"
+            "command": "bun ${PAI_DIR}/hooks/handlers/BuildCLAUDE.ts",
+            "once": true
           }
         ]
       },
@@ -310,6 +314,36 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/RelationshipMemory.hook.ts"
+          }
+        ]
+      }
+    ],
+    "ConfigChange": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts"
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/WorktreeCreate.hook.ts"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/WorktreeRemove.hook.ts"
           }
         ]
       }
@@ -866,7 +900,8 @@
     "algorithmVersion": "3.5.0"
   },
   "preferences": {
-    "temperatureUnit": "fahrenheit"
+    "temperatureUnit": "fahrenheit",
+    "language": "russian"
   },
   "contextDisplay": {
     "compactionThreshold": 83,
@@ -933,12 +968,12 @@
     "workflows": 158,
     "hooks": 27,
     "signals": 49,
-    "files": 103,
-    "work": 48,
-    "sessions": 54,
+    "files": 109,
+    "work": 52,
+    "sessions": 88,
     "research": 7,
-    "ratings": 191,
-    "updatedAt": "2026-03-02T07:18:49.681Z"
+    "ratings": 92,
+    "updatedAt": "2026-03-02T16:03:43.314Z"
   },
   "mcpServers": {
     "supabase": {

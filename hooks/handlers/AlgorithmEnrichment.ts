@@ -12,7 +12,7 @@
 
 import { algorithmEnd, sweepStaleActive, readState, writeState } from '../lib/algorithm-state';
 import type { AlgorithmCriterion, AlgorithmState } from '../lib/algorithm-state';
-import type { ParsedTranscript } from '../../skills/PAI/Tools/TranscriptParser';
+import type { ParsedTranscript } from '../../PAI/Tools/TranscriptParser';
 
 // ── Extraction helpers ──
 

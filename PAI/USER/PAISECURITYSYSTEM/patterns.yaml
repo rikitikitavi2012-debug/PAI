@@ -172,6 +172,29 @@ paths:
 # Project-Specific Rules
 # ════════════════════════════════════════
 
+# ════════════════════════════════════════
+# Content Patterns (additionalContext inspection)
+# ════════════════════════════════════════
+
+content:
+  # ── Blocked: Hard block writes containing these patterns ──
+  blocked:
+    - pattern: "(AKIA|ASIA)[A-Z0-9]{16}"
+      reason: "AWS Access Key ID detected in file content"
+    - pattern: "-----BEGIN (RSA |EC |DSA )?PRIVATE KEY-----"
+      reason: "Private key detected in file content"
+
+  # ── Confirm: Require user confirmation for writes with these ──
+  confirm:
+    - pattern: "(?i)(api[_-]?key|secret[_-]?key|access[_-]?token)\\s*[=:]\\s*['\"]?[A-Za-z0-9_\\-]{20,}"
+      reason: "Possible hardcoded credential in file content"
+    - pattern: "(?i)password\\s*[=:]\\s*['\"]?[^\\s]{8,}"
+      reason: "Possible hardcoded password in file content"
+
+# ════════════════════════════════════════
+# Project-Specific Rules
+# ════════════════════════════════════════
+
 projects:
   pai:
     path: "~/.claude"

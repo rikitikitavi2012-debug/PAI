@@ -101,7 +101,7 @@ const settingsPath = getSettingsPath();
     }
 
     // Run the banner tool
-    const bannerPath = join(paiDir, 'skills/PAI/Tools/Banner.ts');
+    const bannerPath = join(paiDir, 'PAI/Tools/Banner.ts');
     const result = spawnSync('bun', ['run', bannerPath], {
       encoding: 'utf-8',
       stdio: ['inherit', 'pipe', 'pipe'],
