@@ -20,7 +20,10 @@
  * BASED ON: PR #799 by jlacour-git (danielmiessler/PAI)
  */
 
+import { existsSync, readFileSync, unlinkSync } from 'fs';
+import { join } from 'path';
 import { getIdentity, getPrincipal, getVoiceId } from './lib/identity';
+import { appendEvent } from './lib/event-emitter';
 
 interface SessionStartInput {
   session_id: string;
@@ -49,6 +52,51 @@ async function main() {
 
   console.error(`[PostCompactRecovery] Post-compaction recovery at ${timestamp}`);
 
+  // Read PreCompact snapshot if available
+  const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
+  const snapshotPath = join(BASE_DIR, 'MEMORY', 'STATE', `pre-compact-snapshot-${input.session_id}.json`);
+  let dynamicContext = '';
+
+  if (existsSync(snapshotPath)) {
+    try {
+      const snapshot = JSON.parse(readFileSync(snapshotPath, 'utf-8'));
+
+      const lines: string[] = [];
+      lines.push('ACTIVE WORK STATE (captured before compaction by PreCompact.hook.ts):');
+
+      if (snapshot.algorithm) {
+        const a = snapshot.algorithm;
+        lines.push(`- Algorithm: ACTIVE, phase ${a.phase}, effort ${a.effort}`);
+        lines.push(`- Task: ${a.task}`);
+        lines.push(`- ISC progress: ${a.criteria_progress}`);
+        if (a.prd_path) lines.push(`- PRD: ${a.prd_path}`);
+      }
+
+      if (snapshot.work) {
+        const w = snapshot.work;
+        lines.push(`- Work slug: ${w.slug}`);
+        if (w.task) lines.push(`- Work task: ${w.task}`);
+        if (w.phase) lines.push(`- Work phase: ${w.phase}`);
+        if (w.progress) lines.push(`- Work progress: ${w.progress}`);
+      }
+
+      lines.push('');
+      lines.push('IMPORTANT: Resume this work. Read the PRD file to restore full context.');
+
+      dynamicContext = '\n\n' + lines.join('\n');
+
+      // Cleanup snapshot after successful read
+      unlinkSync(snapshotPath);
+      console.error(`[PostCompactRecovery] Snapshot loaded and cleaned up`);
+    } catch (err) {
+      console.error(`[PostCompactRecovery] Snapshot read error: ${err}`);
+    }
+  } else {
+    console.error('[PostCompactRecovery] No PreCompact snapshot found');
+  }
+
+  appendEvent({ type: 'custom.post_compact_recovery', source: 'PostCompactRecovery', has_snapshot: !!dynamicContext } as any);
+
   const recoveryContext = [
     `POST-COMPACTION CONTEXT RECOVERY (auto-injected by PostCompactRecovery.hook.ts)`,
     ``,
@@ -75,7 +123,7 @@ async function main() {
     `- Ask before destructive actions — deletions, deployments, force pushes need approval`,
     `- Only make requested changes — don't refactor or "improve" beyond the ask`,
     `- Use ${identity.name} as your name in voice lines, not "Claude"`,
-  ].join('\n');
+  ].join('\n') + dynamicContext;
 
   console.log(JSON.stringify({ additionalContext: recoveryContext }));
   process.exit(0);

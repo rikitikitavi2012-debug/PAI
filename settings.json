@@ -278,6 +278,16 @@
         ]
       }
     ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/PreCompact.hook.ts"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
@@ -853,7 +863,7 @@
   "pai": {
     "repoUrl": "https://github.com/danielmiessler/PAI",
     "version": "4.0.2",
-    "algorithmVersion": "3.6.0"
+    "algorithmVersion": "3.5.0"
   },
   "preferences": {
     "temperatureUnit": "fahrenheit"
@@ -921,14 +931,14 @@
   "counts": {
     "skills": 11,
     "workflows": 158,
-    "hooks": 26,
+    "hooks": 27,
     "signals": 49,
     "files": 102,
-    "work": 38,
+    "work": 41,
     "sessions": 40,
     "research": 7,
     "ratings": 191,
-    "updatedAt": "2026-03-01T20:02:43.062Z"
+    "updatedAt": "2026-03-02T06:12:29.195Z"
   },
   "mcpServers": {
     "supabase": {
