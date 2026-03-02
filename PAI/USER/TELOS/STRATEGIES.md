@@ -28,8 +28,10 @@
 3. Venice AI (через A0T стейкинг) — приватные LLM без цензуры
 4. Каждую повторяющуюся задачу автоматизировать через агента
 5. Google Jules — async AI agent для рутинных задач (тесты, баги, TODO, dependency updates). API интеграция через JulesAPI.ts. Proactive scan включён на PAI-personal
-6. Test harness для хуков — сеть безопасности при изменениях
-6. Feedback loop: RatingCapture → WisdomSync → FRAMES — автоматическое обучение
+6. Gemini CLI — Google's Gemini Pro как inference provider в PAI. `bun Inference.ts --level gemini "system" "user"`. Navi вызывает Gemini программно для: второго мнения, cross-check, параллельного анализа. 1000 req/day free, 5x с Pro подпиской
+7. Test harness для хуков — сеть безопасности при изменениях (94 теста / 14 сюит)
+8. Feedback loop: RatingCapture → WisdomSync → FRAMES — автоматическое обучение
+9. Hook performance optimization: SecurityValidator 282→26ms (JSON cache), UpdateTabTitle 10s→<500ms (budget cap). Суммарно −33с/сессию
 
 ### S2: Ступенчатый рост (Найм → Накопления → Инвестиции → Бизнес)
 **Адресует:** C2 (финансовая зависимость), G1, G3, M0
@@ -142,7 +144,7 @@
 
 | Стратегия | Применена | Результат | Нужна корректировка |
 |-----------|----------|-----------|---------------------|
-| S1 | 2025-2026 | PAI система работает, агенты запускают исследования | Нет |
+| S1 | 2025-2026 | PAI v4.0.3: 30 хуков, 94 теста, AI Agent Orchestra (Navi+Jules+Gemini+A0). SecurityValidator 11x, UpdateTabTitle 20x ускорены. Events rotation. | Нет |
 | S3 | 2025-2026 | VPS NL работает, Agent Zero развёрнут | Добавить Venice AI |
 | S2 | 2024-2026 | Накоплено 3.5 млн ₽ | Нет, продолжать |
 | S7 | 2026-03 | 6 PRs, contributor acknowledgment в v4.0.3 | Нет, продолжать |

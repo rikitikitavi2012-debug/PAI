@@ -71,10 +71,15 @@
 - AGENTS.md создан, JulesAPI.ts skill для программного управления
 - Первый pipeline: Jules нашёл 4 security-уязвимости → Navi отревьюил → применил → 0 кликов от Ivan
 - Scheduled Tasks доступны для автоматического maintenance
+- **Gemini CLI v0.31.0** — установлен как inference provider в PAI. `bun Inference.ts --level gemini`. Navi вызывает программно (второе мнение, cross-check, Google-знания). Прокси через Амстердам.
+- **Jules extension** для Gemini CLI — MCP сервер для управления Jules из CLI
+- **18 хуков → Jules**: 3 батча тестов делегированы (6+6+6), Jules генерирует
+- **Hook perf optimized**: SecurityValidator 282→26ms, UpdateTabTitle 10s→<500ms (−33с/сессию)
+- **Events rotation**: архивация >7 дней, 10 тестов, интегрировано в SessionStart
 **Следующие шаги:**
 - Подключить Jules к другим репо (digital-foreman-app, timber-frame-site)
 - Настроить GitHub Actions для auto-fix CI failures
-- Batch-делегирование: 18 хуков без тестов → Jules
+- Deeper Gemini integration: MCP server, автоматический выбор провайдера по задаче
 - Jules для community PR в upstream PAI (main branch)
 **Связано с:** S1 (AI-автоматизация), MO9 (Agent Orchestra), M0 (независимость — работать как команда), M3 (два AI-провайдера = суверенитет)
 
