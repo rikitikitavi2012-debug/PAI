@@ -154,11 +154,18 @@ function parseTranscript(transcriptPath: string): {
 /**
  * Generate 8-word description using fast inference
  */
-async function generateDescription(
+interface FailureAnalysis {
+  description: string;
+  avoid: string;
+  instead: string;
+}
+
+async function generateFailureAnalysis(
   sentimentSummary: string,
   conversations: { role: string; content: string }[],
-  toolCalls: ToolCall[]
-): Promise<string> {
+  toolCalls: ToolCall[],
+  detailedContext?: string,
+): Promise<FailureAnalysis> {
   // Get last few exchanges for context
   const recentConvos = conversations.slice(-6).map(c =>
     `${c.role.toUpperCase()}: ${c.content.slice(0, 200)}`
@@ -166,66 +173,71 @@ async function generateDescription(
 
   const recentTools = toolCalls.slice(-5).map(t => t.name).join(', ');
 
-  const systemPrompt = `Generate a SHORT, SPECIFIC description of what went wrong in this AI assistant interaction.
+  const systemPrompt = `Analyze an AI assistant failure and generate: a description, an AVOID rule, and an INSTEAD rule.
 
-REQUIREMENTS:
-- EXACTLY 8 words (count them!)
-- Use lowercase with hyphens between words (kebab-case)
-- Be specific about the actual failure, not generic
-- Focus on what the assistant did wrong or what frustrated the user
+OUTPUT FORMAT (JSON only):
+{
+  "description": "8-word-kebab-case-description-of-what-went-wrong",
+  "avoid": "One sentence: what the assistant did wrong (specific, actionable)",
+  "instead": "One sentence: what the assistant should have done (specific, actionable)"
+}
 
-EXAMPLES OF GOOD DESCRIPTIONS:
-- "assistant-deleted-users-file-without-asking-permission-first"
-- "ignored-explicit-python-prohibition-and-used-it-anyway"
-- "claimed-task-complete-when-build-was-still-failing"
-- "overwrote-working-code-with-broken-implementation-silently"
-- "asked-clarifying-question-instead-of-just-doing-task"
+DESCRIPTION RULES:
+- EXACTLY 8 words in kebab-case
+- Specific about the actual failure
 
-EXAMPLES OF BAD DESCRIPTIONS:
-- "user-was-frustrated-with-assistant-response-quality" (too generic)
-- "error" (too short, not descriptive)
-- "the-assistant-made-a-mistake-on-this-task" (still too generic)
+AVOID/INSTEAD RULES:
+- Be SPECIFIC, not generic. Bad: "Be more careful." Good: "Verify file exists before deleting it."
+- Reference the actual behavior, not abstract principles
+- Max 20 words each
 
-OUTPUT: Return ONLY the 8-word description, nothing else.`;
+EXAMPLES:
+{
+  "description": "assistant-deleted-users-file-without-asking-permission-first",
+  "avoid": "Deleting files without explicit user confirmation, especially in unfamiliar directories.",
+  "instead": "List files to delete, show consequences, ask for approval before rm."
+}
+{
+  "description": "claimed-feature-existed-when-it-was-only-planned",
+  "avoid": "Asserting a feature is available without checking release notes or git tags.",
+  "instead": "Check actual release/branch state before claiming availability."
+}`;
 
   const userPrompt = `SENTIMENT: ${sentimentSummary}
+${detailedContext ? `\nDETAILED CONTEXT: ${detailedContext.slice(0, 500)}` : ''}
 
 RECENT CONVERSATION:
 ${recentConvos}
 
-TOOLS USED: ${recentTools || 'none'}
-
-Generate the 8-word description:`;
+TOOLS USED: ${recentTools || 'none'}`;
 
   try {
     const result = await inference({
       systemPrompt,
       userPrompt,
+      expectJson: true,
       level: 'fast',
-      timeout: 10000,
+      timeout: 12000,
     });
 
-    if (result.success && result.output) {
-      // Clean and validate
-      let desc = result.output.trim().toLowerCase();
-      desc = desc.replace(/[^a-z0-9\s-]/g, '');
-      desc = desc.replace(/\s+/g, '-');
+    if (result.success && result.parsed) {
+      const parsed = result.parsed as any;
+      let desc = (parsed.description || '').trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+      const words = desc.split('-').filter((w: string) => w.length > 0);
+      if (words.length > 10) desc = words.slice(0, 8).join('-');
+      else if (words.length < 5) desc = `low-rating-failure-${words.join('-')}`;
 
-      // Ensure it's roughly 8 words
-      const words = desc.split('-').filter(w => w.length > 0);
-      if (words.length > 10) {
-        desc = words.slice(0, 8).join('-');
-      } else if (words.length < 5) {
-        desc = `low-rating-failure-${words.join('-')}`;
-      }
-
-      return desc;
+      return {
+        description: desc,
+        avoid: (parsed.avoid || '').slice(0, 150),
+        instead: (parsed.instead || '').slice(0, 150),
+      };
     }
   } catch (err) {
     console.error(`[FailureCapture] Inference error: ${err}`);
   }
 
-  // Fallback: derive from sentiment summary
+  // Fallback
   const fallback = sentimentSummary
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, '')
@@ -233,7 +245,11 @@ Generate the 8-word description:`;
     .slice(0, 8)
     .join('-');
 
-  return fallback || 'unspecified-failure-needs-manual-review';
+  return {
+    description: fallback || 'unspecified-failure-needs-manual-review',
+    avoid: sentimentSummary.slice(0, 100),
+    instead: 'Review failure context and apply specific fix.',
+  };
 }
 
 /**
@@ -266,9 +282,9 @@ function getPSTComponents(): {
 export async function captureFailure(input: FailureCaptureInput): Promise<string | null> {
   const { transcriptPath, rating, sentimentSummary, detailedContext, sessionId } = input;
 
-  // Only capture ratings 1-3
-  if (rating > 3) {
-    console.error(`[FailureCapture] Rating ${rating} is above threshold (1-3), skipping`);
+  // Capture ratings 1-4 (lowered from 1-3 to capture more learning opportunities)
+  if (rating > 4) {
+    console.error(`[FailureCapture] Rating ${rating} is above threshold (1-4), skipping`);
     return null;
   }
 
@@ -280,8 +296,9 @@ export async function captureFailure(input: FailureCaptureInput): Promise<string
   // Parse transcript
   const { entries, toolCalls, conversations } = parseTranscript(transcriptPath);
 
-  // Generate description
-  const description = await generateDescription(sentimentSummary, conversations, toolCalls);
+  // Generate description + behavioral rules in a single inference call
+  const analysis = await generateFailureAnalysis(sentimentSummary, conversations, toolCalls, detailedContext);
+  const description = analysis.description;
 
   // Create directory structure
   const { year, month, day, hours, minutes, seconds } = getPSTComponents();
@@ -369,16 +386,16 @@ ${toolCalls.length > 0 ? toolCalls.slice(-10).map(t => `- **${t.name}**: ${JSON.
 
 ---
 
+## Behavioral Rules
+
+**AVOID:** ${analysis.avoid}
+**INSTEAD:** ${analysis.instead}
+
+---
+
 ## Learning System Notes
 
-This failure has been captured for retroactive analysis. The learning system should:
-
-1. Review the full transcript for root cause
-2. Identify systemic issues that contributed
-3. Determine if this failure type has occurred before
-4. Propose improvements to prevent recurrence
-
-**Action Required:** This capture needs manual review to extract learnings.
+This failure has been captured for retroactive analysis. Behavioral rules above are auto-injected into future sessions via LoadContext → loadFailurePatterns().
 `;
 
   writeFileSync(join(failureDir, 'CONTEXT.md'), contextMd, 'utf-8');

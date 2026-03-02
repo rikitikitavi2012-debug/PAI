@@ -171,12 +171,23 @@ export function loadFailurePatterns(paiDir: string): string | null {
 
           try {
             const content = readFileSync(contextPath, 'utf-8');
-            // Extract slug as human-readable failure description
-            const slug = dir.replace(/^\d{4}-\d{2}-\d{2}-\d{6}_/, '').replace(/-/g, ' ');
-            // Get date from dir name
             const dateMatch = dir.match(/^(\d{4}-\d{2}-\d{2})/);
             const date = dateMatch ? dateMatch[1] : '';
-            patterns.push(`[${date}] ${slug.substring(0, 70)}`);
+
+            // Try to extract behavioral rules (new format)
+            const avoidMatch = content.match(/\*\*AVOID:\*\*\s*(.+)/);
+            const insteadMatch = content.match(/\*\*INSTEAD:\*\*\s*(.+)/);
+
+            if (avoidMatch && insteadMatch) {
+              // Actionable format: AVOID → INSTEAD
+              const avoid = avoidMatch[1].substring(0, 80).trim();
+              const instead = insteadMatch[1].substring(0, 80).trim();
+              patterns.push(`[${date}] AVOID: ${avoid} → INSTEAD: ${instead}`);
+            } else {
+              // Fallback: slug from dirname (legacy captures)
+              const slug = dir.replace(/^\d{4}-\d{2}-\d{2}-\d{6}_/, '').replace(/-/g, ' ');
+              patterns.push(`[${date}] ${slug.substring(0, 70)}`);
+            }
           } catch { /* skip unreadable */ }
         }
       } catch { /* skip unreadable months */ }

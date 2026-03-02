@@ -399,7 +399,7 @@ async function main() {
 
         captureLowRatingLearning(explicitResult.rating, explicitResult.comment || '', responseContext, 'explicit');
 
-        if (explicitResult.rating <= 3) {
+        if (explicitResult.rating <= 4) {
           try {
             await captureFailure({
               transcriptPath: data.transcript_path,
@@ -517,7 +517,7 @@ async function main() {
           'implicit'
         );
 
-        if (sentiment.rating <= 3) {
+        if (sentiment.rating <= 4) {
           await captureFailure({
             transcriptPath: data.transcript_path,
             rating: sentiment.rating,
