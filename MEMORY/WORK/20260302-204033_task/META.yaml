@@ -1,0 +1,13 @@
+id: "20260302-204033_task"
+title: "Найденные слепые зоны:
+
+  ┌─────┬─────────────────"
+session_id: "081bcdd2-4386-4342-8323-62eda6233303"
+created_at: "2026-03-02T20:40:33+03:00"
+completed_at: "2026-03-02T21:00:00+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -267,7 +267,7 @@
           },
           {
             "type": "command",
-            "command": "bun ${PAI_DIR}/hooks/handlers/BuildCLAUDE.ts",
+            "command": "${PAI_DIR}/hooks/handlers/BuildCLAUDE.ts",
             "once": true
           }
         ]
@@ -353,7 +353,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/SubagentStart.hook.ts"
+            "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
           }
         ]
       }
@@ -363,7 +363,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/SubagentStop.hook.ts"
+            "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
           }
         ]
       }
@@ -373,7 +373,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PAI_DIR}/hooks/TaskCompleted.hook.ts"
+            "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
           }
         ]
       }

@@ -1,0 +1,11 @@
+id: "20260302-204529_task"
+title: "Давай разберемся с китти терминалом научишь меня к"
+session_id: "52980e3d-7ba4-4caf-b5b5-552fc178cbdf"
+created_at: "2026-03-02T20:45:29+03:00"
+completed_at: "2026-03-02T21:00:00+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []
