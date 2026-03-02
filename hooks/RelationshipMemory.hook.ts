@@ -241,13 +241,11 @@ async function main() {
     const input = await readStdinWithTimeout();
     const data: HookInput = JSON.parse(input);
 
-    if (!data.transcript_path) {
-      console.error('[RelationshipMemory] No transcript path, exiting');
-      process.exit(0);
+    // Build entries from available sources (Stop provides last_assistant_message, not transcript_path)
+    const entries: TranscriptEntry[] = [];
+    if (data.transcript_path) {
+      entries.push(...readTranscriptEntries(data.transcript_path));
     }
-
-    // Read and analyze transcript — prefer last_assistant_message over full parse
-    const entries = readTranscriptEntries(data.transcript_path);
     if (data.last_assistant_message) {
       entries.push({ type: 'assistant', text: data.last_assistant_message });
     }
