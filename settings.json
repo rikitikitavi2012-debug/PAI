@@ -862,7 +862,7 @@
   },
   "pai": {
     "repoUrl": "https://github.com/danielmiessler/PAI",
-    "version": "4.0.2",
+    "version": "4.0.3",
     "algorithmVersion": "3.5.0"
   },
   "preferences": {
@@ -933,12 +933,12 @@
     "workflows": 158,
     "hooks": 27,
     "signals": 49,
-    "files": 102,
-    "work": 41,
-    "sessions": 40,
+    "files": 103,
+    "work": 48,
+    "sessions": 54,
     "research": 7,
     "ratings": 191,
-    "updatedAt": "2026-03-02T06:12:29.195Z"
+    "updatedAt": "2026-03-02T07:18:49.681Z"
   },
   "mcpServers": {
     "supabase": {

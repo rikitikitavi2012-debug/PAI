@@ -147,12 +147,12 @@ paths:
 
   # ── Read Only: Can read, cannot write/delete ──
   readOnly:
-    - "~/.claude/settings.json"
     - "/etc/**"
     - "/usr/**"
 
   # ── Confirm Write: Can read, writing requires confirmation ──
   confirmWrite:
+    - "~/.claude/settings.json"
     - "**/.env"
     - "**/.env.production"
     - "**/package.json"
