@@ -2,7 +2,7 @@
 task: "Activate Unified Event System (events.jsonl) — first wave"
 slug: "20260302-events-jsonl-activation"
 effort: advanced
-phase: verify
+phase: complete
 progress: 8/8
 mode: algorithm
 started: "2026-03-02T09:30:00-08:00"

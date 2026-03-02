@@ -2,8 +2,8 @@ id: "20260301-103817_pai-v30-v401"
 title: "PAI v30  v401"
 session_id: "25492780-b0ed-44d4-a034-9e7a3f51e79f"
 created_at: "2026-03-01T10:38:17+03:00"
-completed_at: null
-status: "ACTIVE"
+completed_at: "2026-03-01T14:00:00+03:00"
+status: "COMPLETED"
 source: "AUTO"
 lineage:
   tools_used: []

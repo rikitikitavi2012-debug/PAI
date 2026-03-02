@@ -139,6 +139,31 @@ export interface HookErrorEvent extends BaseEvent {
   error: string;
 }
 
+// ── Agent Events ──
+
+export interface AgentStartEvent extends BaseEvent {
+  type: 'agent.start';
+  agent_type?: string;
+  agent_id?: string;
+  description?: string;
+}
+
+export interface AgentStopEvent extends BaseEvent {
+  type: 'agent.stop';
+  agent_id?: string;
+  transcript_path?: string;
+  duration_ms?: number;
+  last_message_preview?: string;
+}
+
+// ── Task Events ──
+
+export interface TaskCompletedEvent extends BaseEvent {
+  type: 'task.completed';
+  task_id?: string;
+  task_subject?: string;
+}
+
 // ── Custom Events ──
 
 export interface CustomEvent extends BaseEvent {
@@ -165,6 +190,9 @@ export type PAIEvent =
   | SettingsCountsUpdatedEvent
   | TabUpdatedEvent
   | HookErrorEvent
+  | AgentStartEvent
+  | AgentStopEvent
+  | TaskCompletedEvent
   | CustomEvent;
 
 // ── Input type for appendEvent (without auto-injected fields) ──

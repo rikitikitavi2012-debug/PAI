@@ -347,6 +347,36 @@
           }
         ]
       }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/SubagentStart.hook.ts"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/SubagentStop.hook.ts"
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/TaskCompleted.hook.ts"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -969,11 +999,11 @@
     "hooks": 29,
     "signals": 49,
     "files": 109,
-    "work": 53,
-    "sessions": 108,
+    "work": 55,
+    "sessions": 117,
     "research": 7,
     "ratings": 93,
-    "updatedAt": "2026-03-02T17:10:22.856Z"
+    "updatedAt": "2026-03-02T17:39:28.363Z"
   },
   "mcpServers": {
     "supabase": {
