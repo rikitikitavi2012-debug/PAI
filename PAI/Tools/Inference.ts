@@ -14,26 +14,28 @@
  *   bun Inference.ts --level fast <system_prompt> <user_prompt>
  *   bun Inference.ts --level standard <system_prompt> <user_prompt>
  *   bun Inference.ts --level smart <system_prompt> <user_prompt>
+ *   bun Inference.ts --level gemini <system_prompt> <user_prompt>
  *   bun Inference.ts --json --level fast <system_prompt> <user_prompt>
  *
  * OPTIONS:
- *   --level <fast|standard|smart>  Run level (default: standard)
- *   --json                         Expect and parse JSON response
- *   --timeout <ms>                 Custom timeout (default varies by level)
+ *   --level <fast|standard|smart|gemini>  Run level (default: standard)
+ *   --json                                Expect and parse JSON response
+ *   --timeout <ms>                        Custom timeout (default varies by level)
  *
  * DEFAULTS BY LEVEL:
- *   fast:     model=haiku,   timeout=15s
- *   standard: model=sonnet,  timeout=30s
- *   smart:    model=opus,    timeout=90s
+ *   fast:     model=haiku,        timeout=15s,  provider=claude
+ *   standard: model=sonnet,       timeout=30s,  provider=claude
+ *   smart:    model=opus,         timeout=90s,  provider=claude
+ *   gemini:   model=gemini-pro,   timeout=30s,  provider=gemini-cli
  *
- * BILLING: Uses Claude CLI with subscription (not API key)
+ * BILLING: Claude levels use CLI subscription. Gemini uses GOOGLE_API_KEY (free 1000/day, Pro 5x).
  *
  * ============================================================================
  */
 
 import { spawn } from "child_process";
 
-export type InferenceLevel = 'fast' | 'standard' | 'smart';
+export type InferenceLevel = 'fast' | 'standard' | 'smart' | 'gemini';
 
 export interface InferenceOptions {
   systemPrompt: string;
@@ -53,11 +55,98 @@ export interface InferenceResult {
 }
 
 // Level configurations
-const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: number }> = {
-  fast: { model: 'haiku', defaultTimeout: 15000 },
-  standard: { model: 'sonnet', defaultTimeout: 30000 },
-  smart: { model: 'opus', defaultTimeout: 90000 },
+const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: number; provider: 'claude' | 'gemini' }> = {
+  fast: { model: 'haiku', defaultTimeout: 15000, provider: 'claude' },
+  standard: { model: 'sonnet', defaultTimeout: 30000, provider: 'claude' },
+  smart: { model: 'opus', defaultTimeout: 90000, provider: 'claude' },
+  gemini: { model: 'gemini-pro', defaultTimeout: 30000, provider: 'gemini' },
 };
+
+/**
+ * Run inference via Gemini CLI
+ */
+async function inferenceGemini(options: InferenceOptions, level: InferenceLevel, timeout: number): Promise<InferenceResult> {
+  const startTime = Date.now();
+
+  return new Promise((resolve) => {
+    const geminiPath = `${process.env.HOME}/.npm-global/bin/gemini`;
+    const combinedPrompt = options.systemPrompt
+      ? `System: ${options.systemPrompt}\n\nUser: ${options.userPrompt}`
+      : options.userPrompt;
+
+    // Load GOOGLE_API_KEY from PAI .env
+    const envPath = `${process.env.HOME}/.config/PAI/.env`;
+    let apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || '';
+    if (!apiKey) {
+      try {
+        const envContent = require('fs').readFileSync(envPath, 'utf-8');
+        const match = envContent.match(/^GOOGLE_API_KEY=(.+)$/m);
+        if (match) apiKey = match[1].trim();
+      } catch {}
+    }
+
+    if (!apiKey) {
+      resolve({ success: false, output: '', error: 'No GOOGLE_API_KEY found', latencyMs: Date.now() - startTime, level });
+      return;
+    }
+
+    const env = {
+      ...process.env,
+      GOOGLE_API_KEY: apiKey,
+      GEMINI_API_KEY: apiKey,
+      HTTP_PROXY: process.env.HTTP_PROXY || 'http://127.0.0.1:8118',
+      HTTPS_PROXY: process.env.HTTPS_PROXY || 'http://127.0.0.1:8118',
+    };
+
+    const args = ['--prompt', combinedPrompt, '--output-format', 'text'];
+
+    let stdout = '';
+    let stderr = '';
+
+    const proc = spawn(geminiPath, args, { env, stdio: ['pipe', 'pipe', 'pipe'] });
+
+    proc.stdout.on('data', (data) => { stdout += data.toString(); });
+    proc.stderr.on('data', (data) => { stderr += data.toString(); });
+
+    const timeoutId = setTimeout(() => {
+      proc.kill('SIGTERM');
+      resolve({ success: false, output: '', error: `Gemini timeout after ${timeout}ms`, latencyMs: Date.now() - startTime, level });
+    }, timeout);
+
+    proc.on('close', (code) => {
+      clearTimeout(timeoutId);
+      const latencyMs = Date.now() - startTime;
+      const output = stdout.trim();
+
+      if (code !== 0 && !output) {
+        resolve({ success: false, output, error: stderr || `Gemini exited with code ${code}`, latencyMs, level });
+        return;
+      }
+
+      if (options.expectJson) {
+        const jsonMatch = output.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            resolve({ success: true, output, parsed: JSON.parse(jsonMatch[0]), latencyMs, level });
+            return;
+          } catch {
+            resolve({ success: false, output, error: 'Failed to parse JSON from Gemini', latencyMs, level });
+            return;
+          }
+        }
+        resolve({ success: false, output, error: 'No JSON found in Gemini response', latencyMs, level });
+        return;
+      }
+
+      resolve({ success: true, output, latencyMs, level });
+    });
+
+    proc.on('error', (err) => {
+      clearTimeout(timeoutId);
+      resolve({ success: false, output: '', error: err.message, latencyMs: Date.now() - startTime, level });
+    });
+  });
+}
 
 /**
  * Run inference with configurable level
@@ -65,8 +154,14 @@ const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: numb
 export async function inference(options: InferenceOptions): Promise<InferenceResult> {
   const level = options.level || 'standard';
   const config = LEVEL_CONFIG[level];
-  const startTime = Date.now();
   const timeout = options.timeout || config.defaultTimeout;
+
+  // Route to Gemini provider
+  if (config.provider === 'gemini') {
+    return inferenceGemini(options, level, timeout);
+  }
+
+  const startTime = Date.now();
 
   return new Promise((resolve) => {
     // Build environment WITHOUT ANTHROPIC_API_KEY to force subscription auth
@@ -207,7 +302,7 @@ async function main() {
       expectJson = true;
     } else if (args[i] === '--level' && args[i + 1]) {
       const requestedLevel = args[i + 1].toLowerCase();
-      if (['fast', 'standard', 'smart'].includes(requestedLevel)) {
+      if (['fast', 'standard', 'smart', 'gemini'].includes(requestedLevel)) {
         level = requestedLevel as InferenceLevel;
       } else {
         console.error(`Invalid level: ${args[i + 1]}. Use fast, standard, or smart.`);
@@ -223,7 +318,7 @@ async function main() {
   }
 
   if (positionalArgs.length < 2) {
-    console.error('Usage: bun Inference.ts [--level fast|standard|smart] [--json] [--timeout <ms>] <system_prompt> <user_prompt>');
+    console.error('Usage: bun Inference.ts [--level fast|standard|smart|gemini] [--json] [--timeout <ms>] <system_prompt> <user_prompt>');
     process.exit(1);
   }
 
