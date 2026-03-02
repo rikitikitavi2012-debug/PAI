@@ -74,6 +74,14 @@
 - **Негативные выводы агентов перепроверять**: "X пустой/отсутствует/не работает" — проверить лично перед передачей Ivan
 - **Миграции фиксировать в памяти**: v3→v4 миграция TELOS (commit 74bb626) не была записана → новая сессия не знала
 
+## Gemini CLI (Google's Claude Code analog)
+- **Installed**: v0.31.0, path: ~/.npm-global/bin/gemini
+- **Auth**: GOOGLE_API_KEY + GEMINI_API_KEY from ~/.config/PAI/.env, loaded in .bashrc
+- **Limits**: Free 1000 req/day (Flash), Pro = 5x limits + Pro model (Ivan has Pro sub)
+- **Jules extension**: gemini-cli-jules v0.1.0 installed, MCP server for Jules integration
+- **Config**: ~/.gemini/ (settings, extensions, projects)
+- **Use cases**: Alternative coding agent, Jules integration via CLI, parallel with Claude Code
+
 ## Session Patterns
 - Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10)
 - Common frustration: English responses when Russian expected

@@ -38,6 +38,8 @@ import { spawnSync } from 'child_process';
 import { getPaiDir } from './lib/paths';
 import { recordSessionStart } from './lib/notifications';
 import { loadLearningDigest, loadWisdomFrames, loadFailurePatterns, loadSignalTrends } from './lib/learning-readback';
+import { rotateEvents } from './lib/event-rotation';
+import { getEventsPath } from './lib/event-emitter';
 
 interface DynamicContextConfig {
   relationshipContext?: boolean;
@@ -453,6 +455,16 @@ async function main() {
     // Record session start time for notification timing
     recordSessionStart();
     console.error('⏱️ Session start time recorded');
+
+    // Rotate events.jsonl — archive events older than 7 days
+    try {
+      const rotation = rotateEvents(getEventsPath());
+      if (rotation.archived > 0) {
+        console.error(`🔄 Event rotation: archived ${rotation.archived}, kept ${rotation.kept}`);
+      }
+    } catch (err) {
+      console.error(`⚠️ Event rotation failed (non-fatal): ${err}`);
+    }
 
     // Load settings for dynamic context controls
     const settings = loadSettings(paiDir);

@@ -1,0 +1,108 @@
+/**
+ * event-rotation.ts — Events log rotation for the Unified Event System
+ *
+ * Rotates events.jsonl by archiving events older than 7 days into
+ * monthly archive files (events-archive-YYYY-MM.jsonl) in the same directory.
+ *
+ * Design:
+ * - Fresh events (<=7 days) stay in events.jsonl
+ * - Old events (>7 days) are appended to events-archive-YYYY-MM.jsonl
+ * - Archive files are grouped by the event's timestamp month
+ * - Malformed lines are silently dropped (not preserved)
+ * - Idempotent: running multiple times is safe
+ * - Atomic-ish: writes archive first, then overwrites main file
+ *
+ * Usage:
+ *   import { rotateEvents } from './lib/event-rotation';
+ *   const result = rotateEvents('/path/to/events.jsonl');
+ *   // result = { archived: 5, kept: 10, archiveFile: '...' | null }
+ */
+
+import { existsSync, readFileSync, writeFileSync, appendFileSync } from 'fs';
+import { join, dirname } from 'path';
+
+const RETENTION_DAYS = 7;
+
+interface RotationResult {
+  archived: number;
+  kept: number;
+  /** Last archive file written (null if nothing archived) */
+  archiveFile: string | null;
+}
+
+/**
+ * Rotate events.jsonl — archive events older than 7 days.
+ *
+ * @param eventsPath - Absolute path to events.jsonl
+ * @returns Counts of archived and kept events
+ */
+export function rotateEvents(eventsPath: string): RotationResult {
+  if (!existsSync(eventsPath)) {
+    return { archived: 0, kept: 0, archiveFile: null };
+  }
+
+  const content = readFileSync(eventsPath, 'utf-8').trim();
+  if (!content) {
+    return { archived: 0, kept: 0, archiveFile: null };
+  }
+
+  const lines = content.split('\n');
+  const cutoff = Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000;
+  const dir = dirname(eventsPath);
+
+  const fresh: string[] = [];
+  // Group old events by month for archive files
+  const archiveByMonth = new Map<string, string[]>();
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+
+    try {
+      const evt = JSON.parse(line);
+      const ts = new Date(evt.timestamp);
+
+      if (isNaN(ts.getTime())) {
+        // Invalid timestamp — drop the line
+        continue;
+      }
+
+      if (ts.getTime() <= cutoff) {
+        // Old event — route to archive by month
+        const month = evt.timestamp.slice(0, 7); // YYYY-MM
+        if (!archiveByMonth.has(month)) {
+          archiveByMonth.set(month, []);
+        }
+        archiveByMonth.get(month)!.push(line);
+      } else {
+        // Fresh event — keep in main file
+        fresh.push(line);
+      }
+    } catch {
+      // Malformed JSON — drop silently
+      continue;
+    }
+  }
+
+  let totalArchived = 0;
+  let lastArchiveFile: string | null = null;
+
+  // Write archive files (append, not overwrite)
+  for (const [month, events] of archiveByMonth) {
+    const archivePath = join(dir, `events-archive-${month}.jsonl`);
+    appendFileSync(archivePath, events.join('\n') + '\n', 'utf-8');
+    totalArchived += events.length;
+    lastArchiveFile = archivePath;
+  }
+
+  // Overwrite events.jsonl with only fresh events
+  if (totalArchived > 0) {
+    const freshContent = fresh.length > 0 ? fresh.join('\n') + '\n' : '';
+    writeFileSync(eventsPath, freshContent, 'utf-8');
+  }
+
+  return {
+    archived: totalArchived,
+    kept: fresh.length,
+    archiveFile: lastArchiveFile,
+  };
+}
