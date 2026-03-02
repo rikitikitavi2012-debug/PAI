@@ -965,15 +965,15 @@
   },
   "counts": {
     "skills": 11,
-    "workflows": 158,
-    "hooks": 27,
+    "workflows": 160,
+    "hooks": 29,
     "signals": 49,
     "files": 109,
-    "work": 52,
-    "sessions": 88,
+    "work": 53,
+    "sessions": 108,
     "research": 7,
-    "ratings": 92,
-    "updatedAt": "2026-03-02T16:03:43.314Z"
+    "ratings": 93,
+    "updatedAt": "2026-03-02T17:10:22.856Z"
   },
   "mcpServers": {
     "supabase": {

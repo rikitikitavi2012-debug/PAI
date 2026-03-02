@@ -36,6 +36,7 @@ import { getLearningCategory } from './lib/learning-utils';
 import { getISOTimestamp, getPSTComponents } from './lib/time';
 import { captureFailure } from '../PAI/Tools/FailureCapture';
 import { appendEvent } from './lib/event-emitter';
+import { getPaiDir } from './lib/paths';
 
 
 // ── Shared Types ──
@@ -61,7 +62,7 @@ interface RatingEntry {
 
 // ── Shared Constants ──
 
-const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
+const BASE_DIR = getPaiDir();
 const SIGNALS_DIR = join(BASE_DIR, 'MEMORY', 'LEARNING', 'SIGNALS');
 const RATINGS_FILE = join(SIGNALS_DIR, 'ratings.jsonl');
 const LAST_RESPONSE_CACHE = join(BASE_DIR, 'MEMORY', 'STATE', 'last-response.txt');

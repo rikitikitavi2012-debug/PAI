@@ -11,8 +11,9 @@
 import { appendFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import type { EventInput, PAIEvent } from './event-types';
+import { getPaiDir } from './paths';
 
-const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
+const BASE_DIR = getPaiDir();
 const EVENTS_PATH = join(BASE_DIR, 'MEMORY', 'STATE', 'events.jsonl');
 
 /**

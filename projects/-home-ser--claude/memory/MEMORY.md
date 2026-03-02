@@ -9,14 +9,14 @@
 
 ## Architecture (v4.0.3)
 - 3-layer mode classification: ModeClassifier hook (regex) -> Complexity Gate (LLM) -> Algorithm file
-- Hooks: 28 active, all defensive/fail-open, ALL must have chmod +x
+- Hooks: 29 files (.hook.ts), 23 registered in settings.json, all defensive/fail-open, ALL must have chmod +x
 - Memory: MEMORY/ (LEARNING, WISDOM, RELATIONSHIP, WORK, STATE, SECURITY)
 - TELOS: PAI/USER/TELOS/ — 23 файла (MISSION, GOALS, CHALLENGES, STRATEGIES, BELIEFS, MODELS, NARRATIVES, PROJECTS, IDEAS, PREDICTIONS, STATUS, WISDOM, FRAMES, BOOKS, MOVIES, LEARNED, TRAUMAS, WRONG, PROBLEMS, README, updates). TELOS.md — только index/шаблон, данные в отдельных файлах!
 - Context: loadAtStartup (3 files) + CONTEXT_ROUTING.md (on-demand)
 - API keys: ~/.config/PAI/.env (symlinked from ~/.claude/.env)
 - Security: patterns.yaml in PAI/USER/PAISECURITYSYSTEM/ (REQUIRED for SecurityValidator)
-- Events: events.jsonl append-only log (26+ events from 4 hook sources)
-- Tests: hooks/tests/ with harness.ts, 61 tests across 9 suites (local), 18 tests for upstream PR
+- Events: events.jsonl append-only log (121+ events from multiple hook sources)
+- Tests: hooks/tests/ with harness.ts, 76 tests across 12 suites (local), 18 tests for upstream PR
 
 ## Known Issues (resolved)
 - ~~Wisdom pipeline disconnected~~ → WisdomSync.hook.ts created, ratings → WISDOM + FRAMES
@@ -33,7 +33,8 @@
 ## Development Patterns (CRITICAL)
 - **Always chmod +x** new .hook.ts files — shell executes them directly via shebang
 - **Always create patterns.yaml** when setting up SecurityValidator — без него система декоративна
-- **Always run `bun test hooks/tests/`** after hook changes — 33 tests verify nervous system
+- **Always run `bun test hooks/tests/`** after hook changes — 76 tests across 12 suites verify nervous system
+- **getPaiDir()** from lib/paths.ts — canonical way to get PAI base dir. 11 hooks migrated (2026-03-02). Only harness.ts and notifications.ts still use direct env access
 
 ## Git & Community (CRITICAL — always follow)
 - **Всегда коммитить** изменения при работе над PAI

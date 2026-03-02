@@ -14,7 +14,6 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | Agent system | `PAI/PAIAGENTSYSTEM.md` |
 | Delegation system | `PAI/THEDELEGATIONSYSTEM.md` |
 | Notification system | `PAI/THENOTIFICATIONSYSTEM.md` |
-| Browser automation | `PAI/BROWSERAUTOMATION.md` |
 | CLI architecture | `PAI/CLIFIRSTARCHITECTURE.md` |
 | Tools reference | `PAI/TOOLS.md` |
 | Actions & pipelines | `PAI/ACTIONS.md`, `PAI/PIPELINES.md` |
@@ -34,8 +33,6 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | Definitions | `PAI/USER/DEFINITIONS.md` |
 | Core content themes | `PAI/USER/CORECONTENT.md` |
 | Productivity system | `PAI/USER/PRODUCTIVITY.md` |
-| Writing style | `PAI/USER/WRITINGSTYLE.md` |
-| Rhetorical style | `PAI/USER/RHETORICALSTYLE.md` |
 
 ## {PRINCIPAL.NAME} — Life Goals (Telos)
 
@@ -50,23 +47,17 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | Wisdom | `PAI/USER/TELOS/WISDOM.md` |
 | Favorite books | `PAI/USER/TELOS/BOOKS.md` |
 | Favorite movies | `PAI/USER/TELOS/MOVIES.md` |
-| Favorite authors | `PAI/USER/TELOS/AUTHORS.md` |
 
 ## {DAIDENTITY.NAME} (DA Identity)
 
 | Topic | Path |
 |-------|------|
 | {DAIDENTITY.NAME} identity & rules | `PAI/USER/DAIDENTITY.md` |
-| {DAIDENTITY.NAME} writing style | `PAI/USER/DAWRITINGSTYLE.md` |
-| Our relationship | `PAI/USER/OUR_STORY.md` |
 
 ## {PRINCIPAL.NAME} — Work
 
 | Topic | Path |
 |-------|------|
-| Feed system | `PAI/USER/FEED.md` |
 | Projects | `PAI/USER/PROJECTS/PROJECTS.md` |
 | Business context | `PAI/USER/BUSINESS/` |
-| Health data | `PAI/USER/HEALTH/` |
-| Financial context | `PAI/USER/FINANCES/` |
 | All USER context index | `PAI/USER/README.md` |

@@ -24,6 +24,7 @@ import { existsSync, readFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { getIdentity, getPrincipal, getVoiceId } from './lib/identity';
 import { appendEvent } from './lib/event-emitter';
+import { getPaiDir } from './lib/paths';
 
 interface SessionStartInput {
   session_id: string;
@@ -53,7 +54,7 @@ async function main() {
   console.error(`[PostCompactRecovery] Post-compaction recovery at ${timestamp}`);
 
   // Read PreCompact snapshot if available
-  const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
+  const BASE_DIR = getPaiDir();
   const snapshotPath = join(BASE_DIR, 'MEMORY', 'STATE', `pre-compact-snapshot-${input.session_id}.json`);
   let dynamicContext = '';
 

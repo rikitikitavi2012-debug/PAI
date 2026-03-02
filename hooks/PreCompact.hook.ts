@@ -23,8 +23,9 @@
 import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { appendEvent } from './lib/event-emitter';
+import { getPaiDir } from './lib/paths';
 
-const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
+const BASE_DIR = getPaiDir();
 const STATE_DIR = join(BASE_DIR, 'MEMORY', 'STATE');
 const ALGORITHMS_DIR = join(STATE_DIR, 'algorithms');
 const WORK_DIR = join(BASE_DIR, 'MEMORY', 'WORK');
