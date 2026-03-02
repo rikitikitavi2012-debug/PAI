@@ -53,6 +53,7 @@ import { writeFileSync, existsSync, readFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { getISOTimestamp, getPSTDate } from './lib/time';
 import { getLearningCategory } from './lib/learning-utils';
+import { appendEvent } from './lib/event-emitter';
 
 const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
 const MEMORY_DIR = join(BASE_DIR, 'MEMORY');
@@ -358,6 +359,7 @@ async function main() {
 
     if (hasSignificantWork) {
       writeLearning(workMeta, idealContent);
+      appendEvent({ type: 'learning.captured', source: 'WorkCompletionLearning', category: getLearningCategory(workMeta.title), slug: currentWork.session_dir });
     } else {
       console.error('[WorkCompletionLearning] Trivial work session, skipping learning capture');
     }

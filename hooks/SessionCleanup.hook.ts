@@ -37,6 +37,7 @@ import { writeFileSync, existsSync, readFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { getISOTimestamp } from './lib/time';
 import { setTabState, cleanupKittySession } from './lib/tab-setter';
+import { appendEvent } from './lib/event-emitter';
 
 const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME!, '.claude');
 const MEMORY_DIR = join(BASE_DIR, 'MEMORY');
@@ -112,6 +113,7 @@ function clearSessionWork(sessionId?: string): void {
       }
 
       if (marked) {
+        appendEvent({ type: 'work.completed', source: 'SessionCleanup', slug: currentWork.session_dir });
         console.error(`[SessionCleanup] Marked work directory as COMPLETED: ${currentWork.session_dir}`);
       }
     }
@@ -177,6 +179,7 @@ async function main() {
       console.error(`[SessionCleanup] Cleaned up kitty session: ${sessionId}`);
     }
 
+    appendEvent({ type: 'session.completed', source: 'SessionCleanup', work_slug: undefined });
     console.error('[SessionCleanup] Session ended, work marked complete');
     process.exit(0);
   } catch (error) {

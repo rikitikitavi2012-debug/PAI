@@ -35,6 +35,7 @@ import { getIdentity, getPrincipal, getPrincipalName } from './lib/identity';
 import { getLearningCategory } from './lib/learning-utils';
 import { getISOTimestamp, getPSTComponents } from './lib/time';
 import { captureFailure } from '../PAI/Tools/FailureCapture';
+import { appendEvent } from './lib/event-emitter';
 
 
 // ── Shared Types ──
@@ -390,6 +391,7 @@ async function main() {
       if (cachedResponse) entry.response_preview = cachedResponse.slice(0, 500);
 
       writeRating(entry);
+      appendEvent({ type: 'rating.captured', source: 'RatingCapture', rating: explicitResult.rating, rating_source: 'explicit', summary: explicitResult.comment });
 
       if (explicitResult.rating < 5) {
         // Read cached last response (written by LastResponseCache.hook.ts on previous Stop event)
@@ -464,6 +466,7 @@ async function main() {
           confidence: 0.95,
           ...(cachedResponse ? { response_preview: cachedResponse.slice(0, 500) } : {}),
         });
+        appendEvent({ type: 'rating.captured', source: 'RatingCapture', rating: 8, rating_source: 'implicit', confidence: 0.95, summary: `Direct praise: "${prompt.trim()}"` });
           process.exit(0);
       }
     }
@@ -504,6 +507,7 @@ async function main() {
       if (implicitCachedResponse) entry.response_preview = implicitCachedResponse.slice(0, 500);
 
       writeRating(entry);
+      appendEvent({ type: 'rating.captured', source: 'RatingCapture', rating: sentiment.rating, rating_source: 'implicit', confidence: sentiment.confidence, summary: sentiment.summary });
 
       if (sentiment.rating < 5) {
         captureLowRatingLearning(

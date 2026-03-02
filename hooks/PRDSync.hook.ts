@@ -19,6 +19,7 @@ import {
 } from './lib/prd-utils';
 import { setPhaseTab } from './lib/tab-setter';
 import type { AlgorithmTabPhase } from './lib/tab-constants';
+import { appendEvent } from './lib/event-emitter';
 
 let input: any;
 try {
@@ -57,6 +58,7 @@ async function main() {
 
   // Sync frontmatter + criteria to work.json (pass session_id for session name lookup)
   syncToWorkJson(fm, prdPath, content, input.session_id);
+  appendEvent({ type: 'prd.synced', source: 'PRDSync', slug: fm.slug || '', phase: fm.phase, progress: fm.progress });
 
   // Update tab color when algorithm phase changes
   const VALID_PHASES = new Set(['OBSERVE', 'THINK', 'PLAN', 'BUILD', 'EXECUTE', 'VERIFY', 'LEARN', 'COMPLETE']);
