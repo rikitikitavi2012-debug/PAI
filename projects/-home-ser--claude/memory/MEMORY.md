@@ -16,7 +16,8 @@
 - API keys: ~/.config/PAI/.env (symlinked from ~/.claude/.env)
 - Security: patterns.yaml in PAI/USER/PAISECURITYSYSTEM/ (REQUIRED for SecurityValidator)
 - Events: events.jsonl append-only log (270+ events, 12 types). Consumer: `bun PAI/Tools/EventStats.ts` (types/daily/sources/recent/overview). PRDSync has change detection — only emits on real structural changes (phase/progress/task/effort/criteria)
-- Tests: hooks/tests/ with harness.ts, 84 tests across 13 suites (local), 18 tests for upstream PR
+- Inference: 5 providers via `bun PAI/Tools/Inference.ts --level <fast|standard|smart|gemini|glm5>` (3 companies: Anthropic, Google, Zhipu AI)
+- Tests: hooks/tests/ with harness.ts, 146 tests across 32 suites (84 original + 52 from Jules + 10 EventRotation)
 
 ## Known Issues (resolved)
 - ~~Wisdom pipeline disconnected~~ → WisdomSync.hook.ts created, ratings → WISDOM + FRAMES
@@ -34,7 +35,7 @@
 ## Development Patterns (CRITICAL)
 - **Always chmod +x** new .hook.ts files — shell executes them directly via shebang
 - **Always create patterns.yaml** when setting up SecurityValidator — без него система декоративна
-- **Always run `bun test hooks/tests/`** after hook changes — 84 tests across 13 suites verify nervous system
+- **Always run `bun test hooks/tests/`** after hook changes — 146 tests across 32 suites verify nervous system
 - **getPaiDir()** from lib/paths.ts — canonical way to get PAI base dir. 11 hooks migrated (2026-03-02). Only harness.ts and notifications.ts still use direct env access
 - **WorktreeCreate/Remove — FUNCTIONAL hooks** (не notification!). WorktreeCreate ЗАМЕНЯЕТ встроенный git worktree add. ОБЯЗАН: создать worktree + вывести путь на stdout. Пустой stdout = agent spawn failure. Починено 2026-03-02 (d376658)
 - **Pure event-only hooks → EventLogger**: Хуки которые ТОЛЬКО логируют в events.jsonl должны быть handlers в EventLogger.hook.ts, а не отдельные файлы. Routing table pattern: HANDLERS[hook_event_name] → handler function
@@ -73,6 +74,7 @@
 - **Директория ≠ один файл**: перед выводом о состоянии директории — ВСЕГДА `ls` сначала. TELOS.md — шаблон, данные в 22 файлах рядом
 - **Негативные выводы агентов перепроверять**: "X пустой/отсутствует/не работает" — проверить лично перед передачей Ivan
 - **Миграции фиксировать в памяти**: v3→v4 миграция TELOS (commit 74bb626) не была записана → новая сессия не знала
+- **Agent Zero research = 10min timeout**: Research tasks with browser+search take 2-5min. Default 5min timeout too short. Increased to 10min (600000ms)
 
 ## Gemini CLI (Google's Claude Code analog)
 - **Installed**: v0.31.0, path: ~/.npm-global/bin/gemini
@@ -81,6 +83,37 @@
 - **Jules extension**: gemini-cli-jules v0.1.0 installed, MCP server for Jules integration
 - **Config**: ~/.gemini/ (settings, extensions, projects)
 - **Use cases**: Alternative coding agent, Jules integration via CLI, parallel with Claude Code
+
+## Z.AI / GLM-5 (Zhipu AI — 智谱AI)
+- **Company**: Zhipu AI, Beijing. IPO Jan 2026 (HK: 02513), $6.8B valuation. Chinese jurisdiction = NO geo-blocks for Russia
+- **GLM-5**: 744B MoE, 77.8% SWE-bench, 200K context, MIT license. Released 2026-02-11
+- **Subscription**: Coding plan (middle tier), user ID: 24561766597642761
+- **API Key**: ZAI_API_KEY in ~/.config/PAI/.env. Env var Z_AI_API_KEY exported in .bashrc
+- **Coding endpoint**: `https://api.z.ai/api/coding/paas/v4/chat/completions` (subscription). Regular endpoint (api/paas/v4/) requires token balance — will return error 1113
+- **Inference**: `bun PAI/Tools/Inference.ts --level glm5` — 5th provider, native fetch (no CLI needed, no proxy needed)
+- **Response format**: `reasoning_content` (thinking) + `content` (answer). Need max_tokens≥1000 for content
+- **zai-cli**: v1.1.0 installed globally. Commands: vision, search, read, repo, tools, call, doctor, code
+- **MCP tools**: 13 total — vision (8: analyze_image, extract_text, diagnose_error, ui_diff, etc.), search (1: webSearchPrime), reader (1: webReader), zread (3: search_doc, read_file, get_repo_structure)
+- **MCP in Claude Code**: zai-vision MCP server added in settings.json (stdio via npx @z_ai/mcp-server@latest)
+- **Anthropic-compatible endpoint**: `https://api.z.ai/api/anthropic` — strategic backup if Anthropic blocks Russia
+- **Strategic value**: 3rd AI provider (Anthropic + Google + Zhipu). Direct access from Russia = geo-block resilience
+
+## Agent Zero (Autonomous AI Agent on VPS)
+- **Server**: http://72.56.86.51:50002 (container 2 — primary brain)
+- **Auth**: A0_API_TOKEN in ~/.config/PAI/.env, used as X-API-KEY header
+- **LLM**: claude-sonnet-4-6 (Anthropic), agent0 profile
+- **CLI tool**: `bun PAI/Tools/AgentZero.ts` (message|async|log|terminate|health|scheduler)
+- **REST API**: `/api_message` (sync, blocks 5min), `/message_async` (fire-forget), `/api_log_get`, `/api_terminate_chat`
+- **Scheduler**: CSRF-protected (web UI only), `/scheduler_tasks_list` needs web session
+- **Skills (9)**: a0-deployer, chart-architect, doc-forge, exa-synergy, ops-commander, replicate-studio, telos, the-algorithm, create-skill
+- **Tools (14)**: code_execution_tool, browser_agent, call_subordinate, search_engine, document_query, vision_load, memory_*, behaviour_adjustment, response, input, wait, notify_user, a2a_chat, scheduler:*
+- **Scheduled tasks**: ULC Context Summary (daily 06:00 MSK), TELOS Update (adhoc)
+- **MCP**: SSE endpoint configured in settings.json, WORKING after Ivan enabled in A0 UI (tools: send_message, finish_chat)
+- **A2A**: Agent card works (/.well-known/agent.json), task submission returns 500
+- **Fork repos**: agent-zero-custom (private), agent-zero-skills (public, 5 skills)
+- **Containers**: 1=backup old version, 2=primary brain (50002), 3=planned construction orchestrator
+- **Best for**: Deep research, code execution, browser tasks, document generation, DevOps, scheduled maintenance
+- **NOT for**: Real-time interactive work (22s latency), settings changes (CSRF), sensitive PAI config
 
 ## Session Patterns
 - Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10)

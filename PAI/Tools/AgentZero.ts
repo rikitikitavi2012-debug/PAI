@@ -56,7 +56,7 @@ function loadConfig(): A0Config {
   };
 }
 
-async function apiCall(path: string, body?: object, timeout = 300000): Promise<any> {
+async function apiCall(path: string, body?: object, timeout = 600000): Promise<any> {
   const config = loadConfig();
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
