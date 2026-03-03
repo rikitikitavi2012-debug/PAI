@@ -134,21 +134,37 @@ exit 1
     expect(result.status).toBe('mocked claude json');
   });
 
-  it('resolves gemini level correctly', async () => {
-    const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'gemini', 'sys', 'gemini test'], {
-      stdout: 'pipe',
-      stderr: 'pipe',
-      env: {
-        ...process.env,
-        HOME: tempDir,
-      },
+  it('resolves gemini level correctly via direct HTTP API', async () => {
+    // Gemini uses direct fetch to generativelanguage.googleapis.com (not CLI subprocess)
+    const { inference } = require('../../PAI/Tools/Inference.ts');
+
+    const originalFetch = global.fetch;
+    let fetchedUrl = '';
+
+    global.fetch = async (url: any, opts: any) => {
+      fetchedUrl = url;
+      return new Response(JSON.stringify({
+        candidates: [{ content: { parts: [{ text: 'mocked gemini response' }] } }]
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+    };
+
+    const originalHome = process.env.HOME;
+    process.env.HOME = tempDir;
+
+    const result = await inference({
+      systemPrompt: 'sys',
+      userPrompt: 'gemini test',
+      level: 'gemini',
+      expectJson: false,
+      timeout: 5000,
     });
 
-    const stdout = await new Response(proc.stdout).text();
-    await proc.exited;
+    process.env.HOME = originalHome;
+    global.fetch = originalFetch;
 
-    expect(proc.exitCode).toBe(0);
-    expect(stdout.trim()).toBe('mocked gemini response');
+    expect(result.success).toBe(true);
+    expect(result.output).toBe('mocked gemini response');
+    expect(fetchedUrl).toContain('generativelanguage.googleapis.com');
   });
 
   it('handles gemini level error correctly when no API key', async () => {
@@ -194,10 +210,13 @@ exit 1
       }), { status: 200, headers: { 'content-type': 'application/json' } });
     };
 
-    // Ensure our test environment has HOME set so the Inference tool can find the key we created
-    // We already wrote ZAI_API_KEY=mock_zai_key to join(tempDir, '.config', 'PAI', '.env') in beforeAll
+    // Clear real env vars so mock .env is used
     const originalHome = process.env.HOME;
+    const originalZaiKey = process.env.ZAI_API_KEY;
+    const originalZAiKey = process.env.Z_AI_API_KEY;
     process.env.HOME = tempDir;
+    delete process.env.ZAI_API_KEY;
+    delete process.env.Z_AI_API_KEY;
 
     const result = await inference({
       systemPrompt: 'sys',
@@ -208,10 +227,11 @@ exit 1
     });
 
     process.env.HOME = originalHome;
+    if (originalZaiKey) process.env.ZAI_API_KEY = originalZaiKey;
+    if (originalZAiKey) process.env.Z_AI_API_KEY = originalZAiKey;
 
     // Restore fetch
     global.fetch = originalFetch;
-    delete process.env.Z_AI_API_KEY;
 
     expect(result.success).toBe(true);
     expect(result.output).toBe('mocked zai fetch response');

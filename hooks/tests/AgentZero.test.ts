@@ -187,11 +187,7 @@ describe('AgentZero CLI Tool', () => {
     const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'health'], {
       stdout: 'pipe',
       stderr: 'pipe',
-      env: {
-        ...process.env,
-        HOME: tempDir,
-        A0_BASE_URL: mockServerUrl,
-      },
+      env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl, A0_API_TOKEN: '' },
     });
 
     const stdout = await new Response(proc.stdout).text();
@@ -209,11 +205,7 @@ describe('AgentZero CLI Tool', () => {
     const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'message', 'Hello AI', '--context', 'ctx-old'], {
       stdout: 'pipe',
       stderr: 'pipe',
-      env: {
-        ...process.env,
-        HOME: tempDir,
-        A0_BASE_URL: mockServerUrl,
-      },
+      env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl, A0_API_TOKEN: 'mock_token_123' },
     });
 
     const stdout = await new Response(proc.stdout).text();
@@ -239,11 +231,7 @@ describe('AgentZero CLI Tool', () => {
     const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'async', 'Long job'], {
       stdout: 'pipe',
       stderr: 'pipe',
-      env: {
-        ...process.env,
-        HOME: tempDir,
-        A0_BASE_URL: mockServerUrl,
-      },
+      env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl, A0_API_TOKEN: '' },
     });
 
     const stdout = await new Response(proc.stdout).text();
@@ -265,11 +253,7 @@ describe('AgentZero CLI Tool', () => {
     const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'log', 'ctx-99', '50'], {
       stdout: 'pipe',
       stderr: 'pipe',
-      env: {
-        ...process.env,
-        HOME: tempDir,
-        A0_BASE_URL: mockServerUrl,
-      },
+      env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl, A0_API_TOKEN: '' },
     });
 
     const stdout = await new Response(proc.stdout).text();
@@ -288,11 +272,7 @@ describe('AgentZero CLI Tool', () => {
     const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'terminate', 'ctx-99'], {
       stdout: 'pipe',
       stderr: 'pipe',
-      env: {
-        ...process.env,
-        HOME: tempDir,
-        A0_BASE_URL: mockServerUrl,
-      },
+      env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl, A0_API_TOKEN: '' },
     });
 
     const stdout = await new Response(proc.stdout).text();
