@@ -1,0 +1,68 @@
+{
+  "lastCheck": "2026-03-03T10:43:14.272Z",
+  "processedSessions": [
+    {
+      "sessionId": "sessions/8584917624898497977",
+      "prNumber": 6,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/6",
+      "result": "failed_merge",
+      "processedAt": "2026-03-03T02:42:09.848Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/3933133749775595210",
+      "prNumber": 3,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI/pull/3",
+      "result": "merged",
+      "processedAt": "2026-03-03T10:09:31.000Z",
+      "repo": "rikitikitavi2012-debug/PAI"
+    },
+    {
+      "sessionId": "sessions/7014975337557853207",
+      "prNumber": 2,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI/pull/2",
+      "result": "failed_tests",
+      "processedAt": "2026-03-03T03:08:44.340Z",
+      "repo": "rikitikitavi2012-debug/PAI",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)"
+    },
+    {
+      "sessionId": "sessions/13220784112206981504",
+      "prNumber": 2,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI/pull/2",
+      "result": "skipped",
+      "processedAt": "2026-03-03T03:11:36.848Z",
+      "repo": "rikitikitavi2012-debug/PAI"
+    },
+    {
+      "sessionId": "sessions/2994186955539573608",
+      "prNumber": 3,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI/pull/3",
+      "result": "skipped",
+      "processedAt": "2026-03-03T03:11:54.528Z",
+      "repo": "rikitikitavi2012-debug/PAI"
+    },
+    {
+      "sessionId": "sessions/13533968641968472418",
+      "prNumber": 7,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/7",
+      "result": "merged",
+      "processedAt": "2026-03-03T10:10:10.000Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal"
+    },
+    {
+      "sessionId": "sessions/16614594753528931688",
+      "prNumber": 8,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/8",
+      "result": "merged",
+      "processedAt": "2026-03-03T10:46:33.000Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal"
+    }
+  ],
+  "stats": {
+    "totalMerged": 3,
+    "totalFailed": 2,
+    "totalSkipped": 2
+  }
+}

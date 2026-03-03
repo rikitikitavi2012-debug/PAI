@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-03-03T10:53:57.272Z",
+  "checks": [
+    {
+      "service": "AgentZero",
+      "status": "up",
+      "latencyMs": 7599,
+      "detail": "Response: OK",
+      "timestamp": "2026-03-03T10:53:57.272Z"
+    },
+    {
+      "service": "VoiceServer",
+      "status": "up",
+      "latencyMs": 2922,
+      "detail": "HTTP 200",
+      "timestamp": "2026-03-03T10:53:52.596Z"
+    },
+    {
+      "service": "GitHubCLI",
+      "status": "up",
+      "latencyMs": 2921,
+      "detail": "github.com",
+      "timestamp": "2026-03-03T10:53:52.595Z"
+    }
+  ],
+  "allHealthy": true
+}

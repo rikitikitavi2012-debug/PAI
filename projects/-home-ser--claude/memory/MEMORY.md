@@ -17,7 +17,8 @@
 - Security: patterns.yaml in PAI/USER/PAISECURITYSYSTEM/ (REQUIRED for SecurityValidator)
 - Events: events.jsonl append-only log (270+ events, 12 types). Consumer: `bun PAI/Tools/EventStats.ts` (types/daily/sources/recent/overview). PRDSync has change detection — only emits on real structural changes (phase/progress/task/effort/criteria)
 - Inference: 5 providers via `bun PAI/Tools/Inference.ts --level <fast|standard|smart|gemini|glm5>` (3 companies: Anthropic, Google, Zhipu AI)
-- Tests: hooks/tests/ with harness.ts, 146 tests across 32 suites (84 original + 52 from Jules + 10 EventRotation)
+- Tests: hooks/tests/ with harness.ts, 171 tests across 34 suites (84 original + 52 from Jules batch 1-3 + 17 tool tests + 8 PR#6 + 10 EventRotation)
+- JulesAutoMerge: `bun PAI/Tools/JulesAutoMerge.ts check|merge|status` — auto-tests in worktree, merges passing PRs
 
 ## Known Issues (resolved)
 - ~~Wisdom pipeline disconnected~~ → WisdomSync.hook.ts created, ratings → WISDOM + FRAMES
@@ -35,7 +36,7 @@
 ## Development Patterns (CRITICAL)
 - **Always chmod +x** new .hook.ts files — shell executes them directly via shebang
 - **Always create patterns.yaml** when setting up SecurityValidator — без него система декоративна
-- **Always run `bun test hooks/tests/`** after hook changes — 146 tests across 32 suites verify nervous system
+- **Always run `bun test hooks/tests/`** after hook changes — 171 tests across 34 suites verify nervous system
 - **getPaiDir()** from lib/paths.ts — canonical way to get PAI base dir. 11 hooks migrated (2026-03-02). Only harness.ts and notifications.ts still use direct env access
 - **WorktreeCreate/Remove — FUNCTIONAL hooks** (не notification!). WorktreeCreate ЗАМЕНЯЕТ встроенный git worktree add. ОБЯЗАН: создать worktree + вывести путь на stdout. Пустой stdout = agent spawn failure. Починено 2026-03-02 (d376658)
 - **Pure event-only hooks → EventLogger**: Хуки которые ТОЛЬКО логируют в events.jsonl должны быть handlers в EventLogger.hook.ts, а не отдельные файлы. Routing table pattern: HANDLERS[hook_event_name] → handler function
@@ -52,7 +53,9 @@
 - **Best for**: Writing tests (18 hooks uncovered), dependency updates, TODO resolution, security/performance scans
 - **NOT for**: Architecture, complex refactoring, MEMORY/USER files, settings.json, .env
 - **PR management**: `gh pr list/diff/merge --repo rikitikitavi2012-debug/PAI-personal`
-- **Can use on ANY repo**: Change JULES_REPO env var or specify repo in API call
+- **Can use on ANY repo**: `JULES_REPO=sources/github/rikitikitavi2012-debug/REPO JULES_BRANCH=main bun JulesAPI.ts create "prompt"` (full source path required!)
+- **JulesAutoMerge**: `bun PAI/Tools/JulesAutoMerge.ts check|merge|status` — tests → A0 review → merge. isProcessed() only skips merged/skipped, failed_* are retryable
+- **HealthMonitor**: `bun PAI/Tools/HealthMonitor.ts` — checks A0, VoiceServer, gh CLI → MEMORY/STATE/health-report.json
 
 ## Git & Community (CRITICAL — always follow)
 - **Всегда коммитить** изменения при работе над PAI
@@ -69,12 +72,18 @@
 - **PR #859**: feat/hook-test-harness — Test harness + patterns.example.yaml (OPEN)
 - **PR #860**: fix/rating-false-positives — RatingCapture prompt fix, closes #842 (OPEN)
 - **PR #861**: fix/algorithm-stoploop-regex — stopLoop guard + regex escaping (OPEN)
+- **PR #3 (fork)**: docs: fix dead references — MERGED (2026-03-03, Jules created)
+- **PR #7 (private)**: JulesAutoMerge tests — MERGED (2026-03-03, Jules created)
 
 ## Lessons Learned (CRITICAL)
 - **Директория ≠ один файл**: перед выводом о состоянии директории — ВСЕГДА `ls` сначала. TELOS.md — шаблон, данные в 22 файлах рядом
 - **Негативные выводы агентов перепроверять**: "X пустой/отсутствует/не работает" — проверить лично перед передачей Ivan
 - **Миграции фиксировать в памяти**: v3→v4 миграция TELOS (commit 74bb626) не была записана → новая сессия не знала
 - **Agent Zero research = 10min timeout**: Research tasks with browser+search take 2-5min. Default 5min timeout too short. Increased to 10min (600000ms)
+- **JulesAutoMerge outputs[] bug**: Jules API returns PR in outputs[1] (not [0]). outputs[0]=changeSet, outputs[1]=pullRequest. Always search all outputs.
+- **Jules creates PRs as user**: Author is user account (rikitikitavi2012-debug), NOT app/jules-google. Don't filter by author.
+- **gh pr merge --admin**: Required for PAI-personal repo (personal access token lacks merge permissions without --admin)
+- **A0 Integration plan**: MEMORY/RESEARCH/2026-03/agent-zero-integration-plan.md — 5 coding integrations ranked by ROI
 
 ## Gemini CLI (Google's Claude Code analog)
 - **Installed**: v0.31.0, path: ~/.npm-global/bin/gemini
@@ -112,7 +121,10 @@
 - **A2A**: Agent card works (/.well-known/agent.json), task submission returns 500
 - **Fork repos**: agent-zero-custom (private), agent-zero-skills (public, 5 skills)
 - **Containers**: 1=backup old version, 2=primary brain (50002), 3=planned construction orchestrator
-- **Best for**: Deep research, code execution, browser tasks, document generation, DevOps, scheduled maintenance
+- **Cost model**: Оплата по API вызовам (НЕ подписка). Можно поставить Coding Plan API key для экономии. Контролировать расходы!
+- **GitHub token**: У A0 есть свой GitHub token — может читать PR diffs, repo structure напрямую
+- **JulesAutoMerge A0 review**: Встроен — после тестов A0 ревьюит diff (16.9с, 4 issues found in test). HIGH severity блокирует merge. Если A0 unreachable — proceed (fail-open)
+- **Best for**: Deep research, code execution, browser tasks, document generation, DevOps, scheduled maintenance, code review
 - **NOT for**: Real-time interactive work (22s latency), settings changes (CSRF), sensitive PAI config
 
 ## Session Patterns

@@ -1,0 +1,11 @@
+id: "20260303-125305_ai-brigade-pai"
+title: "AI Brigade   PAI"
+session_id: "858bbfee-5f81-4e27-a6f7-8b99c70cf954"
+created_at: "2026-03-03T12:53:05+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -123,7 +123,7 @@ export function saveState(state: AutoMergeState): void {
 }
 
 export function isProcessed(state: AutoMergeState, sessionId: string): boolean {
-  return state.processedSessions.some(s => s.sessionId === sessionId);
+  return state.processedSessions.some(s => s.sessionId === sessionId && (s.result === 'merged' || s.result === 'skipped'));
 }
 
 // ── Jules API ──
