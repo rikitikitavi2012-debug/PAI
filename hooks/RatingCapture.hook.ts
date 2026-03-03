@@ -37,7 +37,7 @@ import { getISOTimestamp, getPSTComponents } from './lib/time';
 import { captureFailure } from '../PAI/Tools/FailureCapture';
 import { appendEvent } from './lib/event-emitter';
 import { getPaiDir } from './lib/paths';
-
+import { loadRatingVocabulary } from '../PAI/lib/vocabulary-loader';
 
 // ── Shared Types ──
 
@@ -454,15 +454,10 @@ async function main() {
 
     // BUG FIX: Positive word fast-path — short praise gets rating 8 directly
     // Prevents inference timeout from dropping positive signals (the "Excellent!" bug)
-    const POSITIVE_PRAISE_WORDS = new Set([
-      'excellent', 'amazing', 'brilliant', 'fantastic', 'wonderful', 'beautiful',
-      'incredible', 'awesome', 'perfect', 'great', 'nice', 'superb', 'outstanding',
-      'magnificent', 'stellar', 'phenomenal', 'remarkable', 'terrific', 'splendid',
-    ]);
-    const POSITIVE_PHRASES = new Set([
-      'great job', 'good job', 'nice work', 'well done', 'nice job', 'good work',
-      'love it', 'nailed it', 'looks great', 'looks good', 'thats great', 'that works',
-    ]);
+    const ratingVocab = await loadRatingVocabulary();
+    const POSITIVE_PRAISE_WORDS = new Set(ratingVocab.positive_praise_words);
+    const POSITIVE_PHRASES = new Set(ratingVocab.positive_phrases);
+
     const normalizedPrompt = prompt.trim().toLowerCase().replace(/[.!?,'"]/g, '');
     const promptWords = normalizedPrompt.split(/\s+/);
     if (promptWords.length <= 2) {

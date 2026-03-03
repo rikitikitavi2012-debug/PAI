@@ -26,32 +26,11 @@ import { join } from 'path';
 import { setPhaseTab } from './lib/tab-setter';
 import { getVoiceId, getAlgorithmVoice } from './lib/identity';
 import { getPaiDir } from './lib/paths';
+import { loadAlgorithmPhases, AlgorithmPhasesConfig } from '../PAI/lib/vocabulary-loader';
 
 // ── Phase Detection from Voice Curls ──
 
-const PHASE_MAP: Record<string, AlgorithmPhase> = {
-  // English patterns (legacy / future use)
-  'entering the observe phase': 'OBSERVE',
-  'entering the think phase': 'THINK',
-  'entering the plan phase': 'PLAN',
-  'entering the build phase': 'BUILD',
-  'entering the execute phase': 'EXECUTE',
-  'entering the verify phase': 'VERIFY',
-  'entering the learn phase': 'LEARN',
-  'entering the verify phase.': 'VERIFY',
-  // Russian patterns (current Algorithm template)
-  'вхожу в фазу наблюдения': 'OBSERVE',
-  'вхожу в фазу мышления': 'THINK',
-  'вхожу в фазу планирования': 'PLAN',
-  'вхожу в фазу сборки': 'BUILD',
-  'вхожу в фазу выполнения': 'EXECUTE',
-  'вхожу в фазу проверки': 'VERIFY',
-  'вхожу в фазу обучения': 'LEARN',
-};
-
-const ALGORITHM_ENTRY = 'entering the pai algorithm';
-
-function detectPhaseFromBash(command: string): { phase: AlgorithmPhase | null; isAlgorithmEntry: boolean } {
+function detectPhaseFromBash(command: string, config: AlgorithmPhasesConfig): { phase: AlgorithmPhase | null; isAlgorithmEntry: boolean } {
   // Only match voice notification curls to localhost:8888
   if (!command.includes('localhost:8888') || !command.includes('/notify')) {
     return { phase: null, isAlgorithmEntry: false };
@@ -64,14 +43,16 @@ function detectPhaseFromBash(command: string): { phase: AlgorithmPhase | null; i
   const message = messageMatch[1].toLowerCase();
 
   // Check for algorithm entry
-  if (message.includes(ALGORITHM_ENTRY)) {
+  if (message.includes(config.algorithm_entry)) {
     return { phase: null, isAlgorithmEntry: true };
   }
 
   // Check for phase transitions
-  for (const [pattern, phase] of Object.entries(PHASE_MAP)) {
-    if (message.includes(pattern)) {
-      return { phase, isAlgorithmEntry: false };
+  for (const [phase, data] of Object.entries(config.phases)) {
+    if (message.includes(data.english) ||
+        message.includes(data.russian) ||
+        (data.english_alt && message.includes(data.english_alt))) {
+      return { phase: phase as AlgorithmPhase, isAlgorithmEntry: false };
     }
   }
 
@@ -172,7 +153,8 @@ async function main() {
 
   // ── 1. Bash → Phase detection from voice curls ──
   if (tool_name === 'Bash' && tool_input?.command) {
-    const { phase, isAlgorithmEntry } = detectPhaseFromBash(tool_input.command);
+    const phasesConfig = await loadAlgorithmPhases();
+    const { phase, isAlgorithmEntry } = detectPhaseFromBash(tool_input.command, phasesConfig);
 
     if (isAlgorithmEntry) {
       ensureSessionActive(session_id);
