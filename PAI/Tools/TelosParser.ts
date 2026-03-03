@@ -101,6 +101,22 @@ interface Win {
   linked: string;
 }
 
+interface WisdomQuote {
+  id: string;
+  text: string;
+  source: string;
+}
+
+interface LearningMeta {
+  wisdomQuotes: WisdomQuote[];
+  beliefsCount: number;
+  ideasCount: number;
+  lessonsCount: number;
+  sessionsWeek: number;
+  performanceRating: { current: number; weekAvg: number; trend: "up" | "down" | "flat" };
+  wisdomFramesCount: number;
+}
+
 interface SystemHealth {
   hookCount: number;
   testCount: number;
@@ -125,6 +141,7 @@ interface TelosState {
     recentWins: Win[];
   };
   system: SystemHealth;
+  learning: LearningMeta;
 }
 
 // ── Safe file reader ──
@@ -555,6 +572,112 @@ function collectSystemHealth(): SystemHealth {
   return { hookCount, testCount, eventCount24h, eventCount7d, automerge };
 }
 
+// ── Parse wisdom quotes from WISDOM.md ──
+function parseWisdomQuotes(content: string): WisdomQuote[] {
+  if (!content) return [];
+  const quotes: WisdomQuote[] = [];
+  const blocks = content.split(/^### /m).slice(1);
+  for (const block of blocks) {
+    const headerMatch = block.match(/^(W\d+):\s*(.+)/);
+    if (!headerMatch) continue;
+    const id = headerMatch[1];
+    const text = headerMatch[2].trim();
+    const sourceMatch = block.match(/\*\*Источник:\*\*\s*(.+)/);
+    const source = sourceMatch ? sourceMatch[1].trim() : "";
+    quotes.push({ id, text, source });
+  }
+  // Also extract borrowed wisdom quotes (blockquotes)
+  const quoteBlocks = content.match(/^>\s*"(.+?)"/gm) || [];
+  for (let i = 0; i < quoteBlocks.length; i++) {
+    const m = quoteBlocks[i].match(/^>\s*"(.+?)"/);
+    if (m) quotes.push({ id: `Q${i}`, text: m[1], source: "borrowed" });
+  }
+  return quotes;
+}
+
+// ── Count items by header pattern ──
+function countByPattern(content: string, pattern: RegExp): number {
+  if (!content) return 0;
+  return (content.match(pattern) || []).length;
+}
+
+// ── Collect learning meta from MEMORY ──
+function collectLearningMeta(): LearningMeta {
+  const wisdomContent = readFile(join(TELOS_DIR, "WISDOM.md"));
+  const wisdomQuotes = parseWisdomQuotes(wisdomContent);
+
+  const beliefsContent = readFile(join(TELOS_DIR, "BELIEFS.md"));
+  const beliefsCount = countByPattern(beliefsContent, /^### B\d+:/gm);
+
+  const ideasContent = readFile(join(TELOS_DIR, "IDEAS.md"));
+  const ideasCount = countByPattern(ideasContent, /^### I\d+:/gm);
+
+  const learnedContent = readFile(join(TELOS_DIR, "LEARNED.md"));
+  // Count bullet points (lessons are bullet items, not headers)
+  const lessonsCount = countByPattern(learnedContent, /^- \*\*/gm);
+
+  // Sessions this week from MEMORY/WORK
+  let sessionsWeek = 0;
+  try {
+    const workDir = join(PAI_DIR, "MEMORY/WORK");
+    const dirs = readdirSync(workDir);
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 86400000);
+    const weekStr = weekAgo.toISOString().slice(0, 10).replace(/-/g, "").slice(0, 8);
+    sessionsWeek = dirs.filter(d => d.slice(0, 8) >= weekStr).length;
+  } catch { /* fail-open */ }
+
+  // Performance rating from ratings.jsonl
+  let performanceRating = { current: 0, weekAvg: 0, trend: "flat" as "up" | "down" | "flat" };
+  try {
+    const ratingsPath = join(PAI_DIR, "MEMORY/LEARNING/SIGNALS/ratings.jsonl");
+    const lines = readFileSync(ratingsPath, "utf-8").trim().split("\n").filter(Boolean);
+    const now = Date.now();
+    const day = 86400000;
+    const ratings7d: number[] = [];
+    const ratings3d: number[] = [];
+    let lastRating = 0;
+
+    for (const line of lines) {
+      try {
+        const evt = JSON.parse(line);
+        const ts = new Date(evt.timestamp).getTime();
+        const rating = evt.rating || 0;
+        lastRating = rating;
+        if (now - ts < 7 * day) ratings7d.push(rating);
+        if (now - ts < 3 * day) ratings3d.push(rating);
+      } catch { /* skip */ }
+    }
+
+    const avg = (arr: number[]) => arr.length > 0 ? Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10) / 10 : 0;
+    const weekAvg = avg(ratings7d);
+    const recentAvg = avg(ratings3d);
+
+    performanceRating = {
+      current: lastRating,
+      weekAvg,
+      trend: recentAvg > weekAvg + 0.5 ? "up" : recentAvg < weekAvg - 0.5 ? "down" : "flat",
+    };
+  } catch { /* fail-open */ }
+
+  // Wisdom frames count
+  let wisdomFramesCount = 0;
+  try {
+    const framesDir = join(PAI_DIR, "MEMORY/WISDOM/FRAMES");
+    wisdomFramesCount = readdirSync(framesDir).filter(f => f.endsWith(".md")).length;
+  } catch { /* fail-open */ }
+
+  return {
+    wisdomQuotes,
+    beliefsCount,
+    ideasCount,
+    lessonsCount,
+    sessionsWeek,
+    performanceRating,
+    wisdomFramesCount,
+  };
+}
+
 // ── Fix strategy effectiveness using goal data ──
 function fixStrategyEffectiveness(strategies: Strategy[], goals: Goal[]): void {
   for (const s of strategies) {
@@ -615,6 +738,7 @@ function main(): void {
   const season = calculateSeason();
   const status = parseStatus(statusContent);
   const system = collectSystemHealth();
+  const learning = collectLearningMeta();
 
   // Compute derived data
   computeMissionProgress(missions, goals);
@@ -631,6 +755,7 @@ function main(): void {
     season,
     status,
     system,
+    learning,
   };
 
   const json = JSON.stringify(state, null, 2);

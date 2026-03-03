@@ -1,7 +1,8 @@
 #!/bin/bash
-# TELOS Dashboard — Strategic Life Overview for Kitty (Tab 7)
+# TELOS Radar — Strategic Life Dashboard for Kitty (Tab 1: 🎯 TELOS)
 # Data: telos-state.json (pre-computed by TelosParser.ts)
-# Refresh: every 60 seconds | r = refresh now | q = quit
+# Architecture: 5-level hierarchy (Actionable → Progress → Reference)
+# Refresh: 300s smart poll (mtime-check) | r = refresh now | q = quit
 
 export PATH="$HOME/.bun/bin:$PATH"
 # shellcheck disable=SC1091
@@ -9,22 +10,23 @@ export PATH="$HOME/.bun/bin:$PATH"
 
 STATE_FILE="$HOME/.claude/MEMORY/STATE/telos-state.json"
 TELOS_PARSER="$HOME/.claude/PAI/Tools/TelosParser.ts"
+TELOS_DIR="$HOME/.claude/PAI/USER/TELOS"
 
-INTERVAL=60
-W=96  # target content width
+INTERVAL=300
+W=100  # target content width
 
-# ── Colors (24-bit RGB — PAI palette, same as brigade-watch.sh) ──
-RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'
+# ── Colors (24-bit RGB — PAI palette) ──
+RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'; ITL='\e[3m'
 GRN='\e[38;2;74;222;128m'
 RED='\e[38;2;251;113;133m'
 YLW='\e[38;2;251;191;36m'
 CYN='\e[38;2;103;232;249m'
 SLT='\e[38;2;148;163;184m'
 SEP='\e[38;2;71;85;105m'
-# BLU='\e[38;2;59;130;246m'
 VIO='\e[38;2;167;139;250m'
 WHT='\e[38;2;203;213;225m'
 ORG='\e[38;2;251;146;60m'
+BLU='\e[38;2;59;130;246m'
 
 # ── Helpers ──
 
@@ -36,31 +38,6 @@ progress_bar() {
   [ "$empty"  -gt 0 ] && printf '%s' "$(printf '░%.0s' $(seq 1 "$empty"))"
 }
 
-# Box drawing helpers
-box_top() {
-  local label="$1" w=${2:-$W}
-  local label_len=${#label}
-  local pad=$(( w - label_len - 4 ))
-  [ "$pad" -lt 1 ] && pad=1
-  printf "%b┌─ %s " "$SEP" "$label"
-  printf '─%.0s' $(seq 1 "$pad")
-  printf "┐%b\n" "$RST"
-}
-
-box_bottom() {
-  local w=$W
-  printf "%b└" "$SEP"
-  printf '─%.0s' $(seq 1 $(( w - 1 )))
-  printf "┘%b\n" "$RST"
-}
-
-box_line() {
-  # Print a line inside a box, auto-padded to width
-  local content="$1" w=${2:-$W}
-  printf "%b│%b  %s%b\n" "$SEP" "$RST" "$content" "$RST"
-}
-
-# Goal name shortening
 short_goal() {
   local gid="$1"
   case "$gid" in
@@ -77,11 +54,11 @@ short_goal() {
     G10) echo "Аудит скиллов" ;;
     G11) echo "PAI community" ;;
     G12) echo "RU Metrics" ;;
+    G13) echo "Хим. чист." ;;
     *)   echo "$gid" ;;
   esac
 }
 
-# Status emoji for goals
 goal_emoji() {
   local status="$1"
   case "$status" in
@@ -94,20 +71,6 @@ goal_emoji() {
   esac
 }
 
-# Goal status sort key (lower = higher priority)
-goal_sort_key() {
-  local status="$1" progress="$2"
-  case "$status" in
-    *"Активна"*|*"активная"*|*"непрерывная"*) printf "%03d" $(( 100 - progress )) ;;
-    *"К действию"*)                             printf "1%03d" $(( 100 - progress )) ;;
-    *"Планирование"*)                           printf "2%03d" $(( 100 - progress )) ;;
-    *"Заморожено"*)                              printf "3%03d" $(( 100 - progress )) ;;
-    *"Идея"*)                                    printf "4%03d" $(( 100 - progress )) ;;
-    *)                                           printf "5%03d" $(( 100 - progress )) ;;
-  esac
-}
-
-# Severity color for challenges
 severity_icon() {
   case "$1" in
     high)   printf "%b🔴%b" "$RED" "$RST" ;;
@@ -117,17 +80,31 @@ severity_icon() {
   esac
 }
 
-# Effectiveness icon for strategies
 effect_icon() {
   case "$1" in
     working) printf "✅" ;;
     partial) printf "⚡" ;;
-    unknown) printf "⚪" ;;
     *)       printf "⚪" ;;
   esac
 }
 
-# Format amount in thousands
+sphere_icon() {
+  case "$1" in
+    green)  printf "%b●%b" "$GRN" "$RST" ;;
+    yellow) printf "%b●%b" "$YLW" "$RST" ;;
+    red)    printf "%b●%b" "$RED" "$RST" ;;
+    *)      printf "%b●%b" "$SLT" "$RST" ;;
+  esac
+}
+
+trend_arrow() {
+  case "$1" in
+    up)   printf "%b↑%b" "$GRN" "$RST" ;;
+    down) printf "%b↓%b" "$RED" "$RST" ;;
+    *)    printf "%b→%b" "$SLT" "$RST" ;;
+  esac
+}
+
 fmt_k() {
   local amt=${1:-0}
   if [ "$amt" -ge 1000000 ]; then
@@ -139,75 +116,193 @@ fmt_k() {
   fi
 }
 
-# Refresh telos-state.json if older than 5 minutes
+hline() {
+  local w=${1:-$W}
+  printf "%b" "$SEP"
+  printf '─%.0s' $(seq 1 "$w")
+  printf "%b\n" "$RST"
+}
+
+# Track last known mtime of TELOS source files
+LAST_MTIME=0
+
+# Smart refresh: only run TelosParser if source files changed
 maybe_refresh_state() {
   if [ ! -f "$STATE_FILE" ]; then
     timeout 15 bun "$TELOS_PARSER" >/dev/null 2>&1 &
     return
   fi
-  local age now file_mtime
-  now=$(date +%s)
-  file_mtime=$(stat -c %Y "$STATE_FILE" 2>/dev/null || echo "$now")
-  age=$(( now - file_mtime ))
-  if [ "$age" -gt 300 ]; then
+
+  # Check max mtime across all TELOS source files
+  local max_mtime=0
+  for f in "$TELOS_DIR"/*.md; do
+    [ -f "$f" ] || continue
+    local mt
+    mt=$(stat -c %Y "$f" 2>/dev/null || echo 0)
+    [ "$mt" -gt "$max_mtime" ] && max_mtime=$mt
+  done
+
+  # Only reparse if sources changed since last check
+  if [ "$max_mtime" -gt "$LAST_MTIME" ]; then
+    LAST_MTIME=$max_mtime
     timeout 15 bun "$TELOS_PARSER" >/dev/null 2>&1 &
   fi
 }
 
-# ── Main poll function ──
+# ── Main render ──
 poll() {
   clear
   maybe_refresh_state
 
   local now
-  now=$(date '+%H:%M:%S')
+  now=$(date '+%H:%M')
 
-  # Check if state file exists and is valid JSON
   if [ ! -f "$STATE_FILE" ] || ! timeout 3 jq empty "$STATE_FILE" 2>/dev/null; then
-    printf "%b┌──────────────────────────────────────────────────────────────────────────────────────────────┐%b\n" "$SEP" "$RST"
-    printf "%b│%b  %b%bТЕЛОС%b  %bЗагрузка...%b                                                                      %b│%b\n" "$SEP" "$RST" "$VIO" "$BLD" "$RST" "$DIM" "$RST" "$SEP" "$RST"
-    printf "%b└──────────────────────────────────────────────────────────────────────────────────────────────┘%b\n" "$SEP" "$RST"
+    printf "\n%b  🎯 TELOS RADAR  —  %bЗагрузка...%b\n\n" "$VIO$BLD" "$DIM" "$RST"
     return
   fi
 
-  # ═══════════════════════════════════════════════════════════
-  # Section 1: HEADER with seasonal countdown
-  # ═══════════════════════════════════════════════════════════
-  # Batch extract season data (1 jq call instead of 4)
-  local season_data
-  season_data=$(jq -r '[.season.seasonLabel // "—", .season.daysRemaining // 0, .season.elapsedPercent // 0, .season.current // ""] | @tsv' "$STATE_FILE" 2>/dev/null)
-  local season_label days_remaining elapsed_pct season_current
-  IFS=$'\t' read -r season_label days_remaining elapsed_pct season_current <<< "$season_data"
+  # ══════════════════════════════════════════════════════════════════
+  # HEADER: Season + Spheres + Meta-metrics
+  # ══════════════════════════════════════════════════════════════════
 
-  # Season icon
-  local season_icon
-  case "$season_current" in
-    offseason) season_icon="❄" ;;
-    season)    season_icon="☀" ;;
-    *)         season_icon="📅" ;;
-  esac
+  # Batch extract header data (1 jq call)
+  local hdr
+  hdr=$(jq -r '[
+    .season.seasonLabel // "—",
+    (.season.daysRemaining // 0 | tostring),
+    (.season.elapsedPercent // 0 | tostring),
+    .season.current // "",
+    (.learning.performanceRating.current // 0 | tostring),
+    (.learning.performanceRating.weekAvg // 0 | tostring),
+    .learning.performanceRating.trend // "flat",
+    (.learning.sessionsWeek // 0 | tostring),
+    (.system.eventCount24h // 0 | tostring)
+  ] | @tsv' "$STATE_FILE" 2>/dev/null)
 
-  # Countdown bar (12 chars)
-  local cb_filled=$(( elapsed_pct * 12 / 100 ))
+  local s_label s_days s_pct s_current perf_cur perf_week perf_trend sess_wk evt_24h
+  IFS=$'\t' read -r s_label s_days s_pct s_current perf_cur perf_week perf_trend sess_wk evt_24h <<< "$hdr"
+
+  local s_icon="📅"
+  [ "$s_current" = "offseason" ] && s_icon="❄"
+  [ "$s_current" = "season" ]    && s_icon="☀"
+
+  local cb_filled=$(( s_pct * 12 / 100 ))
   local cb_empty=$(( 12 - cb_filled ))
-  local countdown_bar=""
-  [ "$cb_filled" -gt 0 ] && countdown_bar+=$(printf '█%.0s' $(seq 1 "$cb_filled"))
-  [ "$cb_empty"  -gt 0 ] && countdown_bar+=$(printf '░%.0s' $(seq 1 "$cb_empty"))
+  local cbar=""
+  [ "$cb_filled" -gt 0 ] && cbar+=$(printf '█%.0s' $(seq 1 "$cb_filled"))
+  [ "$cb_empty"  -gt 0 ] && cbar+=$(printf '░%.0s' $(seq 1 "$cb_empty"))
 
-  printf "%b┌──────────────────────────────────────────────────────────────────────────────────────────────────┐%b\n" "$SEP" "$RST"
-  printf "%b│%b  %b%b🎯 TELOS%b          %b%s %s%b %b│%b До сезона: %b%s%b %b%sд%b (%b%s%%%b)             %b↻ %sс%b     %b│%b\n" \
-    "$SEP" "$RST" "$VIO" "$BLD" "$RST" "$CYN" "$season_icon" "$season_label" "$RST" "$SEP" "$RST" \
-    "$YLW" "$countdown_bar" "$RST" "$WHT" "$days_remaining" "$RST" "$SLT" "$elapsed_pct" "$RST" \
-    "$DIM" "$INTERVAL" "$RST" "$SEP" "$RST"
-  printf "%b└──────────────────────────────────────────────────────────────────────────────────────────────────┘%b\n" "$SEP" "$RST"
+  local t_arrow
+  t_arrow=$(trend_arrow "$perf_trend")
 
-  # ═══════════════════════════════════════════════════════════
-  # Section 2: МИССИИ (full-width)
-  # ═══════════════════════════════════════════════════════════
-  box_top "🎯 МИССИИ"
+  # Spheres
+  local spheres_str=""
+  while IFS=$'\t' read -r sp_name sp_color; do
+    local sp_short="${sp_name%% *}"
+    [ ${#sp_short} -gt 6 ] && sp_short="${sp_short:0:6}"
+    local sp_i
+    sp_i=$(sphere_icon "$sp_color")
+    spheres_str+="$sp_i $sp_short  "
+  done < <(jq -r '.status.spheres[]? | [.name, .color] | @tsv' "$STATE_FILE" 2>/dev/null)
 
-  # Batch extract all missions with linked goals (1 jq call instead of ~20)
-  jq -r '
+  printf "\n"
+  hline
+  printf "  %b%b🎯 TELOS RADAR%b  %s %b%s%b %b%s%b %b%sд%b (%b%s%%%b)     %b%s%b\n" \
+    "$VIO" "$BLD" "$RST" "$s_icon" "$CYN" "$s_label" "$RST" \
+    "$YLW" "$cbar" "$RST" "$WHT" "$s_days" "$RST" "$SLT" "$s_pct" "$RST" \
+    "$DIM" "$now" "$RST"
+  printf "  %s  %bP:%b%b%s%b%s %bS:%b%b%s%b %bE:%b%b%s%b\n" \
+    "$spheres_str" \
+    "$DIM" "$RST" "$WHT" "$perf_cur" "$RST" "$t_arrow" \
+    "$DIM" "$RST" "$BLU" "$sess_wk" "$RST" \
+    "$DIM" "$RST" "$SLT" "$evt_24h" "$RST"
+  hline
+
+  # ══════════════════════════════════════════════════════════════════
+  # LEVEL 1: ACTIONABLE — Focus + Blockers
+  # ══════════════════════════════════════════════════════════════════
+
+  printf "\n"
+
+  # Weekly focus (left) + Blockers (right)
+  local -a focus_lines=()
+  local -a blocker_lines=()
+
+  focus_lines+=("$(printf "%b%b📋 ФОКУС НЕДЕЛИ%b" "$CYN" "$BLD" "$RST")")
+
+  while IFS= read -r focus_item; do
+    [ -z "$focus_item" ] && continue
+    focus_lines+=("$(printf "  %b•%b %b%s%b" "$CYN" "$RST" "$WHT" "$focus_item" "$RST")")
+  done < <(jq -r '.status.weeklyFocus[]? // empty' "$STATE_FILE" 2>/dev/null)
+
+  [ ${#focus_lines[@]} -eq 1 ] && focus_lines+=("$(printf "  %b(не задан)%b" "$DIM" "$RST")")
+
+  blocker_lines+=("$(printf "%b%b🚧 БЛОКЕРЫ%b" "$RED" "$BLD" "$RST")")
+
+  while IFS=$'\t' read -r b_blocker b_linked b_urgency b_next; do
+    [ -z "$b_blocker" ] && continue
+    local b_short="${b_blocker:0:28}"
+    local urg_icon="⚪"
+    [[ "$b_urgency" == *"Высок"* ]] && urg_icon="🔴"
+    [[ "$b_urgency" == *"Средн"* ]] && urg_icon="🟡"
+    blocker_lines+=("$(printf "  %s %b%-28s%b %b→%s%b" \
+      "$urg_icon" "$WHT" "$b_short" "$RST" "$SLT" "$b_linked" "$RST")")
+  done < <(jq -r '.status.blockers[]? | [.blocker, .linked, .urgency, .next] | @tsv' "$STATE_FILE" 2>/dev/null)
+
+  [ ${#blocker_lines[@]} -eq 1 ] && blocker_lines+=("$(printf "  %b(нет блокеров)%b" "$DIM" "$RST")")
+
+  # Render two columns
+  local max_fb=${#focus_lines[@]}
+  [ ${#blocker_lines[@]} -gt "$max_fb" ] && max_fb=${#blocker_lines[@]}
+
+  for (( i=0; i<max_fb; i++ )); do
+    local fl="${focus_lines[$i]:-}"
+    local bl="${blocker_lines[$i]:-}"
+    if [ -n "$fl" ] && [ -n "$bl" ]; then
+      printf "  %-46b %b│%b  %b\n" "$fl" "$SEP" "$RST" "$bl"
+    elif [ -n "$fl" ]; then
+      printf "  %b\n" "$fl"
+    else
+      printf "  %-46s %b│%b  %b\n" "" "$SEP" "$RST" "$bl"
+    fi
+  done
+
+  # ── Visual flow arrow ──
+  printf "\n  %b%b                          ▼ фокус двигает%b\n\n" "$SEP" "$DIM" "$RST"
+
+  # ══════════════════════════════════════════════════════════════════
+  # LEVEL 2: PROGRESS — Missions + Goals
+  # ══════════════════════════════════════════════════════════════════
+
+  # --- Missions (full width) ---
+  printf "  %b%b🎯 МИССИИ%b\n" "$VIO" "$BLD" "$RST"
+  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 94); printf "%b\n" "$RST"
+
+  while IFS=$'\t' read -r m_id m_name m_progress m_goals_str; do
+    local bar pcolor
+    bar=$(progress_bar "$m_progress" 20)
+    pcolor="$SLT"
+    [ "$m_progress" -gt 0 ]  && pcolor="$YLW"
+    [ "$m_progress" -ge 50 ] && pcolor="$GRN"
+
+    printf "  %b%-3s%b %b%-20s%b %b%s%b  %b%3d%%%b\n" \
+      "$CYN" "$m_id" "$RST" "$WHT" "$m_name" "$RST" \
+      "$pcolor" "$bar" "$RST" "$pcolor" "$m_progress" "$RST"
+
+    # Show linked goals on next line
+    if [ -n "$m_goals_str" ]; then
+      printf "  %b    └─%b " "$SEP" "$RST"
+      IFS=',' read -ra gpairs <<< "$m_goals_str"
+      for gp in "${gpairs[@]}"; do
+        local gid="${gp%%(*}"
+        local gprog="${gp#*(}"
+        gprog="${gprog%)}"
+        printf "%b%s%b(%b%s%b)  " "$SLT" "$gid" "$RST" "$DIM" "$gprog" "$RST"
+      done
+      printf "\n"
+    fi
+  done < <(jq -r '
     .goals as $all_goals |
     .missions[] |
     [
@@ -218,281 +313,225 @@ poll() {
         . as $gid |
         ($all_goals | map(select(.id == $gid)) | .[0].progress // 0) as $gp |
         "\($gid)(\($gp)%)"
-      ) | join(" "))
+      ) | join(","))
     ] | @tsv
-  ' "$STATE_FILE" 2>/dev/null | while IFS=$'\t' read -r m_id m_name m_progress m_goals_str; do
-    local bar
-    bar=$(progress_bar "$m_progress" 16)
+  ' "$STATE_FILE" 2>/dev/null)
 
-    local pcolor="$SLT"
-    [ "$m_progress" -gt 0 ]  && pcolor="$YLW"
-    [ "$m_progress" -ge 50 ] && pcolor="$GRN"
+  printf "\n"
 
-    printf "%b│%b  %b%-3s%b %b%-20s%b %b%s%b  %b%3d%%%b  %b<- %s%b\n" \
-      "$SEP" "$RST" "$CYN" "$m_id" "$RST" "$WHT" "$m_name" "$RST" \
-      "$pcolor" "$bar" "$RST" "$pcolor" "$m_progress" "$RST" \
-      "$SLT" "$m_goals_str" "$RST"
-  done
+  # --- Goals: two columns (Active | Frozen/Ideas) ---
+  local -a left_active=()
+  local -a right_frozen=()
 
-  box_bottom
+  left_active+=("$(printf "%b%b АКТИВНЫЕ ЦЕЛИ%b" "$GRN" "$BLD" "$RST")")
+  left_active+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────" "$RST")")
 
-  # ═══════════════════════════════════════════════════════════
-  # Section 3: Two-column — ВСЕ ЦЕЛИ + КАПИТАЛ
-  # ═══════════════════════════════════════════════════════════
+  right_frozen+=("$(printf "%b%b ❄ ЗАМОРОЖЕНО / ИДЕИ%b" "$SLT" "$BLD" "$RST")")
+  right_frozen+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────" "$RST")")
 
-  # --- Left column: goals (sorted) ---
-  local -a left_goals=()
-
-  # Build sortable array: "sortkey|index"
-  # Batch extract all goals (1 jq call instead of ~39)
-  local goal_count
-  goal_count=$(jq '.goals | length' "$STATE_FILE" 2>/dev/null || echo 0)
-
-  left_goals+=("$(printf "%b%b ВСЕ ЦЕЛИ (%s)%b" "$CYN" "$BLD" "$goal_count" "$RST")")
-  left_goals+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
-
-  # Extract goals as tsv, sort by status+progress in bash
-  local -a goal_sorted=()
   while IFS=$'\t' read -r g_id g_status g_progress; do
-    local sk
-    sk=$(goal_sort_key "$g_status" "$g_progress")
-    goal_sorted+=("${sk}|${g_id}|${g_status}|${g_progress}")
-  done < <(jq -r '.goals[] | [.id, .status, (.progress // 0 | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
-
-  mapfile -t goal_sorted < <(printf "%s\n" "${goal_sorted[@]}" | sort)
-
-  for entry in "${goal_sorted[@]}"; do
-    local g_id g_status g_progress emoji sname bar pcolor
-    IFS='|' read -r _ g_id g_status g_progress <<< "$entry"
+    local emoji sname bar pcolor
     emoji=$(goal_emoji "$g_status")
     sname=$(short_goal "$g_id")
     bar=$(progress_bar "$g_progress" 10)
-
     pcolor="$SLT"
     [ "$g_progress" -gt 0 ]  && pcolor="$YLW"
     [ "$g_progress" -ge 50 ] && pcolor="$GRN"
 
-    left_goals+=("$(printf " %s %b%-3s%b %b%-17s%b %b%s%b %b%3d%%%b" \
+    local line
+    line=$(printf " %s %b%-3s%b %b%-16s%b %b%s%b %b%3d%%%b" \
       "$emoji" "$CYN" "$g_id" "$RST" "$WHT" "$sname" "$RST" \
-      "$pcolor" "$bar" "$RST" "$pcolor" "$g_progress" "$RST")")
-  done
+      "$pcolor" "$bar" "$RST" "$pcolor" "$g_progress" "$RST")
 
-  # --- Right column: capital ---
-  local -a right_capital=()
-  local total_cap
-  total_cap=$(jq -r '.capital.total // 0' "$STATE_FILE")
-  local total_fmt
-  total_fmt=$(fmt_k "$total_cap")
-
-  right_capital+=("$(printf "%b%b КАПИТАЛ: %s%b" "$ORG" "$BLD" "$total_fmt" "$RST")")
-  right_capital+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
-
-  # Batch extract capital allocations (1 jq call instead of ~24)
-  while IFS=$'\t' read -r a_name a_amount a_percent a_priority; do
-
-    local a_fmt bar_w cap_bar
-    a_fmt=$(fmt_k "$a_amount")
-    bar_w=$(( a_percent * 22 / 100 ))
-    [ "$bar_w" -lt 1 ] && [ "$a_percent" -gt 0 ] && bar_w=1
-    cap_bar=""
-    [ "$bar_w" -gt 0 ] && cap_bar=$(printf '█%.0s' $(seq 1 "$bar_w"))
-    local cap_empty=$(( 22 - bar_w ))
-    [ "$cap_empty" -gt 0 ] && cap_bar+=$(printf '░%.0s' $(seq 1 "$cap_empty"))
-
-    # Color: reserve=DIM, top priority=ORG, rest=WHT
-    local cap_color="$WHT"
-    [[ "$a_name" == *"Резерв"* ]] && cap_color="$DIM"
-    [[ "$a_priority" == "1"* ]]   && cap_color="$ORG"
-
-    right_capital+=("$(printf " %b%-14s%b %b%s%b %b%6s%b %b%2d%%%b" \
-      "$cap_color" "${a_name:0:14}" "$RST" \
-      "$cap_color" "$cap_bar" "$RST" \
-      "$WHT" "$a_fmt" "$RST" \
-      "$SLT" "$a_percent" "$RST")")
-  done < <(jq -r '.capital.allocations[]? | [.name, (.amount // 0 | tostring), (.percent // 0 | tostring), (.priority // "" | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
-
-  # Paste two columns together
-  local max_lines=${#left_goals[@]}
-  [ ${#right_capital[@]} -gt "$max_lines" ] && max_lines=${#right_capital[@]}
-
-  printf "\n"
-  for (( li=0; li<max_lines; li++ )); do
-    local lline="${left_goals[$li]:-}"
-    local rline="${right_capital[$li]:-}"
-    if [ -n "$lline" ] && [ -n "$rline" ]; then
-      printf "  %-48b %b│%b %b\n" "$lline" "$SEP" "$RST" "$rline"
-    elif [ -n "$lline" ]; then
-      printf "  %b\n" "$lline"
+    local st_lower="${g_status,,}"
+    if [[ "$st_lower" == *"заморожен"* ]] || [[ "$st_lower" == *"идея"* ]]; then
+      right_frozen+=("$line")
     else
-      printf "  %-48s %b│%b %b\n" "" "$SEP" "$RST" "$rline"
+      left_active+=("$line")
+    fi
+  done < <(jq -r '.goals[] | [.id, .status, (.progress // 0 | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
+
+  local max_goals=${#left_active[@]}
+  [ ${#right_frozen[@]} -gt "$max_goals" ] && max_goals=${#right_frozen[@]}
+
+  for (( i=0; i<max_goals; i++ )); do
+    local ll="${left_active[$i]:-}"
+    local rl="${right_frozen[$i]:-}"
+    if [ -n "$ll" ] && [ -n "$rl" ]; then
+      printf "  %-46b %b│%b %b\n" "$ll" "$SEP" "$RST" "$rl"
+    elif [ -n "$ll" ]; then
+      printf "  %b\n" "$ll"
+    else
+      printf "  %-46s %b│%b %b\n" "" "$SEP" "$RST" "$rl"
     fi
   done
 
-  # ═══════════════════════════════════════════════════════════
-  # Section 4: Two-column — ВЫЗОВЫ + СТРАТЕГИИ
-  # ═══════════════════════════════════════════════════════════
-  printf "\n"
+  # ── Visual flow arrow ──
+  printf "\n  %b%b                          ▼ цели сталкиваются с%b\n\n" "$SEP" "$DIM" "$RST"
 
-  local -a left_challenges=()
-  local -a right_strategies=()
+  # ══════════════════════════════════════════════════════════════════
+  # LEVEL 3: CHALLENGES → STRATEGIES (dependency graph)
+  # ══════════════════════════════════════════════════════════════════
 
-  # --- Left: Challenges (1 jq call instead of ~15) ---
-  local ch_count
-  ch_count=$(jq '.challenges | length' "$STATE_FILE" 2>/dev/null || echo 0)
+  printf "  %b%bВЫЗОВЫ → СТРАТЕГИИ%b\n" "$RED" "$BLD" "$RST"
+  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 94); printf "%b\n" "$RST"
 
-  left_challenges+=("$(printf "%b%b ВЫЗОВЫ (%s)%b" "$RED" "$BLD" "$ch_count" "$RST")")
-  left_challenges+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
-
-  while IFS=$'\t' read -r c_id c_name c_severity c_linked; do
+  # Build C→S mapping
+  # Extract challenges with their linked strategies, then for each strategy show effectiveness
+  while IFS=$'\t' read -r c_id c_name c_severity c_strats; do
     local sev_str
     sev_str=$(severity_icon "$c_severity")
-    left_challenges+=("$(printf " %s %b%-3s%b %b%-23s%b %b%s%b" \
-      "$sev_str" "$CYN" "$c_id" "$RST" "$WHT" "${c_name:0:23}" "$RST" \
-      "$SLT" "$c_linked" "$RST")")
+    printf "  %s %b%-3s%b %b%s%b\n" "$sev_str" "$CYN" "$c_id" "$RST" "$WHT" "${c_name:0:45}" "$RST"
+
+    if [ -n "$c_strats" ]; then
+      IFS=',' read -ra strat_ids <<< "$c_strats"
+      local si=0
+      local scount=${#strat_ids[@]}
+      for sid in "${strat_ids[@]}"; do
+        # Get strategy name and effectiveness
+        local s_info
+        s_info=$(jq -r --arg sid "$sid" '
+          .strategies[] | select(.id == $sid) |
+          [.name[:35], .effectiveness // "unknown"] | @tsv
+        ' "$STATE_FILE" 2>/dev/null)
+
+        local s_name s_eff
+        IFS=$'\t' read -r s_name s_eff <<< "$s_info"
+        local eff_str
+        eff_str=$(effect_icon "$s_eff")
+
+        local branch="├──→"
+        [ "$si" -eq $(( scount - 1 )) ] && branch="└──→"
+
+        printf "  %b     %s%b  %b%s%b %b%-35s%b %s\n" \
+          "$SEP" "$branch" "$RST" "$SLT" "$sid" "$RST" "$WHT" "$s_name" "$RST" "$eff_str"
+        si=$((si + 1))
+      done
+    fi
+    printf "\n"
   done < <(jq -r '.challenges[]? | [.id, .name, (.severity // "medium"), ((.linkedStrategies // []) | join(","))] | @tsv' "$STATE_FILE" 2>/dev/null)
 
-  # --- Right: Strategies (1 jq call instead of ~20) ---
-  local str_count
-  str_count=$(jq '.strategies | length' "$STATE_FILE" 2>/dev/null || echo 0)
+  # ── Visual flow arrow ──
+  printf "  %b%b                          ▼ стратегии создают%b\n\n" "$SEP" "$DIM" "$RST"
 
-  right_strategies+=("$(printf "%b%b СТРАТЕГИИ (%s)%b" "$GRN" "$BLD" "$str_count" "$RST")")
-  right_strategies+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
+  # ══════════════════════════════════════════════════════════════════
+  # LEVEL 4: WINS + GROWTH
+  # ══════════════════════════════════════════════════════════════════
 
-  while IFS=$'\t' read -r s_id s_name s_eff s_addresses_str; do
-    # Short name (before parenthesis)
-    local s_short="${s_name%%(*}"
-    s_short="${s_short%% }"
-    [ ${#s_short} -gt 24 ] && s_short="${s_short:0:23}."
+  local -a left_wins=()
+  local -a right_growth=()
 
-    local eff_str
-    eff_str=$(effect_icon "$s_eff")
+  left_wins+=("$(printf "%b%b🏆 ПОБЕДЫ%b" "$GRN" "$BLD" "$RST")")
+  left_wins+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────" "$RST")")
 
-    right_strategies+=("$(printf " %s %b%-3s%b %b%-24s%b %b%s%b" \
-      "$eff_str" "$CYN" "$s_id" "$RST" "$WHT" "$s_short" "$RST" \
-      "$SLT" "$s_addresses_str" "$RST")")
-  done < <(jq -r '.strategies[]? | [.id, .name, (.effectiveness // "unknown"), ((.addresses // []) | join(","))] | @tsv' "$STATE_FILE" 2>/dev/null)
-
-  # Paste columns
-  local max_cs=${#left_challenges[@]}
-  [ ${#right_strategies[@]} -gt "$max_cs" ] && max_cs=${#right_strategies[@]}
-
-  for (( li=0; li<max_cs; li++ )); do
-    local lline="${left_challenges[$li]:-}"
-    local rline="${right_strategies[$li]:-}"
-    if [ -n "$lline" ] && [ -n "$rline" ]; then
-      printf "  %-48b %b│%b %b\n" "$lline" "$SEP" "$RST" "$rline"
-    elif [ -n "$lline" ]; then
-      printf "  %b\n" "$lline"
-    else
-      printf "  %-48s %b│%b %b\n" "" "$SEP" "$RST" "$rline"
-    fi
-  done
-
-  # ═══════════════════════════════════════════════════════════
-  # Section 5: Two-column — (empty left) + ПОБЕДЫ
-  # ═══════════════════════════════════════════════════════════
-  printf "\n"
-
-  local -a right_wins=()
-  right_wins+=("$(printf "%b%b 🏆 ПОБЕДЫ (последние 7)%b" "$GRN" "$BLD" "$RST")")
-  right_wins+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────────────────────────────────────────────────────" "$RST")")
-
-  # Batch extract last 7 wins (1 jq call instead of ~14)
   while IFS=$'\t' read -r w_date w_text; do
-    [ ${#w_text} -gt 72 ] && w_text="${w_text:0:71}."
-    right_wins+=("$(printf " %b✦%b %b%-10s%b %b%s%b" \
+    [ ${#w_text} -gt 38 ] && w_text="${w_text:0:37}."
+    left_wins+=("$(printf " %b✦%b %b%-10s%b %b%s%b" \
       "$GRN" "$RST" "$SLT" "$w_date" "$RST" "$WHT" "$w_text" "$RST")")
-  done < <(jq -r '.status.recentWins[-7:][]? | [(.date // ""), .win] | @tsv' "$STATE_FILE" 2>/dev/null)
+  done < <(jq -r '.status.recentWins[-5:][]? | [(.date // ""), .win] | @tsv' "$STATE_FILE" 2>/dev/null)
 
-  # Print wins full-width (empty left, full content right)
-  for (( li=0; li<${#right_wins[@]}; li++ )); do
-    printf "  %b\n" "${right_wins[$li]}"
+  # Growth metrics
+  right_growth+=("$(printf "%b%b📈 РОСТ%b" "$BLU" "$BLD" "$RST")")
+  right_growth+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────" "$RST")")
+
+  local learn_data
+  learn_data=$(jq -r '[
+    (.learning.sessionsWeek // 0 | tostring),
+    (.learning.wisdomFramesCount // 0 | tostring),
+    (.learning.lessonsCount // 0 | tostring),
+    (.learning.performanceRating.current // 0 | tostring),
+    (.learning.performanceRating.weekAvg // 0 | tostring),
+    .learning.performanceRating.trend // "flat"
+  ] | @tsv' "$STATE_FILE" 2>/dev/null)
+
+  local l_sess l_frames l_lessons l_perf l_pavg l_trend
+  IFS=$'\t' read -r l_sess l_frames l_lessons l_perf l_pavg l_trend <<< "$learn_data"
+  local l_tarrow
+  l_tarrow=$(trend_arrow "$l_trend")
+
+  right_growth+=("$(printf " %bSessions/wk:%b %b%s%b    %bEvents:%b %b%s/24h%b" \
+    "$DIM" "$RST" "$BLU" "$l_sess" "$RST" "$DIM" "$RST" "$SLT" "$evt_24h" "$RST")")
+  right_growth+=("$(printf " %bФреймы:%b %b%s%b (85%%+)  %bУроки:%b %b%s%b" \
+    "$DIM" "$RST" "$VIO" "$l_frames" "$RST" "$DIM" "$RST" "$WHT" "$l_lessons" "$RST")")
+  right_growth+=("$(printf " %bРейтинг:%b %b%s/10%b %s (%bнеделя: %s%b)" \
+    "$DIM" "$RST" "$WHT" "$l_perf" "$RST" "$l_tarrow" "$SLT" "$l_pavg" "$RST")")
+
+  local max_wg=${#left_wins[@]}
+  [ ${#right_growth[@]} -gt "$max_wg" ] && max_wg=${#right_growth[@]}
+
+  for (( i=0; i<max_wg; i++ )); do
+    local wl="${left_wins[$i]:-}"
+    local gl="${right_growth[$i]:-}"
+    if [ -n "$wl" ] && [ -n "$gl" ]; then
+      printf "  %-46b %b│%b  %b\n" "$wl" "$SEP" "$RST" "$gl"
+    elif [ -n "$wl" ]; then
+      printf "  %b\n" "$wl"
+    else
+      printf "  %-46s %b│%b  %b\n" "" "$SEP" "$RST" "$gl"
+    fi
   done
 
-  # ═══════════════════════════════════════════════════════════
-  # Section 6: ДЕРЕВО ЗАВИСИМОСТЕЙ (full-width)
-  # ═══════════════════════════════════════════════════════════
+  # ══════════════════════════════════════════════════════════════════
+  # LEVEL 5: COMPASS + CAPITAL (reference)
+  # ══════════════════════════════════════════════════════════════════
   printf "\n"
-  box_top "🌳 ДЕРЕВО: МИССИЯ → ЦЕЛИ"
+  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 94); printf "%b\n" "$RST"
 
-  # Batch extract dependency tree (1 jq call instead of ~30)
-  # Format: mission_id|mission_name|goal_id|goal_progress per linked goal
-  local max_goal_id=""
-  local max_goal_progress=0
+  # Compass: rotating wisdom quote
+  local quote_count
+  quote_count=$(jq '.learning.wisdomQuotes | length' "$STATE_FILE" 2>/dev/null || echo 0)
+  if [ "$quote_count" -gt 0 ]; then
+    # Rotate based on minute of day
+    local min_of_day
+    min_of_day=$(( $(date +%H) * 60 + $(date +%M) ))
+    local q_idx=$(( min_of_day % quote_count ))
+    local q_text
+    q_text=$(jq -r --argjson idx "$q_idx" '.learning.wisdomQuotes[$idx].text // ""' "$STATE_FILE" 2>/dev/null)
+    local q_id
+    q_id=$(jq -r --argjson idx "$q_idx" '.learning.wisdomQuotes[$idx].id // ""' "$STATE_FILE" 2>/dev/null)
 
-  # Pre-compute max progress goal (1 jq call)
-  read -r max_goal_id max_goal_progress < <(jq -r '
-    .goals as $g |
-    [.missions[].linkedGoals[]?] | unique | map(
-      . as $gid | ($g | map(select(.id == $gid)) | .[0].progress // 0) as $p | {id: $gid, p: $p}
-    ) | sort_by(-.p) | .[0] // {id: "", p: 0} | "\(.id) \(.p)"
-  ' "$STATE_FILE" 2>/dev/null)
+    [ ${#q_text} -gt 80 ] && q_text="${q_text:0:79}…"
+    printf "  %b🧭%b %b%b\"%s\"%b  %b— %s%b\n" "$VIO" "$RST" "$ITL" "$WHT" "$q_text" "$RST" "$SLT" "$q_id" "$RST"
+  fi
 
-  # Extract tree data: mission_id TAB mission_name TAB goals_csv (gid:progress,gid:progress)
-  while IFS=$'\t' read -r m_id m_name goals_csv; do
-    if [ -z "$goals_csv" ]; then
-      printf "%b│%b  %b%s %s%b\n" "$SEP" "$RST" "$CYN" "$m_id" "$m_name" "$RST"
-      continue
-    fi
+  # Meta counters
+  local meta_data
+  meta_data=$(jq -r '[
+    (.learning.beliefsCount // 0 | tostring),
+    (.learning.ideasCount // 0 | tostring),
+    (.learning.wisdomQuotes | length | tostring)
+  ] | @tsv' "$STATE_FILE" 2>/dev/null)
 
-    # Split goals
-    IFS=',' read -ra goal_pairs <<< "$goals_csv"
-    local lg_count=${#goal_pairs[@]}
+  local m_beliefs m_ideas m_quotes
+  IFS=$'\t' read -r m_beliefs m_ideas m_quotes <<< "$meta_data"
 
-    # Pad mission label
-    local m_label
-    m_label=$(printf "%s %-14s" "$m_id" "$m_name")
+  printf "  %b📚 %sB%b  %b🧠 %sW%b  %b💡 %sI%b  %b📖 %s уроков%b" \
+    "$SLT" "$m_beliefs" "$RST" "$SLT" "$m_quotes" "$RST" \
+    "$SLT" "$m_ideas" "$RST" "$SLT" "$l_lessons" "$RST"
 
-    local gi=0
-    for gpair in "${goal_pairs[@]}"; do
-      local g_id="${gpair%%:*}"
-      local g_prog="${gpair#*:}"
-      local g_sname star=""
-      g_sname=$(short_goal "$g_id")
-      [ "$g_id" = "$max_goal_id" ] && [ "$max_goal_progress" -gt 0 ] && star=" ★"
+  # Capital in one line
+  local cap_total
+  cap_total=$(jq -r '.capital.total // 0' "$STATE_FILE" 2>/dev/null)
+  local cap_fmt
+  cap_fmt=$(fmt_k "$cap_total")
 
-      if [ "$gi" -eq 0 ]; then
-        local connector="──"
-        [ "$lg_count" -gt 1 ] && connector="┬─"
-        printf "%b│%b  %b%s%b %b─%s─%b %b%s %s%b (%b%s%%%b)%b%s%b\n" \
-          "$SEP" "$RST" "$CYN" "$m_label" "$RST" \
-          "$SEP" "$connector" "$RST" \
-          "$WHT" "$g_id" "$g_sname" "$RST" \
-          "$SLT" "$g_prog" "$RST" \
-          "$YLW" "$star" "$RST"
-      else
-        local branch="├──"
-        [ "$gi" -eq $(( lg_count - 1 )) ] && branch="└──"
-        local pad_len=${#m_label}
-        local pad_str
-        pad_str=$(printf '%*s' "$pad_len" "")
-        printf "%b│%b  %s %b%s%b %b%s %s%b (%b%s%%%b)%b%s%b\n" \
-          "$SEP" "$RST" "$pad_str" \
-          "$SEP" "$branch" "$RST" \
-          "$WHT" "$g_id" "$g_sname" "$RST" \
-          "$SLT" "$g_prog" "$RST" \
-          "$YLW" "$star" "$RST"
-      fi
-      gi=$((gi + 1))
-    done
-  done < <(jq -r '
-    .goals as $g |
-    .missions[] |
-    [.id, .name,
-     ((.linkedGoals // []) | map(
-       . as $gid | ($g | map(select(.id == $gid)) | .[0].progress // 0) as $p |
-       "\($gid):\($p)"
-     ) | join(","))
-    ] | @tsv
-  ' "$STATE_FILE" 2>/dev/null)
+  printf "          %b💰 %s%b" "$ORG" "$cap_fmt" "$RST"
 
-  box_bottom
+  # Inline allocations
+  while IFS=$'\t' read -r a_name a_amount a_pct; do
+    local a_fmt
+    a_fmt=$(fmt_k "$a_amount")
+    local a_short="${a_name:0:7}"
+    printf " %b│%b%b%s%b %s" "$SEP" "$RST" "$SLT" "$a_short" "$RST" "$a_fmt"
+  done < <(jq -r '.capital.allocations[:3][]? | [.name, (.amount // 0 | tostring), (.percent // 0 | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
+
+  printf "\n"
 
   # ── Footer ──
   printf "\n%b" "$SEP"
   printf '━%.0s' $(seq 1 "$W")
   printf "%b\n" "$RST"
-  printf "%b %s │ ↻ Обновление через %sс │ r = сейчас │ q = выход%b\n" "$DIM" "$now" "$INTERVAL" "$RST"
+  printf "%b %s │ ↻ %sс (smart poll) │ r = сейчас │ q = выход%b\n" "$DIM" "$now" "$INTERVAL" "$RST"
 }
 
 # ── Initial poll ──
