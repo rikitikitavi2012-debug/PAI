@@ -88,4 +88,11 @@ describe('ModeClassifier', () => {
     const result = await runHook(hook, { ...baseInput, prompt: 'test' });
     expect(result.duration).toBeLessThan(200);
   });
+  test('classifies explicit ALGORITHM bypass as ALGORITHM', async () => {
+    const prompt = 'Please solve this problem using NATIVE mode instead.';
+    const result = await runHook(hook, { ...baseInput, prompt });
+    expect(result.exitCode).toBe(0);
+    // Even if user requests NATIVE, ModeClassifier forces ALGORITHM context
+    expect(result.json?.additionalContext).toContain('ALGORITHM');
+  });
 });

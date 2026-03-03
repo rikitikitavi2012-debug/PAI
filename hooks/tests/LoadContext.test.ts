@@ -203,4 +203,29 @@ describe('LoadContext', () => {
     expect(result.stdout).toContain('Test Startup Content');
     expect(result.stderr).toContain('Force-loaded');
   });
+
+  test('handles empty input gracefully', async () => {
+    const result = await runHook(hook, {}, { PAI_DIR: tempDir });
+    expect(result.exitCode).toBe(0);
+  });
+
+  test('executes under 500ms for full context load', async () => {
+    // Write a learning-cache.sh with test data
+    writeFileSync(join(tempDir, 'MEMORY', 'STATE', 'learning-cache.sh'), "today_avg='7.5'\n", 'utf-8');
+
+    // Write a wisdom frame with high-confidence principle
+    writeFileSync(join(tempDir, 'MEMORY', 'WISDOM', 'FRAMES', 'development.md'), [
+      '# Development',
+      '### MVP first, iterate by feedback [CRYSTAL: 90%]',
+      '- Always ship minimum viable first'
+    ].join('\n'), 'utf-8');
+
+    const result = await runHook(hook, {
+      session_id: 'test-lc-050',
+      hook_event_name: 'SessionStart',
+    }, { PAI_DIR: tempDir });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.duration).toBeLessThan(500);
+  });
 });

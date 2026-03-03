@@ -146,4 +146,26 @@ describe('SecurityValidator', () => {
       result.json?.decision === 'ask';
     expect(isBlocked).toBe(true);
   });
+
+  test('blocks writing to protected paths', async () => {
+    const result = await runHook(hook, {
+      session_id: 'test-sv-030',
+      tool_name: 'Write',
+      tool_input: { file_path: '/etc/passwd', content: 'hello' },
+      hook_event_name: 'PreToolUse',
+    });
+    const isBlocked = result.exitCode === 2 || result.json?.decision === 'block' || result.json?.decision === 'ask';
+    expect(isBlocked).toBe(true);
+  });
+
+  test('executes under 500ms for blocklist checks', async () => {
+    const result = await runHook(hook, {
+      session_id: 'test-sv-040',
+      tool_name: 'Bash',
+      tool_input: { command: 'git status' },
+      hook_event_name: 'PreToolUse',
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.duration).toBeLessThan(500);
+  });
 });

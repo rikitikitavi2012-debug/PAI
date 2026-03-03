@@ -111,4 +111,35 @@ describe('PreCompact', () => {
     expect(result.exitCode).toBe(0);
     expect(result.json?.continue).toBe(true);
   });
+
+  test('handles malformed JSON state files gracefully', async () => {
+    const sessionId = 'test-pc-005';
+    const statePath = join(tempDir, 'MEMORY', 'STATE', 'algorithms', `${sessionId}.json`);
+    mkdirSync(join(tempDir, 'MEMORY', 'STATE', 'algorithms'), { recursive: true });
+    writeFileSync(statePath, '{ invalid json ', 'utf-8');
+
+    const result = await runHook(hook, {
+      session_id: sessionId,
+      hook_event_name: 'PreCompact',
+    }, { PAI_DIR: tempDir });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.json?.continue).toBe(true);
+  });
+
+  test('handles empty input gracefully', async () => {
+    const result = await runHook(hook, {}, { PAI_DIR: tempDir });
+    expect(result.exitCode).toBe(0);
+    expect(result.json?.continue).toBe(true);
+  });
+
+  test('executes under 500ms for memory preservation', async () => {
+    const result = await runHook(hook, {
+      session_id: 'test-pc-006',
+      hook_event_name: 'PreCompact',
+    }, { PAI_DIR: tempDir });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.duration).toBeLessThan(500);
+  });
 });
