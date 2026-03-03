@@ -150,84 +150,77 @@ async function inferenceZai(options: InferenceOptions, level: InferenceLevel, ti
 async function inferenceGemini(options: InferenceOptions, level: InferenceLevel, timeout: number): Promise<InferenceResult> {
   const startTime = Date.now();
 
-  return new Promise((resolve) => {
-    const geminiPath = `${process.env.HOME}/.npm-global/bin/gemini`;
-    const combinedPrompt = options.systemPrompt
-      ? `System: ${options.systemPrompt}\n\nUser: ${options.userPrompt}`
-      : options.userPrompt;
+  // Load GOOGLE_API_KEY from PAI .env
+  const envPath = `${process.env.HOME}/.config/PAI/.env`;
+  let apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || '';
+  if (!apiKey) {
+    try {
+      const envContent = require('fs').readFileSync(envPath, 'utf-8');
+      const match = envContent.match(/^GOOGLE_API_KEY=(.+)$/m);
+      if (match) apiKey = match[1].trim();
+    } catch {}
+  }
 
-    // Load GOOGLE_API_KEY from PAI .env
-    const envPath = `${process.env.HOME}/.config/PAI/.env`;
-    let apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || '';
-    if (!apiKey) {
-      try {
-        const envContent = require('fs').readFileSync(envPath, 'utf-8');
-        const match = envContent.match(/^GOOGLE_API_KEY=(.+)$/m);
-        if (match) apiKey = match[1].trim();
-      } catch {}
+  if (!apiKey) {
+    return { success: false, output: '', error: 'No GOOGLE_API_KEY found', latencyMs: Date.now() - startTime, level };
+  }
+
+  const model = 'gemini-2.0-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
+  if (options.systemPrompt) {
+    contents.push({ role: 'user', parts: [{ text: `System: ${options.systemPrompt}\n\nUser: ${options.userPrompt}` }] });
+  } else {
+    contents.push({ role: 'user', parts: [{ text: options.userPrompt }] });
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    const latencyMs = Date.now() - startTime;
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { success: false, output: '', error: `Gemini API ${response.status}: ${errorText.slice(0, 200)}`, latencyMs, level };
     }
 
-    if (!apiKey) {
-      resolve({ success: false, output: '', error: 'No GOOGLE_API_KEY found', latencyMs: Date.now() - startTime, level });
-      return;
+    const data = await response.json() as any;
+    const output = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+
+    if (!output) {
+      return { success: false, output: '', error: 'Empty Gemini response', latencyMs, level };
     }
 
-    const env = {
-      ...process.env,
-      GOOGLE_API_KEY: apiKey,
-      GEMINI_API_KEY: apiKey,
-      HTTP_PROXY: process.env.HTTP_PROXY || 'http://127.0.0.1:8118',
-      HTTPS_PROXY: process.env.HTTPS_PROXY || 'http://127.0.0.1:8118',
-    };
-
-    const args = ['--prompt', combinedPrompt, '--output-format', 'text'];
-
-    let stdout = '';
-    let stderr = '';
-
-    const proc = spawn(geminiPath, args, { env, stdio: ['pipe', 'pipe', 'pipe'] });
-
-    proc.stdout.on('data', (data) => { stdout += data.toString(); });
-    proc.stderr.on('data', (data) => { stderr += data.toString(); });
-
-    const timeoutId = setTimeout(() => {
-      proc.kill('SIGTERM');
-      resolve({ success: false, output: '', error: `Gemini timeout after ${timeout}ms`, latencyMs: Date.now() - startTime, level });
-    }, timeout);
-
-    proc.on('close', (code) => {
-      clearTimeout(timeoutId);
-      const latencyMs = Date.now() - startTime;
-      const output = stdout.trim();
-
-      if (code !== 0 && !output) {
-        resolve({ success: false, output, error: stderr || `Gemini exited with code ${code}`, latencyMs, level });
-        return;
-      }
-
-      if (options.expectJson) {
-        const jsonMatch = output.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          try {
-            resolve({ success: true, output, parsed: JSON.parse(jsonMatch[0]), latencyMs, level });
-            return;
-          } catch {
-            resolve({ success: false, output, error: 'Failed to parse JSON from Gemini', latencyMs, level });
-            return;
-          }
+    if (options.expectJson) {
+      const jsonMatch = output.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          return { success: true, output, parsed: JSON.parse(jsonMatch[0]), latencyMs, level };
+        } catch {
+          return { success: false, output, error: 'Failed to parse JSON from Gemini', latencyMs, level };
         }
-        resolve({ success: false, output, error: 'No JSON found in Gemini response', latencyMs, level });
-        return;
       }
+      return { success: false, output, error: 'No JSON found in Gemini response', latencyMs, level };
+    }
 
-      resolve({ success: true, output, latencyMs, level });
-    });
-
-    proc.on('error', (err) => {
-      clearTimeout(timeoutId);
-      resolve({ success: false, output: '', error: err.message, latencyMs: Date.now() - startTime, level });
-    });
-  });
+    return { success: true, output, latencyMs, level };
+  } catch (err: any) {
+    const latencyMs = Date.now() - startTime;
+    if (err.name === 'AbortError') {
+      return { success: false, output: '', error: `Gemini timeout after ${timeout}ms`, latencyMs, level };
+    }
+    return { success: false, output: '', error: err.message, latencyMs, level };
+  }
 }
 
 /**
