@@ -412,7 +412,7 @@ export async function processPR(
   }
 
   // Merge
-  const merge = run(['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo, '--squash', '--delete-branch', '--admin']);
+  const merge = run(['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo, '--merge', '--delete-branch', '--admin']);
   if (!merge.ok) {
     record.result = 'failed_merge';
     record.testOutput = merge.stderr;

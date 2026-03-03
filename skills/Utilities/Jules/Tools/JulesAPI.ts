@@ -219,10 +219,11 @@ switch (cmd) {
       console.error(`${RED}Usage:${RESET} message <session-name> "message"`);
       process.exit(1);
     }
+    // Jules API uses sendFeedback (not sendMessage — that endpoint rejects all field names)
     const path = sessionId.startsWith('sessions/')
-      ? `/${sessionId}:sendMessage`
-      : `/sessions/${sessionId}:sendMessage`;
-    await apiCall(path, 'POST', { message: msg });
+      ? `/${sessionId}:sendFeedback`
+      : `/sessions/${sessionId}:sendFeedback`;
+    await apiCall(path, 'POST', { feedback: msg });
     console.log(`${GREEN}+${RESET} Message sent to ${BOLD}${sessionId}${RESET}`);
     break;
   }
