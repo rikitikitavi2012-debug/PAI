@@ -54,7 +54,14 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const name = input.name || `wt-${Date.now()}`;
+  const rawName = input.name || `wt-${Date.now()}`;
+  // Validate name to prevent path traversal and git flag injection
+  const name = rawName.replace(/[^a-zA-Z0-9-_]/g, '');
+  if (!name || name.startsWith('-')) {
+    process.stderr.write(`[WorktreeCreate] Invalid worktree name: ${rawName}\n`);
+    process.exit(1);
+  }
+
   const paiDir = getPaiDir();
   const worktreesDir = join(paiDir, '.claude', 'worktrees');
   const worktreePath = join(worktreesDir, name);

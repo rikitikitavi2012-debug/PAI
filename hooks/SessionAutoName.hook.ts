@@ -265,6 +265,9 @@ function getCustomTitle(sessionId: string): string | null {
       if (!existsSync(projectsDir)) continue;
 
       // Find the session's JSONL file under any project subdir (maxdepth 2)
+      // Validate sessionId to prevent command injection/traversal
+      if (!/^[a-zA-Z0-9-]+$/.test(sessionId)) continue;
+
       const findResult = Bun.spawnSync(
         ['find', projectsDir, '-maxdepth', '2', '-name', `${sessionId}.jsonl`],
         { stdout: 'pipe', stderr: 'pipe', timeout: 2000 },
@@ -351,7 +354,9 @@ function storeName(sessionId: string, label: string, source: string): void {
     if (locked) releaseLock();
   }
   // Cache update is session-local, no lock needed
-  const cacheContent = `cached_session_id='${sessionId}'\ncached_session_label='${label}'\n`;
+  const safeSessionId = sessionId.replace(/'/g, "'\\''");
+  const safeLabel = label.replace(/'/g, "'\\''");
+  const cacheContent = `cached_session_id='${safeSessionId}'\ncached_session_label='${safeLabel}'\n`;
   const cachePath = paiPath('MEMORY', 'STATE', 'session-name-cache.sh');
   writeFileSync(cachePath, cacheContent, 'utf-8');
   // Propagate to work.json so admin dashboard stays in sync
@@ -410,7 +415,9 @@ async function upgradeWithInference(sessionId: string, promptB64: string, expect
           if (locked) releaseLock();
         }
         // Update cache outside lock
-        const cacheContent = `cached_session_id='${sessionId}'\ncached_session_label='${label}'\n`;
+        const safeSessionId = sessionId.replace(/'/g, "'\\''");
+        const safeLabel = label.replace(/'/g, "'\\''");
+        const cacheContent = `cached_session_id='${safeSessionId}'\ncached_session_label='${safeLabel}'\n`;
         const cachePath = paiPath('MEMORY', 'STATE', 'session-name-cache.sh');
         writeFileSync(cachePath, cacheContent, 'utf-8');
         console.error(`[SessionAutoName] Background upgrade: "${label}"`);

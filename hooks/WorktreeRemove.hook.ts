@@ -59,6 +59,13 @@ async function main(): Promise<void> {
   const branchName = basename(worktreePath);
   const paiDir = getPaiDir();
 
+  // Validate that the worktree_path is inside .claude/worktrees
+  const worktreesDir = getPaiDir() + '/.claude/worktrees';
+  if (!worktreePath.startsWith(worktreesDir) || worktreePath.includes('..')) {
+    process.stderr.write(`[WorktreeRemove] worktree_path is not inside ${worktreesDir}\n`);
+    process.exit(0);
+  }
+
   try {
     // Remove git worktree
     if (existsSync(worktreePath)) {
