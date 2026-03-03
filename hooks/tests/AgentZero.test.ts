@@ -49,7 +49,7 @@ describe('AgentZero CLI Tool', () => {
           return Response.json({ context_id: 'ctx-1', response: 'mock response' });
         }
         if (url.pathname === '/message_async') {
-          return Response.json({ status: 'queued', context: 'ctx-2' });
+          return Response.json({ status: 'queued', context_id: 'ctx-2' });
         }
         if (url.pathname === '/api_log_get') {
           return Response.json({ log: ['msg1', 'msg2'] });
@@ -180,6 +180,104 @@ describe('AgentZero CLI Tool', () => {
     // I'll write a test that verifies the abort signal is passed to fetch.
     global.fetch = originalFetch;
     process.env.HOME = originalHome;
+  });
+
+  describe('Event Emission', () => {
+    it('emits a0.message_sent and a0.response events and saves context for message command', async () => {
+      const emitDir = createTempDir('a0-emit-msg-');
+      mkdirSync(join(emitDir, '.config', 'PAI'), { recursive: true });
+      writeFileSync(join(emitDir, '.config', 'PAI', '.env'), 'A0_API_TOKEN=mock_token_123\n');
+
+      const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'message', 'Hello sync AI', '--context', 'ctx-old'], {
+        stdout: 'pipe',
+        stderr: 'pipe',
+        env: { ...process.env, HOME: emitDir, A0_BASE_URL: mockServerUrl },
+      });
+
+      await proc.exited;
+
+      const eventsPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'events.jsonl');
+      const eventsText = require('fs').readFileSync(eventsPath, 'utf-8').trim().split('\n');
+      expect(eventsText.length).toBe(2);
+
+      const eventSent = JSON.parse(eventsText[0]);
+      expect(eventSent.type).toBe('a0.message_sent');
+      expect(eventSent.source).toBe('AgentZero');
+      expect(eventSent.data.context_id).toBe('ctx-old');
+      expect(eventSent.data.preview).toBe('Hello sync AI');
+
+      const eventResp = JSON.parse(eventsText[1]);
+      expect(eventResp.type).toBe('a0.response');
+      expect(eventResp.source).toBe('AgentZero');
+      expect(eventResp.data.context_id).toBe('ctx-1'); // From mock server
+      expect(eventResp.data.latency_s).toBeDefined();
+
+      const contextPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'a0-active-context.json');
+      const contextState = JSON.parse(require('fs').readFileSync(contextPath, 'utf-8'));
+      expect(contextState.context_id).toBe('ctx-1');
+      expect(contextState.last_message).toBe('Hello sync AI');
+
+      cleanupTempDir(emitDir);
+    });
+
+    it('emits a0.async_sent event and saves context for async command', async () => {
+      const emitDir = createTempDir('a0-emit-async-');
+      mkdirSync(join(emitDir, '.config', 'PAI'), { recursive: true });
+      writeFileSync(join(emitDir, '.config', 'PAI', '.env'), 'A0_API_TOKEN=mock_token_123\n');
+
+      const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'async', 'Long job task', '--context', 'ctx-old'], {
+        stdout: 'pipe',
+        stderr: 'pipe',
+        env: { ...process.env, HOME: emitDir, A0_BASE_URL: mockServerUrl },
+      });
+
+      await proc.exited;
+
+      const eventsPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'events.jsonl');
+      const eventsText = require('fs').readFileSync(eventsPath, 'utf-8').trim().split('\n');
+      expect(eventsText.length).toBe(1);
+
+      const eventSent = JSON.parse(eventsText[0]);
+      expect(eventSent.type).toBe('a0.async_sent');
+      expect(eventSent.source).toBe('AgentZero');
+      expect(eventSent.data.context_id).toBe('ctx-old');
+      expect(eventSent.data.preview).toBe('Long job task');
+
+      const contextPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'a0-active-context.json');
+      const contextState = JSON.parse(require('fs').readFileSync(contextPath, 'utf-8'));
+      expect(contextState.context_id).toBe('ctx-2');
+      expect(contextState.last_message).toBe('Long job task');
+
+      cleanupTempDir(emitDir);
+    });
+
+    it('fails gracefully on write errors', async () => {
+      const emitDir = createTempDir('a0-emit-error-');
+      mkdirSync(join(emitDir, '.config', 'PAI'), { recursive: true });
+      writeFileSync(join(emitDir, '.config', 'PAI', '.env'), 'A0_API_TOKEN=mock_token_123\n');
+
+      const stateDir = join(emitDir, '.claude', 'MEMORY', 'STATE');
+      mkdirSync(stateDir, { recursive: true });
+
+      // Make read-only
+      const { chmodSync } = require('fs');
+      chmodSync(stateDir, 0o444);
+
+      const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'message', 'Test un-writable'], {
+        stdout: 'pipe',
+        stderr: 'pipe',
+        env: { ...process.env, HOME: emitDir, A0_BASE_URL: mockServerUrl },
+      });
+
+      const stdout = await new Response(proc.stdout).text();
+      await proc.exited;
+
+      expect(proc.exitCode).toBe(0);
+      expect(stdout).toContain('mock response');
+
+      chmodSync(stateDir, 0o755); // restore to allow cleanup
+      cleanupTempDir(emitDir);
+    });
   });
 
   it('health command works correctly', async () => {

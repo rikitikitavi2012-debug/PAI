@@ -82,6 +82,181 @@ exit 1
     expect(stderr).toContain('Usage:');
   });
 
+  describe('Event Emission', () => {
+    it('emits inference.ok event for claude provider', async () => {
+      const emitDir = createTempDir('inference-emit-claude-');
+      const mockBinDirLocal = join(emitDir, 'bin');
+      mkdirSync(mockBinDirLocal, { recursive: true });
+      const mockClaudePathLocal = join(mockBinDirLocal, 'claude');
+      writeFileSync(mockClaudePathLocal, `#!/bin/sh\necho "mocked claude response"\nexit 0\n`);
+      chmodSync(mockClaudePathLocal, 0o755);
+
+      const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'fast', 'system prompt', 'user test'], {
+        stdout: 'pipe',
+        stderr: 'pipe',
+        env: {
+          ...process.env,
+          HOME: emitDir,
+          PATH: `${mockBinDirLocal}:${process.env.PATH}`,
+        },
+      });
+
+      await proc.exited;
+
+      const eventsPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'events.jsonl');
+      const events = require('fs').readFileSync(eventsPath, 'utf-8').trim().split('\n').map(JSON.parse);
+      const event = events[events.length - 1];
+
+      expect(event.type).toBe('inference.ok');
+      expect(event.source).toBe('Inference');
+      expect(event.data.level).toBe('fast');
+      expect(event.data.provider).toBe('claude');
+      expect(event.data.model).toBe('haiku');
+      expect(event.data.latency_s).toBeDefined();
+
+      cleanupTempDir(emitDir);
+    });
+
+    it('emits inference.ok event for gemini provider', async () => {
+      const emitDir = createTempDir('inference-emit-gemini-');
+      mkdirSync(join(emitDir, '.config', 'PAI'), { recursive: true });
+      writeFileSync(join(emitDir, '.config', 'PAI', '.env'), 'GOOGLE_API_KEY=mock_google_key\n');
+
+      const { inference } = require('../../PAI/Tools/Inference.ts');
+
+      const originalFetch = global.fetch;
+      global.fetch = async () => new Response(JSON.stringify({
+        candidates: [{ content: { parts: [{ text: 'mocked gemini response' }] } }]
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+
+      const originalHome = process.env.HOME;
+      process.env.HOME = emitDir;
+
+      await inference({
+        systemPrompt: 'sys',
+        userPrompt: 'gemini test',
+        level: 'gemini',
+        expectJson: false,
+        timeout: 5000,
+      });
+
+      process.env.HOME = originalHome;
+      global.fetch = originalFetch;
+
+      const eventsPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'events.jsonl');
+      const events = require('fs').readFileSync(eventsPath, 'utf-8').trim().split('\n').map(JSON.parse);
+      const event = events[events.length - 1];
+
+      expect(event.type).toBe('inference.ok');
+      expect(event.source).toBe('Inference');
+      expect(event.data.level).toBe('gemini');
+      expect(event.data.provider).toBe('gemini');
+      expect(event.data.model).toBe('gemini-pro');
+
+      cleanupTempDir(emitDir);
+    });
+
+    it('emits inference.fail event on error', async () => {
+      const emitDir = createTempDir('inference-emit-fail-');
+      // No config created so gemini fails without API key
+
+      const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'gemini', 'sys', 'test'], {
+        stdout: 'pipe',
+        stderr: 'pipe',
+        env: {
+          ...process.env,
+          HOME: emitDir,
+          GOOGLE_API_KEY: '',
+          GEMINI_API_KEY: '',
+        },
+      });
+
+      await proc.exited;
+
+      const eventsPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'events.jsonl');
+      const events = require('fs').readFileSync(eventsPath, 'utf-8').trim().split('\n').map(JSON.parse);
+      const event = events[events.length - 1];
+
+      expect(event.type).toBe('inference.fail');
+      expect(event.source).toBe('Inference');
+      expect(event.data.level).toBe('gemini');
+
+      cleanupTempDir(emitDir);
+    });
+
+    it('fails gracefully when events dir is un-writable', async () => {
+      const emitDir = createTempDir('inference-emit-unwritable-');
+      const stateDir = join(emitDir, '.claude', 'MEMORY', 'STATE');
+      mkdirSync(stateDir, { recursive: true });
+      chmodSync(stateDir, 0o444); // read-only
+
+      const mockBinDirLocal = join(emitDir, 'bin');
+      mkdirSync(mockBinDirLocal, { recursive: true });
+      const mockClaudePathLocal = join(mockBinDirLocal, 'claude');
+      writeFileSync(mockClaudePathLocal, `#!/bin/sh\necho "mocked claude response"\nexit 0\n`);
+      chmodSync(mockClaudePathLocal, 0o755);
+
+      const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'fast', 'sys', 'test'], {
+        stdout: 'pipe',
+        stderr: 'pipe',
+        env: {
+          ...process.env,
+          HOME: emitDir,
+          PATH: `${mockBinDirLocal}:${process.env.PATH}`,
+        },
+      });
+
+      const stdout = await new Response(proc.stdout).text();
+      await proc.exited;
+
+      // Should still output correct response and exit 0 despite failing to write event
+      expect(proc.exitCode).toBe(0);
+      expect(stdout.trim()).toBe('mocked claude response');
+
+      chmodSync(stateDir, 0o755); // restore permission so cleanup works
+      cleanupTempDir(emitDir);
+    });
+
+    it('emits inference.ok event for zai provider', async () => {
+      const emitDir = createTempDir('inference-emit-zai-');
+      mkdirSync(join(emitDir, '.config', 'PAI'), { recursive: true });
+      writeFileSync(join(emitDir, '.config', 'PAI', '.env'), 'ZAI_API_KEY=mock_zai_key\n');
+
+      const { inference } = require('../../PAI/Tools/Inference.ts');
+
+      const originalFetch = global.fetch;
+      global.fetch = async () => new Response(JSON.stringify({
+        choices: [{ message: { content: 'mocked zai fetch response' } }]
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+
+      const originalHome = process.env.HOME;
+      process.env.HOME = emitDir;
+
+      await inference({
+        systemPrompt: 'sys',
+        userPrompt: 'glm5 test',
+        level: 'glm5',
+        expectJson: false,
+        timeout: 500,
+      });
+
+      process.env.HOME = originalHome;
+      global.fetch = originalFetch;
+
+      const eventsPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'events.jsonl');
+      const events = require('fs').readFileSync(eventsPath, 'utf-8').trim().split('\n').map(JSON.parse);
+      const event = events[events.length - 1];
+
+      expect(event.type).toBe('inference.ok');
+      expect(event.source).toBe('Inference');
+      expect(event.data.level).toBe('glm5');
+      expect(event.data.provider).toBe('zai');
+      expect(event.data.model).toBe('glm-5');
+
+      cleanupTempDir(emitDir);
+    });
+  });
+
   it('resolves fast level (Anthropic) correctly', async () => {
     const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'fast', 'system prompt', 'user test'], {
       stdout: 'pipe',
