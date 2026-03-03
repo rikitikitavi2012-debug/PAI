@@ -48,6 +48,7 @@ interface RepoConfig {
   repo: string;
   source: string;
   branch: string;
+  autoMerge: boolean; // false = check+review only, true = full pipeline
 }
 
 const REPOS: Record<string, RepoConfig> = {
@@ -57,6 +58,7 @@ const REPOS: Record<string, RepoConfig> = {
     repo: 'rikitikitavi2012-debug/PAI-personal',
     source: 'sources/github/rikitikitavi2012-debug/PAI-personal',
     branch: 'master',
+    autoMerge: true,
   },
   origin: {
     key: 'origin',
@@ -64,6 +66,7 @@ const REPOS: Record<string, RepoConfig> = {
     repo: 'rikitikitavi2012-debug/PAI',
     source: 'sources/github/rikitikitavi2012-debug/PAI',
     branch: 'main',
+    autoMerge: false, // origin PRs need manual review before upstream submission
   },
 };
 
@@ -264,6 +267,17 @@ async function processPR(
 
   if (dryRun) {
     console.log(`  ${C}DRY${X}  PR #${pr.number}: ${pr.title} (would test & merge)`);
+    return record;
+  }
+
+  // Origin repos: A0 review only, no auto-merge (needs manual upstream submission)
+  if (!repo.autoMerge) {
+    console.log(`  ${D}A0 reviewing PR #${pr.number} (no auto-merge for ${repo.key})...${X}`);
+    const review = await a0ReviewDiff(repo, pr.number);
+    const icon = review.severity === 'HIGH' ? R : review.severity === 'MEDIUM' ? Y : G;
+    console.log(`  ${icon}REVIEW${X} PR #${pr.number}: ${review.severity} — ${review.summary.slice(0, 100)}`);
+    record.result = 'skipped';
+    state.stats.totalSkipped++;
     return record;
   }
 
