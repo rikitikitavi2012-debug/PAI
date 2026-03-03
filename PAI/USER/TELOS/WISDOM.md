@@ -4,7 +4,7 @@
 
 Это не красивые цитаты — это принципы, проверенные практикой.
 
-*Последнее обновление: 2026-02-20*
+*Последнее обновление: 2026-03-03*
 
 ---
 
@@ -51,12 +51,59 @@
 ## Заимствованная мудрость
 
 ### Daniel Miessler (создатель PAI и Fabric)
-Причина выбора PAI как системы. Подход к AI как к мультипликатору человеческих возможностей, не замене. Алгоритмическое мышление: Ideal State → Verification → Hill-climbing.
+Причина выбора PAI как системы. Философия, на которой строится наша инфраструктура.
+
+**Система важнее модели (главный принцип):**
+> "The orchestration and scaffolding are far more important than the model's intelligence. A well-designed system with an unsophisticated model will outperform a smart model in a poorly-designed system."
+> "I've seen haiku outperform opus on many tasks because the scaffolding was good."
+— [PAI December 2025](https://danielmiessler.com/blog/personal-ai-infrastructure-december-2025)
+
+**AI — увеличительное стекло, не замена:**
+> "AI is not a thing. It's an enabler of a thing. It's a magnifier of a thing. And that thing is human creativity."
+— [AI Will 100x Human Creativity](https://danielmiessler.com/blog/ai-will-100x-human-creativity-and-output)
+
+**Hill-climbing через верификацию:**
+> "You can't hill-climb towards something you can't test."
+> "The trick is making things verifiable. General things. General goals."
+— [Generalized Hill-Climbing](https://danielmiessler.com/blog/nobody-is-talking-about-generalized-hill-climbing)
+
+**Ясность > технология:**
+> "My strong intuition is that prompting is the center mass of AI. Not RAG, not fine-tuning, and increasingly — not even the models."
+— [AI is Mostly Prompting](https://danielmiessler.com/blog/ai-is-mostly-prompting)
+
+**Контекст превращает инструмент в ассистента:**
+> "Without context, you have a tool. With context, you have an assistant that knows you."
+— [Building a PAI](https://danielmiessler.com/blog/personal-ai-infrastructure)
+
+**TELOS — цель до технологий:**
+> "Figure out your Telos... Define your purpose, your goals, your challenges, and the life you're building toward."
+— [How My Projects Fit Together](https://danielmiessler.com/blog/how-my-projects-fit-together)
+
+**Алгоритмическое обучение:**
+> "Experiential learning trusts integration to luck, chance and time. Algorithmic learning makes integration explicit."
+— [Algorithmic Learning](https://danielmiessler.com/blog/algorithmic-learning)
+
+**Активация — не автоматизация:**
+> "Most of humanity is not activated... People have been taught that there are special people who have ideas worth sharing."
+> "There are too many Spielbergs working night shift at Walmart."
+— [Cognitive Revolution Podcast](https://www.cognitiverevolution.ai/pioneering-pai-how-daniel-miessler-s-personal-ai-infrastructure-activates-human-agency-creativity/)
+
+**Код до промптов (иерархия):**
+> Goal → Code → CLI Tool → Prompt → Agent. "If you can solve it with a bash script, don't use AI."
+— [PAI README](https://github.com/danielmiessler/Personal_AI_Infrastructure)
+
+**Не автоматизируй "спортзал":**
+> Outsource where outcomes matter (jobs); never automate activities where effort itself provides value (gym).
+— [Ideas](https://danielmiessler.com/ideas)
+
+**Таймлайн:**
+> "I suspect that by 2028 what I am saying will be undeniable, and by 2030 it will be an emergency."
+— [AI Changes 2026](https://danielmiessler.com/blog/ai-changes-2026)
+
+*Полная коллекция: `~/.claude/MEMORY/RESEARCH/2026-03/miessler-philosophy.md`*
 
 ### Navi
 Сначала точим топор, потом рубим дерево.
-
-> *Конкретные цитаты — добавить при нахождении резонирующих.*
 
 ---
 

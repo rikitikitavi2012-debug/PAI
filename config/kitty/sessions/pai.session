@@ -1,12 +1,12 @@
-# PAI Workspace Session — AI Brigade Edition
+# PAI Workspace Session — Command Center Edition
 # Launch: kitty --session ~/.config/kitty/sessions/pai.session
-# Табы: Alt+1..6 для переключения
+# Табы: Alt+1..7 для переключения
 
-# ── Tab 1: Home — приветствие + статус системы ──
-new_tab  ⬢ Home
+# ── Tab 1: Command Center — живая панель управления (LIVE) ──
+new_tab  ⬢ Center
 layout splits
 cd ~
-launch --title "Home" bash -ic 'clear; echo ""; echo "  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"; echo "  ┃          ⬢  PAI — Personal AI Infrastructure       ┃"; echo "  ┃              🤖 AI Brigade Edition                  ┃"; echo "  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"; echo ""; echo "  ┌─ Системный статус ──────────────────────────────────┐"; vpn="❌ Выкл"; pgrep -f "ssh -D" >/dev/null 2>&1 && vpn="✅ Активен"; voice="❌ Выкл"; systemctl --user is-active pai-voice >/dev/null 2>&1 && voice="✅ Активен"; dock="❌ Стоп"; pgrep -x dockerd >/dev/null 2>&1 && dock="✅ Работает"; disk=$(df -h / 2>/dev/null | awk "NR==2{print \$3\"/\"\$2\" (\"\$5\")\"}"); ram=$(free -h 2>/dev/null | awk "/Mem:/{print \$3\"/\"\$2}"); printf "  │  VPN:    %-14s  Voice:  %-14s │\n" "$vpn" "$voice"; printf "  │  Docker: %-14s  Диск:   %-14s │\n" "$dock" "$disk"; printf "  │  RAM:    %-14s                         │\n" "$ram"; echo "  └────────────────────────────────────────────────────┘"; echo ""; echo "  ┌─ AI Brigade ──────────────────────────────────────┐"; echo "  │  🧠 Navi      — Claude Code (архитектор)           │"; echo "  │  ☁️  Jules     — Google async-кодер (PRs)           │"; echo "  │  🔍 Agent Zero — ревьюер 24/7 (VPS Docker)         │"; echo "  │  🔀 AutoMerge — тесты → A0 review → merge          │"; echo "  └────────────────────────────────────────────────────┘"; echo ""; echo "  ┌─ Табы (Alt+1..6) ────────────────────────────────────┐"; echo "  │  Alt+1  ⬢ Home      — ты тут                        │"; echo "  │  Alt+2  ⚙ PAI       — работа над системой PAI       │"; echo "  │  Alt+3  📁 Projects  — проекты                       │"; echo "  │  Alt+4  🤖 Brigade  — мониторинг бригады (LIVE)     │"; echo "  │  Alt+5  🖥 Servers   — серверы agentzero + xray      │"; echo "  │  Alt+6  📊 Monitor   — htop + docker                 │"; echo "  └────────────────────────────────────────────────────────┘"; echo ""; echo "  ┌─ Быстрый старт ─────────────────────────────────────┐"; echo "  │  pai                  — запустить Claude Code тут   │"; echo "  │  pai-kitty --quick    — новое окно с выбором проекта│"; echo "  │  Ctrl+Shift+T         — новый таб                   │"; echo "  │  Ctrl+Shift+\\         — разделить окно вертикально  │"; echo "  │  Ctrl+Shift+-         — разделить горизонтально      │"; echo "  │  Ctrl+Shift+Z         — развернуть/свернуть сплит   │"; echo "  │  F3                   — подсветить ERROR/WARNING     │"; echo "  └────────────────────────────────────────────────────┘"; echo ""; exec bash'
+launch --title "Command Center" bash -c 'exec ~/.config/kitty/scripts/command-center.sh'
 
 # ── Tab 2: PAI System — работа над системой ──
 new_tab  ⚙ PAI
@@ -43,5 +43,11 @@ cd ~
 launch --title "htop" bash -c 'clear; echo ""; echo "  📊 СИСТЕМНЫЙ МОНИТОР (htop)"; echo "  ───────────────────────────"; echo "  Показывает: процессы, CPU, RAM в реальном времени"; echo ""; echo "  ┌─ Управление: ─────────────────────────────────┐"; echo "  │  F5         — дерево процессов                 │"; echo "  │  F6         — сортировка (CPU/RAM/имя)         │"; echo "  │  F9         — убить процесс (осторожно!)       │"; echo "  │  q          — выйти из htop                    │"; echo "  │  /          — поиск процесса по имени           │"; echo "  └─────────────────────────────────────────────────┘"; echo ""; echo "  Нажми Enter чтобы запустить htop..."; read; htop; exec bash'
 launch --location=vsplit --title "docker" bash -c 'clear; echo ""; echo "  🐳 DOCKER МОНИТОРИНГ"; echo "  ────────────────────"; echo "  Показывает: контейнеры, их CPU/RAM/сеть"; echo ""; echo "  ┌─ Команды: ────────────────────────────────────────┐"; echo "  │  docker ps              — список контейнеров      │"; echo "  │  docker stats           — мониторинг (live)       │"; echo "  │  docker logs <name>     — логи контейнера         │"; echo "  │  docker restart <name>  — перезапустить            │"; echo "  │  docker stop <name>     — остановить               │"; echo "  │  Ctrl+C                 — выйти из docker stats   │"; echo "  └────────────────────────────────────────────────────┘"; echo ""; docker ps 2>/dev/null && echo "" && docker stats 2>/dev/null || echo "  ⚠ Docker не запущен. Запустится при следующем входе в WSL."; exec bash'
 
-# Focus Home tab
+# ── Tab 7: TELOS — стратегический радар (LIVE) ──
+new_tab  🎯 TELOS
+layout splits
+cd ~
+launch --title "TELOS Dashboard" bash -c 'exec ~/.config/kitty/scripts/telos-dashboard.sh'
+
+# Focus Command Center tab
 focus_tab 0

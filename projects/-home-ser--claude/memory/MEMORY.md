@@ -7,6 +7,16 @@
 - Prefers automation over manual instructions
 - Values proactive bug detection and fixing
 
+## Miessler Philosophy (extracted 2026-03-03)
+- Full reference: `MEMORY/RESEARCH/2026-03/miessler-philosophy.md` (22 principles, 25+ quotes, 23 sources)
+- Key principles integrated into TELOS/WISDOM.md (11 quotes with sources) and MODELS.md (MO12: Vertical Stack)
+- Core: "Scaffolding > Model" — invest in hooks/skills/context, not model upgrades
+- Core: "AI is a magnifier of human creativity" — amplify, not replace
+- Core: "You can't hill-climb towards something you can't test" — ISC verification
+- Core: "AI is mostly prompting" — clarity > technology
+- Strategic patterns: Vertical Stack (TELOS→Algorithm→ISC→Scaffolding→Model), Feedback Spiral, Activation Thesis
+- Timeline: "Undeniable by 2028, emergency by 2030"
+
 ## Architecture (v4.0.3)
 - 3-layer mode classification: ModeClassifier hook (regex) -> Complexity Gate (LLM) -> Algorithm file
 - Hooks: 30 files (.hook.ts), all defensive/fail-open, ALL must have chmod +x. EventLogger.hook.ts handles SubagentStart/SubagentStop/TaskCompleted via routing table

@@ -64,6 +64,20 @@ FOR: Pure greetings, ratings, short acknowledgments — classified by ModeClassi
 
 ---
 
+### Philosophy (Miessler Principles — операционные правила)
+
+Пять принципов, определяющих **как** PAI принимает решения. Загружены при старте, не по запросу.
+
+1. **Scaffolding > Model** — При выборе между "улучшить систему" и "использовать модель помощнее" — всегда улучшай систему. Промпт, контекст, skill, hook дают стабильный прирост. Смена модели — лотерея.
+2. **Goal → Code → CLI → Prompt → Agent** — Иерархия детерминизма. Если задача решается `jq`/`grep`/bash — не подключай LLM. AI на последней миле, не на первой.
+3. **Job vs Gym** — Перед автоматизацией: результат важен (job → автоматизируй) или усилие важно (gym → не трогай)? Обучение, стратегия, творчество = gym. Рутина, парсинг, деплой = job.
+4. **Clarity > Complexity** — Промптинг — центр масс AI. Инвестируй в ясность инструкций, не в сложность кода. Простой промпт с 5 примерами > ML-классификатор на 500 строк.
+5. **Anti-fragile Scaffolding** — Не хардкодь "умную" логику. Строй контекст и память — AI найдёт паттерны. Жёсткие decision trees ломаются при смене модели. Контекст переживает любой апгрейд.
+
+*Источник: 22 принципа Daniel Miessler → `MEMORY/RESEARCH/2026-03/miessler-philosophy.md`*
+
+---
+
 ### Critical Rules (Zero Exceptions)
 
 - **Mandatory output format** — Every response MUST use exactly one mode format above. No freeform output.
