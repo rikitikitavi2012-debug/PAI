@@ -8,8 +8,17 @@ tool use, prompt submit, compact, etc.). The system includes skills, memory mana
 event logging, security validation, and automated learning.
 
 **Owner**: Solo developer (Ivan). No team. No CI/CD pipeline yet.
-**Primary AI partner**: Claude Code CLI (Navi) — handles architecture, complex refactoring, interactive work.
-**Jules role**: Async worker — tests, maintenance, bounded bug fixes, dependency updates.
+
+## AI Brigade
+
+| Agent | Role | When to use |
+|-------|------|-------------|
+| **Navi** (Claude Opus) | Architect, lead engineer | Architecture, complex decisions, interactive work |
+| **Jules** (Google Gemini) | Async worker | Tests, bugs, TODOs, deps, security scans |
+| **Agent Zero** (Claude Sonnet, 24/7 VPS) | Autonomous researcher | Deep research, code exec, browser, docs, DevOps |
+| **Gemini CLI** / **GLM-5** | Inference tools | Second opinion, cross-check, bulk inference |
+
+Full brigade reference: `PAI/BRIGADE.md`
 
 ## Stack
 
