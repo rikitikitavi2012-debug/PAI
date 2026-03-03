@@ -1037,7 +1037,7 @@
     },
     "agent-zero": {
       "type": "sse",
-      "url": "http://72.56.86.51:50002/mcp/t-${A0_API_TOKEN}/sse"
+      "url": "http://72.56.86.51:50002/mcp/t-4xGU3SuhP7m4Qq-N/sse"
     }
   }
 }
