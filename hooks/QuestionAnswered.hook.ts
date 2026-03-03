@@ -76,4 +76,4 @@ async function main() {
   process.exit(0);
 }
 
-main();
+main().catch((err) => { process.stderr.write(`[QuestionAnswered] error description: ${err}\n`); process.exit(0); });

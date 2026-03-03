@@ -566,4 +566,4 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
   }
 }
 
-main();
+main().catch((err) => { process.stderr.write(`[LoadContext] error description: ${err}\n`); process.exit(0); });

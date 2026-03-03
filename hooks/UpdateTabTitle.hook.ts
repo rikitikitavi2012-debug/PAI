@@ -274,4 +274,4 @@ async function main() {
   }
 }
 
-main();
+main().catch((err) => { process.stderr.write(`[UpdateTabTitle] error description: ${err}\n`); process.exit(0); });

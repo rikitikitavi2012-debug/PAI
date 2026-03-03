@@ -127,4 +127,4 @@ async function main(): Promise<void> {
   }
 }
 
-main();
+main().catch((err) => { process.stderr.write(`[WorktreeCreate] error description: ${err}\n`); process.exit(0); });
