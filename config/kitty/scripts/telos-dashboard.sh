@@ -163,7 +163,7 @@ poll() {
   now=$(date '+%H:%M:%S')
 
   # Check if state file exists and is valid JSON
-  if [ ! -f "$STATE_FILE" ] || ! jq empty "$STATE_FILE" 2>/dev/null; then
+  if [ ! -f "$STATE_FILE" ] || ! timeout 3 jq empty "$STATE_FILE" 2>/dev/null; then
     printf "%b┌──────────────────────────────────────────────────────────────────────────────────────────────┐%b\n" "$SEP" "$RST"
     printf "%b│%b  %b%bТЕЛОС%b  %bЗагрузка...%b                                                                      %b│%b\n" "$SEP" "$RST" "$VIO" "$BLD" "$RST" "$DIM" "$RST" "$SEP" "$RST"
     printf "%b└──────────────────────────────────────────────────────────────────────────────────────────────┘%b\n" "$SEP" "$RST"
@@ -173,14 +173,15 @@ poll() {
   # ═══════════════════════════════════════════════════════════
   # Section 1: HEADER with seasonal countdown
   # ═══════════════════════════════════════════════════════════
-  local season_label days_remaining elapsed_pct
-  season_label=$(jq -r '.season.seasonLabel // "—"' "$STATE_FILE")
-  days_remaining=$(jq -r '.season.daysRemaining // 0' "$STATE_FILE")
-  elapsed_pct=$(jq -r '.season.elapsedPercent // 0' "$STATE_FILE")
+  # Batch extract season data (1 jq call instead of 4)
+  local season_data
+  season_data=$(jq -r '[.season.seasonLabel // "—", .season.daysRemaining // 0, .season.elapsedPercent // 0, .season.current // ""] | @tsv' "$STATE_FILE" 2>/dev/null)
+  local season_label days_remaining elapsed_pct season_current
+  IFS=$'\t' read -r season_label days_remaining elapsed_pct season_current <<< "$season_data"
 
   # Season icon
   local season_icon
-  case "$(jq -r '.season.current // ""' "$STATE_FILE")" in
+  case "$season_current" in
     offseason) season_icon="❄" ;;
     season)    season_icon="☀" ;;
     *)         season_icon="📅" ;;
@@ -205,32 +206,24 @@ poll() {
   # ═══════════════════════════════════════════════════════════
   box_top "🎯 МИССИИ"
 
-  local mission_count
-  mission_count=$(jq '.missions | length' "$STATE_FILE")
-
-  for (( mi=0; mi<mission_count; mi++ )); do
-    local m_id m_name m_progress m_goals_str
-    m_id=$(jq -r ".missions[$mi].id" "$STATE_FILE")
-    m_name=$(jq -r ".missions[$mi].name" "$STATE_FILE")
-    m_progress=$(jq -r ".missions[$mi].progress // 0" "$STATE_FILE")
-
-    # Build linked goals string
-    m_goals_str=""
-    local lg_count
-    lg_count=$(jq ".missions[$mi].linkedGoals | length" "$STATE_FILE")
-    for (( gi=0; gi<lg_count; gi++ )); do
-      local g_id g_progress
-      g_id=$(jq -r ".missions[$mi].linkedGoals[$gi]" "$STATE_FILE")
-      g_progress=$(jq -r ".goals[] | select(.id==\"$g_id\") | .progress // 0" "$STATE_FILE")
-      [ -n "$m_goals_str" ] && m_goals_str+=" "
-      m_goals_str+="${g_id}(${g_progress}%)"
-    done
-
-    # Progress bar (16 chars)
+  # Batch extract all missions with linked goals (1 jq call instead of ~20)
+  jq -r '
+    .goals as $all_goals |
+    .missions[] |
+    [
+      .id,
+      .name,
+      (.progress // 0 | tostring),
+      ((.linkedGoals // []) | map(
+        . as $gid |
+        ($all_goals | map(select(.id == $gid)) | .[0].progress // 0) as $gp |
+        "\($gid)(\($gp)%)"
+      ) | join(" "))
+    ] | @tsv
+  ' "$STATE_FILE" 2>/dev/null | while IFS=$'\t' read -r m_id m_name m_progress m_goals_str; do
     local bar
     bar=$(progress_bar "$m_progress" 16)
 
-    # Color based on progress
     local pcolor="$SLT"
     [ "$m_progress" -gt 0 ]  && pcolor="$YLW"
     [ "$m_progress" -ge 50 ] && pcolor="$GRN"
@@ -251,30 +244,26 @@ poll() {
   local -a left_goals=()
 
   # Build sortable array: "sortkey|index"
+  # Batch extract all goals (1 jq call instead of ~39)
   local goal_count
-  goal_count=$(jq '.goals | length' "$STATE_FILE")
-  local -a goal_sorted=()
-
-  for (( gi=0; gi<goal_count; gi++ )); do
-    local g_status g_progress sk
-    g_status=$(jq -r ".goals[$gi].status" "$STATE_FILE")
-    g_progress=$(jq -r ".goals[$gi].progress // 0" "$STATE_FILE")
-    sk=$(goal_sort_key "$g_status" "$g_progress")
-    goal_sorted+=("${sk}|${gi}")
-  done
-
-  # Sort
-  mapfile -t goal_sorted < <(printf "%s\n" "${goal_sorted[@]}" | sort)
+  goal_count=$(jq '.goals | length' "$STATE_FILE" 2>/dev/null || echo 0)
 
   left_goals+=("$(printf "%b%b ВСЕ ЦЕЛИ (%s)%b" "$CYN" "$BLD" "$goal_count" "$RST")")
   left_goals+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
 
+  # Extract goals as tsv, sort by status+progress in bash
+  local -a goal_sorted=()
+  while IFS=$'\t' read -r g_id g_status g_progress; do
+    local sk
+    sk=$(goal_sort_key "$g_status" "$g_progress")
+    goal_sorted+=("${sk}|${g_id}|${g_status}|${g_progress}")
+  done < <(jq -r '.goals[] | [.id, .status, (.progress // 0 | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
+
+  mapfile -t goal_sorted < <(printf "%s\n" "${goal_sorted[@]}" | sort)
+
   for entry in "${goal_sorted[@]}"; do
-    local idx=${entry#*|}
     local g_id g_status g_progress emoji sname bar pcolor
-    g_id=$(jq -r ".goals[$idx].id" "$STATE_FILE")
-    g_status=$(jq -r ".goals[$idx].status" "$STATE_FILE")
-    g_progress=$(jq -r ".goals[$idx].progress // 0" "$STATE_FILE")
+    IFS='|' read -r _ g_id g_status g_progress <<< "$entry"
     emoji=$(goal_emoji "$g_status")
     sname=$(short_goal "$g_id")
     bar=$(progress_bar "$g_progress" 10)
@@ -298,15 +287,8 @@ poll() {
   right_capital+=("$(printf "%b%b КАПИТАЛ: %s%b" "$ORG" "$BLD" "$total_fmt" "$RST")")
   right_capital+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
 
-  local alloc_count
-  alloc_count=$(jq '.capital.allocations | length' "$STATE_FILE")
-
-  for (( ai=0; ai<alloc_count; ai++ )); do
-    local a_name a_amount a_percent a_priority
-    a_name=$(jq -r ".capital.allocations[$ai].name" "$STATE_FILE")
-    a_amount=$(jq -r ".capital.allocations[$ai].amount // 0" "$STATE_FILE")
-    a_percent=$(jq -r ".capital.allocations[$ai].percent // 0" "$STATE_FILE")
-    a_priority=$(jq -r ".capital.allocations[$ai].priority // \"\"" "$STATE_FILE")
+  # Batch extract capital allocations (1 jq call instead of ~24)
+  while IFS=$'\t' read -r a_name a_amount a_percent a_priority; do
 
     local a_fmt bar_w cap_bar
     a_fmt=$(fmt_k "$a_amount")
@@ -327,7 +309,7 @@ poll() {
       "$cap_color" "$cap_bar" "$RST" \
       "$WHT" "$a_fmt" "$RST" \
       "$SLT" "$a_percent" "$RST")")
-  done
+  done < <(jq -r '.capital.allocations[]? | [.name, (.amount // 0 | tostring), (.percent // 0 | tostring), (.priority // "" | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
 
   # Paste two columns together
   local max_lines=${#left_goals[@]}
@@ -354,66 +336,33 @@ poll() {
   local -a left_challenges=()
   local -a right_strategies=()
 
-  # --- Left: Challenges ---
+  # --- Left: Challenges (1 jq call instead of ~15) ---
   local ch_count
-  ch_count=$(jq '.challenges | length' "$STATE_FILE")
+  ch_count=$(jq '.challenges | length' "$STATE_FILE" 2>/dev/null || echo 0)
 
   left_challenges+=("$(printf "%b%b ВЫЗОВЫ (%s)%b" "$RED" "$BLD" "$ch_count" "$RST")")
   left_challenges+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
 
-  for (( ci=0; ci<ch_count; ci++ )); do
-    local c_id c_name c_severity c_linked
-    c_id=$(jq -r ".challenges[$ci].id" "$STATE_FILE")
-    c_name=$(jq -r ".challenges[$ci].name" "$STATE_FILE")
-    c_severity=$(jq -r ".challenges[$ci].severity // \"medium\"" "$STATE_FILE")
-
-    # Linked strategies
-    c_linked=""
-    local ls_count
-    ls_count=$(jq ".challenges[$ci].linkedStrategies | length" "$STATE_FILE")
-    for (( si=0; si<ls_count; si++ )); do
-      local s_id
-      s_id=$(jq -r ".challenges[$ci].linkedStrategies[$si]" "$STATE_FILE")
-      [ -n "$c_linked" ] && c_linked+=","
-      c_linked+="$s_id"
-    done
-
+  while IFS=$'\t' read -r c_id c_name c_severity c_linked; do
     local sev_str
     sev_str=$(severity_icon "$c_severity")
-
     left_challenges+=("$(printf " %s %b%-3s%b %b%-23s%b %b%s%b" \
       "$sev_str" "$CYN" "$c_id" "$RST" "$WHT" "${c_name:0:23}" "$RST" \
       "$SLT" "$c_linked" "$RST")")
-  done
+  done < <(jq -r '.challenges[]? | [.id, .name, (.severity // "medium"), ((.linkedStrategies // []) | join(","))] | @tsv' "$STATE_FILE" 2>/dev/null)
 
-  # --- Right: Strategies ---
+  # --- Right: Strategies (1 jq call instead of ~20) ---
   local str_count
-  str_count=$(jq '.strategies | length' "$STATE_FILE")
+  str_count=$(jq '.strategies | length' "$STATE_FILE" 2>/dev/null || echo 0)
 
   right_strategies+=("$(printf "%b%b СТРАТЕГИИ (%s)%b" "$GRN" "$BLD" "$str_count" "$RST")")
   right_strategies+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
 
-  for (( si=0; si<str_count; si++ )); do
-    local s_id s_name s_eff s_addresses_str
-    s_id=$(jq -r ".strategies[$si].id" "$STATE_FILE")
-    s_name=$(jq -r ".strategies[$si].name" "$STATE_FILE")
-    s_eff=$(jq -r ".strategies[$si].effectiveness // \"unknown\"" "$STATE_FILE")
-
-    # Get short name (before parenthesis)
+  while IFS=$'\t' read -r s_id s_name s_eff s_addresses_str; do
+    # Short name (before parenthesis)
     local s_short="${s_name%%(*}"
     s_short="${s_short%% }"
     [ ${#s_short} -gt 24 ] && s_short="${s_short:0:23}."
-
-    # Addresses
-    s_addresses_str=""
-    local sa_count
-    sa_count=$(jq ".strategies[$si].addresses | length" "$STATE_FILE")
-    for (( ai=0; ai<sa_count; ai++ )); do
-      local addr
-      addr=$(jq -r ".strategies[$si].addresses[$ai]" "$STATE_FILE")
-      [ -n "$s_addresses_str" ] && s_addresses_str+=","
-      s_addresses_str+="$addr"
-    done
 
     local eff_str
     eff_str=$(effect_icon "$s_eff")
@@ -421,7 +370,7 @@ poll() {
     right_strategies+=("$(printf " %s %b%-3s%b %b%-24s%b %b%s%b" \
       "$eff_str" "$CYN" "$s_id" "$RST" "$WHT" "$s_short" "$RST" \
       "$SLT" "$s_addresses_str" "$RST")")
-  done
+  done < <(jq -r '.strategies[]? | [.id, .name, (.effectiveness // "unknown"), ((.addresses // []) | join(","))] | @tsv' "$STATE_FILE" 2>/dev/null)
 
   # Paste columns
   local max_cs=${#left_challenges[@]}
@@ -448,22 +397,12 @@ poll() {
   right_wins+=("$(printf "%b%b 🏆 ПОБЕДЫ (последние 7)%b" "$GRN" "$BLD" "$RST")")
   right_wins+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────────────────────────────────────────────────────" "$RST")")
 
-  local win_count
-  win_count=$(jq '.status.recentWins | length' "$STATE_FILE")
-  local win_start=$(( win_count - 7 ))
-  [ "$win_start" -lt 0 ] && win_start=0
-
-  for (( wi=win_start; wi<win_count; wi++ )); do
-    local w_text w_date
-    w_text=$(jq -r ".status.recentWins[$wi].win" "$STATE_FILE")
-    w_date=$(jq -r ".status.recentWins[$wi].date // \"\"" "$STATE_FILE")
-
-    # Truncate win text
+  # Batch extract last 7 wins (1 jq call instead of ~14)
+  while IFS=$'\t' read -r w_date w_text; do
     [ ${#w_text} -gt 72 ] && w_text="${w_text:0:71}."
-
     right_wins+=("$(printf " %b✦%b %b%-10s%b %b%s%b" \
       "$GRN" "$RST" "$SLT" "$w_date" "$RST" "$WHT" "$w_text" "$RST")")
-  done
+  done < <(jq -r '.status.recentWins[-7:][]? | [(.date // ""), .win] | @tsv' "$STATE_FILE" 2>/dev/null)
 
   # Print wins full-width (empty left, full content right)
   for (( li=0; li<${#right_wins[@]}; li++ )); do
@@ -476,77 +415,76 @@ poll() {
   printf "\n"
   box_top "🌳 ДЕРЕВО: МИССИЯ → ЦЕЛИ"
 
-  # Find highest-progress goal that appears in mission links (for star marker)
-  local max_goal_progress=0 max_goal_id=""
-  local linked_goals_all
-  linked_goals_all=$(jq -r '[.missions[].linkedGoals[]] | unique | .[]' "$STATE_FILE")
-  for lgid in $linked_goals_all; do
-    local gp
-    gp=$(jq -r ".goals[] | select(.id==\"$lgid\") | .progress // 0" "$STATE_FILE")
-    if [ "$gp" -gt "$max_goal_progress" ]; then
-      max_goal_progress=$gp
-      max_goal_id=$lgid
-    fi
-  done
+  # Batch extract dependency tree (1 jq call instead of ~30)
+  # Format: mission_id|mission_name|goal_id|goal_progress per linked goal
+  local max_goal_id=""
+  local max_goal_progress=0
 
-  for (( mi=0; mi<mission_count; mi++ )); do
-    local m_id m_name
-    m_id=$(jq -r ".missions[$mi].id" "$STATE_FILE")
-    m_name=$(jq -r ".missions[$mi].name" "$STATE_FILE")
+  # Pre-compute max progress goal (1 jq call)
+  read -r max_goal_id max_goal_progress < <(jq -r '
+    .goals as $g |
+    [.missions[].linkedGoals[]?] | unique | map(
+      . as $gid | ($g | map(select(.id == $gid)) | .[0].progress // 0) as $p | {id: $gid, p: $p}
+    ) | sort_by(-.p) | .[0] // {id: "", p: 0} | "\(.id) \(.p)"
+  ' "$STATE_FILE" 2>/dev/null)
 
-    local lg_count
-    lg_count=$(jq ".missions[$mi].linkedGoals | length" "$STATE_FILE")
-
-    if [ "$lg_count" -eq 0 ]; then
+  # Extract tree data: mission_id TAB mission_name TAB goals_csv (gid:progress,gid:progress)
+  while IFS=$'\t' read -r m_id m_name goals_csv; do
+    if [ -z "$goals_csv" ]; then
       printf "%b│%b  %b%s %s%b\n" "$SEP" "$RST" "$CYN" "$m_id" "$m_name" "$RST"
       continue
     fi
 
-    # First line: mission name + connector + first goal
-    local first_gid first_gprog first_sname first_star=""
-    first_gid=$(jq -r ".missions[$mi].linkedGoals[0]" "$STATE_FILE")
-    first_gprog=$(jq -r ".goals[] | select(.id==\"$first_gid\") | .progress // 0" "$STATE_FILE")
-    first_sname=$(short_goal "$first_gid")
-    [ "$first_gid" = "$max_goal_id" ] && [ "$max_goal_progress" -gt 0 ] && first_star=" ★"
-
-    local connector="──"
-    [ "$lg_count" -gt 1 ] && connector="┬─"
+    # Split goals
+    IFS=',' read -ra goal_pairs <<< "$goals_csv"
+    local lg_count=${#goal_pairs[@]}
 
     # Pad mission label
     local m_label
     m_label=$(printf "%s %-14s" "$m_id" "$m_name")
 
-    printf "%b│%b  %b%s%b %b─%s─%b %b%s %s%b (%b%s%%%b)%b%s%b\n" \
-      "$SEP" "$RST" "$CYN" "$m_label" "$RST" \
-      "$SEP" "$connector" "$RST" \
-      "$WHT" "$first_gid" "$first_sname" "$RST" \
-      "$SLT" "$first_gprog" "$RST" \
-      "$YLW" "$first_star" "$RST"
-
-    # Remaining goals
-    for (( gi=1; gi<lg_count; gi++ )); do
-      local g_id g_prog g_sname star=""
-      g_id=$(jq -r ".missions[$mi].linkedGoals[$gi]" "$STATE_FILE")
-      g_prog=$(jq -r ".goals[] | select(.id==\"$g_id\") | .progress // 0" "$STATE_FILE")
+    local gi=0
+    for gpair in "${goal_pairs[@]}"; do
+      local g_id="${gpair%%:*}"
+      local g_prog="${gpair#*:}"
+      local g_sname star=""
       g_sname=$(short_goal "$g_id")
       [ "$g_id" = "$max_goal_id" ] && [ "$max_goal_progress" -gt 0 ] && star=" ★"
 
-      local branch="├──"
-      [ "$gi" -eq $(( lg_count - 1 )) ] && branch="└──"
-
-      # Pad to align with first goal
-      local pad_len=${#m_label}
-      local pad_str
-      pad_str=$(printf '%*s' "$pad_len" "")
-
-      printf "%b│%b  %s %b%s%b %b%s %s%b (%b%s%%%b)%b%s%b\n" \
-        "$SEP" "$RST" "$pad_str" \
-        "$SEP" "$branch" "$RST" \
-        "$WHT" "$g_id" "$g_sname" "$RST" \
-        "$SLT" "$g_prog" "$RST" \
-        "$YLW" "$star" "$RST"
+      if [ "$gi" -eq 0 ]; then
+        local connector="──"
+        [ "$lg_count" -gt 1 ] && connector="┬─"
+        printf "%b│%b  %b%s%b %b─%s─%b %b%s %s%b (%b%s%%%b)%b%s%b\n" \
+          "$SEP" "$RST" "$CYN" "$m_label" "$RST" \
+          "$SEP" "$connector" "$RST" \
+          "$WHT" "$g_id" "$g_sname" "$RST" \
+          "$SLT" "$g_prog" "$RST" \
+          "$YLW" "$star" "$RST"
+      else
+        local branch="├──"
+        [ "$gi" -eq $(( lg_count - 1 )) ] && branch="└──"
+        local pad_len=${#m_label}
+        local pad_str
+        pad_str=$(printf '%*s' "$pad_len" "")
+        printf "%b│%b  %s %b%s%b %b%s %s%b (%b%s%%%b)%b%s%b\n" \
+          "$SEP" "$RST" "$pad_str" \
+          "$SEP" "$branch" "$RST" \
+          "$WHT" "$g_id" "$g_sname" "$RST" \
+          "$SLT" "$g_prog" "$RST" \
+          "$YLW" "$star" "$RST"
+      fi
+      gi=$((gi + 1))
     done
-  done
+  done < <(jq -r '
+    .goals as $g |
+    .missions[] |
+    [.id, .name,
+     ((.linkedGoals // []) | map(
+       . as $gid | ($g | map(select(.id == $gid)) | .[0].progress // 0) as $p |
+       "\($gid):\($p)"
+     ) | join(","))
+    ] | @tsv
+  ' "$STATE_FILE" 2>/dev/null)
 
   box_bottom
 

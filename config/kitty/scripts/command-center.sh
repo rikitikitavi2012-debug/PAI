@@ -6,6 +6,9 @@
 export PATH="$HOME/.bun/bin:$PATH"
 export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:8118}"
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:8118}"
+# A0 is direct WAN — bypass proxy
+export NO_PROXY="${NO_PROXY:+$NO_PROXY,}72.56.86.51"
+export no_proxy="${no_proxy:+$no_proxy,}72.56.86.51"
 
 # Source API keys
 # shellcheck disable=SC1091
@@ -221,7 +224,7 @@ poll() {
   local a0_icon a0_latency_str a0_latency_val=""
   local a0_start a0_end a0_json
   a0_start=$(date +%s%N)
-  a0_json=$(curl -s --max-time 5 "$A0_HEALTH_URL" 2>/dev/null)
+  a0_json=$(curl -s --max-time 10 "$A0_HEALTH_URL" 2>/dev/null)
   a0_end=$(date +%s%N)
   if [ -n "$a0_json" ]; then
     a0_latency_val=$(( (a0_end - a0_start) / 1000000 ))
@@ -279,19 +282,15 @@ poll() {
 
   two_col \
     "$(printf '%bA0%b     %s  %b%s%b' "$SLT" "$RST" "$a0_icon" "$DIM" "$a0_latency_str" "$RST")" \
-    "$(printf '%bA0%b     %s  %b%s%b' "$SLT" "$RST" "$a0_icon" "$DIM" "$a0_latency_str" "$RST")"
-
-  two_col \
-    "$(printf '%bZ.AI%b   %s' "$SLT" "$RST" "$zai_icon")" \
     "$(printf '%bMerge%b  %b+%s%b %b✗%s%b %b~%s%b' "$SLT" "$RST" "$GRN" "$am_merged" "$RST" "$RED" "$am_failed" "$RST" "$DIM" "$am_skipped" "$RST")"
 
   two_col \
-    "$(printf '%bGemini%b %s' "$SLT" "$RST" "$gemini_icon")" \
-    "$(printf '%bGemini%b %s CLI' "$SLT" "$RST" "$gemini_cli_icon")"
+    "$(printf '%bZ.AI%b   %s' "$SLT" "$RST" "$zai_icon")" \
+    "$(printf '%bGemini%b %s  %bCLI%b %s' "$SLT" "$RST" "$gemini_icon" "$SLT" "$RST" "$gemini_cli_icon")"
 
   two_col \
     "$(printf '%bEvents%b %b24ч:%b%b%s%b %b7д:%b%b%s%b' "$SLT" "$RST" "$DIM" "$RST" "$WHT" "$events_24h" "$RST" "$DIM" "$RST" "$WHT" "$events_7d" "$RST")" \
-    "$(printf '%bZ.AI%b   %s' "$SLT" "$RST" "$zai_icon")"
+    "$(printf '%bPR%b     %b%s%b %bоткрыто%b' "$SLT" "$RST" "$YLW" "$jules_prs" "$RST" "$DIM" "$RST")"
 
   two_col_bot
 

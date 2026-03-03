@@ -6,8 +6,12 @@
 A0_HOST="72.56.86.51:50002"
 A0_CONTEXT_FILE="$HOME/.claude/MEMORY/STATE/a0-active-context.json"
 A0_ENV="$HOME/.config/PAI/.env"
+
+# A0 is direct WAN — bypass VPN proxy
+export NO_PROXY="${NO_PROXY:+$NO_PROXY,}72.56.86.51"
+export no_proxy="${no_proxy:+$no_proxy,}72.56.86.51"
 POLL_INTERVAL=5
-SEEN_COUNT=0
+LAST_NO=-1
 
 # ── Colors ──
 RST='\e[0m'
@@ -41,13 +45,21 @@ print_header() {
   printf "%b\n" "${RST}"
 }
 
-# ── Format timestamp UTC→local ──
+# ── Format timestamp → local HH:MM:SS ──
+# Handles both UNIX float (1772566224.67) and ISO string (2026-03-03T19:30:43.031Z)
 to_local_time() {
-  local utc_ts="$1"
-  if command -v date >/dev/null 2>&1; then
-    date -d "$utc_ts" '+%H:%M:%S' 2>/dev/null || echo "${utc_ts:11:8}"
+  local ts="$1"
+  if [ -z "$ts" ] || [ "$ts" = "null" ] || [ "$ts" = "0" ]; then
+    echo "??:??:??"
+    return
+  fi
+  # UNIX float → prepend @
+  if [[ "$ts" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+    local ts_int="${ts%%.*}"
+    date -d "@${ts_int}" '+%H:%M:%S' 2>/dev/null || echo "??:??:??"
   else
-    echo "${utc_ts:11:8}"
+    # ISO string
+    date -d "$ts" '+%H:%M:%S' 2>/dev/null || echo "${ts:11:8}"
   fi
 }
 
@@ -90,51 +102,83 @@ fetch_chat() {
     printf "  %b⚠ Нет ответа от A0%b\n" "${YLW}" "${RST}"
     return 1
   fi
-  # Check for error field or non-parseable JSON
+
+  # Check for error
   local api_err
-  api_err=$(echo "$log_json" | jq -r 'if type == "object" then .error // empty else empty end' 2>/dev/null)
+  api_err=$(echo "$log_json" | jq -r '.error // empty' 2>/dev/null)
   if [ -n "$api_err" ]; then
     printf "  %b⚠ A0: %s%b\n" "${YLW}" "${api_err}" "${RST}"
     return 1
   fi
 
-  # Parse chat log — A0 returns array of message objects
-  local msg_count
-  msg_count=$(echo "$log_json" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo 0)
+  # A0 API returns {context_id, log: {items: [...], progress, total_items}}
+  local msg_count progress
+  msg_count=$(echo "$log_json" | jq '.log.items | length' 2>/dev/null || echo 0)
+  progress=$(echo "$log_json" | jq -r '.log.progress // ""' 2>/dev/null)
 
   if [ "$msg_count" -eq 0 ]; then
-    printf "  %bЧат пуст или формат неизвестен%b\n" "${DIM}" "${RST}"
+    printf "  %bЧат пуст%b\n" "${DIM}" "${RST}"
     return 0
   fi
 
-  # Show only new messages (skip already seen)
-  local start_idx=$SEEN_COUNT
-  if [ "$msg_count" -gt "$SEEN_COUNT" ]; then
-    echo "$log_json" | jq -r --argjson start "$start_idx" '
-      .[$start:][] |
-      (.timestamp // .time // "" ) as $ts |
-      (.role // .type // "?") as $role |
-      (.content // .message // .text // "" | tostring | gsub("\n"; " ") | .[:120]) as $msg |
-      "\($ts)|\($role)|\($msg)"
-    ' 2>/dev/null | while IFS='|' read -r ts role msg; do
-      local local_ts
-      local_ts=$(to_local_time "$ts")
-      case "$role" in
-        user|human)
-          printf "  %b%s%b  %b👤 Ivan:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${GRN}${BLD}" "${RST}" "${WHT}" "$msg" "${RST}"
-          ;;
-        assistant|ai|agent)
-          printf "  %b%s%b  %b🧠 A0:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${CYN}${BLD}" "${RST}" "${WHT}" "$msg" "${RST}"
-          ;;
-        tool|function|code_execution)
-          printf "  %b%s%b  %b⚙ Tool:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${VIO}" "${RST}" "${DIM}" "${msg:0:80}" "${RST}"
-          ;;
-        *)
-          printf "  %b%s%b  %b• %s:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${DIM}" "$role" "${RST}" "${DIM}" "$msg" "${RST}"
-          ;;
-      esac
-    done
-    SEEN_COUNT=$msg_count
+  # Show progress indicator if agent is active
+  if [ -n "$progress" ] && [ "$progress" != "null" ]; then
+    local progress_active
+    progress_active=$(echo "$log_json" | jq -r '.log.progress_active // false' 2>/dev/null)
+    if [ "$progress_active" = "true" ]; then
+      printf "\r  %b⟳ %s%b\n" "${YLW}" "$progress" "${RST}"
+    fi
+  fi
+
+  # Show only new messages (by .no field)
+  echo "$log_json" | jq -r --argjson last_no "$LAST_NO" '
+    .log.items[] | select(.no > $last_no) |
+    (.timestamp // 0 | tostring) as $ts |
+    (.type // "?") as $type |
+    (.no | tostring) as $no |
+    (.heading // "") as $heading |
+    (.content // "" | tostring | gsub("\n"; " ") | .[:120]) as $content |
+    "\($no)|\($ts)|\($type)|\($heading)|\($content)"
+  ' 2>/dev/null | while IFS='|' read -r no ts type heading content; do
+    local local_ts display_text
+    local_ts=$(to_local_time "$ts")
+
+    # Use heading if available, otherwise content preview
+    if [ -n "$heading" ] && [ "$heading" != "null" ]; then
+      # Strip icon:// prefix
+      display_text="${heading#icon://* }"
+      display_text="${display_text:0:100}"
+    else
+      display_text="${content:0:100}"
+    fi
+
+    case "$type" in
+      user)
+        printf "  %b%s%b  %b👤 Ivan:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${GRN}${BLD}" "${RST}" "${WHT}" "$display_text" "${RST}"
+        ;;
+      agent)
+        printf "  %b%s%b  %b🧠 A0:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${CYN}${BLD}" "${RST}" "${WHT}" "$display_text" "${RST}"
+        ;;
+      response)
+        # Final response from agent
+        printf "  %b%s%b  %b💬 Ответ:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${VIO}${BLD}" "${RST}" "${WHT}" "${display_text:0:100}" "${RST}"
+        ;;
+      util)
+        printf "  %b%s%b  %b⚙ %s%b\n" "${SLT}" "$local_ts" "${RST}" "${DIM}" "${display_text:0:80}" "${RST}"
+        ;;
+      *)
+        printf "  %b%s%b  %b• %s: %s%b\n" "${SLT}" "$local_ts" "${RST}" "${DIM}" "$type" "${display_text:0:80}" "${RST}"
+        ;;
+    esac
+
+    # Update LAST_NO (note: runs in subshell, handled below)
+  done
+
+  # Update LAST_NO from max .no in items
+  local max_no
+  max_no=$(echo "$log_json" | jq '[.log.items[].no] | max' 2>/dev/null || echo "$LAST_NO")
+  if [ "$max_no" -gt "$LAST_NO" ] 2>/dev/null; then
+    LAST_NO=$max_no
   fi
 }
 
@@ -156,7 +200,7 @@ while true; do
       printf "\n"
       get_context_info "$CTX_ID"
       printf "\n"
-      SEEN_COUNT=0
+      LAST_NO=-1
       LAST_CTX="$CTX_ID"
     fi
 

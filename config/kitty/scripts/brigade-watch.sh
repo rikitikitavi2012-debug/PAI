@@ -7,6 +7,9 @@ export PATH="$HOME/.bun/bin:$PATH"
 # VPN proxy required for Jules API and GitHub CLI
 export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:8118}"
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:8118}"
+# A0 is direct WAN — bypass proxy
+export NO_PROXY="${NO_PROXY:+$NO_PROXY,}72.56.86.51"
+export no_proxy="${no_proxy:+$no_proxy,}72.56.86.51"
 
 A0_HOST="72.56.86.51:50002"
 A0_HEALTH_URL="http://${A0_HOST}/health"
