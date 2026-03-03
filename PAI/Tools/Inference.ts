@@ -304,11 +304,13 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
     // Handle timeout
     const timeoutId = setTimeout(() => {
       proc.kill('SIGTERM');
+      const latencyMs = Date.now() - startTime;
+      emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
       resolve({
         success: false,
         output: '',
         error: `Timeout after ${timeout}ms`,
-        latencyMs: Date.now() - startTime,
+        latencyMs,
         level,
       });
     }, timeout);
@@ -380,11 +382,13 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
 
     proc.on('error', (err) => {
       clearTimeout(timeoutId);
+      const latencyMs = Date.now() - startTime;
+      emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
       resolve({
         success: false,
         output: '',
         error: err.message,
-        latencyMs: Date.now() - startTime,
+        latencyMs,
         level,
       });
     });

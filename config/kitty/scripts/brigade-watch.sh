@@ -33,7 +33,7 @@ WHT='\e[38;2;203;213;225m'    # white — values
 
 separator() {
   printf "%b" "${SEP}"
-  printf '─%.0s' {1..48}
+  printf '━%.0s' {1..48}
   printf "%b\n" "${RST}"
 }
 
@@ -96,6 +96,31 @@ poll() {
   else
     printf "  %b❌ Недоступен%b\n" "${RED}" "${RST}"
     printf "  %bПроверь: ssh agentzero 'docker ps'%b\n" "${DIM}" "${RST}"
+  fi
+
+  # ═══════════════════════════════════════════════════
+  # ── Local Services ──
+  # ═══════════════════════════════════════════════════
+  section_header "⚡" "ЛОКАЛЬНЫЕ СЕРВИСЫ" "$VIO"
+
+  # VoiceServer — localhost:8888
+  local vs_http
+  vs_http=$(curl -s --max-time 2 -o /dev/null -w "%{http_code}" "http://localhost:8888/health" 2>/dev/null)
+  if [ "$vs_http" = "200" ]; then
+    printf "  %b🔊 VoiceServer%b  %b✅ Online%b  %b:8888%b\n" "${VIO}" "${RST}" "${GRN}" "${RST}" "${DIM}" "${RST}"
+  elif [ -n "$vs_http" ] && [ "$vs_http" != "000" ]; then
+    printf "  %b🔊 VoiceServer%b  %b⚠ HTTP %s%b\n" "${VIO}" "${RST}" "${YLW}" "${vs_http}" "${RST}"
+  else
+    printf "  %b🔊 VoiceServer%b  %b❌ Недоступен%b\n" "${VIO}" "${RST}" "${RED}" "${RST}"
+  fi
+
+  # Z.AI — check via env key presence
+  local zai_key
+  zai_key=$(grep '^ZAI_API_KEY=' "$HOME/.config/PAI/.env" 2>/dev/null | cut -d= -f2)
+  if [ -n "$zai_key" ]; then
+    printf "  %b🤖 Z.AI%b         %b✅ Key настроен%b  %bGLM-5 744B%b\n" "${VIO}" "${RST}" "${GRN}" "${RST}" "${DIM}" "${RST}"
+  else
+    printf "  %b🤖 Z.AI%b         %b⚠ ZAI_API_KEY не найден%b\n" "${VIO}" "${RST}" "${YLW}" "${RST}"
   fi
 
   # ═══════════════════════════════════════════════════
@@ -210,7 +235,7 @@ poll() {
   printf "\n%b" "${SEP}"
   printf '━%.0s' {1..48}
   printf "%b\n" "${RST}"
-  printf "%b ↻ Обновление через %sс │ Ctrl+C выход │ r = обновить%b\n" "${DIM}" "${INTERVAL}" "${RST}"
+  printf "%b ↻ Обновление через %sс │ r = сейчас │ q = выход │ Ctrl+C%b\n" "${DIM}" "${INTERVAL}" "${RST}"
 }
 
 # Initial poll
@@ -219,7 +244,9 @@ poll
 # Main loop with interruptible sleep
 while true; do
   read -r -t "$INTERVAL" -n 1 key 2>/dev/null
-  if [[ "$key" == "r" || "$key" == "R" ]]; then
+  if [[ "$key" == "q" || "$key" == "Q" ]]; then
+    break
+  elif [[ "$key" == "r" || "$key" == "R" ]]; then
     printf "\n%bОбновляю...%b\n" "${DIM}" "${RST}"
   fi
   poll

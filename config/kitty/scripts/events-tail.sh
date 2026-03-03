@@ -14,9 +14,14 @@ RED='\e[38;2;251;113;133m'
 SEP='\e[38;2;71;85;105m'
 GRN='\e[38;2;74;222;128m'
 
-# ── Timezone offset (hours from UTC, e.g. 3 for MSK) ──
-TZ_OFFSET_H=$(date +%z | sed 's/^+//' | sed 's/00$//' | sed 's/^0//')
-[ -z "$TZ_OFFSET_H" ] && TZ_OFFSET_H=0
+# ── Timezone offset (hours from UTC, e.g. 3 for MSK, -5 for EST) ──
+_tz_raw=$(date +%z)
+_tz_sign=1
+[[ "$_tz_raw" == -* ]] && _tz_sign=-1
+_tz_abs=${_tz_raw#[+-]}
+_tz_h=$(( 10#${_tz_abs:0:2} ))
+TZ_OFFSET_H=$(( _tz_sign * _tz_h ))
+unset _tz_raw _tz_sign _tz_abs _tz_h
 
 printf "%b%b📡 PAI EVENTS%b  %b(live · UTC%+d)%b\n" "${BLD}" "${VIO}" "${RST}" "${DIM}" "${TZ_OFFSET_H}" "${RST}"
 printf "%b" "${SEP}"
@@ -55,6 +60,15 @@ tail -n 20 -f "$EVENTS" | jq --unbuffered -r -R --argjson tz "$TZ_OFFSET_H" '
      (if $h < 10 then "0\($h)" else "\($h)" end) as $hh |
      "\($hh):\($parts[1]):\($parts[2])"
    end) as $ts |
+
+  # ── Relative time for recent events (0–60s old) ──
+  (.timestamp // null | if . then
+    (gsub("[.].*$"; "") + "Z" | gsub("Z$"; "") | try strptime("%Y-%m-%dT%H:%M:%S") | mktime) as $evt_epoch |
+    (now - $evt_epoch) as $age |
+    (if $age >= 0 and $age < 10 then "сейчас"
+     elif $age >= 10 and $age < 60 then "\($age | floor)с"
+     else null end)
+   else null end) as $rel |
 
   # Event type
   (.type // "unknown") as $typ |
@@ -117,5 +131,7 @@ tail -n 20 -f "$EVENTS" | jq --unbuffered -r -R --argjson tz "$TZ_OFFSET_H" '
    elif ($typ | startswith("custom."))      then "⚡"
    else "•" end) as $icon |
 
-  "\u001b[38;2;100;116;139m\($ts)\u001b[0m \($icon) \($color)\($short)\u001b[0m \u001b[2m\($detail)\u001b[0m"
+  (if $rel then "\u001b[38;2;100;116;139m\($ts)\u001b[0m \u001b[38;2;74;222;128m(\($rel))\u001b[0m"
+   else "\u001b[38;2;100;116;139m\($ts)\u001b[0m" end) as $ts_display |
+  "\($ts_display) \($icon) \($color)\($short)\u001b[0m \u001b[2m\($detail)\u001b[0m"
 ' 2>/dev/null

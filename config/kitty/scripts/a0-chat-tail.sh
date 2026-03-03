@@ -25,7 +25,7 @@ SLT='\e[38;2;148;163;184m'
 # ── Load API token ──
 A0_TOKEN=""
 if [ -f "$A0_ENV" ]; then
-  A0_TOKEN=$(grep '^A0_API_TOKEN=' "$A0_ENV" | cut -d= -f2)
+  A0_TOKEN=$(grep '^A0_API_TOKEN=' "$A0_ENV" | cut -d= -f2-)
 fi
 if [ -z "$A0_TOKEN" ]; then
   printf "%b❌ A0_API_TOKEN не найден в %s%b\n" "${RED}" "$A0_ENV" "${RST}"
@@ -59,6 +59,7 @@ get_context_id() {
 }
 
 get_context_info() {
+  local ctx_id="$1"
   if [ -f "$A0_CONTEXT_FILE" ]; then
     local updated last_msg
     updated=$(jq -r '.updated // ""' "$A0_CONTEXT_FILE" 2>/dev/null)
@@ -66,7 +67,7 @@ get_context_info() {
     if [ -n "$updated" ]; then
       local local_time
       local_time=$(to_local_time "$updated")
-      printf "  %bContext:%b %b%s%b  %bОбновлён:%b %b%s%b\n" "${SLT}" "${RST}" "${WHT}" "$(get_context_id | head -c 16)" "${RST}" "${SLT}" "${RST}" "${DIM}" "$local_time" "${RST}"
+      printf "  %bContext:%b %b%s%b  %bОбновлён:%b %b%s%b\n" "${SLT}" "${RST}" "${WHT}" "${ctx_id:0:16}" "${RST}" "${SLT}" "${RST}" "${DIM}" "$local_time" "${RST}"
       if [ -n "$last_msg" ]; then
         printf "  %bТема:%b %b%s%b\n" "${SLT}" "${RST}" "${DIM}" "${last_msg:0:60}" "${RST}"
       fi
@@ -85,10 +86,15 @@ fetch_chat() {
     -d "{\"context_id\": \"$ctx_id\", \"length\": 50}" \
     "http://${A0_HOST}/api_log_get" 2>/dev/null)
 
-  if [ -z "$log_json" ] || echo "$log_json" | jq -e '.error' >/dev/null 2>&1; then
-    local err
-    err=$(echo "$log_json" | jq -r '.error // "Нет ответа"' 2>/dev/null)
-    printf "  %b⚠ %s%b\n" "${YLW}" "$err" "${RST}"
+  if [ -z "$log_json" ]; then
+    printf "  %b⚠ Нет ответа от A0%b\n" "${YLW}" "${RST}"
+    return 1
+  fi
+  # Check for error field or non-parseable JSON
+  local api_err
+  api_err=$(echo "$log_json" | jq -r 'if type == "object" then .error // empty else empty end' 2>/dev/null)
+  if [ -n "$api_err" ]; then
+    printf "  %b⚠ A0: %s%b\n" "${YLW}" "${api_err}" "${RST}"
     return 1
   fi
 
@@ -148,7 +154,7 @@ while true; do
     if [ "$CTX_ID" != "$LAST_CTX" ]; then
       print_header
       printf "\n"
-      get_context_info
+      get_context_info "$CTX_ID"
       printf "\n"
       SEEN_COUNT=0
       LAST_CTX="$CTX_ID"
