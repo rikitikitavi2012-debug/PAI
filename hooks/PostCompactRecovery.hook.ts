@@ -25,6 +25,7 @@ import { join } from 'path';
 import { getIdentity, getPrincipal, getVoiceId } from './lib/identity';
 import { appendEvent } from './lib/event-emitter';
 import { getPaiDir } from './lib/paths';
+import { loadAlgorithmPhases } from '../PAI/lib/vocabulary-loader';
 
 interface SessionStartInput {
   session_id: string;
@@ -98,6 +99,9 @@ async function main() {
 
   appendEvent({ type: 'custom.post_compact_recovery', source: 'PostCompactRecovery', has_snapshot: !!dynamicContext } as any);
 
+  const phasesConfig = await loadAlgorithmPhases();
+  const phaseList = Object.keys(phasesConfig.phases).join(', ');
+
   const recoveryContext = [
     `POST-COMPACTION CONTEXT RECOVERY (auto-injected by PostCompactRecovery.hook.ts)`,
     ``,
@@ -111,7 +115,7 @@ async function main() {
     `- Timezone: ${principal.timezone}`,
     ``,
     `FORMAT RULES (may have been lost in compaction summary):`,
-    `- Use PAI Algorithm format with 7 phases (OBSERVE, THINK, PLAN, BUILD, EXECUTE, VERIFY, LEARN)`,
+    `- Use PAI Algorithm format with ${Object.keys(phasesConfig.phases).length} phases (${phaseList})`,
     `- Create ISC (Ideal State Criteria) via TaskCreate before doing work`,
     `- Voice curls at each phase transition`,
     `- Every response uses the Algorithm. The only variable is DEPTH (FULL/ITERATION/MINIMAL).`,

@@ -17,6 +17,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { getPaiDir } from './lib/paths';
+import { loadWisdomDomains } from '../PAI/lib/vocabulary-loader';
 
 const BASE_DIR = getPaiDir();
 const WISDOM_DIR = join(BASE_DIR, 'MEMORY', 'WISDOM');
@@ -58,15 +59,13 @@ interface HookInput {
 
 // ── Domain Classification (lightweight, no external deps) ──
 
-const DOMAIN_KEYWORDS: Record<string, RegExp[]> = {
-  communication: [/response|format|output|tone|style|greeting|language|russian|english/i],
-  development: [/code|bug|fix|refactor|hook|skill|tool|build|test|deploy|git|file|path/i],
-  workflow: [/task|workflow|process|mvp|agent|delegate|parallel|batch|automat/i],
-  system: [/system|architecture|memory|config|settings|pai|infrastructure|pipeline/i],
-  learning: [/learn|rating|feedback|pattern|wisdom|improve|mistake/i],
-};
+async function classifyDomain(text: string): Promise<string> {
+  const wisdomConfig = await loadWisdomDomains();
+  const DOMAIN_KEYWORDS: Record<string, RegExp[]> = {};
+  for (const [domain, keywords] of Object.entries(wisdomConfig.domains)) {
+    DOMAIN_KEYWORDS[domain] = [new RegExp(keywords.join('|'), 'i')];
+  }
 
-function classifyDomain(text: string): string {
   let bestDomain = 'workflow'; // default
   let bestScore = 0;
 
@@ -261,7 +260,7 @@ async function main(): Promise<void> {
     const text = r.sentiment_summary || r.comment || '';
     if (!text || text === 'INFERENCE_FAILED') continue;
 
-    const domain = classifyDomain(text);
+    const domain = await classifyDomain(text);
     const wisdom = loadWisdomJSON(domain);
 
     if (!isDuplicate(wisdom.observations, text)) {
@@ -285,7 +284,7 @@ async function main(): Promise<void> {
     const text = r.sentiment_summary || r.comment || '';
     if (!text || text === 'INFERENCE_FAILED') continue;
 
-    const domain = classifyDomain(text);
+    const domain = await classifyDomain(text);
     const wisdom = loadWisdomJSON(domain);
 
     // Check if similar observation exists — increment confirmed instead of adding new

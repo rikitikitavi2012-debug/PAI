@@ -27,6 +27,8 @@ import { join } from 'path';
 import { getPSTComponents, getISOTimestamp } from './lib/time';
 import { generatePRDTemplate, generatePRDFilename } from './lib/prd-template';
 import { getPaiDir } from './lib/paths';
+import { loadAlgorithmPhases, AlgorithmPhasesConfig } from '../PAI/lib/vocabulary-loader';
+
 interface HookInput {
   session_id: string;
   prompt?: string;
@@ -46,7 +48,7 @@ interface CurrentWork {
 interface PromptClassification {
   type: 'work' | 'question' | 'conversational';
   title: string;
-  effort: 'TRIVIAL' | 'QUICK' | 'STANDARD' | 'THOROUGH';
+  effort: string;
   is_new_topic: boolean;
 }
 
@@ -148,7 +150,8 @@ function createTaskDirectory(
   taskNumber: number,
   title: string,
   effort: string,
-  prompt: string
+  prompt: string,
+  phasesConfig: AlgorithmPhasesConfig
 ): { taskDirName: string; prdPath: string } {
   const taskId = String(taskNumber).padStart(3, '0');
   const taskSlug = slugify(title);
@@ -173,27 +176,7 @@ prompt: |
 
 ## Phase Log
 
-### 👀 OBSERVE Phase
-_Pending..._
-
-### 🧠 THINK Phase
-_Pending..._
-
-### 📋 PLAN Phase
-_Pending..._
-
-### 🔨 BUILD Phase
-_Pending..._
-
-### ▶️ EXECUTE Phase
-_Pending..._
-
-### ✅ VERIFY Phase
-_Pending..._
-
-### 🎓 LEARN Phase
-_Pending..._
-
+${Object.entries(phasesConfig.phases).map(([phase, data]) => `### ${data.emoji} ${phase} Phase\n_Pending..._\n`).join('\n')}
 ---
 
 ## ISC Evolution
@@ -251,25 +234,27 @@ _Important observations during execution..._
  * First prompt = new work. Short confirmations = conversational continuation.
  * Everything else = continuation of current work.
  */
-function classifyPrompt(prompt: string, hasExistingSession: boolean): PromptClassification {
+function classifyPrompt(prompt: string, hasExistingSession: boolean, phasesConfig: AlgorithmPhasesConfig): PromptClassification {
   const trimmed = prompt.trim();
+  const trivialEffort = phasesConfig.effort_levels[0] || 'TRIVIAL';
+  const standardEffort = phasesConfig.effort_levels[2] || 'STANDARD';
 
   // Short confirmations/greetings
   if (trimmed.length < 20 && /^(yes|no|ok|okay|thanks|proceed|continue|go ahead|sure|got it|hi|hello|hey|good morning|good evening|\d{1,2})$/i.test(trimmed)) {
-    return { type: 'conversational', title: '', effort: 'TRIVIAL', is_new_topic: false };
+    return { type: 'conversational', title: '', effort: trivialEffort, is_new_topic: false };
   }
 
   // First prompt in session = always new work
   if (!hasExistingSession) {
     const title = trimmed.substring(0, 60).replace(/[^a-zA-Z0-9\s]/g, '').trim();
-    return { type: 'work', title, effort: 'STANDARD', is_new_topic: true };
+    return { type: 'work', title, effort: standardEffort, is_new_topic: true };
   }
 
   // Existing session — default to continuation
   return {
     type: 'work',
     title: trimmed.substring(0, 60).replace(/[^a-zA-Z0-9\s]/g, '').trim(),
-    effort: 'STANDARD',
+    effort: standardEffort,
     is_new_topic: false,
   };
 }
@@ -290,7 +275,8 @@ async function main() {
     let currentWork = readCurrentWork(sessionId);
     const isExistingSession = currentWork && currentWork.session_id === sessionId;
 
-    const classification = classifyPrompt(prompt, !!isExistingSession);
+    const phasesConfig = await loadAlgorithmPhases();
+    const classification = classifyPrompt(prompt, !!isExistingSession, phasesConfig);
 
     // Skip task creation for pure conversational
     if (classification.type === 'conversational' && !classification.is_new_topic) {
@@ -309,7 +295,8 @@ async function main() {
         1,
         title,
         classification.effort,
-        prompt
+        prompt,
+        phasesConfig
       );
 
       currentWork = {
@@ -335,7 +322,8 @@ async function main() {
         newTaskNumber,
         title,
         classification.effort,
-        prompt
+        prompt,
+        phasesConfig
       );
 
       currentWork!.current_task = taskDirName;
