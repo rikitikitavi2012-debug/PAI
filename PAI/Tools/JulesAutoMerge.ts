@@ -25,7 +25,8 @@ import { appendEvent } from '../../hooks/lib/event-emitter';
 
 const PAI_DIR = getPaiDir();
 const ENV_PATH = join(process.env.HOME!, '.config', 'PAI', '.env');
-const STATE_PATH = join(PAI_DIR, 'MEMORY', 'STATE', 'jules-automerge.json');
+// Instead of a static constant, compute it dynamically or via a getter so mock logic inside getPaiDir applies.
+const getStatePath = () => join(getPaiDir(), 'MEMORY', 'STATE', 'jules-automerge.json');
 const JULES_BASE_URL = 'https://jules.googleapis.com/v1alpha';
 const TEST_TIMEOUT = 120_000;
 
@@ -67,7 +68,15 @@ const REPOS: Record<string, RepoConfig> = {
 
 // ── Types ──
 
-interface ProcessedSession {
+export interface RepoConfig {
+  key: string;
+  remote: string;
+  repo: string;
+  source: string;
+  branch: string;
+}
+
+export interface ProcessedSession {
   sessionId: string;
   prNumber: number;
   prUrl: string;
@@ -77,13 +86,13 @@ interface ProcessedSession {
   testOutput?: string;
 }
 
-interface AutoMergeState {
+export interface AutoMergeState {
   lastCheck: string;
   processedSessions: ProcessedSession[];
   stats: { totalMerged: number; totalFailed: number; totalSkipped: number };
 }
 
-interface JulesSession {
+export interface JulesSession {
   name: string;
   title: string;
   state: string;
@@ -94,20 +103,21 @@ interface JulesSession {
 
 // ── State Management ──
 
-function loadState(): AutoMergeState {
+export function loadState(): AutoMergeState {
   try {
-    if (existsSync(STATE_PATH)) return JSON.parse(readFileSync(STATE_PATH, 'utf-8'));
+    const p = getStatePath();
+    if (existsSync(p)) return JSON.parse(readFileSync(p, 'utf-8'));
   } catch {}
   return { lastCheck: '', processedSessions: [], stats: { totalMerged: 0, totalFailed: 0, totalSkipped: 0 } };
 }
 
-function saveState(state: AutoMergeState): void {
-  const dir = join(PAI_DIR, 'MEMORY', 'STATE');
+export function saveState(state: AutoMergeState): void {
+  const dir = join(getPaiDir(), 'MEMORY', 'STATE');
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  writeFileSync(STATE_PATH, JSON.stringify(state, null, 2), 'utf-8');
+  writeFileSync(getStatePath(), JSON.stringify(state, null, 2), 'utf-8');
 }
 
-function isProcessed(state: AutoMergeState, sessionId: string): boolean {
+export function isProcessed(state: AutoMergeState, sessionId: string): boolean {
   return state.processedSessions.some(s => s.sessionId === sessionId);
 }
 
@@ -132,7 +142,7 @@ async function julesApi(path: string): Promise<any> {
   return res.json();
 }
 
-async function getCompletedSessions(repo: RepoConfig): Promise<JulesSession[]> {
+export async function getCompletedSessions(repo: RepoConfig): Promise<JulesSession[]> {
   const data = await julesApi('/sessions');
   const sessions = (data.sessions || []) as JulesSession[];
   return sessions.filter(s => s.state === 'COMPLETED');
@@ -159,7 +169,7 @@ function run(cmd: string[], opts?: { cwd?: string; timeout?: number }): { ok: bo
   };
 }
 
-function ghPrList(repo: string): Array<{ number: number; title: string; headRefName: string; baseRefName: string }> {
+export function ghPrList(repo: string): Array<{ number: number; title: string; headRefName: string; baseRefName: string }> {
   const result = run(['gh', 'pr', 'list', '--repo', repo, '--state', 'open', '--json', 'number,title,headRefName,baseRefName']);
   if (!result.ok) return [];
   try { return JSON.parse(result.stdout); } catch { return []; }
@@ -193,7 +203,7 @@ async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<{
 
 // ── Pipeline ──
 
-async function processPR(
+export async function processPR(
   repo: RepoConfig,
   session: JulesSession,
   pr: { number: number; title: string; headRefName: string; baseRefName: string },
@@ -264,7 +274,7 @@ async function processPR(
   return record;
 }
 
-async function findReadyPRs(repo: RepoConfig, state: AutoMergeState): Promise<Array<{ session: JulesSession; pr: { number: number; title: string; headRefName: string; baseRefName: string } }>> {
+export async function findReadyPRs(repo: RepoConfig, state: AutoMergeState): Promise<Array<{ session: JulesSession; pr: { number: number; title: string; headRefName: string; baseRefName: string } }>> {
   const sessions = await getCompletedSessions(repo);
   const prs = ghPrList(repo.repo);
   const ready: Array<{ session: JulesSession; pr: typeof prs[0] }> = [];
