@@ -8,6 +8,7 @@ export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:8118}"
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:8118}"
 
 # Source API keys
+# shellcheck disable=SC1091
 . "$HOME/.config/PAI/.env" 2>/dev/null
 
 INTERVAL=30
@@ -23,7 +24,7 @@ YLW='\e[38;2;251;191;36m'
 CYN='\e[38;2;103;232;249m'
 SLT='\e[38;2;148;163;184m'
 SEP='\e[38;2;71;85;105m'
-BLU='\e[38;2;59;130;246m'
+# BLU='\e[38;2;59;130;246m'
 VIO='\e[38;2;167;139;250m'
 WHT='\e[38;2;203;213;225m'
 
@@ -207,7 +208,7 @@ poll() {
   events_7d=$(jq_val '.system.eventCount7d' '?')
 
   # VoiceServer check
-  local vs_status vs_icon
+  local vs_icon
   local vs_http
   vs_http=$(curl -s --max-time 2 -o /dev/null -w "%{http_code}" "http://localhost:8888/" 2>/dev/null)
   if [ "$vs_http" = "200" ]; then
@@ -307,7 +308,7 @@ poll() {
     goal_count=$(jq '[.goals[] | select(.status | test("Активна"))] | length' "$TELOS_JSON" 2>/dev/null || echo 0)
 
     if [ "$goal_count" -gt 0 ]; then
-      jq -r '.goals[] | select(.status | test("Активна")) | "\(.id)|\(.name)|\(.progress)|\(.checked)/\(.total)|\(.missions | join(","))"' "$TELOS_JSON" 2>/dev/null | while IFS='|' read -r gid gname gpct gchecked gmissions; do
+      jq -r '.goals[] | select(.status | test("Активна")) | "\(.id)|\(.name)|\(.progress)|\(.checked)/\(.total)"' "$TELOS_JSON" 2>/dev/null | while IFS='|' read -r gid gname gpct gchecked; do
         local bar
         bar=$(progress_bar "$gpct" 16)
         local pct_color="$DIM"
@@ -392,7 +393,7 @@ poll() {
 
   # Right lines: wins
   if [ -n "$wins_raw" ]; then
-    while IFS='|' read -r wdate wtext; do
+    while IFS='|' read -r _wdate wtext; do
       local short_win="${wtext:0:$((half - 4))}"
       right_lines+=("$(printf '%b✓%b %b%s%b' "$GRN" "$RST" "$WHT" "$short_win" "$RST")")
     done <<< "$wins_raw"
