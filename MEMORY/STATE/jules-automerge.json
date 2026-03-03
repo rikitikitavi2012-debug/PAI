@@ -1,5 +1,5 @@
 {
-  "lastCheck": "2026-03-03T10:43:14.272Z",
+  "lastCheck": "2026-03-03T13:38:45.332Z",
   "processedSessions": [
     {
       "sessionId": "sessions/8584917624898497977",
@@ -58,11 +58,108 @@
       "result": "merged",
       "processedAt": "2026-03-03T10:46:33.000Z",
       "repo": "rikitikitavi2012-debug/PAI-personal"
+    },
+    {
+      "sessionId": "sessions/2276168450016148325",
+      "prNumber": 10,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/10",
+      "result": "failed_merge",
+      "processedAt": "2026-03-03T12:09:28.742Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/15105993658518051621",
+      "prNumber": 9,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/9",
+      "result": "failed_tests",
+      "processedAt": "2026-03-03T12:10:51.429Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)"
+    },
+    {
+      "sessionId": "sessions/15212498456637421725",
+      "prNumber": 4,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI/pull/4",
+      "result": "skipped",
+      "processedAt": "2026-03-03T12:12:27.851Z",
+      "repo": "rikitikitavi2012-debug/PAI"
+    },
+    {
+      "sessionId": "sessions/1436366211605020911",
+      "prNumber": 5,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI/pull/5",
+      "result": "skipped",
+      "processedAt": "2026-03-03T12:12:54.058Z",
+      "repo": "rikitikitavi2012-debug/PAI"
+    },
+    {
+      "sessionId": "sessions/4692545462021208302",
+      "prNumber": 11,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/11",
+      "result": "failed_merge",
+      "processedAt": "2026-03-03T13:27:46.798Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/9705076818860228080",
+      "prNumber": 12,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/12",
+      "result": "failed_merge",
+      "processedAt": "2026-03-03T13:28:48.018Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/15105993658518051621",
+      "prNumber": 9,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/9",
+      "result": "failed_tests",
+      "processedAt": "2026-03-03T13:29:45.269Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)"
+    },
+    {
+      "sessionId": "sessions/4692545462021208302",
+      "prNumber": 11,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/11",
+      "result": "failed_merge",
+      "processedAt": "2026-03-03T13:32:57.861Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/9705076818860228080",
+      "prNumber": 12,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/12",
+      "result": "failed_merge",
+      "processedAt": "2026-03-03T13:33:54.128Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/15105993658518051621",
+      "prNumber": 9,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/9",
+      "result": "failed_tests",
+      "processedAt": "2026-03-03T13:35:03.207Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)"
+    },
+    {
+      "sessionId": "sessions/4629303589701649915",
+      "prNumber": 13,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/13",
+      "result": "failed_merge",
+      "processedAt": "2026-03-03T13:39:53.672Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
     }
   ],
   "stats": {
     "totalMerged": 3,
-    "totalFailed": 2,
-    "totalSkipped": 2
+    "totalFailed": 11,
+    "totalSkipped": 4
   }
 }
