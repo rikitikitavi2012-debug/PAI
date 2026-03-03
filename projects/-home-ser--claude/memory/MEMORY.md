@@ -7,15 +7,30 @@
 - Prefers automation over manual instructions
 - Values proactive bug detection and fixing
 
-## Miessler Philosophy (extracted 2026-03-03)
+## Miessler Philosophy — EMBEDDED in nervous system (2026-03-03)
 - Full reference: `MEMORY/RESEARCH/2026-03/miessler-philosophy.md` (22 principles, 25+ quotes, 23 sources)
-- Key principles integrated into TELOS/WISDOM.md (11 quotes with sources) and MODELS.md (MO12: Vertical Stack)
-- Core: "Scaffolding > Model" — invest in hooks/skills/context, not model upgrades
-- Core: "AI is a magnifier of human creativity" — amplify, not replace
-- Core: "You can't hill-climb towards something you can't test" — ISC verification
-- Core: "AI is mostly prompting" — clarity > technology
-- Strategic patterns: Vertical Stack (TELOS→Algorithm→ISC→Scaffolding→Model), Feedback Spiral, Activation Thesis
-- Timeline: "Undeniable by 2028, emergency by 2030"
+- Key principles in TELOS/WISDOM.md (11 quotes) and MODELS.md (MO12: Vertical Stack)
+- **ВШИТО в CLAUDE.md (строки 67-77):** 5 операционных принципов (Philosophy секция, загружается каждую сессию):
+  1. Scaffolding > Model — улучшай систему, не гонись за моделями
+  2. Goal → Code → CLI → Prompt → Agent — иерархия детерминизма
+  3. Job vs Gym — не автоматизируй где ценно усилие
+  4. Clarity > Complexity — ясность промптов > сложность кода
+  5. Anti-fragile Scaffolding — контекст вместо хардкода
+- **ВШИТО в AISTEERINGRULES.md (строки 150-215):** те же 5 как детальные правила (Statement/Bad/Correct)
+- **ВШИТО (2026-03-03, Phase 2):** 4 дополнительных правила из TELOS (результат Council Debate):
+  1. MO11: Ясность > дипломатия (CLAUDE.md #6, AISTEERINGRULES строки 215-224)
+  2. C3+W5: Один фокус + анти-перфекционизм (CLAUDE.md #7, AISTEERINGRULES строки 228-237)
+  3. C1: Время — дефицит, сезонность 6/1 (CLAUDE.md #8, AISTEERINGRULES строки 241-250)
+  4. Алгоритмический рост, Miessler #12 (CLAUDE.md #9, AISTEERINGRULES строки 254-263)
+- **Council Debate insight:** "Нервная система = таблица прерываний, не система убеждений. Вшивай только то что меняет решение в первые 5 минут." Убеждения (B0-B5), стратегии (S0-S7), конкретные цели (G0-G12) — на полках TELOS, НЕ вшивать.
+- **Future (Marcus):** ContextualRules.hook.ts — динамическая инжекция правил per session (сезон, проект, время суток)
+
+## Miessler Hook Refactoring (Jules task 2026-03-03)
+- **Jules session:** sessions/14113504585497934111 — Extract hardcoded vocabularies from hooks into YAML configs
+- **A0 architecture review (context Gf7GAGQi):** Multiple YAML files by domain + shared yamlConfig.ts loader (copy SecurityValidator pattern). RelationshipMemory → LLM primary + regex fallback
+- **Z.AI consensus:** YAML (comments support), multiple files, eager-load at startup, fail-fast
+- **7 противоречий найдены аудитом:** AutoWorkCreation (хардкод фаз), AlgorithmTracker (PHASE_MAP), RatingCapture (word lists), WisdomSync (DOMAIN_KEYWORDS), PostCompactRecovery (строка с фазами), AutoWorkCreation (два effort-словаря), RelationshipMemory (regex vs LLM)
+- **Check Jules status:** `bun skills/Utilities/Jules/Tools/JulesAPI.ts status sessions/14113504585497934111`
 
 ## Architecture (v4.0.3)
 - 3-layer mode classification: ModeClassifier hook (regex) -> Complexity Gate (LLM) -> Algorithm file
@@ -181,5 +196,6 @@
 ## Session Patterns
 - Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10, today: 9/10)
 - Common frustration: English responses when Russian expected
-- Common success: parallel agent delegation for audits
+- Common success: parallel agent delegation for audits, council debates for strategy
 - Ivan wants: активное использование Z.AI, Gemini, Coding Plan — все инструменты бригады
+- **Key insight (2026-03-03):** Совет оптимизирует эффективность, Ivan хочет синергетический рост. Всегда проверять: "это защитное правило или генеративное?" Нужны ОБА типа.
