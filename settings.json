@@ -999,11 +999,11 @@
     "hooks": 30,
     "signals": 50,
     "files": 110,
-    "work": 74,
-    "sessions": 337,
+    "work": 78,
+    "sessions": 465,
     "research": 11,
-    "ratings": 104,
-    "updatedAt": "2026-03-03T09:38:50.442Z"
+    "ratings": 107,
+    "updatedAt": "2026-03-03T13:53:56.512Z"
   },
   "mcpServers": {
     "supabase": {

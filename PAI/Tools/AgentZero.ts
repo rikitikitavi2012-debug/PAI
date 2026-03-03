@@ -27,6 +27,38 @@
  */
 
 const fs = require('fs');
+const path = require('path');
+
+const EVENTS_PATH = path.join(process.env.HOME || '', '.claude', 'MEMORY', 'STATE', 'events.jsonl');
+const A0_CONTEXT_PATH = path.join(process.env.HOME || '', '.claude', 'MEMORY', 'STATE', 'a0-active-context.json');
+
+/** Emit A0 event to events.jsonl (fire-and-forget, never throws) */
+function emitA0Event(type: string, data: Record<string, unknown>): void {
+  try {
+    const dir = path.dirname(EVENTS_PATH);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const event = {
+      type: `a0.${type}`,
+      source: 'AgentZero',
+      data,
+      timestamp: new Date().toISOString(),
+      session_id: process.env.CLAUDE_SESSION_ID || 'unknown',
+    };
+    fs.appendFileSync(EVENTS_PATH, JSON.stringify(event) + '\n', 'utf-8');
+  } catch { /* observability, not critical path */ }
+}
+
+/** Save active context_id to state file for a0-chat-tail.sh */
+function saveActiveContext(contextId: string, lastMessage: string): void {
+  try {
+    const state = {
+      context_id: contextId,
+      updated: new Date().toISOString(),
+      last_message: lastMessage.slice(0, 100),
+    };
+    fs.writeFileSync(A0_CONTEXT_PATH, JSON.stringify(state, null, 2), 'utf-8');
+  } catch { /* best effort */ }
+}
 
 interface A0Config {
   baseUrl: string;
@@ -110,8 +142,20 @@ async function sendMessage(message: string, contextId?: string): Promise<void> {
   const body: any = { message, lifetime_hours: 1 };
   if (contextId) body.context_id = contextId;
 
+  emitA0Event('message_sent', { context_id: contextId || 'new', preview: message.slice(0, 50) });
+
   const result = await apiCall('/api_message', body);
   const latency = ((Date.now() - startTime) / 1000).toFixed(1);
+
+  // Track context + emit response event
+  if (result.context_id) {
+    saveActiveContext(result.context_id, message);
+    emitA0Event('response', {
+      context_id: result.context_id,
+      latency_s: latency,
+      preview: (result.response || '').slice(0, 50),
+    });
+  }
 
   console.log(JSON.stringify({
     context_id: result.context_id,
@@ -125,7 +169,15 @@ async function sendAsync(message: string, contextId?: string): Promise<void> {
   const body: any = { text: message };
   if (contextId) body.context = contextId;
 
+  emitA0Event('async_sent', { context_id: contextId || 'new', preview: message.slice(0, 50) });
+
   const result = await apiCall('/message_async', body, 15000);
+
+  // Track context if returned
+  if (result.context_id) {
+    saveActiveContext(result.context_id, message);
+  }
+
   console.log(JSON.stringify(result, null, 2));
 }
 

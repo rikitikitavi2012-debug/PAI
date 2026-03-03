@@ -34,6 +34,25 @@
  */
 
 import { spawn } from "child_process";
+import { appendFileSync, existsSync, mkdirSync } from "fs";
+import { join, dirname } from "path";
+
+/** Emit inference event to events.jsonl (fire-and-forget, never throws) */
+function emitInferenceEvent(level: InferenceLevel, provider: string, model: string, success: boolean, latencyMs: number): void {
+  try {
+    const eventsPath = join(process.env.HOME || '', '.claude', 'MEMORY', 'STATE', 'events.jsonl');
+    const dir = dirname(eventsPath);
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+    const event = {
+      type: `inference.${success ? 'ok' : 'fail'}`,
+      source: 'Inference',
+      data: { level, provider, model, latency_s: (latencyMs / 1000).toFixed(1) },
+      timestamp: new Date().toISOString(),
+      session_id: process.env.CLAUDE_SESSION_ID || 'unknown',
+    };
+    appendFileSync(eventsPath, JSON.stringify(event) + '\n', 'utf-8');
+  } catch { /* observability, not critical path */ }
+}
 
 export type InferenceLevel = 'fast' | 'standard' | 'smart' | 'gemini' | 'glm5';
 
@@ -233,10 +252,14 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
 
   // Route to alternative providers
   if (config.provider === 'gemini') {
-    return inferenceGemini(options, level, timeout);
+    const result = await inferenceGemini(options, level, timeout);
+    emitInferenceEvent(level, 'gemini', config.model, result.success, result.latencyMs);
+    return result;
   }
   if (config.provider === 'zai') {
-    return inferenceZai(options, level, timeout);
+    const result = await inferenceZai(options, level, timeout);
+    emitInferenceEvent(level, 'zai', config.model, result.success, result.latencyMs);
+    return result;
   }
 
   const startTime = Date.now();
@@ -295,6 +318,7 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
       const latencyMs = Date.now() - startTime;
 
       if (code !== 0) {
+        emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
         resolve({
           success: false,
           output: stdout,
@@ -313,6 +337,7 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
         if (jsonMatch) {
           try {
             const parsed = JSON.parse(jsonMatch[0]);
+            emitInferenceEvent(level, 'claude', config.model, true, latencyMs);
             resolve({
               success: true,
               output,
@@ -322,6 +347,7 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
             });
             return;
           } catch {
+            emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
             resolve({
               success: false,
               output,
@@ -332,6 +358,7 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
             return;
           }
         }
+        emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
         resolve({
           success: false,
           output,
@@ -342,6 +369,7 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
         return;
       }
 
+      emitInferenceEvent(level, 'claude', config.model, true, latencyMs);
       resolve({
         success: true,
         output,

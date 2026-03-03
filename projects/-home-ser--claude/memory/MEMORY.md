@@ -32,6 +32,10 @@
 - ~~RatingCapture 52% false-positive 5s~~ → prompt fix + data cleanup, 192→92 entries (2026-03-02)
 - ~~settings.json in readOnly~~ → moved to confirmWrite in patterns.yaml (2026-03-02)
 - ~~PRDSync 40% event noise~~ → change detection added, only syncs on structural changes (2026-03-02, 037c79d)
+- ~~CRIT-01: SecurityValidator triple fail-open~~ → hardcoded fallback blocks, timeout 500ms (2026-03-03, b8d9551)
+- ~~CRIT-02: WorktreeRemove path traversal~~ → resolve() + trailing slash (2026-03-03, b8d9551)
+- ~~HIGH-01: LoadContext 20s blocking~~ → timeout 20s→5s, ghQuery 15s→4s (2026-03-03, 8d95338)
+- ~~HIGH-03: Silent catch blocks~~ → Jules PR #11 добавил error logging (2026-03-03)
 
 ## Development Patterns (CRITICAL)
 - **Always chmod +x** new .hook.ts files — shell executes them directly via shebang
@@ -72,8 +76,11 @@
 - **PR #859**: feat/hook-test-harness — Test harness + patterns.example.yaml (OPEN)
 - **PR #860**: fix/rating-false-positives — RatingCapture prompt fix, closes #842 (OPEN)
 - **PR #861**: fix/algorithm-stoploop-regex — stopLoop guard + regex escaping (OPEN)
-- **PR #3 (fork)**: docs: fix dead references — MERGED (2026-03-03, Jules created)
-- **PR #7 (private)**: JulesAutoMerge tests — MERGED (2026-03-03, Jules created)
+- **PR #864**: fix/PAIUpgrade — hardcoded skill path after v3→v4 migration (OPEN)
+- **PR #882**: fix(hooks) — UTF-16 surrogate pair splitting in RatingCapture (OPEN)
+- **PR #883**: docs — fix dead references in CONTEXT_ROUTING.md (OPEN)
+- **JulesAutoMerge --admin**: Required for PAI-personal repo — нужно добавить флаг в pipeline
+- **Jules Coding Plan task** (sessions/16877413060062799985): MEDIUM fixes MED-03/05/10 — IN_PROGRESS
 
 ## Lessons Learned (CRITICAL)
 - **Директория ≠ один файл**: перед выводом о состоянии директории — ВСЕГДА `ls` сначала. TELOS.md — шаблон, данные в 22 файлах рядом
@@ -143,7 +150,26 @@
 - **Voice resolution**: hooks use `getVoiceId()` (main) or `getAlgorithmVoice()` from identity.ts → reads settings.json
 - **All messages in Russian** — no English voice notifications
 
+## Brigade Pipeline (инструменты бригады)
+- **Navi (Claude)**: Руководитель — архитектура, triage, делегирование, code review
+- **Jules**: Async кодер — тесты, баги, рефакторинг. Использовать **Coding Plan** (детальный промпт с файлами/шагами/критериями)
+- **A0**: Deep review, security аудит, code review в JulesAutoMerge pipeline
+- **Gemini**: Второе мнение, независимый triage, альтернативный анализ. `gemini` CLI
+- **Z.AI**: Web search (`zai-cli search`), vision analysis, repo analysis. **НУЖНО АКТИВНЕЕ** — Ivan хочет отрабатывать подписку
+- **Z.AI в pipeline**: Добавить как reviewer/analyst рядом с A0 (code review, pattern analysis, vision для UI)
+- **Ivan хочет**: Чаще использовать Coding Plan для Jules, активнее Z.AI, каждый инструмент на своём месте
+
+## Стратегические направления (следующие сессии)
+1. **Z.AI интеграция в pipeline** — добавить Z.AI как code reviewer (zai-cli call для анализа diff), vision для UI проверок
+2. **JulesAutoMerge --admin fix** — автоматический --admin флаг для PAI-personal repo
+3. **events.jsonl rotation** — Jules задача IN_PROGRESS (MED-03)
+4. **fetch timeout во всех хуках** — Jules задача IN_PROGRESS (MED-05)
+5. **Upstream PR follow-up** — 7 PR открыты, через 3-5 дней пинг maintainer
+6. **LOW findings (8 шт)** — батчить в следующую итерацию, не срочно
+7. **A0 scheduled tasks** — расширить (weekly security scan, daily health check)
+
 ## Session Patterns
-- Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10)
+- Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10, today: 9/10)
 - Common frustration: English responses when Russian expected
 - Common success: parallel agent delegation for audits
+- Ivan wants: активное использование Z.AI, Gemini, Coding Plan — все инструменты бригады

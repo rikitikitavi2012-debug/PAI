@@ -30,7 +30,9 @@ const getStatePath = () => join(getPaiDir(), 'MEMORY', 'STATE', 'jules-automerge
 const JULES_BASE_URL = 'https://jules.googleapis.com/v1alpha';
 const TEST_TIMEOUT = 120_000;
 const A0_REVIEW_TIMEOUT = 120_000;
+const ZAI_REVIEW_TIMEOUT = 30_000;
 const A0_TOOL = join(PAI_DIR, 'PAI', 'Tools', 'AgentZero.ts');
+const INFERENCE_TOOL = join(PAI_DIR, 'PAI', 'Tools', 'Inference.ts');
 
 // ANSI
 const R = '\x1b[31m';
@@ -89,6 +91,7 @@ export interface ProcessedSession {
   processedAt: string;
   repo: string;
   testOutput?: string;
+  zaiReviewSeverity?: 'LOW' | 'MEDIUM' | 'HIGH' | 'ERROR';
 }
 
 export interface AutoMergeState {
@@ -250,6 +253,41 @@ async function a0ReviewDiff(repo: RepoConfig, prNumber: number): Promise<A0Revie
   }
 }
 
+// ── Z.AI Code Review ──
+
+async function zaiReviewDiff(repo: RepoConfig, prNumber: number): Promise<A0ReviewResult> {
+  // Get PR diff via gh
+  const diff = run(['gh', 'pr', 'diff', String(prNumber), '--repo', repo.repo]);
+  if (!diff.ok) return { ok: true, severity: 'ERROR', summary: 'Could not fetch diff, skipping Z.AI review' };
+
+  const diffText = diff.stdout.slice(0, 4000); // Limit tokens
+  if (!diffText.trim()) return { ok: true, severity: 'LOW', summary: 'Empty diff' };
+
+  // Use Inference.ts with GLM-5 for code review
+  const systemPrompt = 'You are a code reviewer focused on code quality, patterns, and bugs. Reply ONLY with valid JSON.';
+  const userPrompt = `Review this git diff for code quality issues, anti-patterns, potential bugs, and performance problems. Reply with ONLY a JSON object: {"severity":"LOW"|"MEDIUM"|"HIGH","issues":[{"type":"quality|bug|performance|pattern","description":"..."}]}\n\nDiff:\n${diffText}`;
+
+  const result = run(['bun', INFERENCE_TOOL, '--level', 'glm5', '--timeout', String(ZAI_REVIEW_TIMEOUT), systemPrompt, userPrompt], { timeout: ZAI_REVIEW_TIMEOUT + 5000 });
+  if (!result.ok) return { ok: true, severity: 'ERROR', summary: 'Z.AI review failed, skipping' };
+
+  // Parse Z.AI response
+  try {
+    const jsonMatch = result.stdout.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return { ok: true, severity: 'LOW', summary: 'Z.AI returned non-JSON, assuming clean' };
+
+    const review = JSON.parse(jsonMatch[0]);
+    const severity = review.severity || 'LOW';
+    const issueCount = review.issues?.length || 0;
+    const summary = issueCount > 0
+      ? `${issueCount} issue(s): ${review.issues.map((i: any) => i.description).join('; ').slice(0, 200)}`
+      : 'Clean';
+
+    return { ok: severity !== 'HIGH', severity, summary };
+  } catch {
+    return { ok: true, severity: 'LOW', summary: 'Z.AI parse failed, assuming clean' };
+  }
+}
+
 // ── Pipeline ──
 
 export async function processPR(
@@ -307,11 +345,25 @@ export async function processPR(
   // A0 Code Review (non-blocking: if A0 unreachable, proceed anyway)
   console.log(`  ${D}A0 reviewing PR #${pr.number}...${X}`);
   const review = await a0ReviewDiff(repo, pr.number);
-  console.log(`  ${D}Review: ${review.severity} — ${review.summary.slice(0, 80)}${X}`);
+  console.log(`  ${D}A0: ${review.severity} — ${review.summary.slice(0, 80)}${X}`);
   if (!review.ok) {
     record.result = 'failed_review';
     record.testOutput = review.summary;
     console.log(`  ${R}BLOCKED${X} PR #${pr.number}: A0 found HIGH severity issues`);
+    state.stats.totalFailed++;
+    return record;
+  }
+
+  // Z.AI Code Review (quality/patterns focus, fail-open)
+  console.log(`  ${D}Z.AI reviewing PR #${pr.number}...${X}`);
+  const zaiReview = await zaiReviewDiff(repo, pr.number);
+  record.zaiReviewSeverity = zaiReview.severity;
+  const zaiIcon = zaiReview.severity === 'HIGH' ? R : zaiReview.severity === 'MEDIUM' ? Y : G;
+  console.log(`  ${zaiIcon}Z.AI${X} PR #${pr.number}: ${zaiReview.severity} — ${zaiReview.summary.slice(0, 80)}`);
+  if (!zaiReview.ok) {
+    record.result = 'failed_review';
+    record.testOutput = `Z.AI: ${zaiReview.summary}`;
+    console.log(`  ${R}BLOCKED${X} PR #${pr.number}: Z.AI found HIGH severity issues`);
     state.stats.totalFailed++;
     return record;
   }
@@ -342,6 +394,7 @@ export async function processPR(
     repo: repo.repo,
     test_duration_ms: test.durationMs,
     review_severity: review.severity,
+    zai_review_severity: zaiReview.severity,
   } as any);
 
   return record;

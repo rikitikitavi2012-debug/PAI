@@ -20,12 +20,14 @@ layout splits
 cd ~/projects
 launch --title "Projects" bash -ic 'clear; echo ""; echo "  📁 ПРОЕКТЫ — ~/projects"; echo "  ─────────────────────────"; echo ""; echo "  Доступные проекты:"; for d in */; do [ -d "$d" ] && printf "    → %s\n" "$d"; done; echo ""; echo "  ┌─ Как работать: ──────────────────────────────────┐"; echo "  │  cd timber-frame-site    — перейти в проект      │"; echo "  │  pai                     — запустить Claude Code  │"; echo "  │  ls                      — посмотреть файлы       │"; echo "  │  cd ..                   — назад к списку         │"; echo "  └──────────────────────────────────────────────────┘"; echo ""; exec bash'
 
-# ── Tab 4: Brigade — мониторинг AI Brigade (NEW) ──
+# ── Tab 4: Brigade — мониторинг AI Brigade (3-pane) ──
+# Layout: brigade-watch (left) | events (top-right) + a0-chat (bottom-right)
 new_tab  🤖 Brigade
 layout tall
 cd ~
 launch --title "Brigade Watch" bash -c 'exec ~/.config/kitty/scripts/brigade-watch.sh'
 launch --location=vsplit --title "Events" bash -c 'exec ~/.config/kitty/scripts/events-tail.sh'
+launch --location=hsplit --title "A0 Chat" bash -c 'exec ~/.config/kitty/scripts/a0-chat-tail.sh'
 
 # ── Tab 5: Servers — два сервера ──
 new_tab  🖥 Servers
