@@ -13,17 +13,17 @@ RED='\e[38;2;251;113;133m'
 SEP='\e[38;2;71;85;105m'
 GRN='\e[38;2;74;222;128m'
 
-printf "${BLD}${VIO}📡 PAI EVENTS${RST}  ${DIM}(live)${RST}\n"
-printf "${SEP}"
+printf "%b%b📡 PAI EVENTS%b  %b(live)%b\n" "${BLD}" "${VIO}" "${RST}" "${DIM}" "${RST}"
+printf "%b" "${SEP}"
 printf '━%.0s' {1..40}
-printf "${RST}\n\n"
+printf "%b\n\n" "${RST}"
 
 if [ ! -f "$EVENTS" ]; then
-  printf "${RED}⚠ ${EVENTS} не найден${RST}\n"
-  printf "${DIM}Файл появится после первого события PAI.${RST}\n"
-  for i in $(seq 1 60); do [ -f "$EVENTS" ] && break; sleep 5; done
-  [ ! -f "$EVENTS" ] && { printf "${RED}Таймаут ожидания.${RST}\n"; exit 1; }
-  printf "${GRN}Файл появился, начинаю мониторинг...${RST}\n\n"
+  printf "%b⚠ %s не найден%b\n" "${RED}" "${EVENTS}" "${RST}"
+  printf "%bФайл появится после первого события PAI.%b\n" "${DIM}" "${RST}"
+  for _ in $(seq 1 60); do [ -f "$EVENTS" ] && break; sleep 5; done
+  [ ! -f "$EVENTS" ] && { printf "%bТаймаут ожидания.%b\n" "${RED}" "${RST}"; exit 1; }
+  printf "%bФайл появился, начинаю мониторинг...%b\n\n" "${GRN}" "${RST}"
 fi
 
 # Show last 20 events, then follow — single jq process
