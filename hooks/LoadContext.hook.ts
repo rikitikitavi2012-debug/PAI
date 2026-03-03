@@ -527,10 +527,10 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
       console.log('\n✅ PAI session ready...');
     }
 
-    // Community check — upstream PAI activity (non-blocking, brief mode)
-    // Timeout reduced from 20s to 5s (A0 audit HIGH-01: sync blocking on network)
+    // Community check — upstream PAI activity via CommunityWatcher (non-blocking, brief mode)
+    // Timeout: 5s (A0 audit HIGH-01: sync blocking on network)
     try {
-      const communityScript = join(paiDir, 'PAI', 'Tools', 'CommunityCheck.ts');
+      const communityScript = join(paiDir, 'PAI', 'Tools', 'CommunityWatcher.ts');
       if (existsSync(communityScript)) {
         const ccResult = spawnSync('bun', ['run', communityScript, '--brief'], {
           encoding: 'utf-8',
@@ -540,6 +540,22 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
         if (ccResult.stdout?.trim()) {
           console.log('\n🌐 COMMUNITY:');
           console.log(ccResult.stdout.trim());
+        }
+        // Inject action items from last report if available
+        const reportPath = join(paiDir, 'MEMORY', 'STATE', 'community-report.json');
+        if (existsSync(reportPath)) {
+          try {
+            const report = JSON.parse(readFileSync(reportPath, 'utf-8'));
+            const recs = (report.recommendations || []).filter(
+              (r: string) => !r.includes('Всё спокойно')
+            );
+            if (recs.length > 0) {
+              console.log('  Action items:');
+              for (const rec of recs.slice(0, 3)) {
+                console.log(`  → ${rec}`);
+              }
+            }
+          } catch { /* non-fatal */ }
         }
         console.error('🌐 Community check completed');
       }

@@ -20,6 +20,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
 import { getPaiDir } from '../../hooks/lib/paths';
 import { appendEvent } from '../../hooks/lib/event-emitter';
+import { inference } from './Inference';
 
 // ── Constants ──
 
@@ -177,6 +178,34 @@ function run(cmd: string[], opts?: { cwd?: string; timeout?: number }): { ok: bo
   };
 }
 
+/** Async version of run() — non-blocking, enables Promise.all parallelism */
+function runAsync(cmd: string[], opts?: { cwd?: string; timeout?: number }): Promise<{ ok: boolean; stdout: string; stderr: string }> {
+  return new Promise((resolve) => {
+    const proc = Bun.spawn(cmd, {
+      cwd: opts?.cwd || PAI_DIR,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    });
+
+    const timeoutId = opts?.timeout ? setTimeout(() => {
+      proc.kill();
+      resolve({ ok: false, stdout: '', stderr: `Timeout after ${opts.timeout}ms` });
+    }, opts.timeout) : null;
+
+    Promise.all([
+      new Response(proc.stdout).text(),
+      new Response(proc.stderr).text(),
+    ]).then(async ([stdout, stderr]) => {
+      const exitCode = await proc.exited;
+      if (timeoutId) clearTimeout(timeoutId);
+      resolve({ ok: exitCode === 0, stdout: stdout.trim(), stderr: stderr.trim() });
+    }).catch(() => {
+      if (timeoutId) clearTimeout(timeoutId);
+      resolve({ ok: false, stdout: '', stderr: 'Process error' });
+    });
+  });
+}
+
 export function ghPrList(repo: string): Array<{ number: number; title: string; headRefName: string; baseRefName: string }> {
   const result = run(['gh', 'pr', 'list', '--repo', repo, '--state', 'open', '--json', 'number,title,headRefName,baseRefName']);
   if (!result.ok) return [];
@@ -217,22 +246,23 @@ interface A0ReviewResult {
   summary: string;
 }
 
-async function a0ReviewDiff(repo: RepoConfig, prNumber: number): Promise<A0ReviewResult> {
-  // Get PR diff via gh
-  const diff = run(['gh', 'pr', 'diff', String(prNumber), '--repo', repo.repo]);
-  if (!diff.ok) return { ok: true, severity: 'ERROR', summary: 'Could not fetch diff, skipping review' };
-
-  const diffText = diff.stdout.slice(0, 4000); // Limit tokens sent to A0
+async function a0ReviewDiff(repo: RepoConfig, prNumber: number, diffText?: string): Promise<A0ReviewResult> {
+  // Get PR diff via gh (async to enable parallel execution)
+  if (!diffText) {
+    const diff = await runAsync(['gh', 'pr', 'diff', String(prNumber), '--repo', repo.repo]);
+    if (!diff.ok) return { ok: true, severity: 'ERROR', summary: 'Could not fetch diff, skipping review' };
+    diffText = diff.stdout.slice(0, 4000);
+  }
   if (!diffText.trim()) return { ok: true, severity: 'LOW', summary: 'Empty diff' };
 
   // Check if A0 is available
-  const health = run(['bun', A0_TOOL, 'health'], { timeout: 10_000 });
+  const health = await runAsync(['bun', A0_TOOL, 'health'], { timeout: 10_000 });
   if (!health.ok) return { ok: true, severity: 'ERROR', summary: 'A0 unreachable, skipping review' };
 
   // Send diff to A0 for review
   const prompt = `Review this git diff for security vulnerabilities, command injection, path traversal, and code quality issues. Be concise. Reply with ONLY a JSON object: {"severity":"LOW"|"MEDIUM"|"HIGH","issues":[{"type":"security|quality|performance","description":"..."}]}\n\nDiff:\n${diffText}`;
 
-  const result = run(['bun', A0_TOOL, 'message', prompt], { timeout: A0_REVIEW_TIMEOUT });
+  const result = await runAsync(['bun', A0_TOOL, 'message', prompt], { timeout: A0_REVIEW_TIMEOUT });
   if (!result.ok) return { ok: true, severity: 'ERROR', summary: 'A0 review failed, skipping' };
 
   // Parse A0 response
@@ -253,29 +283,35 @@ async function a0ReviewDiff(repo: RepoConfig, prNumber: number): Promise<A0Revie
   }
 }
 
-// ── Z.AI Code Review ──
+// ── Z.AI Code Review (direct API via inference(), no subprocess) ──
 
-async function zaiReviewDiff(repo: RepoConfig, prNumber: number): Promise<A0ReviewResult> {
-  // Get PR diff via gh
-  const diff = run(['gh', 'pr', 'diff', String(prNumber), '--repo', repo.repo]);
-  if (!diff.ok) return { ok: true, severity: 'ERROR', summary: 'Could not fetch diff, skipping Z.AI review' };
-
-  const diffText = diff.stdout.slice(0, 4000); // Limit tokens
+async function zaiReviewDiff(repo: RepoConfig, prNumber: number, diffText?: string): Promise<A0ReviewResult> {
+  // Get PR diff via gh (async) if not provided
+  if (!diffText) {
+    const diff = await runAsync(['gh', 'pr', 'diff', String(prNumber), '--repo', repo.repo]);
+    if (!diff.ok) return { ok: true, severity: 'ERROR', summary: 'Could not fetch diff, skipping Z.AI review' };
+    diffText = diff.stdout.slice(0, 4000);
+  }
   if (!diffText.trim()) return { ok: true, severity: 'LOW', summary: 'Empty diff' };
 
-  // Use Inference.ts with GLM-5 for code review
+  // Direct API call via inference() — no subprocess, truly async
   const systemPrompt = 'You are a code reviewer focused on code quality, patterns, and bugs. Reply ONLY with valid JSON.';
   const userPrompt = `Review this git diff for code quality issues, anti-patterns, potential bugs, and performance problems. Reply with ONLY a JSON object: {"severity":"LOW"|"MEDIUM"|"HIGH","issues":[{"type":"quality|bug|performance|pattern","description":"..."}]}\n\nDiff:\n${diffText}`;
 
-  const result = run(['bun', INFERENCE_TOOL, '--level', 'glm5', '--timeout', String(ZAI_REVIEW_TIMEOUT), systemPrompt, userPrompt], { timeout: ZAI_REVIEW_TIMEOUT + 5000 });
-  if (!result.ok) return { ok: true, severity: 'ERROR', summary: 'Z.AI review failed, skipping' };
-
-  // Parse Z.AI response
   try {
-    const jsonMatch = result.stdout.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return { ok: true, severity: 'LOW', summary: 'Z.AI returned non-JSON, assuming clean' };
+    const result = await inference({
+      systemPrompt,
+      userPrompt,
+      level: 'glm5',
+      expectJson: true,
+      timeout: ZAI_REVIEW_TIMEOUT,
+    });
 
-    const review = JSON.parse(jsonMatch[0]);
+    if (!result.success) return { ok: true, severity: 'ERROR', summary: `Z.AI review failed: ${result.error}` };
+
+    const review = result.parsed as any;
+    if (!review) return { ok: true, severity: 'LOW', summary: 'Z.AI returned empty, assuming clean' };
+
     const severity = review.severity || 'LOW';
     const issueCount = review.issues?.length || 0;
     const summary = issueCount > 0
@@ -284,7 +320,7 @@ async function zaiReviewDiff(repo: RepoConfig, prNumber: number): Promise<A0Revi
 
     return { ok: severity !== 'HIGH', severity, summary };
   } catch {
-    return { ok: true, severity: 'LOW', summary: 'Z.AI parse failed, assuming clean' };
+    return { ok: true, severity: 'LOW', summary: 'Z.AI review exception, assuming clean' };
   }
 }
 
@@ -342,9 +378,18 @@ export async function processPR(
     return record;
   }
 
-  // A0 Code Review (non-blocking: if A0 unreachable, proceed anyway)
-  console.log(`  ${D}A0 reviewing PR #${pr.number}...${X}`);
-  const review = await a0ReviewDiff(repo, pr.number);
+  // Fetch diff once, share between reviewers
+  const diffResult = await runAsync(['gh', 'pr', 'diff', String(pr.number), '--repo', repo.repo]);
+  const diffText = diffResult.ok ? diffResult.stdout.slice(0, 4000) : '';
+
+  // A0 + Z.AI Code Reviews — PARALLEL (Promise.all)
+  console.log(`  ${D}Reviewing PR #${pr.number} (A0 + Z.AI parallel)...${X}`);
+  const [review, zaiReview] = await Promise.all([
+    a0ReviewDiff(repo, pr.number, diffText),
+    zaiReviewDiff(repo, pr.number, diffText),
+  ]);
+
+  // A0 result
   console.log(`  ${D}A0: ${review.severity} — ${review.summary.slice(0, 80)}${X}`);
   if (!review.ok) {
     record.result = 'failed_review';
@@ -354,9 +399,7 @@ export async function processPR(
     return record;
   }
 
-  // Z.AI Code Review (quality/patterns focus, fail-open)
-  console.log(`  ${D}Z.AI reviewing PR #${pr.number}...${X}`);
-  const zaiReview = await zaiReviewDiff(repo, pr.number);
+  // Z.AI result
   record.zaiReviewSeverity = zaiReview.severity;
   const zaiIcon = zaiReview.severity === 'HIGH' ? R : zaiReview.severity === 'MEDIUM' ? Y : G;
   console.log(`  ${zaiIcon}Z.AI${X} PR #${pr.number}: ${zaiReview.severity} — ${zaiReview.summary.slice(0, 80)}`);
