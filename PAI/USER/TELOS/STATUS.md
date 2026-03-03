@@ -64,7 +64,7 @@
 | TELOS | Файлы контекста | 23 файла | Актуальные и глубокие |
 | PAI | Хуки | 30 | Все defensive/fail-open |
 | PAI | Тесты | 94 / 14 сюит | 100% pass |
-| PAI | AI Agents | 3+1 (Navi, Jules, A0, Gemini tool) | Оркестр работает |
+| PAI | AI Agents | 3+2 (Navi, Jules, A0, Gemini tool, GLM-5 tool) | Оркестр работает, A0 подключён |
 | PAI | Inference providers | 5 (Haiku, Sonnet, Opus, Gemini, GLM-5) | Unified tool, 3 AI компании |
 | PAI | Скиллы | 11 | Аудит по v4 (G10) |
 | PAI | Community PRs | 6 (4 open) | Регулярный вклад |
@@ -100,6 +100,7 @@
 
 | Победа | Дата | Связано с |
 |--------|------|-----------|
+| Agent Zero подключён к Navi через REST API (AgentZero.ts) — 24/7 VPS, 9 навыков | 2026-03-03 | I3, MO9, S1 |
 | Z.AI GLM-5 интегрирован: 5-й inference provider + zai-cli MCP (vision/search/read/repo) | 2026-03-03 | I3, S1, S3, MO9 |
 | 3 AI-провайдера: Anthropic + Google + Zhipu AI = полный суверенитет | 2026-03-03 | S3, M3, C2 |
 | AI Agent Orchestra запущен: Jules (async) + Gemini CLI (tool) + Navi (architect) + A0 (researcher) | 2026-03-03 | I3, MO9, S1 |
