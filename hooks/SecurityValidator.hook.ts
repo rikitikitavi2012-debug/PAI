@@ -536,7 +536,7 @@ async function validateContent(content: string): Promise<{ action: 'allow' | 'bl
       if (new RegExp(p.pattern).test(content)) {
         return { action: 'block', reason: p.reason };
       }
-    } catch { /* invalid regex — skip */ }
+    } catch (err) { process.stderr.write(`[SecurityValidator] error description: ${err}\n`); /* invalid regex — skip */ }
   }
 
   // Check confirm content patterns
@@ -545,7 +545,7 @@ async function validateContent(content: string): Promise<{ action: 'allow' | 'bl
       if (new RegExp(p.pattern).test(content)) {
         return { action: 'confirm', reason: p.reason };
       }
-    } catch { /* invalid regex — skip */ }
+    } catch (err) { process.stderr.write(`[SecurityValidator] error description: ${err}\n`); /* invalid regex — skip */ }
   }
 
   return { action: 'allow' };
