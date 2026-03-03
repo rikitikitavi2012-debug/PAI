@@ -28,6 +28,8 @@ const ENV_PATH = join(process.env.HOME!, '.config', 'PAI', '.env');
 const STATE_PATH = join(PAI_DIR, 'MEMORY', 'STATE', 'jules-automerge.json');
 const JULES_BASE_URL = 'https://jules.googleapis.com/v1alpha';
 const TEST_TIMEOUT = 120_000;
+const A0_REVIEW_TIMEOUT = 120_000;
+const A0_TOOL = join(PAI_DIR, 'PAI', 'Tools', 'AgentZero.ts');
 
 // ANSI
 const R = '\x1b[31m';
@@ -71,7 +73,7 @@ interface ProcessedSession {
   sessionId: string;
   prNumber: number;
   prUrl: string;
-  result: 'merged' | 'failed_tests' | 'failed_merge' | 'skipped';
+  result: 'merged' | 'failed_tests' | 'failed_merge' | 'failed_review' | 'skipped';
   processedAt: string;
   repo: string;
   testOutput?: string;
@@ -191,6 +193,50 @@ async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<{
   }
 }
 
+// ── A0 Code Review ──
+
+interface A0ReviewResult {
+  ok: boolean;
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'ERROR';
+  summary: string;
+}
+
+async function a0ReviewDiff(repo: RepoConfig, prNumber: number): Promise<A0ReviewResult> {
+  // Get PR diff via gh
+  const diff = run(['gh', 'pr', 'diff', String(prNumber), '--repo', repo.repo]);
+  if (!diff.ok) return { ok: true, severity: 'ERROR', summary: 'Could not fetch diff, skipping review' };
+
+  const diffText = diff.stdout.slice(0, 4000); // Limit tokens sent to A0
+  if (!diffText.trim()) return { ok: true, severity: 'LOW', summary: 'Empty diff' };
+
+  // Check if A0 is available
+  const health = run(['bun', A0_TOOL, 'health'], { timeout: 10_000 });
+  if (!health.ok) return { ok: true, severity: 'ERROR', summary: 'A0 unreachable, skipping review' };
+
+  // Send diff to A0 for review
+  const prompt = `Review this git diff for security vulnerabilities, command injection, path traversal, and code quality issues. Be concise. Reply with ONLY a JSON object: {"severity":"LOW"|"MEDIUM"|"HIGH","issues":[{"type":"security|quality|performance","description":"..."}]}\n\nDiff:\n${diffText}`;
+
+  const result = run(['bun', A0_TOOL, 'message', prompt], { timeout: A0_REVIEW_TIMEOUT });
+  if (!result.ok) return { ok: true, severity: 'ERROR', summary: 'A0 review failed, skipping' };
+
+  // Parse A0 response
+  try {
+    const jsonMatch = result.stdout.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return { ok: true, severity: 'LOW', summary: 'A0 returned non-JSON, assuming clean' };
+
+    const review = JSON.parse(jsonMatch[0]);
+    const severity = review.severity || 'LOW';
+    const issueCount = review.issues?.length || 0;
+    const summary = issueCount > 0
+      ? `${issueCount} issue(s): ${review.issues.map((i: any) => i.description).join('; ').slice(0, 200)}`
+      : 'Clean';
+
+    return { ok: severity !== 'HIGH', severity, summary };
+  } catch {
+    return { ok: true, severity: 'LOW', summary: 'A0 parse failed, assuming clean' };
+  }
+}
+
 // ── Pipeline ──
 
 async function processPR(
@@ -234,6 +280,18 @@ async function processPR(
     return record;
   }
 
+  // A0 Code Review (non-blocking: if A0 unreachable, proceed anyway)
+  console.log(`  ${D}A0 reviewing PR #${pr.number}...${X}`);
+  const review = await a0ReviewDiff(repo, pr.number);
+  console.log(`  ${D}Review: ${review.severity} — ${review.summary.slice(0, 80)}${X}`);
+  if (!review.ok) {
+    record.result = 'failed_review';
+    record.testOutput = review.summary;
+    console.log(`  ${R}BLOCKED${X} PR #${pr.number}: A0 found HIGH severity issues`);
+    state.stats.totalFailed++;
+    return record;
+  }
+
   // Merge
   const merge = run(['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo, '--squash', '--delete-branch', '--admin']);
   if (!merge.ok) {
@@ -259,6 +317,7 @@ async function processPR(
     pr_number: pr.number,
     repo: repo.repo,
     test_duration_ms: test.durationMs,
+    review_severity: review.severity,
   } as any);
 
   return record;
