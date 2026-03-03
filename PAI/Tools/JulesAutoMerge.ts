@@ -160,7 +160,7 @@ function run(cmd: string[], opts?: { cwd?: string; timeout?: number }): { ok: bo
 }
 
 function ghPrList(repo: string): Array<{ number: number; title: string; headRefName: string; baseRefName: string }> {
-  const result = run(['gh', 'pr', 'list', '--repo', repo, '--author', 'app/jules-google', '--state', 'open', '--json', 'number,title,headRefName,baseRefName']);
+  const result = run(['gh', 'pr', 'list', '--repo', repo, '--state', 'open', '--json', 'number,title,headRefName,baseRefName']);
   if (!result.ok) return [];
   try { return JSON.parse(result.stdout); } catch { return []; }
 }
@@ -235,7 +235,7 @@ async function processPR(
   }
 
   // Merge
-  const merge = run(['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo, '--squash', '--delete-branch']);
+  const merge = run(['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo, '--squash', '--delete-branch', '--admin']);
   if (!merge.ok) {
     record.result = 'failed_merge';
     record.testOutput = merge.stderr;
@@ -268,6 +268,7 @@ async function findReadyPRs(repo: RepoConfig, state: AutoMergeState): Promise<Ar
   const sessions = await getCompletedSessions(repo);
   const prs = ghPrList(repo.repo);
   const ready: Array<{ session: JulesSession; pr: typeof prs[0] }> = [];
+  const seenPRs = new Set<number>();
 
   for (const session of sessions) {
     if (isProcessed(state, session.name)) continue;
@@ -276,20 +277,27 @@ async function findReadyPRs(repo: RepoConfig, state: AutoMergeState): Promise<Ar
     let details: JulesSession;
     try { details = await getSessionDetails(session.name); } catch { continue; }
 
-    // Match session to open PR
-    const prUrl = details.outputs?.[0]?.pullRequest?.url;
-    const headRef = details.outputs?.[0]?.pullRequest?.headRef;
+    // Match session to open PR (PR can be in any outputs element)
+    const prOutput = details.outputs?.find(o => o.pullRequest);
+    const prUrl = prOutput?.pullRequest?.url;
+    const headRef = prOutput?.pullRequest?.headRef;
+
+    let matchedPr: typeof prs[0] | undefined;
 
     if (prUrl) {
       const prNumMatch = prUrl.match(/\/pull\/(\d+)/);
       if (prNumMatch) {
         const prNum = parseInt(prNumMatch[1]);
-        const pr = prs.find(p => p.number === prNum);
-        if (pr) ready.push({ session: details, pr });
+        matchedPr = prs.find(p => p.number === prNum);
       }
     } else if (headRef) {
-      const pr = prs.find(p => p.headRefName === headRef);
-      if (pr) ready.push({ session: details, pr });
+      matchedPr = prs.find(p => p.headRefName === headRef);
+    }
+
+    // Deduplicate: only process each PR once (first matching session wins)
+    if (matchedPr && !seenPRs.has(matchedPr.number)) {
+      seenPRs.add(matchedPr.number);
+      ready.push({ session: details, pr: matchedPr });
     }
   }
 
