@@ -1,0 +1,11 @@
+id: "20260302-090940_task"
+title: "Дай промт для новой сессии для себя для продолжени"
+session_id: "eb067924-4620-482c-b6ac-e481ffde57b2"
+created_at: "2026-03-02T09:09:40+03:00"
+completed_at: "2026-03-02T09:12:29+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []
