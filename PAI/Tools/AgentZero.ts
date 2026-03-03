@@ -1,0 +1,236 @@
+#!/usr/bin/env bun
+/**
+ * ============================================================================
+ * AGENT ZERO API — Programmatic access to Agent Zero instance
+ * ============================================================================
+ *
+ * PURPOSE:
+ * CLI tool for communicating with Agent Zero (autonomous AI agent) via REST API.
+ * Agent Zero runs 24/7 in Docker on VPS, has: code execution, browser, search,
+ * vision, memory, scheduler, document query, sub-agent delegation.
+ *
+ * USAGE:
+ *   bun AgentZero.ts message "Your task here"             — sync message (blocks up to 5min)
+ *   bun AgentZero.ts message "Follow up" --context ABC    — continue conversation
+ *   bun AgentZero.ts async "Long task"                    — fire-and-forget, returns context_id
+ *   bun AgentZero.ts log <context_id>                     — get conversation log
+ *   bun AgentZero.ts terminate <context_id>               — end conversation
+ *   bun AgentZero.ts health                               — check server status
+ *   bun AgentZero.ts scheduler list                       — list scheduled tasks
+ *   bun AgentZero.ts scheduler run "task description"     — run ad-hoc task now
+ *
+ * CONFIG:
+ *   A0_API_TOKEN in ~/.config/PAI/.env
+ *   A0_BASE_URL defaults to http://72.56.86.51:50002
+ *
+ * ============================================================================
+ */
+
+const fs = require('fs');
+
+interface A0Config {
+  baseUrl: string;
+  apiToken: string;
+}
+
+function loadConfig(): A0Config {
+  const envPath = `${process.env.HOME}/.config/PAI/.env`;
+  let apiToken = process.env.A0_API_TOKEN || '';
+
+  if (!apiToken) {
+    try {
+      const envContent = fs.readFileSync(envPath, 'utf-8');
+      const match = envContent.match(/^A0_API_TOKEN=(.+)$/m);
+      if (match) apiToken = match[1].trim();
+    } catch {}
+  }
+
+  if (!apiToken) {
+    console.error('Error: No A0_API_TOKEN found in env or ~/.config/PAI/.env');
+    process.exit(1);
+  }
+
+  return {
+    baseUrl: process.env.A0_BASE_URL || 'http://72.56.86.51:50002',
+    apiToken,
+  };
+}
+
+async function apiCall(path: string, body?: object, timeout = 300000): Promise<any> {
+  const config = loadConfig();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(`${config.baseUrl}${path}`, {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': config.apiToken,
+        'Content-Type': 'application/json',
+      },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`HTTP ${response.status}: ${text}`);
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return await response.json();
+    }
+    return await response.text();
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error(`Timeout after ${timeout}ms`);
+    }
+    throw err;
+  }
+}
+
+async function healthCheck(): Promise<void> {
+  const config = loadConfig();
+  try {
+    const res = await fetch(`${config.baseUrl}/health`, { method: 'GET' });
+    console.log(res.ok ? '✅ Agent Zero is running' : `⚠️ Status: ${res.status}`);
+  } catch (err: any) {
+    console.error(`❌ Agent Zero unreachable: ${err.message}`);
+    process.exit(1);
+  }
+}
+
+// Send synchronous message (blocks up to 5 min)
+async function sendMessage(message: string, contextId?: string): Promise<void> {
+  const startTime = Date.now();
+  const body: any = { message, lifetime_hours: 1 };
+  if (contextId) body.context_id = contextId;
+
+  const result = await apiCall('/api_message', body);
+  const latency = ((Date.now() - startTime) / 1000).toFixed(1);
+
+  console.log(JSON.stringify({
+    context_id: result.context_id,
+    response: result.response,
+    latency_s: latency,
+  }, null, 2));
+}
+
+// Send async message (fire-and-forget)
+async function sendAsync(message: string, contextId?: string): Promise<void> {
+  const body: any = { text: message };
+  if (contextId) body.context = contextId;
+
+  const result = await apiCall('/message_async', body, 15000);
+  console.log(JSON.stringify(result, null, 2));
+}
+
+// Get conversation log
+async function getLog(contextId: string, length = 100): Promise<void> {
+  const result = await apiCall('/api_log_get', { context_id: contextId, length }, 15000);
+  console.log(JSON.stringify(result, null, 2));
+}
+
+// Terminate conversation
+async function terminateChat(contextId: string): Promise<void> {
+  const result = await apiCall('/api_terminate_chat', { context_id: contextId }, 15000);
+  console.log(result || 'Chat terminated');
+}
+
+// Scheduler operations
+async function schedulerList(): Promise<void> {
+  const result = await apiCall('/scheduler_tasks_list', {}, 15000);
+  console.log(JSON.stringify(result, null, 2));
+}
+
+async function schedulerRun(task: string): Promise<void> {
+  const result = await apiCall('/scheduler_task_run', { task }, 60000);
+  console.log(JSON.stringify(result, null, 2));
+}
+
+// ─── CLI entry point ───────────────────────────────────────────────
+
+async function main() {
+  const args = process.argv.slice(2);
+  const command = args[0];
+
+  if (!command) {
+    console.error(`Usage:
+  bun AgentZero.ts message "Your task"           — sync (blocks up to 5min)
+  bun AgentZero.ts message "Text" --context ID   — continue conversation
+  bun AgentZero.ts async "Long task"             — fire-and-forget
+  bun AgentZero.ts log <context_id>              — conversation log
+  bun AgentZero.ts terminate <context_id>        — end conversation
+  bun AgentZero.ts health                        — server check
+  bun AgentZero.ts scheduler list                — list tasks
+  bun AgentZero.ts scheduler run "task"          — run ad-hoc task`);
+    process.exit(1);
+  }
+
+  switch (command) {
+    case 'health':
+      await healthCheck();
+      break;
+
+    case 'message': {
+      const message = args[1];
+      if (!message) { console.error('Error: message text required'); process.exit(1); }
+      const ctxIdx = args.indexOf('--context');
+      const contextId = ctxIdx >= 0 ? args[ctxIdx + 1] : undefined;
+      await sendMessage(message, contextId);
+      break;
+    }
+
+    case 'async': {
+      const message = args[1];
+      if (!message) { console.error('Error: message text required'); process.exit(1); }
+      const ctxIdx = args.indexOf('--context');
+      const contextId = ctxIdx >= 0 ? args[ctxIdx + 1] : undefined;
+      await sendAsync(message, contextId);
+      break;
+    }
+
+    case 'log': {
+      const contextId = args[1];
+      if (!contextId) { console.error('Error: context_id required'); process.exit(1); }
+      const length = args[2] ? parseInt(args[2]) : 100;
+      await getLog(contextId, length);
+      break;
+    }
+
+    case 'terminate': {
+      const contextId = args[1];
+      if (!contextId) { console.error('Error: context_id required'); process.exit(1); }
+      await terminateChat(contextId);
+      break;
+    }
+
+    case 'scheduler':
+      if (args[1] === 'list') {
+        await schedulerList();
+      } else if (args[1] === 'run') {
+        const task = args[2];
+        if (!task) { console.error('Error: task description required'); process.exit(1); }
+        await schedulerRun(task);
+      } else {
+        console.error('Scheduler subcommands: list, run "task"');
+        process.exit(1);
+      }
+      break;
+
+    default:
+      console.error(`Unknown command: ${command}`);
+      process.exit(1);
+  }
+}
+
+if (import.meta.main) {
+  main().catch((err) => {
+    console.error(`Error: ${err.message}`);
+    process.exit(1);
+  });
+}
