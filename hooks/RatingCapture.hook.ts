@@ -76,7 +76,7 @@ const MIN_CONFIDENCE = 0.5;
 function getLastResponse(): string {
   try {
     if (existsSync(LAST_RESPONSE_CACHE)) return readFileSync(LAST_RESPONSE_CACHE, 'utf-8');
-  } catch {}
+  } catch (err) { process.stderr.write(`[RatingCapture] error description: ${err}\n`); }
   return '';
 }
 
@@ -281,7 +281,7 @@ function getRecentContext(transcriptPath: string, maxTurns: number = 3): string 
             turns.push({ role: 'Assistant', text: summaryMatch ? summaryMatch[1] : text.slice(0, 150) });
           }
         }
-      } catch {}
+      } catch (err) { process.stderr.write(`[RatingCapture] error description: ${err}\n`); }
     }
 
     const recent = turns.slice(-maxTurns);

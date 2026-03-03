@@ -173,7 +173,7 @@ function loadRelationshipContext(paiDir: string): string | null {
           recentNotes.push(`*${formatDate(date)}:*`);
           recentNotes.push(...notes);
         }
-      } catch {}
+      } catch (err) { process.stderr.write(`[LoadContext] error description: ${err}\n`); }
     }
   }
 
@@ -220,7 +220,7 @@ function getRecentWorkSessions(paiDir: string): WorkSession[] {
     if (existsSync(namesPath)) {
       sessionNames = JSON.parse(readFileSync(namesPath, 'utf-8'));
     }
-  } catch { /* ignore parse errors */ }
+  } catch (err) { process.stderr.write(`[LoadContext] error description: ${err}\n`); /* ignore parse errors */ }
 
   const sessions: WorkSession[] = [];
   const now = Date.now();
@@ -263,7 +263,7 @@ function getRecentWorkSessions(paiDir: string): WorkSession[] {
           if (statusMatch) status = statusMatch[1];
           if (titleMatch) rawTitle = titleMatch[1];
           if (sessionIdMatch) sessionId = sessionIdMatch[1]?.trim();
-        } catch { /* skip */ }
+        } catch (err) { process.stderr.write(`[LoadContext] error description: ${err}\n`); /* skip */ }
       } else if (existsSync(metaPath)) {
         // Legacy: Read from META.yaml
         try {
@@ -274,7 +274,7 @@ function getRecentWorkSessions(paiDir: string): WorkSession[] {
           if (statusMatch) status = statusMatch[1];
           if (titleMatch) rawTitle = titleMatch[1];
           if (sessionIdMatch) sessionId = sessionIdMatch[1]?.trim();
-        } catch { /* skip */ }
+        } catch (err) { process.stderr.write(`[LoadContext] error description: ${err}\n`); /* skip */ }
       } else {
         continue; // No PRD.md or META.yaml — skip
       }
@@ -311,7 +311,7 @@ function getRecentWorkSessions(paiDir: string): WorkSession[] {
               progress: prdVerifyMatch?.[1]?.trim() || '0/0'
             };
           }
-        } catch { /* no PRDs */ }
+        } catch (err) { process.stderr.write(`[LoadContext] error description: ${err}\n`); /* no PRDs */ }
 
         sessions.push({
           type: 'recent',
@@ -322,7 +322,7 @@ function getRecentWorkSessions(paiDir: string): WorkSession[] {
           stale: false,
           prd
         });
-      } catch { /* skip malformed */ }
+      } catch (err) { process.stderr.write(`[LoadContext] error description: ${err}\n`); /* skip malformed */ }
     }
   } catch (err) {
     console.error(`⚠️ Error scanning WORK dirs: ${err}`);
@@ -375,7 +375,7 @@ function getProjectProgress(paiDir: string): WorkSession[] {
           handoff_notes: progress.handoff_notes,
           next_steps: progress.next_steps
         });
-      } catch { /* skip malformed */ }
+      } catch (err) { process.stderr.write(`[LoadContext] error description: ${err}\n`); /* skip malformed */ }
     }
   } catch (err) {
     console.error(`⚠️ Error reading progress files: ${err}`);

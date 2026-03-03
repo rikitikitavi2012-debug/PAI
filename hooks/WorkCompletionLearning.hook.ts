@@ -334,7 +334,7 @@ async function main() {
             idealContent = `**ISC:** ${checked}/${total} criteria passing`;
           }
         }
-      } catch { /* ignore */ }
+      } catch (err) { process.stderr.write(`[WorkCompletionLearning] error description: ${err}\n`); /* ignore */ }
     } else {
       const iscPath = join(workPath, 'ISC.json');
       if (existsSync(iscPath)) {
@@ -347,7 +347,7 @@ async function main() {
             const s = iscData.satisfaction;
             idealContent += `\n\n**Satisfaction:** ${s.satisfied}/${s.total} satisfied, ${s.partial} partial, ${s.failed} failed`;
           }
-        } catch { /* ignore */ }
+        } catch (err) { process.stderr.write(`[WorkCompletionLearning] error description: ${err}\n`); /* ignore */ }
       }
     }
 

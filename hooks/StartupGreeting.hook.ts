@@ -80,7 +80,7 @@ const settingsPath = getSettingsPath();
         const hookInput = JSON.parse(stdinText);
         sessionId = hookInput.session_id || null;
       }
-    } catch { /* stdin parse failed or timed out — proceed without session_id */ }
+    } catch (err) { process.stderr.write(`[StartupGreeting] error description: ${err}\n`); /* stdin parse failed or timed out — proceed without session_id */ }
 
     // Persist Kitty environment for hooks that run later without terminal context.
     // Uses per-session mapping so multiple tabs don't overwrite each other's window IDs.
@@ -125,7 +125,7 @@ const settingsPath = getSettingsPath();
         body: JSON.stringify({ message: 'Navi готов к работе', voice_id: getVoiceId() }),
         signal: AbortSignal.timeout(3000),
       });
-    } catch { /* voice server unavailable — not critical */ }
+    } catch (err) { process.stderr.write(`[StartupGreeting] error description: ${err}\n`); /* voice server unavailable — not critical */ }
 
     process.exit(0);
   } catch (error) {

@@ -68,10 +68,10 @@ function acquireLock(): boolean {
       try {
         const stat = statSync(LOCK_PATH);
         if (Date.now() - stat.mtimeMs > LOCK_STALE) {
-          try { rmdirSync(LOCK_PATH); } catch {}
+          try { rmdirSync(LOCK_PATH); } catch (err) { process.stderr.write(`[SessionAutoName] error description: ${err}\n`); }
           continue;
         }
-      } catch {}
+      } catch (err) { process.stderr.write(`[SessionAutoName] error description: ${err}\n`); }
       Bun.sleepSync(50);
     }
   }
@@ -79,7 +79,7 @@ function acquireLock(): boolean {
 }
 
 function releaseLock(): void {
-  try { rmdirSync(LOCK_PATH); } catch {}
+  try { rmdirSync(LOCK_PATH); } catch (err) { process.stderr.write(`[SessionAutoName] error description: ${err}\n`); }
 }
 
 function readSessionNames(): SessionNames {
@@ -95,7 +95,7 @@ function readSessionNames(): SessionNames {
         console.error('[SessionAutoName] Primary corrupted, reading backup');
         return JSON.parse(readFileSync(bakPath, 'utf-8'));
       }
-    } catch {}
+    } catch (err) { process.stderr.write(`[SessionAutoName] error description: ${err}\n`); }
   }
   return {};
 }
@@ -111,7 +111,7 @@ function writeSessionNames(names: SessionNames): void {
     if (existsSync(SESSION_NAMES_PATH)) {
       writeFileSync(SESSION_NAMES_PATH + '.bak', readFileSync(SESSION_NAMES_PATH), 'utf-8');
     }
-  } catch {}
+  } catch (err) { process.stderr.write(`[SessionAutoName] error description: ${err}\n`); }
   // Atomic: write tmp, rename
   const tmpPath = SESSION_NAMES_PATH + '.tmp.' + process.pid;
   writeFileSync(tmpPath, JSON.stringify(names, null, 2), 'utf-8');
@@ -285,7 +285,7 @@ function getCustomTitle(sessionId: string): string | null {
           if (entry.type === 'custom-title' && entry.customTitle) {
             lastCustomTitle = entry.customTitle;
           }
-        } catch {}
+        } catch (err) { process.stderr.write(`[SessionAutoName] error description: ${err}\n`); }
       }
       if (lastCustomTitle) return lastCustomTitle;
     }

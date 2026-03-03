@@ -117,7 +117,7 @@ async function main(): Promise<void> {
         voice_enabled: true,
       }),
       signal: AbortSignal.timeout(2000),
-    }).catch(() => {});
+    }).catch((err) => { process.stderr.write(`[WorktreeRemove] error description: ${err}\n`); });
 
     process.stderr.write(`[WorktreeRemove] Removed: ${worktreePath} (branch: ${branchName})\n`);
   } catch (err) {

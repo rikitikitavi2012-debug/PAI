@@ -114,7 +114,7 @@ async function main(): Promise<void> {
         voice_enabled: true,
       }),
       signal: AbortSignal.timeout(2000),
-    }).catch(() => {});
+    }).catch((err) => { process.stderr.write(`[WorktreeCreate] error description: ${err}\n`); });
 
     process.stderr.write(`[WorktreeCreate] Created: ${worktreePath} (branch: ${name})\n`);
 

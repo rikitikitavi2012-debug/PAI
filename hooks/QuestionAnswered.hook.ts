@@ -51,7 +51,7 @@ async function main() {
         const parsed = JSON.parse(raw);
         sessionId = parsed.session_id;
       }
-    } catch { /* stdin timeout or parse failed — continue without session_id */ }
+    } catch (err) { process.stderr.write(`[QuestionAnswered] error description: ${err}\n`); /* stdin timeout or parse failed — continue without session_id */ }
 
     // Read previous working title saved by SetQuestionTab
     const currentState = readTabState(sessionId);

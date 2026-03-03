@@ -238,7 +238,7 @@ _Important observations during execution..._
     if (existsSync(currentLink) || lstatSync(currentLink)) {
       unlinkSync(currentLink);
     }
-  } catch { /* ignore if doesn't exist */ }
+  } catch (err) { process.stderr.write(`[AutoWorkCreation] error description: ${err}\n`); /* ignore if doesn't exist */ }
   symlinkSync(taskDirName, currentLink);
 
   console.error(`[AutoWork] Created task: ${taskPath}`);

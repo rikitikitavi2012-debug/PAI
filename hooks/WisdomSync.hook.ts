@@ -92,7 +92,7 @@ function loadWisdomJSON(domain: string): WisdomJSON {
   if (existsSync(path)) {
     try {
       return JSON.parse(readFileSync(path, 'utf-8'));
-    } catch { /* fall through */ }
+    } catch (err) { process.stderr.write(`[WisdomSync] error description: ${err}\n`); /* fall through */ }
   }
   return { domain, updated: new Date().toISOString(), observations: [] };
 }
@@ -198,7 +198,7 @@ function getSessionCount(): number {
       const data = JSON.parse(readFileSync(SESSION_COUNTER_FILE, 'utf-8'));
       return data.count || 0;
     }
-  } catch { /* ignore */ }
+  } catch (err) { process.stderr.write(`[WisdomSync] error description: ${err}\n`); /* ignore */ }
   return 0;
 }
 
@@ -234,7 +234,7 @@ async function main(): Promise<void> {
   const lines = readFileSync(RATINGS_FILE, 'utf-8').split('\n').filter(l => l.trim());
   const allRatings: RatingEntry[] = [];
   for (const line of lines) {
-    try { allRatings.push(JSON.parse(line)); } catch { /* skip */ }
+    try { allRatings.push(JSON.parse(line)); } catch (err) { process.stderr.write(`[WisdomSync] error description: ${err}\n`); /* skip */ }
   }
 
   if (allRatings.length === 0) {

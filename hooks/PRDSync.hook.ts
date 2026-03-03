@@ -72,7 +72,7 @@ async function main() {
         hasChanges = !(phaseMatch && progressMatch && taskMatch && effortMatch && criteriaMatch);
       }
       // No existing entry → hasChanges stays true (first sync for new slug)
-    } catch { /* silent — fail open, sync anyway */ }
+    } catch (err) { process.stderr.write(`[PRDSync] error description: ${err}\n`); /* silent — fail open, sync anyway */ }
   }
 
   // Only sync + emit event when structural data actually changed
@@ -93,7 +93,7 @@ async function main() {
 
 }
 
-main().catch(() => {}).finally(() => {
+main().catch((err) => { process.stderr.write(`[PRDSync] error description: ${err}\n`); }).finally(() => {
   console.log(JSON.stringify({ continue: true }));
   process.exit(0);
 });

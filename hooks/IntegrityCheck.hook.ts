@@ -33,7 +33,7 @@ async function readStdin(): Promise<HookInput | null> {
     })();
     await Promise.race([read, timeout]);
     if (input.trim()) return JSON.parse(input) as HookInput;
-  } catch {}
+  } catch (err) { process.stderr.write(`[IntegrityCheck] error description: ${err}\n`); }
   return null;
 }
 

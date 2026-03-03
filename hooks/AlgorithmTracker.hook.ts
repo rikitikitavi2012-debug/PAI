@@ -110,7 +110,7 @@ function getSessionName(sid: string): string {
       const names = JSON.parse(readFileSync(snPath, 'utf-8'));
       if (names[sid]) return names[sid];
     }
-  } catch {}
+  } catch (err) { process.stderr.write(`[AlgorithmTracker] error description: ${err}\n`); }
   // Return session ID prefix instead of "Starting..." to avoid phantom dashboard entries
   return sid.slice(0, 8);
 }
@@ -205,7 +205,7 @@ async function main() {
               voice_id: getAlgorithmVoice()?.voiceId || getVoiceId(),
             }),
           }).catch((e) => process.stderr.write(`[AlgorithmTracker] Voice notify failed: ${e}\n`));
-        } catch {}
+        } catch (err) { process.stderr.write(`[AlgorithmTracker] error description: ${err}\n`); }
         process.stderr.write(`[AlgorithmTracker] REWORK detected — iteration ${reworkNum}\n`);
       }
 
@@ -286,4 +286,4 @@ async function main() {
   }
 }
 
-main().catch(() => {});
+main().catch((err) => { process.stderr.write(`[AlgorithmTracker] error description: ${err}\n`); });
