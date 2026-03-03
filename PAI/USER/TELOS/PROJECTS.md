@@ -39,12 +39,14 @@
   - #800 fix: Inference.ts JSON parsing (CLOSED)
 - **Признание:** @rikitikitavi2012-debug отмечен в release notes PAI v4.0.3
 **Подпроекты:**
-- **PAI Dashboard** — Next.js UI для управления TELOS и PAI (5 страниц, 11 API)
+- **PAI Workspace (Kitty)** — 7-tab terminal workspace: Command Center, TELOS, Code, Brigade Dashboard, Logs, Research, Comms. Заменяет PAI Dashboard (web). Детерминизм + zero overhead.
+- ~~**PAI Dashboard**~~ — ❌ Заменён на Kitty Workspace (март 2026). Web UI = лишний overhead для соло-разработчика. Terminal-native = быстрее, проще, надёжнее.
 - **TELOS контекст** — 23 файла заполнены, эволюция продолжается
 - **PAI инфраструктура** — хуки, скиллы, агенты, воркфлоу
 - **Community contribution** — PRs, issues, code review в upstream PAI
-- **AI Brigade** — Navi (архитектор) + Jules (async-кодер) + Agent Zero (ревьюер/исследователь)
+- **AI Brigade** — Navi (архитектор) + Jules (async-кодер) + Agent Zero (ревьюер/исследователь) + Z.AI (vision/search) + Gemini (второе мнение)
 - **JulesAutoMerge** — автоматизация merge Jules PRs с A0 code review
+- **Miessler Philosophy** — 9 операционных принципов вшиты в нервную систему (CLAUDE.md + AISTEERINGRULES.md)
 **Результаты (февраль-март 2026):**
 - Context engineering оформился как дисциплина. PAI опережает академические Memory OS
 - Research skill боевой тест по v3: все 4 режима работают (нужен ре-аудит по v4)
@@ -69,7 +71,9 @@
 - [x] Community: 6 PRs в upstream
 - [x] Git workflow: fork, main/master, worktrees
 - [ ] Аудит скиллов по v4 структуре (11 скиллов, новая архитектура)
-- [ ] Развить PAI Dashboard (Фаза 2-4 по ROADMAP)
+- [ ] PAI Workspace v2 (Kitty): TELOS panel, project switcher, financial tracker
+- [ ] Z.AI интеграция в pipeline (code reviewer, vision для UI)
+- [ ] A0 расширение scheduled tasks (health check, security scan, community watcher)
 - [ ] Углубить контекст в заполненных TELOS файлах
 **Связано с:** M1, M3, B1, B2, MO9, S7
 
@@ -160,17 +164,27 @@
 
 | # | Проект | Приоритет | Почему |
 |---|--------|-----------|--------|
-| P0 | PAI + TELOS | Высший | Фундамент для всего. Контекст = актив. |
-| P3 | Цифровой Прораб (PWA) | **Высший** | Активная разработка, 3 модуля готовы, ключ к презентации руководству. |
-| P1 | Сайт Timber Frame | **Высший** | Конкурентная разведка готова, ниша пуста, нужен для презентации руководству. Сезон начинается в апреле. |
+| P0 | PAI + TELOS | Высший | Фундамент для всего. Контекст = актив. Заточка инструментов = compound returns. |
+| P1 | Сайт Timber Frame | **Высший** | Ниша пуста, сезон в апреле, сайт = деньги. |
+| P3 | Цифровой Прораб (PWA) | **Высокий** | 3 модуля готовы, но sync + Telegram = ещё работа. Можно в первые вечера сезона. |
 | P4 | Инвест-портфель | Высокий | Капитал лежит — деньги должны работать. |
-| P2 | Construction Orchestrator | Средний | Мощный проект, но зависит от P3 и P1. |
+| P2 | Construction Orchestrator | Средний | Зависит от P3 и P1. Концепция. |
 
-**Текущий фокус (февраль-март 2026):** Два проекта готовятся параллельно для одной стратегической цели — презентация руководству фирмы:
-1. **P3 (Цифровой Прораб PWA)** — решение узкого места коммуникации прораб↔офис
-2. **P1 (Timber Frame сайт)** — своё направление МАФ в коллаборации с фирмой
+**Текущий фокус (март 2026) — две фазы:**
 
-**Принцип:** P0 — всегда фоном. P3 и P1 — два проекта одной стратегии (W5 не нарушен: одна цель, два инструмента).
+**Фаза A: Заточка инструментов (до ~10 марта):**
+Неделя на финальную доводку PAI, чтобы к продуктовым задачам идти с отточенными механизмами.
+1. **PAI Workspace v2 (Kitty)** — TELOS panel, расширить Command Center
+2. **Бригада** — Z.AI в pipeline, A0 scheduled tasks, merge открытых Jules PRs
+3. **Тестирование** — G10 аудит скиллов, усиление test suite
+4. **Community** — пинг 7 upstream PRs, follow-up
+
+**Фаза B: Продукт (10+ марта → сезон):**
+Отточенные механизмы применяем на продуктовые задачи.
+1. **P1 (Timber Frame сайт)** — MVP к концу марта, реклама в апреле
+2. **P3 (Цифровой Прораб)** — SyncEngine + Telegram дайджест
+
+**Принцип:** Scaffolding > Model (принцип #1). Неделя вложений в систему → широкие шаги к G1/G3 весь сезон.
 
 ---
 

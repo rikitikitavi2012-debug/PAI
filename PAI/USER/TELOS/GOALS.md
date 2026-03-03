@@ -4,7 +4,7 @@
 
 Цели поддерживают ваши миссии (M#) и представляют собой конкретные результаты, которых вы хотите достичь.
 
-*Последнее обновление: 2026-03-02*
+*Последнее обновление: 2026-03-03*
 
 ---
 
@@ -257,6 +257,23 @@
 - [ ] Jules → batch-генерация тестов для upstream hooks
 - [ ] Jules → security/performance scan upstream codebase
 - [ ] Gemini CLI + Jules extension → дополнительный канал работы
+
+### G13: PAI Workspace v2 (Kitty)
+**Статус:** Активна (Высокий приоритет — Фаза A)
+**Поддерживает:** M1 (Инновации), M3 (Техно-суверенитет)
+**Срок:** Март 2026 (неделя 3-10 марта)
+**Описание:** Развить Kitty Workspace из 7-tab v1 в полноценную панель управления PAI. Заменяет PAI Dashboard (Next.js web) — terminal-native, zero overhead, детерминизм. TELOS panel для просмотра целей/статуса прямо в терминале. Project switcher для переключения контекста P0/P1/P3. Brigade monitoring в реальном времени.
+**Обоснование:** Kitty — это где Ivan работает. Web dashboard = лишний таб, лишний deploy, лишнее обслуживание. Принцип #2 (Code > Prompts): bash скрипты надёжнее web UI.
+**Прогресс:**
+- [x] Kitty Workspace v1 — 7 табов (Command Center, TELOS, Code, Brigade, Logs, Research, Comms)
+- [x] Brigade Dashboard — AUTOMERGE, A0 info, Events tail с цветами
+- [ ] TELOS panel — goals, status, projects прямо в терминале
+- [ ] Project switcher — быстрое переключение контекста между P0/P1/P3
+- [ ] Financial tracker — метрики портфеля (3.5M распределение)
+- [ ] Hotkeys — быстрый доступ к частым действиям
+**Связано с:** P0, принцип #2 (Code > Prompts)
+
+---
 
 ### G12: RU Metrics — экономические данные России
 **Статус:** Идея
