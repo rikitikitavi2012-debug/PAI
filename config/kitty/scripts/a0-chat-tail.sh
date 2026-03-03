@@ -13,7 +13,7 @@ export no_proxy="${no_proxy:+$no_proxy,}72.56.86.51"
 POLL_INTERVAL=5
 LAST_NO=-1
 
-# ── Colors ──
+# ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
 RST='\e[0m'
 BLD='\e[1m'
 DIM='\e[2m'
@@ -22,9 +22,9 @@ VIO='\e[38;2;167;139;250m'
 GRN='\e[38;2;74;222;128m'
 RED='\e[38;2;251;113;133m'
 YLW='\e[38;2;251;191;36m'
-SEP='\e[38;2;71;85;105m'
-WHT='\e[38;2;203;213;225m'
-SLT='\e[38;2;148;163;184m'
+SEP='\e[38;2;71;85;105m'      # separators and borders
+WHT='\e[38;2;203;213;225m'    # primary text
+SLT='\e[38;2;148;163;184m'    # secondary text (bright enough for readability)
 
 # ── Load API token ──
 A0_TOKEN=""
@@ -39,9 +39,9 @@ fi
 # ── Header ──
 print_header() {
   clear
-  printf "%b%b🧠 A0 CHAT%b  %b(live · ${POLL_INTERVAL}s)%b\n" "${BLD}" "${CYN}" "${RST}" "${DIM}" "${RST}"
-  printf "%b" "${SEP}"
-  printf '━%.0s' {1..40}
+  printf "  %b%b🧠 A0 CHAT%b  %b(live · %ss)%b\n" "${BLD}" "${CYN}" "${RST}" "${SLT}" "${POLL_INTERVAL}" "${RST}"
+  printf "  %b" "${SEP}"
+  printf '─%.0s' {1..40}
   printf "%b\n" "${RST}"
 }
 
@@ -154,20 +154,19 @@ fetch_chat() {
 
     case "$type" in
       user)
-        printf "  %b%s%b  %b👤 Ivan:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${GRN}${BLD}" "${RST}" "${WHT}" "$display_text" "${RST}"
+        printf "  %b%-8s%b  %b👤 Ivan:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${GRN}${BLD}" "${RST}" "${WHT}" "$display_text" "${RST}"
         ;;
       agent)
-        printf "  %b%s%b  %b🧠 A0:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${CYN}${BLD}" "${RST}" "${WHT}" "$display_text" "${RST}"
+        printf "  %b%-8s%b  %b🧠 A0:%b   %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${CYN}${BLD}" "${RST}" "${WHT}" "$display_text" "${RST}"
         ;;
       response)
-        # Final response from agent
-        printf "  %b%s%b  %b💬 Ответ:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${VIO}${BLD}" "${RST}" "${WHT}" "${display_text:0:100}" "${RST}"
+        printf "  %b%-8s%b  %b💬 Ответ:%b %b%s%b\n" "${SLT}" "$local_ts" "${RST}" "${VIO}${BLD}" "${RST}" "${WHT}" "${display_text:0:100}" "${RST}"
         ;;
       util)
-        printf "  %b%s%b  %b⚙ %s%b\n" "${SLT}" "$local_ts" "${RST}" "${DIM}" "${display_text:0:80}" "${RST}"
+        printf "  %b%-8s%b  %b⚙ %s%b\n" "${SLT}" "$local_ts" "${RST}" "${SLT}" "${display_text:0:80}" "${RST}"
         ;;
       *)
-        printf "  %b%s%b  %b• %s: %s%b\n" "${SLT}" "$local_ts" "${RST}" "${DIM}" "$type" "${display_text:0:80}" "${RST}"
+        printf "  %b%-8s%b  %b• %s: %s%b\n" "${SLT}" "$local_ts" "${RST}" "${SLT}" "$type" "${display_text:0:80}" "${RST}"
         ;;
     esac
 

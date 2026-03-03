@@ -5,14 +5,15 @@
 
 EVENTS="$HOME/.claude/MEMORY/STATE/events.jsonl"
 
-# ── Colors ──
+# ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
 RST='\e[0m'
 BLD='\e[1m'
 DIM='\e[2m'
 VIO='\e[38;2;167;139;250m'
 RED='\e[38;2;251;113;133m'
-SEP='\e[38;2;71;85;105m'
+SEP='\e[38;2;71;85;105m'      # separators and borders
 GRN='\e[38;2;74;222;128m'
+SLT='\e[38;2;148;163;184m'    # secondary text
 
 # ── Timezone offset (hours from UTC, e.g. 3 for MSK, -5 for EST) ──
 _tz_raw=$(date +%z)
@@ -23,9 +24,9 @@ _tz_h=$(( 10#${_tz_abs:0:2} ))
 TZ_OFFSET_H=$(( _tz_sign * _tz_h ))
 unset _tz_raw _tz_sign _tz_abs _tz_h
 
-printf "%b%b📡 PAI EVENTS%b  %b(live · UTC%+d)%b\n" "${BLD}" "${VIO}" "${RST}" "${DIM}" "${TZ_OFFSET_H}" "${RST}"
-printf "%b" "${SEP}"
-printf '━%.0s' {1..40}
+printf "  %b%b📡 PAI EVENTS%b  %b(live · UTC%+d)%b\n" "${BLD}" "${VIO}" "${RST}" "${DIM}" "${TZ_OFFSET_H}" "${RST}"
+printf "  %b" "${SEP}"
+printf '─%.0s' {1..40}
 printf "%b\n\n" "${RST}"
 
 if [ ! -f "$EVENTS" ]; then
@@ -94,25 +95,25 @@ tail -n 20 -f "$EVENTS" | jq --unbuffered -r -R --argjson tz "$TZ_OFFSET_H" '
       (.data.hook     // .hook       // empty | "hook=\(.)"),
       (.phase         // .data.phase // empty | "φ=\(.)"),
       (.progress      // empty | "prog=\(.)"),
-      (.slug          // .data.slug  // empty | "slug=\(.[:25])"),
+      (.slug          // .data.slug  // empty | "slug=\(.[:20])"),
       (.data.agent_type              // empty | "agent=\(.)"),
-      (.data.agent_id                // empty | "id=\(.[:12])"),
+      (.data.agent_id                // empty | "id=\(.[:8])"),
       (.data.event    // .event      // empty | "ev=\(.)"),
       (.data.rating   // .rating     // empty | "★\(.)"),
       (.data.pr_number               // empty | "PR#\(.)"),
       (.data.worktree_path           // empty | split("/") | last | "wt=\(.)"),
-      (.has_snapshot                  // empty | "snap=\(.)"),
       (.data.level                   // empty | "lvl=\(.)"),
       (.data.provider                // empty | "via=\(.)"),
       (.data.latency_s               // empty | "\(.)s"),
-      (.data.context_id              // empty | "ctx=\(.[:12])"),
+      (.data.context_id              // empty | "ctx=\(.[:8])"),
       (if .data.preview then
-        (.data.preview[:40] | gsub("\n"; " ") | "\"\(.)\"")
+        (.data.preview[:30] | gsub("\n"; " ") | "\"\(.)\"")
        elif .data.last_message_preview then
-        (.data.last_message_preview[:35] | gsub("\n"; " ") | "\"\(.)\"")
+        (.data.last_message_preview[:30] | gsub("\n"; " ") | "\"\(.)\"")
        else empty end)
     ] | join(" │ ")
-  ) as $detail |
+  ) as $detail_raw |
+  ($detail_raw | if length > 80 then .[:77] + "..." else . end) as $detail |
 
   # Short type name
   ($typ | split(".") | last) as $short |

@@ -1,5 +1,5 @@
 #!/bin/bash
-# PAI Command Center — Live Dashboard for Kitty Home Tab
+# PAI Command Center — Live Dashboard for Kitty (Tab 2: ⬢ Center)
 # Polls: system health, AI brigade, TELOS goals, decisions, wins
 # Refresh: every 30 seconds | r = refresh now | q = exit
 
@@ -19,17 +19,17 @@ TELOS_JSON="$HOME/.claude/MEMORY/STATE/telos-state.json"
 TELOS_PARSER="$HOME/.claude/PAI/Tools/TelosParser.ts"
 A0_HEALTH_URL="http://72.56.86.51:50002/health"
 
-# ── Colors (24-bit RGB — PAI palette) ──
+# ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
 RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'
 GRN='\e[38;2;74;222;128m'
 RED='\e[38;2;251;113;133m'
 YLW='\e[38;2;251;191;36m'
 CYN='\e[38;2;103;232;249m'
-SLT='\e[38;2;148;163;184m'
-SEP='\e[38;2;71;85;105m'
-# BLU='\e[38;2;59;130;246m'
+SLT='\e[38;2;148;163;184m'    # secondary text (bright enough for readability)
+SEP='\e[38;2;71;85;105m'      # separators and borders
+BLU='\e[38;2;59;130;246m'
 VIO='\e[38;2;167;139;250m'
-WHT='\e[38;2;203;213;225m'
+WHT='\e[38;2;203;213;225m'    # primary text
 
 # ── Terminal width ──
 cols=$(tput cols 2>/dev/null || echo 96)
@@ -92,7 +92,7 @@ progress_bar() {
   printf '%b' "$color"
   local i
   for ((i=0; i<filled; i++)); do printf '%s' '█'; done
-  printf '%b' "$DIM"
+  printf '%b' "$SEP"
   for ((i=0; i<empty; i++)); do printf '%s' '░'; done
   printf '%b' "$RST"
 }
@@ -273,26 +273,27 @@ poll() {
 
   # Render rows
   two_col \
-    "$(printf '%bPAI%b    %bv4.0.3%b  %b%s хуков  %s тестов%b' "$SLT" "$RST" "$WHT" "$RST" "$DIM" "$hook_count" "$test_count" "$RST")" \
+    "$(printf '%bPAI%b    %b%bv4.0.3%b  %b%s хуков  %s тестов%b' "$SLT" "$RST" "$WHT" "$BLD" "$RST" "$SLT" "$hook_count" "$test_count" "$RST")" \
     "$(printf '%bNavi%b   %b✅ Claude Code%b' "$SLT" "$RST" "$GRN" "$RST")"
 
   two_col \
-    "$(printf '%bVoice%b  %s  %b:8888%b' "$SLT" "$RST" "$vs_icon" "$DIM" "$RST")" \
-    "$(printf '%bJules%b  %bPR:%b %b%s%b %bоткрыто%b' "$SLT" "$RST" "$SLT" "$RST" "$YLW" "$jules_prs" "$RST" "$DIM" "$RST")"
+    "$(printf '%bVoice%b  %s  %b:8888%b' "$SLT" "$RST" "$vs_icon" "$SLT" "$RST")" \
+    "$(printf '%bJules%b  %bPR:%b %b%b%s%b %bоткрыто%b' "$SLT" "$RST" "$SLT" "$RST" "$YLW" "$BLD" "$jules_prs" "$RST" "$SLT" "$RST")"
 
   two_col \
-    "$(printf '%bA0%b     %s  %b%s%b' "$SLT" "$RST" "$a0_icon" "$DIM" "$a0_latency_str" "$RST")" \
-    "$(printf '%bMerge%b  %b+%s%b %b✗%s%b %b~%s%b' "$SLT" "$RST" "$GRN" "$am_merged" "$RST" "$RED" "$am_failed" "$RST" "$DIM" "$am_skipped" "$RST")"
+    "$(printf '%bA0%b     %s  %b%s%b' "$SLT" "$RST" "$a0_icon" "$SLT" "$a0_latency_str" "$RST")" \
+    "$(printf '%bMerge%b  %b+%s%b %b✗%s%b %b~%s%b' "$SLT" "$RST" "$GRN" "$am_merged" "$RST" "$RED" "$am_failed" "$RST" "$SLT" "$am_skipped" "$RST")"
 
   two_col \
     "$(printf '%bZ.AI%b   %s' "$SLT" "$RST" "$zai_icon")" \
     "$(printf '%bGemini%b %s  %bCLI%b %s' "$SLT" "$RST" "$gemini_icon" "$SLT" "$RST" "$gemini_cli_icon")"
 
   two_col \
-    "$(printf '%bEvents%b %b24ч:%b%b%s%b %b7д:%b%b%s%b' "$SLT" "$RST" "$DIM" "$RST" "$WHT" "$events_24h" "$RST" "$DIM" "$RST" "$WHT" "$events_7d" "$RST")" \
-    "$(printf '%bPR%b     %b%s%b %bоткрыто%b' "$SLT" "$RST" "$YLW" "$jules_prs" "$RST" "$DIM" "$RST")"
+    "$(printf '%bEvents%b %b24ч:%b%b%b%s%b %b7д:%b%b%b%s%b' "$SLT" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$events_24h" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$events_7d" "$RST")" \
+    ""
 
   two_col_bot
+  printf "\n"
 
   # ═══════════════════════════════════════════════════
   # ── 3. АКТИВНЫЕ ЦЕЛИ ──
@@ -341,6 +342,7 @@ poll() {
     box_line "$(printf '%bЗагрузка...%b' "$DIM" "$RST")"
   fi
   box_bot
+  printf "\n"
 
   # ═══════════════════════════════════════════════════
   # ── 4. Two-column: РЕШЕНИЯ + ПОБЕДЫ ──
@@ -417,17 +419,18 @@ poll() {
   # ═══════════════════════════════════════════════════
   # ── 5. Tab navigation footer ──
   # ═══════════════════════════════════════════════════
+  printf "\n"
   local tab_str=""
-  tab_str+="${VIO}${BLD}1${RST}${SLT}Center${RST}  "
-  tab_str+="${VIO}${BLD}2${RST}${SLT}PAI${RST}  "
-  tab_str+="${VIO}${BLD}3${RST}${SLT}Projects${RST}  "
-  tab_str+="${VIO}${BLD}4${RST}${SLT}Brigade${RST}  "
-  tab_str+="${VIO}${BLD}5${RST}${SLT}Servers${RST}  "
-  tab_str+="${VIO}${BLD}6${RST}${SLT}Monitor${RST}  "
-  tab_str+="${VIO}${BLD}7${RST}${SLT}TELOS${RST}"
+  tab_str+="${YLW}${BLD}1${RST}${SLT}TELOS${RST}  "
+  tab_str+="${YLW}${BLD}2${RST}${SLT}Center${RST}  "
+  tab_str+="${CYN}${BLD}3${RST}${SLT}Brigade${RST}  "
+  tab_str+="${CYN}${BLD}4${RST}${SLT}Infra${RST}  "
+  tab_str+="${GRN}${BLD}5${RST}${SLT}PAI${RST}  "
+  tab_str+="${GRN}${BLD}6${RST}${SLT}Projects${RST}"
+  box_top
   box_line "$tab_str"
   box_bot
-  printf '%b ↻ %sс │ r = обновить │ q = выход%b\n' "$DIM" "$INTERVAL" "$RST"
+  printf ' %b%s │ ↻ %sс │ r = обновить │ q = выход%b\n' "$SLT" "$(date '+%H:%M')" "$INTERVAL" "$RST"
 }
 
 # ── Initial poll ──

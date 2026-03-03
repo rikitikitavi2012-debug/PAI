@@ -15,18 +15,19 @@ TELOS_DIR="$HOME/.claude/PAI/USER/TELOS"
 INTERVAL=300
 W=100  # target content width
 
-# ── Colors (24-bit RGB — PAI palette) ──
+# ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
 RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'; ITL='\e[3m'
 GRN='\e[38;2;74;222;128m'
 RED='\e[38;2;251;113;133m'
 YLW='\e[38;2;251;191;36m'
 CYN='\e[38;2;103;232;249m'
-SLT='\e[38;2;148;163;184m'
-SEP='\e[38;2;71;85;105m'
+SLT='\e[38;2;148;163;184m'    # secondary text (bright enough for readability)
+SEP='\e[38;2;71;85;105m'      # separators and borders
 VIO='\e[38;2;167;139;250m'
-WHT='\e[38;2;203;213;225m'
+WHT='\e[38;2;203;213;225m'    # primary text
 ORG='\e[38;2;251;146;60m'
 BLU='\e[38;2;59;130;246m'
+LO_GRN='\e[38;2;134;239;172m' # brighter green for low-value progress bars
 
 # ── Helpers ──
 
@@ -208,15 +209,14 @@ poll() {
 
   printf "\n"
   hline
-  printf "  %b%b🎯 TELOS RADAR%b  %s %b%s%b %b%s%b %b%sд%b (%b%s%%%b)     %b%s%b\n" \
+  printf "  %b%b🎯 TELOS RADAR%b  %s %b%-12s%b %b%s%b %b%3sд%b %b%3s%%%b  %bP:%b%b%s%b%s %bS:%b%b%s%b %bE:%b%b%s%b  %b%s%b\n" \
     "$VIO" "$BLD" "$RST" "$s_icon" "$CYN" "$s_label" "$RST" \
     "$YLW" "$cbar" "$RST" "$WHT" "$s_days" "$RST" "$SLT" "$s_pct" "$RST" \
+    "$SLT" "$RST" "$WHT" "$perf_cur" "$RST" "$t_arrow" \
+    "$SLT" "$RST" "$BLU" "$sess_wk" "$RST" \
+    "$SLT" "$RST" "$SLT" "$evt_24h" "$RST" \
     "$DIM" "$now" "$RST"
-  printf "  %s  %bP:%b%b%s%b%s %bS:%b%b%s%b %bE:%b%b%s%b\n" \
-    "$spheres_str" \
-    "$DIM" "$RST" "$WHT" "$perf_cur" "$RST" "$t_arrow" \
-    "$DIM" "$RST" "$BLU" "$sess_wk" "$RST" \
-    "$DIM" "$RST" "$SLT" "$evt_24h" "$RST"
+  printf "  %s\n" "$spheres_str"
   hline
 
   # ══════════════════════════════════════════════════════════════════
@@ -268,8 +268,7 @@ poll() {
     fi
   done
 
-  # ── Visual flow arrow ──
-  printf "\n  %b%b                          ▼ фокус двигает%b\n\n" "$SEP" "$DIM" "$RST"
+  printf "\n"
 
   # ══════════════════════════════════════════════════════════════════
   # LEVEL 2: PROGRESS — Missions + Goals
@@ -277,13 +276,14 @@ poll() {
 
   # --- Missions (full width) ---
   printf "  %b%b🎯 МИССИИ%b\n" "$VIO" "$BLD" "$RST"
-  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 94); printf "%b\n" "$RST"
+  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 80); printf "%b\n" "$RST"
 
   while IFS=$'\t' read -r m_id m_name m_progress m_goals_str; do
     local bar pcolor
     bar=$(progress_bar "$m_progress" 20)
     pcolor="$SLT"
     [ "$m_progress" -gt 0 ]  && pcolor="$YLW"
+    [ "$m_progress" -ge 25 ] && pcolor="$LO_GRN"
     [ "$m_progress" -ge 50 ] && pcolor="$GRN"
 
     printf "  %b%-3s%b %b%-20s%b %b%s%b  %b%3d%%%b\n" \
@@ -336,6 +336,7 @@ poll() {
     bar=$(progress_bar "$g_progress" 10)
     pcolor="$SLT"
     [ "$g_progress" -gt 0 ]  && pcolor="$YLW"
+    [ "$g_progress" -ge 25 ] && pcolor="$LO_GRN"
     [ "$g_progress" -ge 50 ] && pcolor="$GRN"
 
     local line
@@ -366,15 +367,14 @@ poll() {
     fi
   done
 
-  # ── Visual flow arrow ──
-  printf "\n  %b%b                          ▼ цели сталкиваются с%b\n\n" "$SEP" "$DIM" "$RST"
+  printf "\n"
 
   # ══════════════════════════════════════════════════════════════════
   # LEVEL 3: CHALLENGES → STRATEGIES (dependency graph)
   # ══════════════════════════════════════════════════════════════════
 
-  printf "  %b%bВЫЗОВЫ → СТРАТЕГИИ%b\n" "$RED" "$BLD" "$RST"
-  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 94); printf "%b\n" "$RST"
+  printf "  %b%b⚡ ВЫЗОВЫ → СТРАТЕГИИ%b\n" "$RED" "$BLD" "$RST"
+  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 80); printf "%b\n" "$RST"
 
   # Build C→S mapping
   # Extract challenges with their linked strategies, then for each strategy show effectiveness
@@ -411,8 +411,7 @@ poll() {
     printf "\n"
   done < <(jq -r '.challenges[]? | [.id, .name, (.severity // "medium"), ((.linkedStrategies // []) | join(","))] | @tsv' "$STATE_FILE" 2>/dev/null)
 
-  # ── Visual flow arrow ──
-  printf "  %b%b                          ▼ стратегии создают%b\n\n" "$SEP" "$DIM" "$RST"
+  printf "\n"
 
   # ══════════════════════════════════════════════════════════════════
   # LEVEL 4: WINS + GROWTH
@@ -449,12 +448,12 @@ poll() {
   local l_tarrow
   l_tarrow=$(trend_arrow "$l_trend")
 
-  right_growth+=("$(printf " %bSessions/wk:%b %b%s%b    %bEvents:%b %b%s/24h%b" \
-    "$DIM" "$RST" "$BLU" "$l_sess" "$RST" "$DIM" "$RST" "$SLT" "$evt_24h" "$RST")")
-  right_growth+=("$(printf " %bФреймы:%b %b%s%b (85%%+)  %bУроки:%b %b%s%b" \
-    "$DIM" "$RST" "$VIO" "$l_frames" "$RST" "$DIM" "$RST" "$WHT" "$l_lessons" "$RST")")
-  right_growth+=("$(printf " %bРейтинг:%b %b%s/10%b %s (%bнеделя: %s%b)" \
-    "$DIM" "$RST" "$WHT" "$l_perf" "$RST" "$l_tarrow" "$SLT" "$l_pavg" "$RST")")
+  right_growth+=("$(printf " %bSessions:%b %b%b%s%b/wk  %bEvents:%b %b%b%s%b/24h" \
+    "$SLT" "$RST" "$BLU" "$BLD" "$l_sess" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$evt_24h" "$RST")")
+  right_growth+=("$(printf " %bФреймы:%b  %b%b%s%b (85%%+)  %bУроки:%b %b%b%s%b" \
+    "$SLT" "$RST" "$VIO" "$BLD" "$l_frames" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$l_lessons" "$RST")")
+  right_growth+=("$(printf " %bРейтинг:%b %b%b%s/10%b %s (%bнед: %s%b)" \
+    "$SLT" "$RST" "$WHT" "$BLD" "$l_perf" "$RST" "$l_tarrow" "$SLT" "$l_pavg" "$RST")")
 
   local max_wg=${#left_wins[@]}
   [ ${#right_growth[@]} -gt "$max_wg" ] && max_wg=${#right_growth[@]}
@@ -475,7 +474,7 @@ poll() {
   # LEVEL 5: COMPASS + CAPITAL (reference)
   # ══════════════════════════════════════════════════════════════════
   printf "\n"
-  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 94); printf "%b\n" "$RST"
+  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 80); printf "%b\n" "$RST"
 
   # Compass: rotating wisdom quote
   local quote_count
@@ -529,9 +528,9 @@ poll() {
 
   # ── Footer ──
   printf "\n%b" "$SEP"
-  printf '━%.0s' $(seq 1 "$W")
+  printf '─%.0s' $(seq 1 "$W")
   printf "%b\n" "$RST"
-  printf "%b %s │ ↻ %sс (smart poll) │ r = сейчас │ q = выход%b\n" "$DIM" "$now" "$INTERVAL" "$RST"
+  printf " %b%s │ ↻ %sс │ r = обновить │ q = выход%b\n" "$SLT" "$now" "$INTERVAL" "$RST"
 }
 
 # ── Initial poll ──

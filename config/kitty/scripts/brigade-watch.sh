@@ -19,31 +19,30 @@ JAM_STATE="$HOME/.claude/MEMORY/STATE/jules-automerge.json"
 INTERVAL=30
 API_TIMEOUT=10
 
-# ── Colors (24-bit RGB matching PAI palette) ──
+# ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
 RST='\e[0m'
 BLD='\e[1m'
 DIM='\e[2m'
-# Semantic
-GRN='\e[38;2;74;222;128m'    # emerald — success
+GRN='\e[38;2;74;222;128m'     # emerald — success
 RED='\e[38;2;251;113;133m'    # rose — error
 YLW='\e[38;2;251;191;36m'     # amber — warning/in-progress
 CYN='\e[38;2;103;232;249m'    # cyan — info
-SLT='\e[38;2;148;163;184m'    # slate — dim text
-SEP='\e[38;2;71;85;105m'      # separator lines
+SLT='\e[38;2;148;163;184m'    # secondary text (bright enough for readability)
+SEP='\e[38;2;71;85;105m'      # separators and borders
 BLU='\e[38;2;59;130;246m'     # blue — accents
 VIO='\e[38;2;167;139;250m'    # violet — headers
-WHT='\e[38;2;203;213;225m'    # white — values
+WHT='\e[38;2;203;213;225m'    # primary text
 
 separator() {
   printf "%b" "${SEP}"
-  printf '━%.0s' {1..48}
+  printf '─%.0s' {1..48}
   printf "%b\n" "${RST}"
 }
 
 section_header() {
   local icon="$1" title="$2" color="$3"
-  printf "\n%b%b%s %s%b\n" "${color}" "${BLD}" "${icon}" "${title}" "${RST}"
-  separator
+  printf "\n  %b%b%s %s%b\n" "${color}" "${BLD}" "${icon}" "${title}" "${RST}"
+  printf "  "; separator
 }
 
 poll() {
@@ -188,10 +187,11 @@ poll() {
       check_time=$(echo "$last_check" | sed 's/T/ /' | cut -c1-19)
     fi
 
-    printf "  %b✓%b %b%s%b %bmerged%b" "${GRN}" "${RST}" "${WHT}" "${merged}" "${RST}" "${SLT}" "${RST}"
-    printf "  %b✗%b %b%s%b %bfailed%b" "${RED}" "${RST}" "${WHT}" "${failed_am}" "${RST}" "${SLT}" "${RST}"
-    printf "  %b~%b %b%s%b %bskipped%b\n" "${DIM}" "${RST}" "${WHT}" "${skipped}" "${RST}" "${SLT}" "${RST}"
-    printf "  %bПроверка:%b %b%s%b\n" "${SLT}" "${RST}" "${DIM}" "${check_time}" "${RST}"
+    printf "  %b✓%b%b%s%b merged  %b✗%b%b%s%b failed  %b~%b%b%s%b skip  %b│%b %bcheck: %s%b\n" \
+      "${GRN}" "${RST}" "${WHT}" "${merged}" "${RST}" \
+      "${RED}" "${RST}" "${WHT}" "${failed_am}" "${RST}" \
+      "${SLT}" "${RST}" "${WHT}" "${skipped}" "${RST}" \
+      "${SEP}" "${RST}" "${SLT}" "${check_time}" "${RST}"
 
     # Show last 5 processed PRs
     local recent
@@ -217,7 +217,8 @@ poll() {
   fi
 
   # Check for open PRs (fast — just gh pr list)
-  printf "\n  %bOpen PRs:%b " "${SLT}" "${RST}"
+  printf "\n  %b" "${SEP}"; printf '─%.0s' {1..40}; printf "%b\n" "${RST}"
+  printf "  %bOpen PRs:%b " "${SLT}" "${RST}"
   local open_prs
   if open_prs=$(timeout 5 gh pr list --repo rikitikitavi2012-debug/PAI-personal --state open --json number,title 2>/dev/null) && [ -n "$open_prs" ]; then
     local pr_count
@@ -236,9 +237,9 @@ poll() {
 
   # ── Footer ──
   printf "\n%b" "${SEP}"
-  printf '━%.0s' {1..48}
+  printf '─%.0s' {1..48}
   printf "%b\n" "${RST}"
-  printf "%b ↻ Обновление через %sс │ r = сейчас │ q = выход │ Ctrl+C%b\n" "${DIM}" "${INTERVAL}" "${RST}"
+  printf " %b%s │ ↻ %sс │ r = обновить │ q = выход%b\n" "${SLT}" "$(date '+%H:%M')" "${INTERVAL}" "${RST}"
 }
 
 # Initial poll
