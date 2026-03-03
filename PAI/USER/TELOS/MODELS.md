@@ -81,19 +81,42 @@
 - **Применение:** S3 (инфра-независимость), VPS NL, Venice AI, FTTH + 4G bonding для дома в горах.
 - **Связано с:** B3, B4, C2, S3, M3
 
-### MO9: AI Agent Orchestra — один дирижёр, много инструментов
+### MO9: AI Brigade — один дирижёр, бригада специалистов
 **Обновлено: 2026-03-03**
-Эволюция от "двух мозгов" к **оркестру AI-агентов**. Ivan — дирижёр (тимлид), каждый агент — специалист в своей роли. Задачи распределяются по сравнительному преимуществу, работа идёт параллельно.
-- **Navi (Claude Code/PAI):** "Архитектор и ведущий инженер". Стратегический контекст (TELOS), сложные решения, архитектура, интерактивная работа, ревью PR. Синхронный, локальный.
-- **Jules (Google Gemini):** "Async-исполнитель". Рутинные задачи (тесты, баги, TODO, dependency updates), proactive scan, scheduled maintenance. Асинхронный, облачный. Работает пока Ivan спит.
-- **Agent Zero:** "Автономный исследователь". Тяжёлые вычисления, глубокий ресёрч, семантический анализ. Свой сервер, Docker, Venice AI.
-- **Gemini CLI:** "Второе мнение и инструмент Navi". Gemini Pro доступен как inference provider (`bun Inference.ts --level gemini`). Navi вызывает программно для cross-check кода, параллельного анализа, Google-специфичных знаний. Не агент — инструмент в руках архитектора.
-- **GLM-5 (Z.AI):** "Тяжёлая артиллерия и стратегический резерв". 744B MoE, 77.8% SWE-bench, MIT license. Inference provider (`bun Inference.ts --level glm5`). OpenAI-compatible API, прямой доступ из РФ (китайская компания, без гео-блока). zai-cli — MCP tools (vision/search/read/repo). Двойная роль: bulk inference (дешевле Claude) + резерв если заблокируют Anthropic и Google.
-- **Agent Zero:** "Автономный исследователь и исполнитель". 24/7 в Docker на VPS (72.56.86.51:50002). LLM: claude-sonnet-4-6. 9 навыков: TELOS, TheAlgorithm, chart-architect, doc-forge, exa-synergy, ops-commander, replicate-studio, a0-deployer, create-skill. Инструменты: code_execution, browser_agent, search_engine, document_query, vision, memory, scheduler. Общается на русском.
-- **Интеграция:** Navi управляет Jules через REST API (`JulesAPI.ts`), Agent Zero через REST API (`AgentZero.ts`), Gemini через CLI/Inference.ts, GLM-5 через Inference.ts (native fetch). TELOS sync обеспечивает общий контекст. AGENTS.md в репо → контекст для Jules.
-- **Ключевой принцип:** "Один человек работает как команда из 3-4 разработчиков." Делегируй рутину → фокусируйся на том что нельзя делегировать (доменная экспертиза, продажи, стратегия).
-- **Три провайдера = суверенитет:** Anthropic (через прокси NL) + Google (через прокси NL) + Zhipu AI (прямой доступ). Если любые два заблокируют — третий работает. Unified API через `bun Inference.ts --level <fast|standard|smart|gemini|glm5>`.
-- **Источник:** Эволюция S1. Подтверждено практикой 2026-03-03: Jules нашёл и починил 4 security-уязвимости за 7 минут, Navi отревьюил и замёрджил без участия Ivan. GLM-5 интегрирован в тот же день.
+Эволюция от "двух мозгов" к **бригаде AI-агентов**. Ivan — дирижёр (тимлид). Чёткое разделение: **члены бригады** (автономные агенты с мышлением) и **инструменты** (вызываются членами, не думают сами).
+
+**ЧЛЕНЫ БРИГАДЫ (агенты с автономией):**
+- **Ivan:** Дирижёр и тимлид. Ставит задачи, принимает решения, доменная экспертиза, стратегия, продажи.
+- **Navi (Claude Code/PAI):** Архитектор и ведущий инженер. TELOS контекст, сложные решения, архитектура, интерактивная разработка, ревью PR, координация бригады. Синхронный, локальный.
+- **Jules (Google Gemini):** Async-кодер. Рутинные задачи: тесты, баги, фиксы, dependency updates. Proactive scan. Работает пока Ivan спит. Асинхронный, облачный.
+- **Agent Zero:** Ревьюер, исследователь, мониторщик. 24/7 в Docker на VPS (72.56.86.51:50002). LLM: claude-sonnet-4-6. 14 инструментов (code_execution, browser_agent, search_engine, document_query, vision, memory, scheduler и др.), 9 навыков (TELOS, TheAlgorithm, chart-architect, doc-forge, exa-synergy, ops-commander, replicate-studio, a0-deployer, create-skill). Общается на русском.
+
+**ИНСТРУМЕНТЫ (вызываются членами, не думают сами):**
+- **Inference.ts:** Unified API для 5 LLM providers (fast/standard/smart/gemini/glm5).
+- **Gemini CLI:** Inference provider — Navi вызывает для второго мнения, cross-check. 1000 req/day free.
+- **GLM-5 / zai-cli:** Inference provider (744B MoE) + MCP tools (vision/search/read/repo). Стратегический резерв: прямой доступ из РФ (китайская компания).
+- **JulesAutoMerge.ts:** Pipeline — тесты в worktree → A0 code review → gh pr merge --squash → git pull sync. Соединяет Jules + A0 + gh CLI.
+- **JulesAPI.ts:** REST клиент к Jules API (сессии, задачи, статус).
+- **AgentZero.ts:** REST клиент к A0 API (message, health, async).
+- **CommunityCheck.ts:** Мониторинг upstream PRs/issues.
+- **EventStats.ts:** Аналитика событий (types/daily/sources/recent).
+- **MCP серверы:** Расширения Claude Code (filesystem, fetch).
+- **gh CLI:** GitHub операции (PR, merge, issues) — используют все члены.
+
+**Ключевая разница:** Член бригады может получить задачу и выполнить её самостоятельно. Инструмент вызывается кем-то для конкретной операции.
+
+**Биллинг:** Navi — по подписке Anthropic Max. Jules — по подписке Google Coding Plan. A0 — по API вызовам (контролировать расходы!). Gemini CLI — бесплатный tier. GLM-5 — по API вызовам.
+
+**Pipeline (как работает бригада):**
+```
+Jules кодит → создаёт PR → JulesAutoMerge (Navi) →
+→ тесты в worktree → A0 code review → merge → sync
+→ Ivan утром видит результат
+```
+
+**Интеграция:** Navi управляет Jules через JulesAPI.ts, A0 через AgentZero.ts, Gemini/GLM-5 через Inference.ts. TELOS sync обеспечивает общий контекст. AGENTS.md в репо → контекст для Jules.
+- **Три провайдера = суверенитет:** Anthropic (прокси NL) + Google (прокси NL) + Zhipu AI (прямой). Если два заблокируют — третий работает.
+- **Источник:** Эволюция S1. Подтверждено практикой 2026-03-03: Jules починил 4 security-уязвимости, A0 отревьюил diff, Navi замёрджил автоматически — без участия Ivan.
 
 ---
 
@@ -123,7 +146,7 @@
 | Отношения | MO1, MO10, MO11 | Стимулы → действия, доверие через дела, прямая коммуникация |
 | Личностный рост | MO2, MO5 | Идентичность через действия, learn-by-doing + AI |
 | Понимание людей | MO1, MO3 | Стимулы + асимметричный риск в переговорах |
-| AI разработка | MO5, MO6, MO9 | Agent Orchestra, делегирование кода, фокус на экспертизе |
+| AI разработка | MO5, MO6, MO9 | AI Brigade (члены vs инструменты), делегирование кода, JulesAutoMerge pipeline |
 | Бизнес | MO3, MO4, MO7 | Асимметричный риск, один фокус, вечные ниши |
 | Финансы | MO3, MO8 | Диверсификация, автономность от государства |
 | Философия жизни | MO0, MO2, MO8 | Стоицизм, действия > слова, технологии > контроль |
@@ -136,7 +159,7 @@
 |--------|------|-------|----------------|------|
 | MO9 | Один AI-ассистент | Система двух мозгов (Оркестратор + Воркер) | Успешная интеграция Agent Zero через A2A | 2026-01-28 |
 | MO9 | Система двух мозгов | AI Agent Orchestra (3+ агента) | Добавлен Jules (async worker), модель расширена до оркестра | 2026-03-03 |
-| MO9 | AI Agent Orchestra (3 агента) | AI Agent Orchestra (3 агента + Gemini tool) | Gemini CLI как inference provider для Navi. 4 уровня: fast/standard/smart/gemini | 2026-03-03 |
+| MO9 | AI Agent Orchestra (3 агента + Gemini tool) | AI Brigade (4 члена + 10 инструментов) | Чёткая таксономия: члены (Ivan/Navi/Jules/A0) vs инструменты. JulesAutoMerge pipeline. Биллинг модель | 2026-03-03 |
 | MO0-MO8, MO10-MO11 | Пустые шаблоны | Заполнены на основе BELIEFS, WISDOM, STRATEGIES | Извлечение неявных моделей из заполненных TELOS файлов | 2026-02-20 |
 
 ---

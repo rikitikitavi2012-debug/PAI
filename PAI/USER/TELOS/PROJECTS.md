@@ -15,22 +15,26 @@
 **Цель:** Полноценная личная операционная система: TELOS 23/23, PAI настроен, агенты работают, контекст глубокий.
 **Срок:** Непрерывный процесс — система эволюционирует постоянно
 **Архитектура PAI v4.0.3:**
-- **27 хуков** — все defensive/fail-open, shebang-based (chmod +x обязателен)
-- **61 тест** / 9 сюит — subprocess-based test harness (hooks/tests/)
+- **30 хуков** — все defensive/fail-open, shebang-based (chmod +x обязателен)
+- **171 тест** / 34 сюиты — subprocess-based test harness (hooks/tests/)
 - **11 скиллов** — Agents, ContentAnalysis, Investigation, Media, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
 - **Security system** — SecurityValidator.hook.ts + patterns.yaml (trusted/blocked/confirm/alert + path categories)
 - **3-layer mode routing** — ModeClassifier hook (regex) → Complexity Gate (LLM) → Algorithm file
 - **Memory pipeline** — LEARNING/WISDOM/RELATIONSHIP/WORK/STATE/SECURITY + events.jsonl
 - **Feedback loop** — RatingCapture (implicit sentiment) → WisdomSync → FRAMES
+- **JulesAutoMerge pipeline** — тесты в worktree → A0 code review → gh pr merge --squash → git pull sync
+- **EventLogger** — routing table для SubagentStart/SubagentStop/TaskCompleted (вместо отдельных хуков)
 **GitHub & Community:**
 - **Fork:** github.com/rikitikitavi2012-debug/PAI (public)
 - **Git workflow:** `main` = upstream community (552+ commits), `master` = локальная конфигурация (НЕ пушить)
 - **PR workflow:** feature branches от main через `git worktree add` → PR в upstream
-- **PRs:** 6 отправлено (4 open, 2 closed merged):
+- **PRs:** 8 отправлено (6 open, 2 closed merged):
   - #840 feat: ModeClassifier hook (OPEN)
   - #859 feat: hook test harness + patterns template (OPEN)
   - #860 fix: RatingCapture false-positive 5s (OPEN)
   - #861 fix: algorithm stopLoop + regex escaping (OPEN)
+  - #882 fix: UTF-16 surrogate pairs in RatingCapture (OPEN) — submitted by Navi
+  - #883 fix: dead references in CONTEXT_ROUTING.md (OPEN) — submitted by Navi
   - #808 fix: algorithm parallel worker (CLOSED)
   - #800 fix: Inference.ts JSON parsing (CLOSED)
 - **Признание:** @rikitikitavi2012-debug отмечен в release notes PAI v4.0.3
@@ -39,15 +43,21 @@
 - **TELOS контекст** — 23 файла заполнены, эволюция продолжается
 - **PAI инфраструктура** — хуки, скиллы, агенты, воркфлоу
 - **Community contribution** — PRs, issues, code review в upstream PAI
+- **AI Brigade** — Navi (архитектор) + Jules (async-кодер) + Agent Zero (ревьюер/исследователь)
+- **JulesAutoMerge** — автоматизация merge Jules PRs с A0 code review
 **Результаты (февраль-март 2026):**
 - Context engineering оформился как дисциплина. PAI опережает академические Memory OS
 - Research skill боевой тест по v3: все 4 режима работают (нужен ре-аудит по v4)
 - Telos skill аудит по v3: 9 багов пофикшено (нужен ре-аудит по v4)
 - Agent system аудит: 10 коммитов, 40+ phantom refs исправлено
 - RatingCapture: исправлены false-positive 5s (52% мусорных данных → 92 чистых записи)
-- Hook test harness: 61 тест / 9 сюит / 161 expect() calls
+- Hook test harness: 171 тест / 34 сюиты / 427 expect() calls
 - Security system: SecurityValidator + patterns.yaml активированы
-- 4 PR отправлены в upstream, contributor acknowledgment получен
+- 8 PR отправлены в upstream (6 open, 2 merged), contributor acknowledgment получен
+- JulesAutoMerge pipeline: автоматический merge Jules PRs с A0 code review gate
+- AI Brigade оформилась: Navi + Jules + Agent Zero как координированная команда
+- A0 code review интегрирован в JulesAutoMerge (fail-open, ~17s на ревью)
+- PRDSync change detection: устранено 40% шума в event pipeline
 **Следующие шаги:**
 - [x] Заполнить TELOS до 22/22
 - [x] Боевой тест Research skill (v3 — 4 режима)
@@ -168,7 +178,7 @@
 
 | Проект | Завершён | Результат | Урок |
 |--------|----------|-----------|------|
-| PAI настройка (базовая) | 2025-2026 | PAI v4.0.3 работает, 11 скиллов, 27 хуков, 61 тест | Система окупает вложенное время многократно |
+| PAI настройка (базовая) | 2025-2026 | PAI v4.0.3 работает, 11 скиллов, 30 хуков, 171 тест | Система окупает вложенное время многократно |
 | VPS NL инфраструктура | 2025-2026 | 2 сервера, Agent Zero развёрнут | Инфра-независимость возможна и необходима |
 
 ---
