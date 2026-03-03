@@ -262,11 +262,27 @@ async function compileAndCache(yamlPath: string, cachePath: string): Promise<Pat
   return config;
 }
 
+// Fallback config when patterns.yaml is missing/broken.
+// Contains HARDCODED critical blocks so security isn't zero even without yaml.
 const EMPTY_CONFIG: PatternsConfig = {
-  version: '0.0',
-  philosophy: { mode: 'permissive', principle: 'No patterns loaded - fail open' },
-  bash: { trusted: [], blocked: [], confirm: [], alert: [] },
-  paths: { zeroAccess: [], readOnly: [], confirmWrite: [], noDelete: [] },
+  version: '0.0-fallback',
+  philosophy: { mode: 'permissive', principle: 'Fallback — critical blocks only' },
+  bash: {
+    trusted: [],
+    blocked: [
+      { pattern: '^\\s*rm\\s+-rf\\s+/', reason: 'Dangerous recursive delete from root' },
+      { pattern: 'chmod\\s+777', reason: 'World-writable permissions' },
+      { pattern: '>(\\s+)/etc/', reason: 'Writing to system config' },
+    ],
+    confirm: [],
+    alert: [],
+  },
+  paths: {
+    zeroAccess: ['\\.env$', 'credentials\\.json$', 'id_rsa'],
+    readOnly: [],
+    confirmWrite: ['settings\\.json$'],
+    noDelete: [],
+  },
   projects: {}
 };
 
@@ -699,14 +715,14 @@ async function main(): Promise<void> {
       }
     })();
 
-    // Hard timeout: if stdin doesn't close in 100ms, fail open.
-    // Reduced from 200ms — stdin data arrives within single-digit ms when piped.
+    // Hard timeout: if stdin doesn't close in 500ms, fail open.
+    // 500ms is generous — stdin data arrives within single-digit ms when piped.
     let timedOut = false;
     const timeoutId = setTimeout(() => {
       timedOut = true;
-    }, 100);
+    }, 500);
 
-    await Promise.race([readLoop, new Promise<void>(r => setTimeout(r, 100))]);
+    await Promise.race([readLoop, new Promise<void>(r => setTimeout(r, 500))]);
     clearTimeout(timeoutId);
 
     if (timedOut && !raw.trim()) {
@@ -720,8 +736,9 @@ async function main(): Promise<void> {
     }
 
     input = JSON.parse(raw);
-  } catch {
-    // Parse error or timeout - fail open
+  } catch (err) {
+    // Parse error or timeout - fail open but LOG
+    process.stderr.write(`[SecurityValidator] stdin parse error, failing open: ${err}\n`);
     console.log(JSON.stringify({ continue: true }));
     process.exit(0);
     return;
@@ -752,8 +769,9 @@ async function main(): Promise<void> {
   process.exit(0);
 }
 
-// Run main, fail open on any error
-main().catch(() => {
+// Run main, fail open on any error (but LOG it so failures are visible)
+main().catch((err) => {
+  process.stderr.write(`[SecurityValidator] CRITICAL: main() crashed, failing open: ${err}\n`);
   console.log(JSON.stringify({ continue: true }));
   process.exit(0);
 });

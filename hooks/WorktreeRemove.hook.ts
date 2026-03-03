@@ -31,7 +31,7 @@
 
 import { appendEvent } from './lib/event-emitter';
 import { getPaiDir } from './lib/paths';
-import { basename } from 'path';
+import { basename, resolve } from 'path';
 import { existsSync } from 'fs';
 
 interface HookInput {
@@ -60,8 +60,9 @@ async function main(): Promise<void> {
   const paiDir = getPaiDir();
 
   // Validate that the worktree_path is inside .claude/worktrees
-  const worktreesDir = getPaiDir() + '/.claude/worktrees';
-  if (!worktreePath.startsWith(worktreesDir) || worktreePath.includes('..')) {
+  // Use resolve() to normalize and trailing slash to prevent sibling-dir traversal
+  const worktreesDir = resolve(getPaiDir(), '.claude', 'worktrees') + '/';
+  if (!resolve(worktreePath).startsWith(worktreesDir) || worktreePath.includes('..')) {
     process.stderr.write(`[WorktreeRemove] worktree_path is not inside ${worktreesDir}\n`);
     process.exit(0);
   }
