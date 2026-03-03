@@ -4,6 +4,7 @@
 # Refresh: every 60 seconds | r = refresh now | q = quit
 
 export PATH="$HOME/.bun/bin:$PATH"
+# shellcheck disable=SC1091
 [ -f "$HOME/.config/PAI/.env" ] && source "$HOME/.config/PAI/.env"
 
 STATE_FILE="$HOME/.claude/MEMORY/STATE/telos-state.json"
@@ -20,7 +21,7 @@ YLW='\e[38;2;251;191;36m'
 CYN='\e[38;2;103;232;249m'
 SLT='\e[38;2;148;163;184m'
 SEP='\e[38;2;71;85;105m'
-BLU='\e[38;2;59;130;246m'
+# BLU='\e[38;2;59;130;246m'
 VIO='\e[38;2;167;139;250m'
 WHT='\e[38;2;203;213;225m'
 ORG='\e[38;2;251;146;60m'
@@ -47,7 +48,7 @@ box_top() {
 }
 
 box_bottom() {
-  local w=${1:-$W}
+  local w=$W
   printf "%b└" "$SEP"
   printf '─%.0s' $(seq 1 $(( w - 1 )))
   printf "┘%b\n" "$RST"
@@ -172,11 +173,10 @@ poll() {
   # ═══════════════════════════════════════════════════════════
   # Section 1: HEADER with seasonal countdown
   # ═══════════════════════════════════════════════════════════
-  local season_label days_remaining elapsed_pct total_days
+  local season_label days_remaining elapsed_pct
   season_label=$(jq -r '.season.seasonLabel // "—"' "$STATE_FILE")
   days_remaining=$(jq -r '.season.daysRemaining // 0' "$STATE_FILE")
   elapsed_pct=$(jq -r '.season.elapsedPercent // 0' "$STATE_FILE")
-  total_days=$(jq -r '.season.totalDays // 1' "$STATE_FILE")
 
   # Season icon
   local season_icon
@@ -264,16 +264,15 @@ poll() {
   done
 
   # Sort
-  IFS=$'\n' goal_sorted=($(sort <<<"${goal_sorted[*]}")); unset IFS
+  mapfile -t goal_sorted < <(printf "%s\n" "${goal_sorted[@]}" | sort)
 
   left_goals+=("$(printf "%b%b ВСЕ ЦЕЛИ (%s)%b" "$CYN" "$BLD" "$goal_count" "$RST")")
   left_goals+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────────" "$RST")")
 
   for entry in "${goal_sorted[@]}"; do
     local idx=${entry#*|}
-    local g_id g_name g_status g_progress emoji sname bar pcolor
+    local g_id g_status g_progress emoji sname bar pcolor
     g_id=$(jq -r ".goals[$idx].id" "$STATE_FILE")
-    g_name=$(jq -r ".goals[$idx].name" "$STATE_FILE")
     g_status=$(jq -r ".goals[$idx].status" "$STATE_FILE")
     g_progress=$(jq -r ".goals[$idx].progress // 0" "$STATE_FILE")
     emoji=$(goal_emoji "$g_status")
@@ -455,7 +454,7 @@ poll() {
   [ "$win_start" -lt 0 ] && win_start=0
 
   for (( wi=win_start; wi<win_count; wi++ )); do
-    local w_text w_date w_linked
+    local w_text w_date
     w_text=$(jq -r ".status.recentWins[$wi].win" "$STATE_FILE")
     w_date=$(jq -r ".status.recentWins[$wi].date // \"\"" "$STATE_FILE")
 
