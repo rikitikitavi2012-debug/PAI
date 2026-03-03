@@ -1,6 +1,6 @@
 #!/bin/bash
-# PAI Command Center — Live Dashboard for Kitty (Tab 2: ⬢ Center)
-# Polls: system health, AI brigade, TELOS goals, decisions, wins
+# PAI Command Center — Operational Pulse for Kitty (Tab 2: ⬢ Center)
+# Scope: system health, AI brigade, sessions, PRs, hooks (NO goal/strategy duplication with Telos tab)
 # Refresh: every 30 seconds | r = refresh now | q = exit
 
 export PATH="$HOME/.bun/bin:$PATH"
@@ -18,6 +18,10 @@ INTERVAL=30
 TELOS_JSON="$HOME/.claude/MEMORY/STATE/telos-state.json"
 TELOS_PARSER="$HOME/.claude/PAI/Tools/TelosParser.ts"
 A0_HEALTH_URL="http://72.56.86.51:50002/health"
+WORK_DIR="$HOME/.claude/MEMORY/WORK"
+AUTOMERGE_JSON="$HOME/.claude/MEMORY/STATE/jules-automerge.json"
+HOOKS_DIR="$HOME/.claude/hooks"
+HOOKS_TESTS="$HOME/.claude/hooks/tests"
 
 # ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
 RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'
@@ -30,6 +34,7 @@ SEP='\e[38;2;71;85;105m'      # separators and borders
 BLU='\e[38;2;59;130;246m'
 VIO='\e[38;2;167;139;250m'
 WHT='\e[38;2;203;213;225m'    # primary text
+ORG='\e[38;2;251;146;60m'
 
 # ── Terminal width ──
 cols=$(tput cols 2>/dev/null || echo 96)
@@ -253,9 +258,10 @@ poll() {
   fi
 
   # -- Right: AI brigade --
-  # Jules open PRs
-  local jules_prs="?"
-  jules_prs=$(timeout 5 gh pr list --repo rikitikitavi2012-debug/PAI-personal --state open --json number 2>/dev/null | jq 'length' 2>/dev/null || echo "?")
+  # Jules open PRs (cache for reuse in PR section)
+  local jules_pr_json jules_prs="?"
+  jules_pr_json=$(timeout 5 gh pr list --repo rikitikitavi2012-debug/PAI-personal --state open --json number,title --limit 5 2>/dev/null)
+  jules_prs=$(echo "$jules_pr_json" | jq 'length' 2>/dev/null || echo "?")
 
   # AutoMerge stats
   local am_merged am_failed am_skipped
@@ -288,136 +294,144 @@ poll() {
     "$(printf '%bZ.AI%b   %s' "$SLT" "$RST" "$zai_icon")" \
     "$(printf '%bGemini%b %s  %bCLI%b %s' "$SLT" "$RST" "$gemini_icon" "$SLT" "$RST" "$gemini_cli_icon")"
 
-  two_col \
-    "$(printf '%bEvents%b %b24ч:%b%b%b%s%b %b7д:%b%b%b%s%b' "$SLT" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$events_24h" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$events_7d" "$RST")" \
-    ""
-
   two_col_bot
   printf "\n"
 
   # ═══════════════════════════════════════════════════
-  # ── 3. АКТИВНЫЕ ЦЕЛИ ──
+  # ── 3. АКТИВНЫЕ СЕССИИ ──
   # ═══════════════════════════════════════════════════
   box_top
-  box_line "$(printf '%b%b АКТИВНЫЕ ЦЕЛИ%b' "$GRN" "$BLD" "$RST")"
+  box_line "$(printf '%b%b АКТИВНЫЕ СЕССИИ%b' "$BLU" "$BLD" "$RST")"
   printf '%b├%s┤%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
 
-  if [ -f "$TELOS_JSON" ]; then
-    # Extract active goals (status contains "Активна")
-    local goal_count
-    goal_count=$(jq '[.goals[] | select(.status | test("Активна"))] | length' "$TELOS_JSON" 2>/dev/null || echo 0)
+  # Parse recent WORK directories (last 5 with META.yaml)
+  local session_count=0
+  if [ -d "$WORK_DIR" ]; then
+    while IFS= read -r meta_file; do
+      [ "$session_count" -ge 5 ] && break
+      local s_title s_status s_created s_dir s_age_str
+      s_dir=$(dirname "$meta_file")
+      s_title=$(grep '^title:' "$meta_file" 2>/dev/null | sed 's/^title: *//; s/^"//; s/"$//')
+      s_status=$(grep '^status:' "$meta_file" 2>/dev/null | sed 's/^status: *//; s/^"//; s/"$//')
+      s_created=$(grep '^created_at:' "$meta_file" 2>/dev/null | sed 's/^created_at: *//; s/^"//; s/"$//')
+      [ -z "$s_title" ] && continue
 
-    if [ "$goal_count" -gt 0 ]; then
-      jq -r '.goals[] | select(.status | test("Активна")) | "\(.id)|\(.name)|\(.progress)|\(.checked)/\(.total)"' "$TELOS_JSON" 2>/dev/null | while IFS='|' read -r gid gname gpct gchecked; do
-        local bar
-        bar=$(progress_bar "$gpct" 16)
-        local pct_color="$DIM"
-        if [ "$gpct" -gt 50 ]; then pct_color="$GRN"
-        elif [ "$gpct" -gt 0 ]; then pct_color="$YLW"
-        fi
-        # Truncate name to fit
-        local name_max=$((cols - 38))
-        local short_name="${gname:0:$name_max}"
-        box_line "$(printf '%b%s%b %s %b%3d%%%b %b[%s]%b %b%s%b' "$CYN" "$gid" "$RST" "$bar" "$pct_color" "$gpct" "$RST" "$DIM" "$gchecked" "$RST" "$SLT" "$short_name" "$RST")"
-      done
-    else
-      box_line "$(printf '%bНет активных целей%b' "$DIM" "$RST")"
-    fi
+      # Age calculation
+      local s_epoch now_epoch s_ago
+      now_epoch=$(date +%s)
+      s_epoch=$(date -d "$s_created" +%s 2>/dev/null || echo "$now_epoch")
+      s_ago=$(( (now_epoch - s_epoch) / 3600 ))
+      if [ "$s_ago" -lt 1 ]; then
+        s_age_str="<1ч"
+      elif [ "$s_ago" -lt 24 ]; then
+        s_age_str="${s_ago}ч"
+      else
+        s_age_str="$(( s_ago / 24 ))д"
+      fi
 
-    # Show blockers inline
-    local blocker_count
-    blocker_count=$(jq '.status.blockers | length' "$TELOS_JSON" 2>/dev/null || echo 0)
-    if [ "$blocker_count" -gt 0 ]; then
-      printf '%b├%s┤%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
-      box_line "$(printf '%b%b⚠ БЛОКЕРЫ%b' "$RED" "$BLD" "$RST")"
-      jq -r '.status.blockers[] | "\(.blocker)|\(.urgency)"' "$TELOS_JSON" 2>/dev/null | while IFS='|' read -r btxt burgency; do
-        local bcolor="$YLW"
-        if [ "$burgency" = "Высокая" ]; then bcolor="$RED"; fi
-        local bmax=$((cols - 18))
-        local short_b="${btxt:0:$bmax}"
-        box_line "$(printf '%b▸%b %b%s%b %b[%s]%b' "$bcolor" "$RST" "$WHT" "$short_b" "$RST" "$bcolor" "$burgency" "$RST")"
-      done
-    fi
-  else
-    box_line "$(printf '%bЗагрузка...%b' "$DIM" "$RST")"
+      # Status icon
+      local s_icon
+      case "$s_status" in
+        ACTIVE)    s_icon=$(printf '%b⚡%b' "$YLW" "$RST") ;;
+        COMPLETED) s_icon=$(printf '%b✅%b' "$GRN" "$RST") ;;
+        *)         s_icon=$(printf '%b○%b' "$SLT" "$RST") ;;
+      esac
+
+      # Truncate title
+      local name_max=$((cols - 24))
+      local short_title="${s_title:0:$name_max}"
+
+      box_line "$(printf '%s %b%-*s%b %b%4s%b %b%s%b' "$s_icon" "$WHT" "$name_max" "$short_title" "$RST" "$SLT" "$s_age_str" "$RST" "$SLT" "$s_status" "$RST")"
+      session_count=$((session_count + 1))
+    done < <(find "$WORK_DIR" -maxdepth 2 -name "META.yaml" -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -8 | awk '{print $2}')
+  fi
+
+  if [ "$session_count" -eq 0 ]; then
+    box_line "$(printf '%bНет активных сессий%b' "$SLT" "$RST")"
   fi
   box_bot
   printf "\n"
 
   # ═══════════════════════════════════════════════════
-  # ── 4. Two-column: РЕШЕНИЯ + ПОБЕДЫ ──
+  # ── 4. PULL REQUESTS ──
   # ═══════════════════════════════════════════════════
   box_top
-  two_col \
-    "$(printf '%b%b РЕШЕНИЯ%b' "$YLW" "$BLD" "$RST")" \
-    "$(printf '%b%b ПОБЕДЫ%b' "$GRN" "$BLD" "$RST")"
-  two_col_mid
+  box_line "$(printf '%b%b PULL REQUESTS%b' "$ORG" "$BLD" "$RST")"
+  printf '%b├%s┤%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
 
-  # Left: decisions / season countdown
-  local season_label days_remaining elapsed_pct
-  season_label=$(jq_val '.season.seasonLabel' '?')
-  days_remaining=$(jq_val '.season.daysRemaining' '?')
-  elapsed_pct=$(jq_val '.season.elapsedPercent' '0')
+  # Fetch open PRs from both repos
+  local has_prs=false
 
-  # Season bar
-  local season_bar
-  season_bar=$(progress_bar "$elapsed_pct" 12)
-
-  # Right: last 5 wins
-  local wins_raw
-  wins_raw=""
-  if [ -f "$TELOS_JSON" ]; then
-    wins_raw=$(jq -r '.status.recentWins[:5][] | "\(.date)|\(.win)"' "$TELOS_JSON" 2>/dev/null)
-  fi
-
-  # Build arrays for parallel rendering
-  local -a left_lines=()
-  local -a right_lines=()
-
-  # Left lines: season + blockers as decisions
-  left_lines+=("$(printf '%b%s%b %s %b%sд%b' "$CYN" "$season_label" "$RST" "$season_bar" "$YLW" "$days_remaining" "$RST")")
-
-  if [ -f "$TELOS_JSON" ]; then
-    local bcount
-    bcount=$(jq '.status.blockers | length' "$TELOS_JSON" 2>/dev/null || echo 0)
-    local bi=0
-    while [ "$bi" -lt "$bcount" ] && [ "$bi" -lt 4 ]; do
-      local bnext
-      bnext=$(jq -r ".status.blockers[$bi].next // empty" "$TELOS_JSON" 2>/dev/null)
-      if [ -n "$bnext" ]; then
-        local short_next="${bnext:0:$((half - 6))}"
-        left_lines+=("$(printf '%b▸%b %b%s%b' "$YLW" "$RST" "$WHT" "$short_next" "$RST")")
-      fi
-      bi=$((bi + 1))
+  # Private repo PRs (Jules) — reuse cached data from section 2
+  if [ -n "$jules_pr_json" ] && [ "$jules_pr_json" != "[]" ]; then
+    has_prs=true
+    echo "$jules_pr_json" | jq -r '.[] | "#\(.number)|\(.title)"' 2>/dev/null | while IFS='|' read -r pr_num pr_title; do
+      local pr_max=$((cols - 28))
+      local short_pr="${pr_title:0:$pr_max}"
+      box_line "$(printf '%b%-6s%b %b%-*s%b %bprivate%b' "$YLW" "$pr_num" "$RST" "$WHT" "$pr_max" "$short_pr" "$RST" "$SLT" "$RST")"
     done
   fi
 
-  # Right lines: wins
-  if [ -n "$wins_raw" ]; then
-    while IFS='|' read -r _wdate wtext; do
-      local short_win="${wtext:0:$((half - 4))}"
-      right_lines+=("$(printf '%b✓%b %b%s%b' "$GRN" "$RST" "$WHT" "$short_win" "$RST")")
-    done <<< "$wins_raw"
+  # Public repo PRs (upstream)
+  local public_pr_json
+  public_pr_json=$(timeout 5 gh pr list --repo rikitikitavi2012-debug/PAI --state open --json number,title --limit 5 2>/dev/null)
+  if [ -n "$public_pr_json" ] && [ "$public_pr_json" != "[]" ]; then
+    has_prs=true
+    echo "$public_pr_json" | jq -r '.[] | "#\(.number)|\(.title)"' 2>/dev/null | while IFS='|' read -r pr_num pr_title; do
+      local pr_max=$((cols - 28))
+      local short_pr="${pr_title:0:$pr_max}"
+      box_line "$(printf '%b%-6s%b %b%-*s%b %bpublic%b' "$CYN" "$pr_num" "$RST" "$WHT" "$pr_max" "$short_pr" "$RST" "$SLT" "$RST")"
+    done
   fi
 
-  # Render both columns, matching row count
-  local max_rows=${#left_lines[@]}
-  if [ ${#right_lines[@]} -gt "$max_rows" ]; then
-    max_rows=${#right_lines[@]}
+  if [ "$has_prs" = false ]; then
+    box_line "$(printf '%bНет открытых PR%b' "$SLT" "$RST")"
+  fi
+  box_bot
+  printf "\n"
+
+  # ═══════════════════════════════════════════════════
+  # ── 5. Two-column: ХУКИ & ТЕСТЫ + ЗАДАЧИ ──
+  # ═══════════════════════════════════════════════════
+  box_top
+  two_col \
+    "$(printf '%b%b ХУКИ & ТЕСТЫ%b' "$CYN" "$BLD" "$RST")" \
+    "$(printf '%b%b АВТОМЕРЖ%b' "$VIO" "$BLD" "$RST")"
+  two_col_mid
+
+  # Left: hook health
+  local hook_file_count test_file_count
+  hook_file_count=$(find "$HOOKS_DIR" -maxdepth 1 -name "*.hook.ts" 2>/dev/null | wc -l)
+  test_file_count=$(find "$HOOKS_TESTS" -maxdepth 1 -name "*.test.ts" 2>/dev/null | wc -l)
+
+  # Right: AutoMerge pipeline stats (from JSON directly, not telos-state)
+  local am_total am_merged_d am_failed_d am_skipped_d am_last
+  if [ -f "$AUTOMERGE_JSON" ]; then
+    am_total=$(jq '.processedSessions | length' "$AUTOMERGE_JSON" 2>/dev/null || echo 0)
+    am_merged_d=$(jq '[.processedSessions[] | select(.result == "merged")] | length' "$AUTOMERGE_JSON" 2>/dev/null || echo 0)
+    am_failed_d=$(jq '[.processedSessions[] | select(.result | startswith("failed"))] | length' "$AUTOMERGE_JSON" 2>/dev/null || echo 0)
+    am_skipped_d=$(jq '[.processedSessions[] | select(.result == "skipped")] | length' "$AUTOMERGE_JSON" 2>/dev/null || echo 0)
+    am_last=$(jq -r '.lastCheck // empty' "$AUTOMERGE_JSON" 2>/dev/null | head -c 16 | sed 's/T/ /')
+  else
+    am_total=0; am_merged_d=0; am_failed_d=0; am_skipped_d=0; am_last="—"
   fi
 
-  local ri=0
-  while [ "$ri" -lt "$max_rows" ]; do
-    local lc="${left_lines[$ri]:-}"
-    local rc="${right_lines[$ri]:-}"
-    two_col "$lc" "$rc"
-    ri=$((ri + 1))
-  done
+  two_col \
+    "$(printf '%bХуков%b   %b%b%s%b %bфайлов%b' "$SLT" "$RST" "$WHT" "$BLD" "$hook_file_count" "$RST" "$SLT" "$RST")" \
+    "$(printf '%bВсего%b   %b%b%s%b %bсессий%b' "$SLT" "$RST" "$WHT" "$BLD" "$am_total" "$RST" "$SLT" "$RST")"
+
+  two_col \
+    "$(printf '%bТестов%b  %b%b%s%b %bсьютов%b' "$SLT" "$RST" "$WHT" "$BLD" "$test_file_count" "$RST" "$SLT" "$RST")" \
+    "$(printf '%b+%s%b %b✗%s%b %b~%s%b' "$GRN" "$am_merged_d" "$RST" "$RED" "$am_failed_d" "$RST" "$SLT" "$am_skipped_d" "$RST")"
+
+  two_col \
+    "$(printf '%bEvents%b  %b24ч:%b%b%b%s%b  %b7д:%b%b%b%s%b' "$SLT" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$events_24h" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$events_7d" "$RST")" \
+    "$(printf '%bПосл:%b %b%s%b' "$SLT" "$RST" "$WHT" "$am_last" "$RST")"
 
   two_col_bot
 
   # ═══════════════════════════════════════════════════
-  # ── 5. Tab navigation footer ──
+  # ── 6. Tab navigation footer ──
   # ═══════════════════════════════════════════════════
   printf "\n"
   local tab_str=""
