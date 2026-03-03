@@ -62,7 +62,7 @@ function saveState(state: CommunityState): void {
 function ghQuery(args: string[]): string {
   const result = spawnSync('gh', args, {
     encoding: 'utf-8',
-    timeout: 15000,
+    timeout: 4000,
     env: { ...process.env, NO_COLOR: '1', GH_PAGER: '' },
   });
   if (result.status !== 0) {

@@ -528,12 +528,13 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
     }
 
     // Community check — upstream PAI activity (non-blocking, brief mode)
+    // Timeout reduced from 20s to 5s (A0 audit HIGH-01: sync blocking on network)
     try {
       const communityScript = join(paiDir, 'PAI', 'Tools', 'CommunityCheck.ts');
       if (existsSync(communityScript)) {
         const ccResult = spawnSync('bun', ['run', communityScript, '--brief'], {
           encoding: 'utf-8',
-          timeout: 20000,
+          timeout: 5000,
           env: { ...process.env, NO_COLOR: '1' },
         });
         if (ccResult.stdout?.trim()) {
