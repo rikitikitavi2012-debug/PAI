@@ -106,4 +106,4 @@ Only exceptions: Explore agents, haiku-model agents, and agents with ## Scope FA
   }
 }
 
-main();
+main().catch((err) => { process.stderr.write(`[AgentExecutionGuard] error description: ${err}\n`); process.exit(0); });

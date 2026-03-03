@@ -190,4 +190,4 @@ async function main() {
   }
 }
 
-main();
+main().catch((err) => { process.stderr.write(`[SessionCleanup] error description: ${err}\n`); process.exit(0); });

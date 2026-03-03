@@ -56,7 +56,7 @@ import { getVoiceId } from './lib/identity';
 const paiDir = getPaiDir();
 const settingsPath = getSettingsPath();
 
-(async () => {
+async function main() {
   try {
     const settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
 
@@ -132,4 +132,6 @@ const settingsPath = getSettingsPath();
     console.error('StartupGreeting: Failed to display banner', error);
     process.exit(0);
   }
-})();
+}
+
+main().catch((err) => { process.stderr.write(`[StartupGreeting] error description: ${err}\n`); process.exit(0); });

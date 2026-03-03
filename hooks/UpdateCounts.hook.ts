@@ -22,4 +22,4 @@ async function main() {
   process.exit(0);
 }
 
-main();
+main().catch((err) => { process.stderr.write(`[UpdateCounts] error description: ${err}\n`); process.exit(0); });

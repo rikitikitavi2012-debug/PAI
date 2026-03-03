@@ -82,4 +82,4 @@ async function main() {
   }
 }
 
-main();
+main().catch((err) => { process.stderr.write(`[SkillGuard] error description: ${err}\n`); process.exit(0); });

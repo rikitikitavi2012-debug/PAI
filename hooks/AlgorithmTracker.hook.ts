@@ -186,6 +186,7 @@ async function main() {
               message: `Новая итерация алгоритма. Повторение ${reworkNum}.`,
               voice_id: getAlgorithmVoice()?.voiceId || getVoiceId(),
             }),
+            signal: AbortSignal.timeout(3000),
           }).catch((e) => process.stderr.write(`[AlgorithmTracker] Voice notify failed: ${e}\n`));
         } catch (err) { process.stderr.write(`[AlgorithmTracker] error description: ${err}\n`); }
         process.stderr.write(`[AlgorithmTracker] REWORK detected — iteration ${reworkNum}\n`);
