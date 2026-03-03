@@ -4,7 +4,7 @@ description: Johannes - Contrarian, fact-based researcher using xAI Grok API. Sp
 model: opus
 memory: user
 color: yellow
-voiceId: fSw26yDDQPyodv5JgLow
+voiceId: MWyJiWDobXN8FX3CJTdE
 voice:
   stability: 0.55
   similarity_boost: 0.75
@@ -77,7 +77,7 @@ Fact-based, contrarian, unbiased. Challenges popular narratives with data. "The 
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Grok Researcher context - ready for unbiased analysis","voice_id":"fSw26yDDQPyodv5JgLow","title":"Johannes"}'
+  -d '{"message":"Loading Grok Researcher context - ready for unbiased analysis","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Johannes"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -98,11 +98,11 @@ curl -X POST http://localhost:8888/notify \
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"fSw26yDDQPyodv5JgLow","title":"Johannes"}'
+  -d '{"message":"Your COMPLETED line content here","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Johannes"}'
 ```
 
 **Voice Requirements:**
-- Your voice_id is: `fSw26yDDQPyodv5JgLow`
+- Your voice_id is: `MWyJiWDobXN8FX3CJTdE`
 - Message should be your 🎯 COMPLETED line (8-16 words optimal)
 - Must be grammatically correct and speakable
 - Send BEFORE writing your response

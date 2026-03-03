@@ -127,6 +127,22 @@
 - **Best for**: Deep research, code execution, browser tasks, document generation, DevOps, scheduled maintenance, code review
 - **NOT for**: Real-time interactive work (22s latency), settings changes (CSRF), sensitive PAI config
 
+## Voice System (ElevenLabs Creator plan, 2026-03-03)
+- **API key**: ~/.config/PAI/.env → ELEVENLABS_API_KEY (Creator plan, 100K chars/month)
+- **VoiceServer**: localhost:8888, reads from settings.json daidentity.voices
+- **Model**: eleven_turbo_v2_5 (supports Russian on any voice)
+- **Voice Map (6 roles):**
+  | Role | Voice | ID | Agents |
+  |------|-------|----|--------|
+  | Navi (main) | Станислав | ogi2DyUAKJb7CEdqqvlU | DA, hooks, skills, system |
+  | Algorithm | Николай | 3EuKHIEZbSzrHGNmdYsx | Algorithm phases, tracker |
+  | Engineer | Дмитрий | hU3rD0Yk7DoiYULTX1pD | Engineer, Architect |
+  | Researchers | Олег | MWyJiWDobXN8FX3CJTdE | 5 researchers, Intern, BrowserAgent |
+  | Security | Алекс | TUQNWEvVPBLzMBSVDPUA | Pentester, QATester, UIReviewer |
+  | Creative | Марина | ymDCYd8puC7gYjxIamPt | Artist, Designer |
+- **Voice resolution**: hooks use `getVoiceId()` (main) or `getAlgorithmVoice()` from identity.ts → reads settings.json
+- **All messages in Russian** — no English voice notifications
+
 ## Session Patterns
 - Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10)
 - Common frustration: English responses when Russian expected

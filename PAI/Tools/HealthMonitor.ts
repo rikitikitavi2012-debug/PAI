@@ -142,7 +142,7 @@ async function main() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: `Health check alert: ${names} is down`,
-          voice_id: 'iLVmqjzCGGvqtMCk6vVQ',
+          voice_id: 'ogi2DyUAKJb7CEdqqvlU',
           title: 'Health Monitor',
         }),
       });

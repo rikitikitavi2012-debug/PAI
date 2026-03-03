@@ -4,6 +4,7 @@ description: Parallel headless browser automation agent using Playwright CLI. Na
 model: sonnet
 memory: user
 color: cyan
+voiceId: MWyJiWDobXN8FX3CJTdE
 skills:
   - Browser
 permissions:

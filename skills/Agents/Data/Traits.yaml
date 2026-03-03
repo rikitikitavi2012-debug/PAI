@@ -131,7 +131,7 @@ voice_mappings:
     # MALE VOICES
     # --------------------------------------------------------------------------
     Adam:
-      voice_id: "pNInz6obpgDQGcFmaJgB"
+      voice_id: "ogi2DyUAKJb7CEdqqvlU"
       gender: "male"
       characteristics: ["deep", "narration", "authoritative"]
       description: "Deep American male, great for narration"

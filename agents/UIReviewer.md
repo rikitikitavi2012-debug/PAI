@@ -4,6 +4,7 @@ description: User story validation agent using Playwright CLI. Accepts a structu
 model: sonnet
 memory: user
 color: orange
+voiceId: TUQNWEvVPBLzMBSVDPUA
 skills:
   - Browser
 permissions:

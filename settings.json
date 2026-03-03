@@ -878,16 +878,16 @@
     "color": "#3B82F6",
     "voices": {
       "main": {
-        "voiceId": "pNInz6obpgDQGcFmaJgB",
-        "voiceName": "Navi",
+        "voiceId": "ogi2DyUAKJb7CEdqqvlU",
+        "voiceName": "Stanislav Deep",
         "stability": 0.35,
         "similarityBoost": 0.8,
         "style": 0.9,
         "speed": 1.1
       },
       "algorithm": {
-        "voiceId": "pNInz6obpgDQGcFmaJgB",
-        "voiceName": "Algorithm Voice",
+        "voiceId": "3EuKHIEZbSzrHGNmdYsx",
+        "voiceName": "Nikolay",
         "stability": 0.35,
         "similarityBoost": 0.8,
         "style": 0.9,
@@ -911,7 +911,7 @@
       "playfulness": 45
     },
     "startupCatchphrase": "Navi готов к работе",
-    "voiceId": "pNInz6obpgDQGcFmaJgB"
+    "voiceId": "ogi2DyUAKJb7CEdqqvlU"
   },
   "principal": {
     "name": "Ivan",
@@ -998,12 +998,12 @@
     "workflows": 164,
     "hooks": 30,
     "signals": 50,
-    "files": 109,
-    "work": 70,
-    "sessions": 185,
-    "research": 9,
-    "ratings": 101,
-    "updatedAt": "2026-03-02T22:45:42.167Z"
+    "files": 110,
+    "work": 74,
+    "sessions": 337,
+    "research": 11,
+    "ratings": 104,
+    "updatedAt": "2026-03-03T09:38:50.442Z"
   },
   "mcpServers": {
     "supabase": {
@@ -1027,7 +1027,10 @@
     },
     "zai-vision": {
       "command": "npx",
-      "args": ["-y", "@z_ai/mcp-server@latest"],
+      "args": [
+        "-y",
+        "@z_ai/mcp-server@latest"
+      ],
       "env": {
         "Z_AI_API_KEY": "${ZAI_API_KEY}",
         "Z_AI_BASE_URL": "https://api.z.ai/api/coding/paas/v4",

@@ -24,7 +24,7 @@ import type { AlgorithmCriterion, AlgorithmPhase, AlgorithmState } from './lib/a
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { setPhaseTab } from './lib/tab-setter';
-import { getVoiceId } from './lib/identity';
+import { getVoiceId, getAlgorithmVoice } from './lib/identity';
 import { getPaiDir } from './lib/paths';
 
 // ── Phase Detection from Voice Curls ──
@@ -202,7 +202,7 @@ async function main() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               message: `Новая итерация алгоритма. Повторение ${reworkNum}.`,
-              voice_id: getVoiceId(),
+              voice_id: getAlgorithmVoice()?.voiceId || getVoiceId(),
             }),
           }).catch((e) => process.stderr.write(`[AlgorithmTracker] Voice notify failed: ${e}\n`));
         } catch {}

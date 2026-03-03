@@ -21,11 +21,11 @@ FOR: Everything not routed to MINIMAL by ModeClassifier.
 Does this task require multiple steps, multiple files, investigation, planning, or verification?
 
 **YES → Algorithm confirmed:**
-`curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Алгоритм подтверждён", "voice_id": "fTtv3eikoepIosk8dTZ5", "voice_enabled": true}'`
+`curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Алгоритм подтверждён", "voice_id": "3EuKHIEZbSzrHGNmdYsx", "voice_enabled": true}'`
 Load `PAI/Algorithm/v3.5.0.md` — **only if not already in context this session** (skip on subsequent turns or after /compact recovery). Follow that file exactly.
 
 **NO → Downshift to NATIVE:**
-`curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Задача простая, нативный режим", "voice_id": "fTtv3eikoepIosk8dTZ5", "voice_enabled": true}'`
+`curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Задача простая, нативный режим", "voice_id": "ogi2DyUAKJb7CEdqqvlU", "voice_enabled": true}'`
 Output NATIVE format directly. Do not read the Algorithm file.
 
 ---
@@ -35,7 +35,7 @@ Output NATIVE format directly. Do not read the Algorithm file.
 FOR: Simple single-step tasks confirmed by Complexity Gate or ModeClassifier.
 Not the default. Only reached by downshift — never chosen upfront.
 
-**Voice:** `curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Executing using PAI native mode", "voice_id": "fTtv3eikoepIosk8dTZ5", "voice_enabled": true}'`
+**Voice:** `curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Нативный режим PAI", "voice_id": "ogi2DyUAKJb7CEdqqvlU", "voice_enabled": true}'`
 
 ```
 ════ PAI | NATIVE MODE ═══════════════════════

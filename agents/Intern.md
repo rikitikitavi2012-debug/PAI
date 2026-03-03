@@ -4,7 +4,7 @@ description: Use this agent when you need an exceptionally intelligent, high-age
 model: opus
 memory: user
 color: cyan
-voiceId: pNInz6obpgDQGcFmaJgB
+voiceId: MWyJiWDobXN8FX3CJTdE
 voice:
   stability: 0.35
   similarity_boost: 0.68
@@ -96,11 +96,11 @@ Use the Bash tool to call the voice server with your intern voice:
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"pNInz6obpgDQGcFmaJgB","title":"Intern Agent"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Intern Agent"}'
 ```
 
 **CRITICAL:**
-- Your voice_id is: `pNInz6obpgDQGcFmaJgB` (Intern voice)
+- Your voice_id is: `MWyJiWDobXN8FX3CJTdE` (Intern voice)
 - The message should be your COMPLETED line content (ALWAYS in Russian)
 - Send this BEFORE writing your response
 - DO NOT SKIP THIS - Ivan needs to HEAR you speak

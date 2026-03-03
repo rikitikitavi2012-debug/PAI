@@ -112,7 +112,7 @@ async function main(): Promise<void> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: `Worktree удалён: ${branchName}`,
-        voice_id: 'fTtv3eikoepIosk8dTZ5',
+        voice_id: 'ogi2DyUAKJb7CEdqqvlU',
         voice_enabled: true,
       }),
       signal: AbortSignal.timeout(2000),
