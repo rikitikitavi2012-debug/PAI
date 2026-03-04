@@ -22,15 +22,6 @@ API_TIMEOUT=10
 # shellcheck disable=SC1091
 . "$HOME/.config/kitty/scripts/lib/ui.sh"
 
-# Brigade uses a simpler section header (no box, just indented)
-brig_section() {
-  local icon="$1" title="$2" color="$3"
-  printf "\n"
-  box_sep
-  box_line "$(printf '%b%b%s %s%b' "$color" "$BLD" "$icon" "$title" "$RST")"
-  box_sep
-}
-
 # ── Flicker-free refresh ──
 FIRST_RENDER=true
 
@@ -41,20 +32,23 @@ poll() {
   else
     printf '\033[H\033[J'
   fi
+
   local now
   now=$(date '+%H:%M:%S')
 
+  # Pulse: visual heartbeat
+  local pulse=" "
+  [ $(( 10#$(date +%S) % 2 )) -eq 0 ] && pulse="●"
+
   # ── Header ──
   box_top
-  box_line "$(printf '%b%b🤖 AI BRIGADE%b                              %b%s%b  %b↻ %sс%b' \
-    "$VIO" "$BLD" "$RST" "$WHT" "$now" "$RST" "$DIM" "$INTERVAL" "$RST")"
-  box_bot
+  box_line "$(printf '%b%b🤖 AI BRIGADE%b                                   %b%s%b %b%s%b  %b↻%sс%b' \
+    "$VIO" "$BLD" "$RST" "$WHT" "$now" "$RST" "$VIO" "$pulse" "$RST" "$DIM" "$INTERVAL" "$RST")"
 
   # ═══════════════════════════════════════════════════
   # ── Agent Zero ──
   # ═══════════════════════════════════════════════════
-  brig_section "🧠" "AGENT ZERO" "$CYN"
-  printf "  %bHost:%b %b%s%b\n" "${SLT}" "${RST}" "${DIM}" "${A0_HOST}" "${RST}"
+  section_header "🧠" "AGENT ZERO" "$CYN"
 
   local a0_start a0_end a0_latency a0_json
   a0_start=$(date +%s%N)
@@ -63,112 +57,104 @@ poll() {
 
   if [ -n "$a0_json" ]; then
     a0_latency=$(( (a0_end - a0_start) / 1000000 ))
-    local a0_error
-    a0_error=$(echo "$a0_json" | jq -r '.error // empty' 2>/dev/null)
+    local a0_error a0_sha
 
-    # Status with latency
+    # Status + latency + SHA on one line
+    local status_str
     if [ "$a0_latency" -lt 1000 ]; then
-      printf "  %b✅ Online%b  %b%sms%b\n" "${GRN}" "${RST}" "${SLT}" "${a0_latency}" "${RST}"
+      status_str=$(printf '%b✅ Online%b %b%sms%b' "$GRN" "$RST" "$DIM" "$a0_latency" "$RST")
     else
-      printf "  %b⚠ Slow%b  %b%sms%b\n" "${YLW}" "${RST}" "${YLW}" "${a0_latency}" "${RST}"
+      status_str=$(printf '%b⚠ Slow%b %b%sms%b' "$YLW" "$RST" "$YLW" "$a0_latency" "$RST")
     fi
 
-    # Git info or error from A0
-    if [ -n "$a0_error" ] && [ "$a0_error" != "null" ]; then
-      local short_err
-      short_err=$(echo "$a0_error" | head -c 60)
-      printf "  %b⚙ %s%b\n" "${DIM}" "${short_err}" "${RST}"
-    fi
-
-    # Git SHA if available
-    local a0_sha
     a0_sha=$(echo "$a0_json" | jq -r '.gitinfo // empty' 2>/dev/null)
     if [ -n "$a0_sha" ] && [ "$a0_sha" != "null" ]; then
-      printf "  %bSHA:%b %b%s%b\n" "${SLT}" "${RST}" "${DIM}" "${a0_sha:0:8}" "${RST}"
+      status_str+=$(printf '  %bSHA:%b%b%s%b' "$SLT" "$RST" "$DIM" "${a0_sha:0:8}" "$RST")
     fi
 
-    # Container: Docker containers on the VPS
-    printf "  %bContainers:%b %b3%b %b(50001-50003)%b\n" "${SLT}" "${RST}" "${WHT}" "${RST}" "${DIM}" "${RST}"
-    printf "  %bPrimary:%b %b50002%b %bbrain%b\n" "${SLT}" "${RST}" "${GRN}" "${RST}" "${DIM}" "${RST}"
+    box_line "$(printf '%s  %bHost:%b%b%s%b  %b3 containers%b' \
+      "$status_str" "$SLT" "$RST" "$DIM" "$A0_HOST" "$RST" "$DIM" "$RST")"
+
+    # Error if present
+    a0_error=$(echo "$a0_json" | jq -r '.error // empty' 2>/dev/null)
+    if [ -n "$a0_error" ] && [ "$a0_error" != "null" ]; then
+      box_line "$(printf '%b⚙ %s%b' "$DIM" "${a0_error:0:80}" "$RST")"
+    fi
   else
-    printf "  %b❌ Недоступен%b\n" "${RED}" "${RST}"
-    printf "  %bПроверь: ssh agentzero 'docker ps'%b\n" "${DIM}" "${RST}"
+    box_line "$(printf '%b❌ Недоступен%b  %bssh agentzero docker ps%b' "$RED" "$RST" "$DIM" "$RST")"
   fi
 
   # ═══════════════════════════════════════════════════
   # ── Local Services ──
   # ═══════════════════════════════════════════════════
-  brig_section "⚡" "ЛОКАЛЬНЫЕ СЕРВИСЫ" "$VIO"
+  section_header "⚡" "ЛОКАЛЬНЫЕ СЕРВИСЫ" "$VIO"
 
-  # VoiceServer — localhost:8888
-  local vs_http
+  # VoiceServer
+  local vs_http vs_str
   vs_http=$(curl -s --max-time 2 -o /dev/null -w "%{http_code}" "http://localhost:8888/health" 2>/dev/null)
   if [ "$vs_http" = "200" ]; then
-    printf "  %b🔊 VoiceServer%b  %b✅ Online%b  %b:8888%b\n" "${VIO}" "${RST}" "${GRN}" "${RST}" "${DIM}" "${RST}"
+    vs_str=$(printf '%b✅%b %bVoice%b %b:8888%b' "$GRN" "$RST" "$WHT" "$RST" "$DIM" "$RST")
   elif [ -n "$vs_http" ] && [ "$vs_http" != "000" ]; then
-    printf "  %b🔊 VoiceServer%b  %b⚠ HTTP %s%b\n" "${VIO}" "${RST}" "${YLW}" "${vs_http}" "${RST}"
+    vs_str=$(printf '%b⚠%b  %bVoice%b %bHTTP %s%b' "$YLW" "$RST" "$WHT" "$RST" "$DIM" "$vs_http" "$RST")
   else
-    printf "  %b🔊 VoiceServer%b  %b❌ Недоступен%b\n" "${VIO}" "${RST}" "${RED}" "${RST}"
+    vs_str=$(printf '%b❌%b %bVoice%b' "$RED" "$RST" "$WHT" "$RST")
   fi
 
-  # Z.AI — check via env key presence
+  # Z.AI
+  local zai_str
   local zai_key
   zai_key=$(grep '^ZAI_API_KEY=' "$HOME/.config/PAI/.env" 2>/dev/null | cut -d= -f2)
   if [ -n "$zai_key" ]; then
-    printf "  %b🤖 Z.AI%b         %b✅ Key настроен%b  %bGLM-5 744B%b\n" "${VIO}" "${RST}" "${GRN}" "${RST}" "${DIM}" "${RST}"
+    zai_str=$(printf '%b✅%b %bZ.AI%b %bGLM-5%b' "$GRN" "$RST" "$WHT" "$RST" "$DIM" "$RST")
   else
-    printf "  %b🤖 Z.AI%b         %b⚠ ZAI_API_KEY не найден%b\n" "${VIO}" "${RST}" "${YLW}" "${RST}"
+    zai_str=$(printf '%b⚠%b  %bZ.AI%b %bno key%b' "$YLW" "$RST" "$WHT" "$RST" "$DIM" "$RST")
   fi
+
+  box_line "$(printf '%s          %s' "$vs_str" "$zai_str")"
 
   # ═══════════════════════════════════════════════════
   # ── Jules Sessions ──
   # ═══════════════════════════════════════════════════
-  brig_section "📋" "JULES — Сессии" "$YLW"
+  section_header "📋" "JULES" "$YLW"
 
   local jules_out
   jules_out=$(cd "$HOME/.claude" && timeout "$API_TIMEOUT" bun "$JULES_TOOL" sessions 2>/dev/null)
 
   if [ -n "$jules_out" ]; then
-    # Strip ANSI for counting
     local clean_out
     # shellcheck disable=SC2001
     clean_out=$(echo "$jules_out" | sed 's/\x1b\[[0-9;]*m//g')
 
-    # Count states
     local in_progress completed failed
     in_progress=$(echo "$clean_out" | grep -c "IN_PROGRESS")
     completed=$(echo "$clean_out" | grep -c "COMPLETED")
     failed=$(echo "$clean_out" | grep -c "FAILED")
 
-    printf "  %b▸%b %b%s%b %bв работе%b" "${YLW}" "${RST}" "${WHT}" "${in_progress}" "${RST}" "${SLT}" "${RST}"
-    printf "  %b▸%b %b%s%b %bготово%b" "${GRN}" "${RST}" "${WHT}" "${completed}" "${RST}" "${SLT}" "${RST}"
+    local summary=""
+    summary+=$(printf '%b▸%b%b%s%b %bработе%b' "$YLW" "$RST" "$WHT" "$in_progress" "$RST" "$SLT" "$RST")
+    summary+=$(printf '  %b▸%b%b%s%b %bготово%b' "$GRN" "$RST" "$WHT" "$completed" "$RST" "$SLT" "$RST")
     if [ "$failed" -gt 0 ] 2>/dev/null; then
-      printf "  %b▸%b %b%s%b %bошибки%b" "${RED}" "${RST}" "${WHT}" "${failed}" "${RST}" "${SLT}" "${RST}"
+      summary+=$(printf '  %b▸%b%b%s%b %bошибки%b' "$RED" "$RST" "$WHT" "$failed" "$RST" "$SLT" "$RST")
     fi
-    printf "\n"
+    box_line "$summary"
 
-    # Show active sessions (IN_PROGRESS) with titles
+    # Active sessions
     if [ "$in_progress" -gt 0 ] 2>/dev/null; then
-      printf "\n  %bАктивные:%b\n" "${BLD}" "${RST}"
       echo "$clean_out" | grep "IN_PROGRESS" | while IFS= read -r line; do
         local title
-        # Format: "* IN_PROGRESS    | Title here | sessions/123"
-        title=$(echo "$line" | sed 's/^[^|]*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | head -c 50)
-        if [ -n "$title" ]; then
-          printf "  %b⚡%b %b%s%b\n" "${YLW}" "${RST}" "${WHT}" "${title}" "${RST}"
-        fi
+        title=$(echo "$line" | sed 's/^[^|]*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | head -c 70)
+        [ -n "$title" ] && box_line "$(printf '  %b⚡%b %b%s%b' "$YLW" "$RST" "$WHT" "$title" "$RST")"
       done
     fi
   else
-    printf "  %bAPI недоступен или нет сессий%b\n" "${DIM}" "${RST}"
+    box_line "$(printf '%bAPI недоступен%b' "$DIM" "$RST")"
   fi
 
   # ═══════════════════════════════════════════════════
   # ── AutoMerge Pipeline ──
   # ═══════════════════════════════════════════════════
-  brig_section "🔀" "AUTOMERGE — Pipeline" "$GRN"
+  section_header "🔀" "AUTOMERGE" "$GRN"
 
-  # Read stats directly from state file (instant, no API call)
   if [ -f "$JAM_STATE" ]; then
     local merged failed_am skipped last_check
     merged=$(jq -r '.stats.totalMerged // 0' "$JAM_STATE" 2>/dev/null)
@@ -176,58 +162,57 @@ poll() {
     skipped=$(jq -r '.stats.totalSkipped // 0' "$JAM_STATE" 2>/dev/null)
     last_check=$(jq -r '.lastCheck // "never"' "$JAM_STATE" 2>/dev/null)
 
-    # Format last check time
     local check_time="—"
     if [ "$last_check" != "never" ] && [ "$last_check" != "null" ]; then
       check_time=$(echo "$last_check" | sed 's/T/ /' | cut -c1-19)
     fi
 
-    printf "  %b✓%b%b%s%b merged  %b✗%b%b%s%b failed  %b~%b%b%s%b skip  %b│%b %bcheck: %s%b\n" \
-      "${GRN}" "${RST}" "${WHT}" "${merged}" "${RST}" \
-      "${RED}" "${RST}" "${WHT}" "${failed_am}" "${RST}" \
-      "${SLT}" "${RST}" "${WHT}" "${skipped}" "${RST}" \
-      "${SEP}" "${RST}" "${SLT}" "${check_time}" "${RST}"
+    box_line "$(printf '%b+%s%b  %b✗%s%b  %b~%s%b          %bcheck: %s%b' \
+      "$GRN" "$merged" "$RST" "$RED" "$failed_am" "$RST" "$SLT" "$skipped" "$RST" \
+      "$DIM" "$check_time" "$RST")"
 
-    # Show last 5 processed PRs
+    # Last 5 processed
     local recent
     recent=$(jq -r '.processedSessions[-5:][] | "\(.result) #\(.prNumber) \(.processedAt | split("T")[0])"' "$JAM_STATE" 2>/dev/null)
     if [ -n "$recent" ]; then
-      printf "\n  %bПоследние:%b\n" "${SLT}" "${RST}"
       echo "$recent" | while IFS= read -r entry; do
         local result prnum pdate
         result=$(echo "$entry" | cut -d' ' -f1)
         prnum=$(echo "$entry" | cut -d' ' -f2)
         pdate=$(echo "$entry" | cut -d' ' -f3)
         case "$result" in
-          merged)       printf "  %b+%b %b%s%b %b%s%b\n" "${GRN}" "${RST}" "${WHT}" "${prnum}" "${RST}" "${SLT}" "${pdate}" "${RST}" ;;
-          failed_tests) printf "  %b✗%b %b%s%b %btests%b %b%s%b\n" "${RED}" "${RST}" "${WHT}" "${prnum}" "${RST}" "${RED}" "${RST}" "${SLT}" "${pdate}" "${RST}" ;;
-          failed_merge) printf "  %b✗%b %b%s%b %bmerge%b %b%s%b\n" "${RED}" "${RST}" "${WHT}" "${prnum}" "${RST}" "${RED}" "${RST}" "${SLT}" "${pdate}" "${RST}" ;;
-          failed_review) printf "  %b!%b %b%s%b %breview%b %b%s%b\n" "${YLW}" "${RST}" "${WHT}" "${prnum}" "${RST}" "${YLW}" "${RST}" "${SLT}" "${pdate}" "${RST}" ;;
-          skipped)      printf "  %b~ %s %s%b\n" "${DIM}" "${prnum}" "${pdate}" "${RST}" ;;
+          merged)        box_line "$(printf '  %b+%b %b%-8s%b %b%s%b' "$GRN" "$RST" "$WHT" "$prnum" "$RST" "$DIM" "$pdate" "$RST")" ;;
+          failed_tests)  box_line "$(printf '  %b✗%b %b%-8s%b %btests%b %b%s%b' "$RED" "$RST" "$WHT" "$prnum" "$RST" "$RED" "$RST" "$DIM" "$pdate" "$RST")" ;;
+          failed_merge)  box_line "$(printf '  %b✗%b %b%-8s%b %bmerge%b %b%s%b' "$RED" "$RST" "$WHT" "$prnum" "$RST" "$RED" "$RST" "$DIM" "$pdate" "$RST")" ;;
+          failed_review) box_line "$(printf '  %b!%b %b%-8s%b %breview%b %b%s%b' "$YLW" "$RST" "$WHT" "$prnum" "$RST" "$YLW" "$RST" "$DIM" "$pdate" "$RST")" ;;
+          skipped)       box_line "$(printf '  %b~ %-8s %s%b' "$DIM" "$prnum" "$pdate" "$RST")" ;;
         esac
       done
     fi
   else
-    printf "  %bНет данных (запусти: bun JulesAutoMerge.ts merge)%b\n" "${DIM}" "${RST}"
+    box_line "$(printf '%bНет данных%b %b(bun JulesAutoMerge.ts merge)%b' "$SLT" "$RST" "$DIM" "$RST")"
   fi
 
-  # Check for open PRs (fast — just gh pr list)
+  # ── Open PRs ──
   box_sep
-  printf "  %bOpen PRs:%b " "${SLT}" "${RST}"
-  local open_prs
+  local open_prs pr_line
+  pr_line=$(printf '%bOpen PRs:%b ' "$SLT" "$RST")
   if open_prs=$(timeout 5 gh pr list --repo rikitikitavi2012-debug/PAI-personal --state open --json number,title 2>/dev/null) && [ -n "$open_prs" ]; then
     local pr_count
     pr_count=$(echo "$open_prs" | jq 'length' 2>/dev/null || echo "?")
     if [ "$pr_count" -gt 0 ]; then
-      printf "%b%s%b\n" "${YLW}" "${pr_count}" "${RST}"
-      echo "$open_prs" | jq -r '.[] | "#\(.number) \(.title[:45])"' 2>/dev/null | while IFS= read -r pr; do
-        printf "  %b→%b %b%s%b\n" "${BLU}" "${RST}" "${WHT}" "${pr}" "${RST}"
+      pr_line+=$(printf '%b%b%s%b' "$YLW" "$BLD" "$pr_count" "$RST")
+      box_line "$pr_line"
+      echo "$open_prs" | jq -r '.[] | "#\(.number) \(.title[:60])"' 2>/dev/null | while IFS= read -r pr; do
+        box_line "$(printf '  %b→%b %b%s%b' "$BLU" "$RST" "$WHT" "$pr" "$RST")"
       done
     else
-      printf "%b0%b %b(чисто)%b\n" "${GRN}" "${RST}" "${DIM}" "${RST}"
+      pr_line+=$(printf '%b0%b %b(чисто)%b' "$GRN" "$RST" "$DIM" "$RST")
+      box_line "$pr_line"
     fi
   else
-    printf "%b?%b\n" "${DIM}" "${RST}"
+    pr_line+=$(printf '%b?%b' "$DIM" "$RST")
+    box_line "$pr_line"
   fi
 
   # ── Dynamic tab color ──
@@ -238,8 +223,8 @@ poll() {
   fi
 
   # ── Footer ──
-  box_top
-  box_line "$(printf '%b%s │ ↻ %sс │ r = обновить │ q = выход%b' "$SLT" "$(date '+%H:%M')" "$INTERVAL" "$RST")"
+  box_sep
+  box_line "$(printf '%b%s │ r = обновить │ q = выход%b' "$DIM" "$(date '+%H:%M')" "$RST")"
   box_bot
 }
 
@@ -248,11 +233,12 @@ poll
 
 # Main loop with interruptible sleep
 while true; do
-  read -r -t "$INTERVAL" -n 1 key 2>/dev/null
-  if [[ "$key" == "q" || "$key" == "Q" ]]; then
-    break
-  elif [[ "$key" == "r" || "$key" == "R" ]]; then
-    printf "\n%bОбновляю...%b\n" "${DIM}" "${RST}"
-  fi
+  for ((i=INTERVAL; i>0; i--)); do
+    read -rsn1 -t1 key
+    case "$key" in
+      r|R) break ;;
+      q|Q) exit 0 ;;
+    esac
+  done
   poll
 done

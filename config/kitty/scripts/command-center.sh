@@ -83,20 +83,21 @@ poll() {
   esac
   now_date=$(printf '%02d %s %s' "$day" "$month" "$year")
 
+  # Pulse indicator
+  local pulse=" "
+  [ $(( 10#$(date +%S) % 2 )) -eq 0 ] && pulse="●"
+
   # ═══════════════════════════════════════════════════
   # ── 1. Header ──
   # ═══════════════════════════════════════════════════
   box_top
-  local header_left header_right
-  header_left=$(printf '%b%b⬢ PAI COMMAND CENTER%b' "$VIO" "$BLD" "$RST")
-  header_right=$(printf '%b%s %s%b  %b↻ %sс%b' "$WHT" "$now_date" "$now_time" "$RST" "$DIM" "$INTERVAL" "$RST")
-  box_line "$(printf '%s                             %s' "$header_left" "$header_right")"
-  box_bot
+  box_line "$(printf '%b%b⬢ PAI COMMAND CENTER%b                %b%s %s%b %b%s%b %b↻%sс%b' \
+    "$VIO" "$BLD" "$RST" "$WHT" "$now_date" "$now_time" "$RST" "$VIO" "$pulse" "$RST" "$DIM" "$INTERVAL" "$RST")"
 
   # ═══════════════════════════════════════════════════
   # ── 2. Two-column: СИСТЕМА + AI БРИГАДА ──
   # ═══════════════════════════════════════════════════
-  box_top
+  two_col_top
   two_col \
     "$(printf '%b%b СИСТЕМА%b' "$CYN" "$BLD" "$RST")" \
     "$(printf '%b%b AI БРИГАДА%b' "$VIO" "$BLD" "$RST")"
@@ -189,14 +190,8 @@ poll() {
     "$(printf '%bGemini%b %s  %bCLI%b %s' "$SLT" "$RST" "$gemini_icon" "$SLT" "$RST" "$gemini_cli_icon")"
 
   two_col_bot
-  printf "\n"
-
-  # ═══════════════════════════════════════════════════
-  # ── 3. АКТИВНЫЕ СЕССИИ ──
-  # ═══════════════════════════════════════════════════
-  box_top
-  box_line "$(printf '%b%b АКТИВНЫЕ СЕССИИ%b' "$BLU" "$BLD" "$RST")"
-  box_sep
+  box_line ""
+  section_header "💼" "АКТИВНЫЕ СЕССИИ" "$BLU"
 
   # Parse recent WORK directories (last 5 with META.yaml)
   local session_count=0
@@ -243,15 +238,8 @@ poll() {
   if [ "$session_count" -eq 0 ]; then
     box_line "$(printf '%bНет активных сессий%b' "$SLT" "$RST")"
   fi
-  box_bot
-  printf "\n"
-
-  # ═══════════════════════════════════════════════════
-  # ── 4. PULL REQUESTS ──
-  # ═══════════════════════════════════════════════════
-  box_top
-  box_line "$(printf '%b%b PULL REQUESTS%b' "$ORG" "$BLD" "$RST")"
-  box_sep
+  box_line ""
+  section_header "🔗" "PULL REQUESTS" "$ORG"
 
   # Fetch open PRs from both repos
   local has_prs=false
@@ -281,13 +269,12 @@ poll() {
   if [ "$has_prs" = false ]; then
     box_line "$(printf '%bНет открытых PR%b' "$SLT" "$RST")"
   fi
-  box_bot
-  printf "\n"
+  box_line ""
 
   # ═══════════════════════════════════════════════════
-  # ── 5. Two-column: ХУКИ & ТЕСТЫ + ЗАДАЧИ ──
+  # ── 5. Two-column: ХУКИ & ТЕСТЫ + АВТОМЕРЖ ──
   # ═══════════════════════════════════════════════════
-  box_top
+  two_col_top
   two_col \
     "$(printf '%b%b ХУКИ & ТЕСТЫ%b' "$CYN" "$BLD" "$RST")" \
     "$(printf '%b%b АВТОМЕРЖ%b' "$VIO" "$BLD" "$RST")"
@@ -331,21 +318,10 @@ poll() {
     tab_warn
   fi
 
-  # ═══════════════════════════════════════════════════
-  # ── 6. Tab navigation footer ──
-  # ═══════════════════════════════════════════════════
-  printf "\n"
-  local tab_str=""
-  tab_str+="${YLW}${BLD}1${RST}${SLT}TELOS${RST}  "
-  tab_str+="${YLW}${BLD}2${RST}${SLT}Center${RST}  "
-  tab_str+="${CYN}${BLD}3${RST}${SLT}Brigade${RST}  "
-  tab_str+="${CYN}${BLD}4${RST}${SLT}Infra${RST}  "
-  tab_str+="${GRN}${BLD}5${RST}${SLT}PAI${RST}  "
-  tab_str+="${GRN}${BLD}6${RST}${SLT}Projects${RST}"
-  box_top
-  box_line "$tab_str"
+  # ── Footer ──
+  box_sep
+  box_line "$(printf '%b%s │ r = обновить │ q = выход%b' "$DIM" "$(date '+%H:%M')" "$RST")"
   box_bot
-  printf ' %b%s │ ↻ %sс │ r = обновить │ q = выход%b\n' "$SLT" "$(date '+%H:%M')" "$INTERVAL" "$RST"
 }
 
 # ── Initial poll ──
