@@ -1,7 +1,7 @@
 # PAI Workspace Session — Domain Architecture
 # Launch: kitty --session ~/.config/kitty/sessions/pai.session
-# Домены: Стратегия (1-2) → Операции (3-4) → Работа (5-6)
-# Табы: Alt+1..6 для переключения
+# Домены: Стратегия (1-2) → Операции (3-5) → Работа (6-7)
+# Табы: Alt+1..7 для переключения
 
 # ══════════════════════════════════════════════════════════
 # 🟡 ДОМЕН: СТРАТЕГИЯ (amber) — зачем и куда
@@ -20,19 +20,24 @@ cd ~
 launch --title "Command Center" bash -c 'exec ~/.config/kitty/scripts/command-center.sh'
 
 # ══════════════════════════════════════════════════════════
-# 🔵 ДОМЕН: ОПЕРАЦИИ (cyan) — кто работает и где
+# 🔵 ДОМЕН: ОПЕРАЦИИ (cyan) — кто работает, где и как (табы 3-5)
 # ══════════════════════════════════════════════════════════
 
-# ── Tab 3: Brigade — мониторинг AI Brigade (3-pane) ──
-# Layout: brigade-watch (left) | events (top-right) + a0-chat (bottom-right)
+# ── Tab 3: Brigade — мониторинг AI Brigade (2-pane) ──
+# Layout: brigade-watch (left) | a0-chat (right)
 new_tab  🤖 Brigade
 layout tall
 cd ~
 launch --title "Brigade Watch" bash -c 'exec ~/.config/kitty/scripts/brigade-watch.sh'
-launch --location=vsplit --title "Events" bash -c 'exec ~/.config/kitty/scripts/events-tail.sh'
-launch --location=hsplit --title "A0 Chat" bash -c 'exec ~/.config/kitty/scripts/a0-chat-tail.sh'
+launch --location=vsplit --title "A0 Chat" bash -c 'exec ~/.config/kitty/scripts/a0-chat-tail.sh'
 
-# ── Tab 4: Infra — серверы + мониторинг (4-pane grid) ──
+# ── Tab 4: Telemetry — полноэкранный мониторинг нервной системы (LIVE) ──
+new_tab  📡 Telemetry
+layout splits
+cd ~
+launch --title "Telemetry" bash -c 'exec ~/.config/kitty/scripts/telemetry-dashboard.sh'
+
+# ── Tab 5: Infra — серверы + мониторинг (4-pane grid) ──
 # Grid: agentzero (TL) | xray-vps (TR) / htop (BL) | docker (BR)
 new_tab  🏗 Infra
 layout grid
@@ -46,17 +51,17 @@ launch --title "docker" bash -c 'clear; echo ""; echo "  🐳 DOCKER"; echo "  �
 # 🟢 ДОМЕН: РАБОТА (emerald) — что делаем
 # ══════════════════════════════════════════════════════════
 
-# ── Tab 5: PAI System — работа над системой ──
+# ── Tab 6: PAI System — работа над системой ──
 new_tab  ⚙ PAI
 layout splits
 cd ~/.claude
-launch --title "PAI System" bash -ic 'clear; echo ""; echo "  ⚙  PAI SYSTEM — ~/.claude"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo ""; echo "  Набери pai чтобы запустить Claude Code."; echo ""; echo "  ┌──────────────────────────────────────────────────────────────────────────────────┐"; echo "  │ Структура:                                                                       │"; echo "  │ PAI/Algorithm/    — алгоритм (мозг Navi)                                         │"; echo "  │ PAI/Tools/        — инструменты системы                                          │"; echo "  │ MEMORY/           — память Navi                                                  │"; echo "  │ settings.json     — настройки Claude Code                                        │"; echo "  │ CLAUDE.md         — главный конфиг поведения                                      │"; echo "  │ hooks/            — хуки (автоматические действия)                                 │"; echo "  │ agents/           — профили агентов                                              │"; echo "  │ skills/           — навыки (скиллы)                                                │"; echo "  └──────────────────────────────────────────────────────────────────────────────────┘"; echo ""; echo "  🟡1 TELOS  🟡2 Center  🔵3 Brigade  🔵4 Infra  🟢5 PAI  🟢6 Projects"; echo ""; exec bash'
+launch --title "PAI System" bash -ic 'clear; echo ""; echo "  ⚙  PAI SYSTEM — ~/.claude"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo ""; echo "  Набери pai чтобы запустить Claude Code."; echo ""; echo "  ┌──────────────────────────────────────────────────────────────────────────────────┐"; echo "  │ Структура:                                                                       │"; echo "  │ PAI/Algorithm/    — алгоритм (мозг Navi)                                         │"; echo "  │ PAI/Tools/        — инструменты системы                                          │"; echo "  │ MEMORY/           — память Navi                                                  │"; echo "  │ settings.json     — настройки Claude Code                                        │"; echo "  │ CLAUDE.md         — главный конфиг поведения                                      │"; echo "  │ hooks/            — хуки (автоматические действия)                                 │"; echo "  │ agents/           — профили агентов                                              │"; echo "  │ skills/           — навыки (скиллы)                                                │"; echo "  └──────────────────────────────────────────────────────────────────────────────────┘"; echo ""; echo "  🟡1 TELOS  🟡2 Center  🔵3 Brigade  🔵4 Telemetry  🔵5 Infra  🟢6 PAI  🟢7 Projects"; echo ""; exec bash'
 
-# ── Tab 6: Projects — терминал для проектов ──
+# ── Tab 7: Projects — терминал для проектов ──
 new_tab  📁 Projects
 layout splits
 cd ~/projects
-launch --title "Projects" bash -ic 'clear; echo ""; echo "  📁 ПРОЕКТЫ — ~/projects"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo ""; echo "  Доступные проекты:"; for d in */; do [ -d "$d" ] && printf "    → %s\n" "$d"; done; echo ""; echo "  ┌──────────────────────────────────────────────────────────────────────────────────┐"; echo "  │ Как работать:                                                                    │"; echo "  │ cd timber-frame-site    — перейти в проект                                       │"; echo "  │ pai                     — запустить Claude Code                                  │"; echo "  │ ls                      — посмотреть файлы                                       │"; echo "  │ cd ..                   — назад к списку                                         │"; echo "  └──────────────────────────────────────────────────────────────────────────────────┘"; echo ""; echo "  🟡1 TELOS  🟡2 Center  🔵3 Brigade  🔵4 Infra  🟢5 PAI  🟢6 Projects"; echo ""; exec bash'
+launch --title "Projects" bash -ic 'clear; echo ""; echo "  📁 ПРОЕКТЫ — ~/projects"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo ""; echo "  Доступные проекты:"; for d in */; do [ -d "$d" ] && printf "    → %s\n" "$d"; done; echo ""; echo "  ┌──────────────────────────────────────────────────────────────────────────────────┐"; echo "  │ Как работать:                                                                    │"; echo "  │ cd timber-frame-site    — перейти в проект                                       │"; echo "  │ pai                     — запустить Claude Code                                  │"; echo "  │ ls                      — посмотреть файлы                                       │"; echo "  │ cd ..                   — назад к списку                                         │"; echo "  └──────────────────────────────────────────────────────────────────────────────────┘"; echo ""; echo "  🟡1 TELOS  🟡2 Center  🔵3 Brigade  🔵4 Telemetry  🔵5 Infra  🟢6 PAI  🟢7 Projects"; echo ""; exec bash'
 
 # Focus TELOS tab (стратегия первым)
 focus_tab 0

@@ -22,16 +22,13 @@ API_TIMEOUT=10
 # shellcheck disable=SC1091
 . "$HOME/.config/kitty/scripts/lib/ui.sh"
 
-# ── Flicker-free refresh ──
-FIRST_RENDER=true
+# ── Alternate buffer + clean exit ──
+alt_screen_enter
+set_tab_title "🤖 Brigade"
+trap 'alt_screen_exit' EXIT INT TERM
 
 poll() {
-  if [ "$FIRST_RENDER" = true ]; then
-    printf '\033[2J\033[H'
-    FIRST_RENDER=false
-  else
-    printf '\033[H\033[J'
-  fi
+  printf '\033[2J\033[H'
 
   local now
   now=$(date '+%H:%M:%S')
@@ -146,7 +143,8 @@ poll() {
     if [ "$in_progress" -gt 0 ] 2>/dev/null; then
       echo "$clean_out" | grep "IN_PROGRESS" | while IFS= read -r line; do
         local title
-        title=$(echo "$line" | sed 's/^[^|]*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//' | head -c 70)
+        title=$(echo "$line" | sed 's/^[^|]*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//')
+        title=$(truncate "$title" 70)
         [ -n "$title" ] && box_line "$(printf '  %b⚡%b %b%s%b' "$YLW" "$RST" "$WHT" "$title" "$RST")"
       done
     fi
@@ -228,7 +226,10 @@ poll() {
 
   # ── Footer ──
   box_sep
-  box_line "$(printf '%b%s │ r = обновить │ q = выход%b' "$DIM" "$(date '+%H:%M')" "$RST")"
+  local footer_left footer_right
+  footer_left=$(printf '%b↻ %sс │ r = обновить │ q = выход%b' "$DIM" "$INTERVAL" "$RST")
+  footer_right=$(printf '%b%s%b' "$DIM" "$(date '+%H:%M')" "$RST")
+  box_line "$(printf '%s%*s%s' "$footer_left" "$(( PAI_UI_WIDTH - 4 - $(vwidth "$footer_left") - $(vwidth "$footer_right") ))" "" "$footer_right")"
   box_bot
 }
 

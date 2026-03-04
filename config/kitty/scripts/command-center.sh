@@ -54,19 +54,16 @@ jq_val() {
   fi
 }
 
-# ── Flicker-free refresh ──
-FIRST_RENDER=true
+# ── Alternate buffer + clean exit ──
+alt_screen_enter
+set_tab_title "⬢ Center"
+trap 'alt_screen_exit' EXIT INT TERM
 
 # ═══════════════════════════════════════════════════
 # ── Main poll function ──
 # ═══════════════════════════════════════════════════
 poll() {
-  if [ "$FIRST_RENDER" = true ]; then
-    printf '\033[2J\033[H'
-    FIRST_RENDER=false
-  else
-    printf '\033[H\033[J'
-  fi
+  printf '\033[2J\033[H'
   refresh_telos
 
   local now_time now_date
@@ -230,7 +227,8 @@ poll() {
 
       # Truncate title
       local name_max=$((PAI_UI_WIDTH - 24))
-      local short_title="${s_title:0:$name_max}"
+      local short_title
+      short_title=$(truncate "$s_title" "$name_max")
 
       box_line "$(printf '%s %b%-*s%b %b%4s%b %b%s%b' "$s_icon" "$WHT" "$name_max" "$short_title" "$RST" "$SLT" "$s_age_str" "$RST" "$SLT" "$s_status" "$RST")"
       session_count=$((session_count + 1))
@@ -251,7 +249,8 @@ poll() {
     has_prs=true
     echo "$jules_pr_json" | jq -r '.[] | "#\(.number)|\(.title)"' 2>/dev/null | while IFS='|' read -r pr_num pr_title; do
       local pr_max=$((PAI_UI_WIDTH - 28))
-      local short_pr="${pr_title:0:$pr_max}"
+      local short_pr
+      short_pr=$(truncate "$pr_title" "$pr_max")
       box_line "$(printf '%b%-6s%b %b%-*s%b %bprivate%b' "$YLW" "$pr_num" "$RST" "$WHT" "$pr_max" "$short_pr" "$RST" "$SLT" "$RST")"
     done
   fi
@@ -263,7 +262,8 @@ poll() {
     has_prs=true
     echo "$public_pr_json" | jq -r '.[] | "#\(.number)|\(.title)"' 2>/dev/null | while IFS='|' read -r pr_num pr_title; do
       local pr_max=$((PAI_UI_WIDTH - 28))
-      local short_pr="${pr_title:0:$pr_max}"
+      local short_pr
+      short_pr=$(truncate "$pr_title" "$pr_max")
       box_line "$(printf '%b%-6s%b %b%-*s%b %bpublic%b' "$CYN" "$pr_num" "$RST" "$WHT" "$pr_max" "$short_pr" "$RST" "$SLT" "$RST")"
     done
   fi
@@ -322,7 +322,10 @@ poll() {
 
   # ── Footer ──
   box_sep
-  box_line "$(printf '%b%s │ r = обновить │ q = выход%b' "$DIM" "$(date '+%H:%M')" "$RST")"
+  local footer_left footer_right
+  footer_left=$(printf '%b↻ %sс │ r = обновить │ q = выход%b' "$DIM" "$INTERVAL" "$RST")
+  footer_right=$(printf '%b%s%b' "$DIM" "$(date '+%H:%M')" "$RST")
+  box_line "$(printf '%s%*s%s' "$footer_left" "$(( PAI_UI_WIDTH - 4 - $(vwidth "$footer_left") - $(vwidth "$footer_right") ))" "" "$footer_right")"
   box_bot
 }
 

@@ -124,17 +124,14 @@ maybe_refresh_state() {
   fi
 }
 
-# ── Flicker-free refresh ──
-FIRST_RENDER=true
+# ── Alternate buffer + clean exit ──
+alt_screen_enter
+set_tab_title "🎯 TELOS"
+trap 'alt_screen_exit' EXIT INT TERM
 
 # ── Main render ──
 poll() {
-  if [ "$FIRST_RENDER" = true ]; then
-    printf '\033[2J\033[H'
-    FIRST_RENDER=false
-  else
-    printf '\033[H\033[J'
-  fi
+  printf '\033[2J\033[H'
   maybe_refresh_state
 
   local now
@@ -522,7 +519,9 @@ poll() {
 
   # ── Footer ──
   printf "\n%b%s%b\n" "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
-  printf " %b%s │ ↻ %sс │ r = обновить │ q = выход%b\n" "$SLT" "$now" "$INTERVAL" "$RST"
+  printf " %b↻ %sс │ r = обновить │ q = выход%b" "$SLT" "$INTERVAL" "$RST"
+  right_align "$(printf '%b%s%b' "$DIM" "$now" "$RST")" "$PAI_UI_WIDTH"
+  printf "\n"
 }
 
 # ── Initial poll ──
