@@ -23,20 +23,13 @@ import { join, dirname } from 'path';
 
 const RETENTION_DAYS = 7;
 
-interface RotationResult {
-  archived: number;
-  kept: number;
-  /** Last archive file written (null if nothing archived) */
-  archiveFile: string | null;
-}
-
 /**
  * Rotate events.jsonl — archive events older than 7 days.
  *
  * @param eventsPath - Absolute path to events.jsonl
  * @returns Counts of archived and kept events
  */
-export function rotateEvents(eventsPath: string): RotationResult {
+export function rotateEvents(eventsPath: string): { archived: number; kept: number; archiveFile: string | null } {
   if (!existsSync(eventsPath)) {
     return { archived: 0, kept: 0, archiveFile: null };
   }
@@ -94,8 +87,8 @@ export function rotateEvents(eventsPath: string): RotationResult {
     lastArchiveFile = archivePath;
   }
 
-  // Overwrite events.jsonl with only fresh events
-  if (totalArchived > 0) {
+  // Overwrite events.jsonl with only fresh events (also drops malformed lines)
+  if (totalArchived > 0 || fresh.length !== lines.filter((l) => l.trim()).length) {
     const freshContent = fresh.length > 0 ? fresh.join('\n') + '\n' : '';
     writeFileSync(eventsPath, freshContent, 'utf-8');
   }
