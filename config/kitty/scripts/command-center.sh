@@ -13,6 +13,8 @@ export no_proxy="${no_proxy:+$no_proxy,}72.56.86.51"
 # Source API keys
 # shellcheck disable=SC1091
 . "$HOME/.config/PAI/.env" 2>/dev/null
+# shellcheck disable=SC1091
+. "$HOME/.config/kitty/scripts/lib/ui.sh"
 
 INTERVAL=30
 TELOS_JSON="$HOME/.claude/MEMORY/STATE/telos-state.json"
@@ -22,122 +24,6 @@ WORK_DIR="$HOME/.claude/MEMORY/WORK"
 AUTOMERGE_JSON="$HOME/.claude/MEMORY/STATE/jules-automerge.json"
 HOOKS_DIR="$HOME/.claude/hooks"
 HOOKS_TESTS="$HOME/.claude/hooks/tests"
-
-# ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
-RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'
-GRN='\e[38;2;74;222;128m'
-RED='\e[38;2;251;113;133m'
-YLW='\e[38;2;251;191;36m'
-CYN='\e[38;2;103;232;249m'
-SLT='\e[38;2;148;163;184m'    # secondary text (bright enough for readability)
-SEP='\e[38;2;71;85;105m'      # separators and borders
-BLU='\e[38;2;59;130;246m'
-VIO='\e[38;2;167;139;250m'
-WHT='\e[38;2;203;213;225m'    # primary text
-ORG='\e[38;2;251;146;60m'
-
-# ── Terminal width ──
-cols=$(tput cols 2>/dev/null || echo 96)
-if [ "$cols" -gt 96 ]; then cols=96; fi
-if [ "$cols" -lt 80 ]; then cols=80; fi
-
-# Half-width for two-column layout (subtract 4 for borders/padding)
-half=$(( (cols - 4) / 2 ))
-
-# ── Helpers ──
-hline() {
-  local ch="${1:-─}" w="${2:-$cols}"
-  printf '%s' "$ch"
-  local i
-  for ((i=1; i<w; i++)); do printf '%s' "$ch"; done
-}
-
-# Print a box top: ┌────...────┐
-box_top() {
-  printf '%b┌%s┐%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
-}
-
-# Print a box bottom: └────...────┘
-box_bot() {
-  printf '%b└%s┘%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
-}
-
-# Print a box line: │ content... (padded) │
-# Usage: box_line "content" [color_prefix]
-box_line() {
-  local content="$1"
-  # Strip ANSI codes for length calculation
-  local stripped
-  stripped=$(printf '%b' "$content" | sed 's/\x1b\[[0-9;]*m//g')
-  local len=${#stripped}
-  local pad=$((cols - 4 - len))
-  if [ "$pad" -lt 0 ]; then pad=0; fi
-  printf '%b│%b  %b%*s  %b│%b\n' "${SEP}" "${RST}" "$content" "$pad" "" "${SEP}" "${RST}"
-}
-
-# Section header (full width box)
-section_box() {
-  local title="$1" color="$2"
-  printf '%b├%s┤%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
-  box_line "$(printf '%b%b%s%b' "$color" "$BLD" "$title" "$RST")"
-  printf '%b├%s┤%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
-}
-
-# Progress bar: filled/empty with color based on percentage
-progress_bar() {
-  local pct=$1 width=${2:-16}
-  local filled=$((pct * width / 100))
-  local empty=$((width - filled))
-  local color="$DIM"
-  if [ "$pct" -gt 50 ]; then
-    color="$GRN"
-  elif [ "$pct" -gt 0 ]; then
-    color="$YLW"
-  fi
-  printf '%b' "$color"
-  local i
-  for ((i=0; i<filled; i++)); do printf '%s' '█'; done
-  printf '%b' "$SEP"
-  for ((i=0; i<empty; i++)); do printf '%s' '░'; done
-  printf '%b' "$RST"
-}
-
-# Two-column line: left and right content side by side
-# Usage: two_col "left content" "right content"
-two_col() {
-  local left="$1" right="$2"
-  local left_stripped right_stripped
-  left_stripped=$(printf '%b' "$left" | sed 's/\x1b\[[0-9;]*m//g')
-  right_stripped=$(printf '%b' "$right" | sed 's/\x1b\[[0-9;]*m//g')
-  local left_len=${#left_stripped}
-  local right_len=${#right_stripped}
-  local left_pad=$((half - left_len))
-  local right_pad=$((cols - 4 - half - 1 - right_len))
-  if [ "$left_pad" -lt 0 ]; then left_pad=0; fi
-  if [ "$right_pad" -lt 0 ]; then right_pad=0; fi
-  printf '%b│%b %b%*s%b│%b %b%*s %b│%b\n' \
-    "${SEP}" "${RST}" \
-    "$left" "$left_pad" "" \
-    "${SEP}" "${RST}" \
-    "$right" "$right_pad" "" \
-    "${SEP}" "${RST}"
-}
-
-# Two-column separator
-two_col_top() {
-  local left_w=$half right_w=$((cols - 2 - half - 1))
-  printf '%b├%s┬%s┤%b\n' "${SEP}" "$(hline '─' "$left_w")" "$(hline '─' "$right_w")" "${RST}"
-}
-
-two_col_mid() {
-  local left_w=$half right_w=$((cols - 2 - half - 1))
-  printf '%b├%s┼%s┤%b\n' "${SEP}" "$(hline '─' "$left_w")" "$(hline '─' "$right_w")" "${RST}"
-}
-
-two_col_bot() {
-  local left_w=$half right_w=$((cols - 2 - half - 1))
-  printf '%b├%s┴%s┤%b\n' "${SEP}" "$(hline '─' "$left_w")" "$(hline '─' "$right_w")" "${RST}"
-}
 
 # ── TELOS refresh (only if older than 5 minutes) ──
 refresh_telos() {
@@ -168,11 +54,19 @@ jq_val() {
   fi
 }
 
+# ── Flicker-free refresh ──
+FIRST_RENDER=true
+
 # ═══════════════════════════════════════════════════
 # ── Main poll function ──
 # ═══════════════════════════════════════════════════
 poll() {
-  clear
+  if [ "$FIRST_RENDER" = true ]; then
+    printf '\033[2J\033[H'
+    FIRST_RENDER=false
+  else
+    printf '\033[H\033[J'
+  fi
   refresh_telos
 
   local now_time now_date
@@ -302,7 +196,7 @@ poll() {
   # ═══════════════════════════════════════════════════
   box_top
   box_line "$(printf '%b%b АКТИВНЫЕ СЕССИИ%b' "$BLU" "$BLD" "$RST")"
-  printf '%b├%s┤%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
+  box_sep
 
   # Parse recent WORK directories (last 5 with META.yaml)
   local session_count=0
@@ -338,7 +232,7 @@ poll() {
       esac
 
       # Truncate title
-      local name_max=$((cols - 24))
+      local name_max=$((PAI_UI_WIDTH - 24))
       local short_title="${s_title:0:$name_max}"
 
       box_line "$(printf '%s %b%-*s%b %b%4s%b %b%s%b' "$s_icon" "$WHT" "$name_max" "$short_title" "$RST" "$SLT" "$s_age_str" "$RST" "$SLT" "$s_status" "$RST")"
@@ -357,7 +251,7 @@ poll() {
   # ═══════════════════════════════════════════════════
   box_top
   box_line "$(printf '%b%b PULL REQUESTS%b' "$ORG" "$BLD" "$RST")"
-  printf '%b├%s┤%b\n' "${SEP}" "$(hline '─' $((cols - 2)))" "${RST}"
+  box_sep
 
   # Fetch open PRs from both repos
   local has_prs=false
@@ -366,7 +260,7 @@ poll() {
   if [ -n "$jules_pr_json" ] && [ "$jules_pr_json" != "[]" ]; then
     has_prs=true
     echo "$jules_pr_json" | jq -r '.[] | "#\(.number)|\(.title)"' 2>/dev/null | while IFS='|' read -r pr_num pr_title; do
-      local pr_max=$((cols - 28))
+      local pr_max=$((PAI_UI_WIDTH - 28))
       local short_pr="${pr_title:0:$pr_max}"
       box_line "$(printf '%b%-6s%b %b%-*s%b %bprivate%b' "$YLW" "$pr_num" "$RST" "$WHT" "$pr_max" "$short_pr" "$RST" "$SLT" "$RST")"
     done
@@ -378,7 +272,7 @@ poll() {
   if [ -n "$public_pr_json" ] && [ "$public_pr_json" != "[]" ]; then
     has_prs=true
     echo "$public_pr_json" | jq -r '.[] | "#\(.number)|\(.title)"' 2>/dev/null | while IFS='|' read -r pr_num pr_title; do
-      local pr_max=$((cols - 28))
+      local pr_max=$((PAI_UI_WIDTH - 28))
       local short_pr="${pr_title:0:$pr_max}"
       box_line "$(printf '%b%-6s%b %b%-*s%b %bpublic%b' "$CYN" "$pr_num" "$RST" "$WHT" "$pr_max" "$short_pr" "$RST" "$SLT" "$RST")"
     done
@@ -429,6 +323,13 @@ poll() {
     "$(printf '%bПосл:%b %b%s%b' "$SLT" "$RST" "$WHT" "$am_last" "$RST")"
 
   two_col_bot
+
+  # ── Dynamic tab color ──
+  if [ "$vs_http" = "200" ] && [ -n "$a0_json" ]; then
+    tab_ok
+  elif [ "$vs_http" != "200" ] || [ -z "$a0_json" ]; then
+    tab_warn
+  fi
 
   # ═══════════════════════════════════════════════════
   # ── 6. Tab navigation footer ──

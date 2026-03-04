@@ -19,46 +19,41 @@ JAM_STATE="$HOME/.claude/MEMORY/STATE/jules-automerge.json"
 INTERVAL=30
 API_TIMEOUT=10
 
-# ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
-RST='\e[0m'
-BLD='\e[1m'
-DIM='\e[2m'
-GRN='\e[38;2;74;222;128m'     # emerald — success
-RED='\e[38;2;251;113;133m'    # rose — error
-YLW='\e[38;2;251;191;36m'     # amber — warning/in-progress
-CYN='\e[38;2;103;232;249m'    # cyan — info
-SLT='\e[38;2;148;163;184m'    # secondary text (bright enough for readability)
-SEP='\e[38;2;71;85;105m'      # separators and borders
-BLU='\e[38;2;59;130;246m'     # blue — accents
-VIO='\e[38;2;167;139;250m'    # violet — headers
-WHT='\e[38;2;203;213;225m'    # primary text
+# shellcheck disable=SC1091
+. "$HOME/.config/kitty/scripts/lib/ui.sh"
 
-separator() {
-  printf "%b" "${SEP}"
-  printf '─%.0s' {1..48}
-  printf "%b\n" "${RST}"
-}
-
-section_header() {
+# Brigade uses a simpler section header (no box, just indented)
+brig_section() {
   local icon="$1" title="$2" color="$3"
-  printf "\n  %b%b%s %s%b\n" "${color}" "${BLD}" "${icon}" "${title}" "${RST}"
-  printf "  "; separator
+  printf "\n"
+  box_sep
+  box_line "$(printf '%b%b%s %s%b' "$color" "$BLD" "$icon" "$title" "$RST")"
+  box_sep
 }
+
+# ── Flicker-free refresh ──
+FIRST_RENDER=true
 
 poll() {
-  clear
+  if [ "$FIRST_RENDER" = true ]; then
+    printf '\033[2J\033[H'
+    FIRST_RENDER=false
+  else
+    printf '\033[H\033[J'
+  fi
   local now
   now=$(date '+%H:%M:%S')
 
   # ── Header ──
-  printf "%b┌──────────────────────────────────────────────────┐%b\n" "${SEP}" "${RST}"
-  printf "%b│%b  %b%b🤖 AI BRIGADE%b  %b│%b  %b%s%b  %b│%b  %b↻ %sс%b          %b│%b\n" "${SEP}" "${RST}" "${VIO}" "${BLD}" "${RST}" "${SLT}" "${RST}" "${WHT}" "${now}" "${RST}" "${SLT}" "${RST}" "${DIM}" "${INTERVAL}" "${RST}" "${SEP}" "${RST}"
-  printf "%b└──────────────────────────────────────────────────┘%b\n" "${SEP}" "${RST}"
+  box_top
+  box_line "$(printf '%b%b🤖 AI BRIGADE%b                              %b%s%b  %b↻ %sс%b' \
+    "$VIO" "$BLD" "$RST" "$WHT" "$now" "$RST" "$DIM" "$INTERVAL" "$RST")"
+  box_bot
 
   # ═══════════════════════════════════════════════════
   # ── Agent Zero ──
   # ═══════════════════════════════════════════════════
-  section_header "🧠" "AGENT ZERO" "$CYN"
+  brig_section "🧠" "AGENT ZERO" "$CYN"
   printf "  %bHost:%b %b%s%b\n" "${SLT}" "${RST}" "${DIM}" "${A0_HOST}" "${RST}"
 
   local a0_start a0_end a0_latency a0_json
@@ -103,7 +98,7 @@ poll() {
   # ═══════════════════════════════════════════════════
   # ── Local Services ──
   # ═══════════════════════════════════════════════════
-  section_header "⚡" "ЛОКАЛЬНЫЕ СЕРВИСЫ" "$VIO"
+  brig_section "⚡" "ЛОКАЛЬНЫЕ СЕРВИСЫ" "$VIO"
 
   # VoiceServer — localhost:8888
   local vs_http
@@ -128,7 +123,7 @@ poll() {
   # ═══════════════════════════════════════════════════
   # ── Jules Sessions ──
   # ═══════════════════════════════════════════════════
-  section_header "📋" "JULES — Сессии" "$YLW"
+  brig_section "📋" "JULES — Сессии" "$YLW"
 
   local jules_out
   jules_out=$(cd "$HOME/.claude" && timeout "$API_TIMEOUT" bun "$JULES_TOOL" sessions 2>/dev/null)
@@ -171,7 +166,7 @@ poll() {
   # ═══════════════════════════════════════════════════
   # ── AutoMerge Pipeline ──
   # ═══════════════════════════════════════════════════
-  section_header "🔀" "AUTOMERGE — Pipeline" "$GRN"
+  brig_section "🔀" "AUTOMERGE — Pipeline" "$GRN"
 
   # Read stats directly from state file (instant, no API call)
   if [ -f "$JAM_STATE" ]; then
@@ -217,7 +212,7 @@ poll() {
   fi
 
   # Check for open PRs (fast — just gh pr list)
-  printf "\n  %b" "${SEP}"; printf '─%.0s' {1..40}; printf "%b\n" "${RST}"
+  box_sep
   printf "  %bOpen PRs:%b " "${SLT}" "${RST}"
   local open_prs
   if open_prs=$(timeout 5 gh pr list --repo rikitikitavi2012-debug/PAI-personal --state open --json number,title 2>/dev/null) && [ -n "$open_prs" ]; then
@@ -235,11 +230,17 @@ poll() {
     printf "%b?%b\n" "${DIM}" "${RST}"
   fi
 
+  # ── Dynamic tab color ──
+  if [ -n "$a0_json" ]; then
+    tab_ok
+  else
+    tab_crit
+  fi
+
   # ── Footer ──
-  printf "\n%b" "${SEP}"
-  printf '─%.0s' {1..48}
-  printf "%b\n" "${RST}"
-  printf " %b%s │ ↻ %sс │ r = обновить │ q = выход%b\n" "${SLT}" "$(date '+%H:%M')" "${INTERVAL}" "${RST}"
+  box_top
+  box_line "$(printf '%b%s │ ↻ %sс │ r = обновить │ q = выход%b' "$SLT" "$(date '+%H:%M')" "$INTERVAL" "$RST")"
+  box_bot
 }
 
 # Initial poll

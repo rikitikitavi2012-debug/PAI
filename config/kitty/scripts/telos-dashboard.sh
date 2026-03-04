@@ -7,37 +7,18 @@
 export PATH="$HOME/.bun/bin:$PATH"
 # shellcheck disable=SC1091
 [ -f "$HOME/.config/PAI/.env" ] && source "$HOME/.config/PAI/.env"
+# shellcheck disable=SC1091
+. "$HOME/.config/kitty/scripts/lib/ui.sh"
 
 STATE_FILE="$HOME/.claude/MEMORY/STATE/telos-state.json"
 TELOS_PARSER="$HOME/.claude/PAI/Tools/TelosParser.ts"
 TELOS_DIR="$HOME/.claude/PAI/USER/TELOS"
 
 INTERVAL=300
-W=100  # target content width
-
-# ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
-RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'; ITL='\e[3m'
-GRN='\e[38;2;74;222;128m'
-RED='\e[38;2;251;113;133m'
-YLW='\e[38;2;251;191;36m'
-CYN='\e[38;2;103;232;249m'
-SLT='\e[38;2;148;163;184m'    # secondary text (bright enough for readability)
-SEP='\e[38;2;71;85;105m'      # separators and borders
-VIO='\e[38;2;167;139;250m'
-WHT='\e[38;2;203;213;225m'    # primary text
-ORG='\e[38;2;251;146;60m'
-BLU='\e[38;2;59;130;246m'
+ITL='\e[3m'
 LO_GRN='\e[38;2;134;239;172m' # brighter green for low-value progress bars
 
 # ── Helpers ──
-
-progress_bar() {
-  local pct=${1:-0} width=${2:-16}
-  local filled=$(( pct * width / 100 ))
-  local empty=$(( width - filled ))
-  [ "$filled" -gt 0 ] && printf '%s' "$(printf '█%.0s' $(seq 1 "$filled"))"
-  [ "$empty"  -gt 0 ] && printf '%s' "$(printf '░%.0s' $(seq 1 "$empty"))"
-}
 
 short_goal() {
   local gid="$1"
@@ -117,13 +98,6 @@ fmt_k() {
   fi
 }
 
-hline() {
-  local w=${1:-$W}
-  printf "%b" "$SEP"
-  printf '─%.0s' $(seq 1 "$w")
-  printf "%b\n" "$RST"
-}
-
 # Track last known mtime of TELOS source files
 LAST_MTIME=0
 
@@ -150,9 +124,17 @@ maybe_refresh_state() {
   fi
 }
 
+# ── Flicker-free refresh ──
+FIRST_RENDER=true
+
 # ── Main render ──
 poll() {
-  clear
+  if [ "$FIRST_RENDER" = true ]; then
+    printf '\033[2J\033[H'
+    FIRST_RENDER=false
+  else
+    printf '\033[H\033[J'
+  fi
   maybe_refresh_state
 
   local now
@@ -208,7 +190,7 @@ poll() {
   done < <(jq -r '.status.spheres[]? | [.name, .color] | @tsv' "$STATE_FILE" 2>/dev/null)
 
   printf "\n"
-  hline
+  printf '%b%s%b\n' "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
   printf "  %b%b🎯 TELOS RADAR%b  %s %b%-12s%b %b%s%b %b%3sд%b %b%3s%%%b  %bP:%b%b%s%b%s %bS:%b%b%s%b %bE:%b%b%s%b  %b%s%b\n" \
     "$VIO" "$BLD" "$RST" "$s_icon" "$CYN" "$s_label" "$RST" \
     "$YLW" "$cbar" "$RST" "$WHT" "$s_days" "$RST" "$SLT" "$s_pct" "$RST" \
@@ -217,7 +199,7 @@ poll() {
     "$SLT" "$RST" "$SLT" "$evt_24h" "$RST" \
     "$DIM" "$now" "$RST"
   printf "  %s\n" "$spheres_str"
-  hline
+  printf '%b%s%b\n' "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
 
   # ══════════════════════════════════════════════════════════════════
   # LEVEL 1: ACTIONABLE — Focus + Blockers
@@ -276,7 +258,7 @@ poll() {
 
   # --- Missions (full width) ---
   printf "  %b%b🎯 МИССИИ%b\n" "$VIO" "$BLD" "$RST"
-  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 80); printf "%b\n" "$RST"
+  printf "  %b%s%b\n" "$SEP" "$(hline 80)" "$RST"
 
   while IFS=$'\t' read -r m_id m_name m_progress m_goals_str; do
     local bar pcolor
@@ -324,10 +306,10 @@ poll() {
   local -a right_frozen=()
 
   left_active+=("$(printf "%b%b АКТИВНЫЕ ЦЕЛИ%b" "$GRN" "$BLD" "$RST")")
-  left_active+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────" "$RST")")
+  left_active+=("$(printf "%b%s%b" "$SEP" "$(hline 42)" "$RST")")
 
   right_frozen+=("$(printf "%b%b ❄ ЗАМОРОЖЕНО / ИДЕИ%b" "$SLT" "$BLD" "$RST")")
-  right_frozen+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────" "$RST")")
+  right_frozen+=("$(printf "%b%s%b" "$SEP" "$(hline 42)" "$RST")")
 
   while IFS=$'\t' read -r g_id g_status g_progress; do
     local emoji sname bar pcolor
@@ -374,7 +356,7 @@ poll() {
   # ══════════════════════════════════════════════════════════════════
 
   printf "  %b%b⚡ ВЫЗОВЫ → СТРАТЕГИИ%b\n" "$RED" "$BLD" "$RST"
-  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 80); printf "%b\n" "$RST"
+  printf "  %b%s%b\n" "$SEP" "$(hline 80)" "$RST"
 
   # Build C→S mapping
   # Extract challenges with their linked strategies, then for each strategy show effectiveness
@@ -421,7 +403,7 @@ poll() {
   local -a right_growth=()
 
   left_wins+=("$(printf "%b%b🏆 ПОБЕДЫ%b" "$GRN" "$BLD" "$RST")")
-  left_wins+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────" "$RST")")
+  left_wins+=("$(printf "%b%s%b" "$SEP" "$(hline 42)" "$RST")")
 
   while IFS=$'\t' read -r w_date w_text; do
     [ ${#w_text} -gt 38 ] && w_text="${w_text:0:37}."
@@ -431,7 +413,7 @@ poll() {
 
   # Growth metrics
   right_growth+=("$(printf "%b%b📈 РОСТ%b" "$BLU" "$BLD" "$RST")")
-  right_growth+=("$(printf "%b%s%b" "$SEP" "──────────────────────────────────────────" "$RST")")
+  right_growth+=("$(printf "%b%s%b" "$SEP" "$(hline 42)" "$RST")")
 
   local learn_data
   learn_data=$(jq -r '[
@@ -474,7 +456,7 @@ poll() {
   # LEVEL 5: COMPASS + CAPITAL (reference)
   # ══════════════════════════════════════════════════════════════════
   printf "\n"
-  printf "  %b" "$SEP"; printf '─%.0s' $(seq 1 80); printf "%b\n" "$RST"
+  printf "  %b%s%b\n" "$SEP" "$(hline 80)" "$RST"
 
   # Compass: rotating wisdom quote
   local quote_count
@@ -526,10 +508,16 @@ poll() {
 
   printf "\n"
 
+  # ── Dynamic tab color ──
+  if [ -f "$STATE_FILE" ]; then
+    local blocker_count
+    blocker_count=$(jq '.status.blockers | length' "$STATE_FILE" 2>/dev/null || echo 0)
+    if [ "$blocker_count" -gt 2 ]; then tab_warn
+    else tab_ok; fi
+  fi
+
   # ── Footer ──
-  printf "\n%b" "$SEP"
-  printf '─%.0s' $(seq 1 "$W")
-  printf "%b\n" "$RST"
+  printf "\n%b%s%b\n" "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
   printf " %b%s │ ↻ %sс │ r = обновить │ q = выход%b\n" "$SLT" "$now" "$INTERVAL" "$RST"
 }
 
