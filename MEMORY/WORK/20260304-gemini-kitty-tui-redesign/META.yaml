@@ -1,0 +1,12 @@
+title: "Gemini CLI — Kitty TUI Redesign"
+status: ACTIVE
+created_at: "2026-03-04T14:00:00Z"
+agent: gemini-cli
+task: UI fix and unification of all PAI Kitty dashboard scripts
+files:
+  - config/kitty/scripts/telos-dashboard.sh
+  - config/kitty/scripts/command-center.sh
+  - config/kitty/scripts/brigade-watch.sh
+  - config/kitty/scripts/events-tail.sh
+  - config/kitty/scripts/a0-chat-tail.sh
+  - config/kitty/sessions/pai.session

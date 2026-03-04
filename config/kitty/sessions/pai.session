@@ -1,26 +1,29 @@
-# PAI Workspace Session — Command Center Edition
+# PAI Workspace Session — Domain Architecture
 # Launch: kitty --session ~/.config/kitty/sessions/pai.session
-# Табы: Alt+1..7 для переключения
+# Домены: Стратегия (1-2) → Операции (3-4) → Работа (5-6)
+# Табы: Alt+1..6 для переключения
 
-# ── Tab 1: Command Center — живая панель управления (LIVE) ──
+# ══════════════════════════════════════════════════════════
+# 🟡 ДОМЕН: СТРАТЕГИЯ (amber) — зачем и куда
+# ══════════════════════════════════════════════════════════
+
+# ── Tab 1: TELOS — стратегический радар (LIVE) ──
+new_tab  🎯 TELOS
+layout splits
+cd ~
+launch --title "TELOS Dashboard" bash -c 'exec ~/.config/kitty/scripts/telos-dashboard.sh'
+
+# ── Tab 2: Command Center — здоровье системы (LIVE) ──
 new_tab  ⬢ Center
 layout splits
 cd ~
 launch --title "Command Center" bash -c 'exec ~/.config/kitty/scripts/command-center.sh'
 
-# ── Tab 2: PAI System — работа над системой ──
-new_tab  ⚙ PAI
-layout splits
-cd ~/.claude
-launch --title "PAI System" bash -ic 'clear; echo ""; echo "  ⚙  PAI SYSTEM — ~/.claude"; echo "  ──────────────────────────"; echo ""; echo "  Здесь работаешь над самой системой PAI."; echo "  Набери pai чтобы запустить Claude Code."; echo ""; echo "  ┌─ Структура: ──────────────────────────────────────┐"; echo "  │  PAI/Algorithm/    — алгоритм (мозг Navi)         │"; echo "  │  PAI/Tools/        — инструменты системы           │"; echo "  │  MEMORY/           — память Navi                   │"; echo "  │  settings.json     — настройки Claude Code         │"; echo "  │  CLAUDE.md         — главный конфиг поведения      │"; echo "  │  hooks/            — хуки (автоматические действия) │"; echo "  │  agents/           — профили агентов                │"; echo "  │  skills/           — навыки (скиллы)                │"; echo "  └────────────────────────────────────────────────────┘"; echo ""; exec bash'
+# ══════════════════════════════════════════════════════════
+# 🔵 ДОМЕН: ОПЕРАЦИИ (cyan) — кто работает и где
+# ══════════════════════════════════════════════════════════
 
-# ── Tab 3: Projects — терминал для проектов ──
-new_tab  📁 Projects
-layout splits
-cd ~/projects
-launch --title "Projects" bash -ic 'clear; echo ""; echo "  📁 ПРОЕКТЫ — ~/projects"; echo "  ─────────────────────────"; echo ""; echo "  Доступные проекты:"; for d in */; do [ -d "$d" ] && printf "    → %s\n" "$d"; done; echo ""; echo "  ┌─ Как работать: ──────────────────────────────────┐"; echo "  │  cd timber-frame-site    — перейти в проект      │"; echo "  │  pai                     — запустить Claude Code  │"; echo "  │  ls                      — посмотреть файлы       │"; echo "  │  cd ..                   — назад к списку         │"; echo "  └──────────────────────────────────────────────────┘"; echo ""; exec bash'
-
-# ── Tab 4: Brigade — мониторинг AI Brigade (3-pane) ──
+# ── Tab 3: Brigade — мониторинг AI Brigade (3-pane) ──
 # Layout: brigade-watch (left) | events (top-right) + a0-chat (bottom-right)
 new_tab  🤖 Brigade
 layout tall
@@ -29,25 +32,31 @@ launch --title "Brigade Watch" bash -c 'exec ~/.config/kitty/scripts/brigade-wat
 launch --location=vsplit --title "Events" bash -c 'exec ~/.config/kitty/scripts/events-tail.sh'
 launch --location=hsplit --title "A0 Chat" bash -c 'exec ~/.config/kitty/scripts/a0-chat-tail.sh'
 
-# ── Tab 5: Servers — два сервера ──
-new_tab  🖥 Servers
-layout tall
+# ── Tab 4: Infra — серверы + мониторинг (4-pane grid) ──
+# Grid: agentzero (TL) | xray-vps (TR) / htop (BL) | docker (BR)
+new_tab  🏗 Infra
+layout grid
 cd ~
-launch --title "agentzero" bash -c 'clear; echo ""; echo "  🖥 AGENT ZERO — 72.56.86.51 (8GB RAM)"; echo "  ──────────────────────────────────────"; echo "  3 Agent Zero контейнера (порты 50001-50003)"; echo ""; echo "  ┌─ Команды: ──────────────────────────────────────┐"; echo "  │  ssh agentzero           — подключиться          │"; echo "  │  kssh agentzero          — SSH с Kitty фичами    │"; echo "  │                                                  │"; echo "  │  На сервере:                                     │"; echo "  │  docker ps               — список контейнеров    │"; echo "  │  docker logs <name>      — логи контейнера       │"; echo "  │  docker restart <name>   — перезапустить          │"; echo "  │  htop                    — монитор процессов      │"; echo "  │  df -h                   — место на диске         │"; echo "  │  exit                    — отключиться            │"; echo "  └──────────────────────────────────────────────────┘"; echo ""; exec bash'
-launch --location=vsplit --title "xray-vps" bash -c 'clear; echo ""; echo "  🔒 XRAY VPS — 72.56.99.127 (1GB RAM)"; echo "  ──────────────────────────────────────"; echo "  VPN/прокси сервер (Xray на порту 443)"; echo ""; echo "  ┌─ Команды: ──────────────────────────────────────┐"; echo "  │  ssh xray-vps            — подключиться          │"; echo "  │                                                  │"; echo "  │  На сервере:                                     │"; echo "  │  systemctl status xray   — статус VPN            │"; echo "  │  journalctl -u xray -f   — логи VPN в реалтайме  │"; echo "  │  htop                    — монитор процессов      │"; echo "  │  df -h                   — место на диске         │"; echo "  │  exit                    — отключиться            │"; echo "  └──────────────────────────────────────────────────┘"; echo ""; exec bash'
+launch --title "agentzero" bash -c 'clear; echo ""; echo "  🖥 AGENT ZERO — 72.56.86.51 (8GB RAM)"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo "  3 Agent Zero контейнера (порты 50001-50003)"; echo ""; echo "  ┌──────────────────────────────────────────────────────────────────────────────────┐"; echo "  │ Команды:                                                                         │"; echo "  │ ssh agentzero           — подключиться                                           │"; echo "  │ kssh agentzero          — SSH с Kitty фичами                                     │"; echo "  │ docker ps               — список контейнеров                                     │"; echo "  │ docker logs <name>      — логи контейнера                                        │"; echo "  │ docker restart <name>   — перезапустить                                          │"; echo "  │ htop / df -h            — мониторинг / диск                                      │"; echo "  └──────────────────────────────────────────────────────────────────────────────────┘"; echo ""; exec bash'
+launch --title "xray-vps" bash -c 'clear; echo ""; echo "  🔒 XRAY VPS — 72.56.99.127 (1GB RAM)"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo "  VPN/прокси сервер (Xray на порту 443)"; echo ""; echo "  ┌──────────────────────────────────────────────────────────────────────────────────┐"; echo "  │ Команды:                                                                         │"; echo "  │ ssh xray-vps            — подключиться                                           │"; echo "  │ systemctl status xray   — статус VPN                                             │"; echo "  │ journalctl -u xray -f   — логи VPN                                               │"; echo "  │ htop / df -h            — мониторинг / диск                                      │"; echo "  └──────────────────────────────────────────────────────────────────────────────────┘"; echo ""; exec bash'
+launch --title "htop" bash -c 'clear; echo ""; echo "  📊 СИСТЕМНЫЙ МОНИТОР"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo ""; echo "  F5=дерево  F6=сорт  F9=kill  /=поиск  q=выход"; echo ""; echo "  Нажми Enter → htop..."; read; htop; exec bash'
+launch --title "docker" bash -c 'clear; echo ""; echo "  🐳 DOCKER"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo ""; echo "  docker ps / stats / logs <name> / restart <name>"; echo ""; docker ps 2>/dev/null && echo "" && docker stats 2>/dev/null || echo "  ⚠ Docker не запущен."; exec bash'
 
-# ── Tab 6: Monitor — системный мониторинг ──
-new_tab  📊 Monitor
-layout tall
-cd ~
-launch --title "htop" bash -c 'clear; echo ""; echo "  📊 СИСТЕМНЫЙ МОНИТОР (htop)"; echo "  ───────────────────────────"; echo "  Показывает: процессы, CPU, RAM в реальном времени"; echo ""; echo "  ┌─ Управление: ─────────────────────────────────┐"; echo "  │  F5         — дерево процессов                 │"; echo "  │  F6         — сортировка (CPU/RAM/имя)         │"; echo "  │  F9         — убить процесс (осторожно!)       │"; echo "  │  q          — выйти из htop                    │"; echo "  │  /          — поиск процесса по имени           │"; echo "  └─────────────────────────────────────────────────┘"; echo ""; echo "  Нажми Enter чтобы запустить htop..."; read; htop; exec bash'
-launch --location=vsplit --title "docker" bash -c 'clear; echo ""; echo "  🐳 DOCKER МОНИТОРИНГ"; echo "  ────────────────────"; echo "  Показывает: контейнеры, их CPU/RAM/сеть"; echo ""; echo "  ┌─ Команды: ────────────────────────────────────────┐"; echo "  │  docker ps              — список контейнеров      │"; echo "  │  docker stats           — мониторинг (live)       │"; echo "  │  docker logs <name>     — логи контейнера         │"; echo "  │  docker restart <name>  — перезапустить            │"; echo "  │  docker stop <name>     — остановить               │"; echo "  │  Ctrl+C                 — выйти из docker stats   │"; echo "  └────────────────────────────────────────────────────┘"; echo ""; docker ps 2>/dev/null && echo "" && docker stats 2>/dev/null || echo "  ⚠ Docker не запущен. Запустится при следующем входе в WSL."; exec bash'
+# ══════════════════════════════════════════════════════════
+# 🟢 ДОМЕН: РАБОТА (emerald) — что делаем
+# ══════════════════════════════════════════════════════════
 
-# ── Tab 7: TELOS — стратегический радар (LIVE) ──
-new_tab  🎯 TELOS
+# ── Tab 5: PAI System — работа над системой ──
+new_tab  ⚙ PAI
 layout splits
-cd ~
-launch --title "TELOS Dashboard" bash -c 'exec ~/.config/kitty/scripts/telos-dashboard.sh'
+cd ~/.claude
+launch --title "PAI System" bash -ic 'clear; echo ""; echo "  ⚙  PAI SYSTEM — ~/.claude"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo ""; echo "  Набери pai чтобы запустить Claude Code."; echo ""; echo "  ┌──────────────────────────────────────────────────────────────────────────────────┐"; echo "  │ Структура:                                                                       │"; echo "  │ PAI/Algorithm/    — алгоритм (мозг Navi)                                         │"; echo "  │ PAI/Tools/        — инструменты системы                                          │"; echo "  │ MEMORY/           — память Navi                                                  │"; echo "  │ settings.json     — настройки Claude Code                                        │"; echo "  │ CLAUDE.md         — главный конфиг поведения                                      │"; echo "  │ hooks/            — хуки (автоматические действия)                                 │"; echo "  │ agents/           — профили агентов                                              │"; echo "  │ skills/           — навыки (скиллы)                                                │"; echo "  └──────────────────────────────────────────────────────────────────────────────────┘"; echo ""; echo "  🟡1 TELOS  🟡2 Center  🔵3 Brigade  🔵4 Infra  🟢5 PAI  🟢6 Projects"; echo ""; exec bash'
 
-# Focus Command Center tab
+# ── Tab 6: Projects — терминал для проектов ──
+new_tab  📁 Projects
+layout splits
+cd ~/projects
+launch --title "Projects" bash -ic 'clear; echo ""; echo "  📁 ПРОЕКТЫ — ~/projects"; echo "  ────────────────────────────────────────────────────────────────────────────────────────"; echo ""; echo "  Доступные проекты:"; for d in */; do [ -d "$d" ] && printf "    → %s\n" "$d"; done; echo ""; echo "  ┌──────────────────────────────────────────────────────────────────────────────────┐"; echo "  │ Как работать:                                                                    │"; echo "  │ cd timber-frame-site    — перейти в проект                                       │"; echo "  │ pai                     — запустить Claude Code                                  │"; echo "  │ ls                      — посмотреть файлы                                       │"; echo "  │ cd ..                   — назад к списку                                         │"; echo "  └──────────────────────────────────────────────────────────────────────────────────┘"; echo ""; echo "  🟡1 TELOS  🟡2 Center  🔵3 Brigade  🔵4 Infra  🟢5 PAI  🟢6 Projects"; echo ""; exec bash'
+
+# Focus TELOS tab (стратегия первым)
 focus_tab 0

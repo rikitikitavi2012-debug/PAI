@@ -36,13 +36,16 @@ if [ -z "$A0_TOKEN" ]; then
   exit 1
 fi
 
+# ── UI Helpers (Source Library) ──
+. "$HOME/.config/kitty/scripts/lib/ui.sh"
+
 # ── Header ──
 print_header() {
   clear
-  printf "  %b%b🧠 A0 CHAT%b  %b(live · %ss)%b\n" "${BLD}" "${CYN}" "${RST}" "${SLT}" "${POLL_INTERVAL}" "${RST}"
-  printf "  %b" "${SEP}"
-  printf '─%.0s' {1..40}
-  printf "%b\n" "${RST}"
+  box_top
+  box_line "$(printf "%b%b🧠 A0 CHAT%b  %b(live · %ss)%b" "${CYN}" "${BLD}" "${RST}" "${SLT}" "${POLL_INTERVAL}" "${RST}")"
+  box_bot
+  printf "\n"
 }
 
 # ── Format timestamp → local HH:MM:SS ──

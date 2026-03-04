@@ -24,10 +24,13 @@ _tz_h=$(( 10#${_tz_abs:0:2} ))
 TZ_OFFSET_H=$(( _tz_sign * _tz_h ))
 unset _tz_raw _tz_sign _tz_abs _tz_h
 
-printf "  %b%b📡 PAI EVENTS%b  %b(live · UTC%+d)%b\n" "${BLD}" "${VIO}" "${RST}" "${DIM}" "${TZ_OFFSET_H}" "${RST}"
-printf "  %b" "${SEP}"
-printf '─%.0s' {1..40}
-printf "%b\n\n" "${RST}"
+# ── UI Helpers (Source Library) ──
+. "$HOME/.config/kitty/scripts/lib/ui.sh"
+
+box_top
+box_line "$(printf "%b%b📡 PAI EVENTS%b  %b(live · UTC%+d)%b" "${VIO}" "${BLD}" "${RST}" "${DIM}" "${TZ_OFFSET_H}" "${RST}")"
+box_bot
+printf "\n"
 
 if [ ! -f "$EVENTS" ]; then
   printf "%b⚠ %s не найден%b\n" "${RED}" "${EVENTS}" "${RST}"
