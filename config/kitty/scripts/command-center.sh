@@ -124,7 +124,9 @@ poll() {
   local a0_icon a0_latency_str a0_latency_val=""
   local a0_start a0_end a0_json
   a0_start=$(date +%s%N)
+  spin_start "A0..."
   a0_json=$(curl -s --max-time 10 "$A0_HEALTH_URL" 2>/dev/null)
+  spin_stop
   a0_end=$(date +%s%N)
   if [ -n "$a0_json" ]; then
     a0_latency_val=$(( (a0_end - a0_start) / 1000000 ))

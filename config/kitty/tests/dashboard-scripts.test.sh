@@ -54,7 +54,7 @@ bash -n "$LIB" 2>/dev/null
 assert "lib/ui.sh valid syntax" $?
 
 # Verify lib exports required functions
-for fn in box_top box_bot box_sep box_line two_col two_col_top two_col_mid two_col_bot hline vwidth progress_bar section_header badge_active badge_done badge_fail tab_ok tab_warn tab_crit tab_reset set_tab_state; do
+for fn in box_top box_bot box_sep box_line two_col two_col_top two_col_mid two_col_bot hline vwidth progress_bar section_header badge_active badge_done badge_fail tab_ok tab_warn tab_crit tab_reset set_tab_state spin_start spin_stop; do
   grep -q "^${fn}()" "$LIB"
   assert "lib/ui.sh defines $fn" $?
 done
@@ -173,8 +173,16 @@ assert "brigade-watch references AutoMerge state" $?
 grep -q "JulesAPI" "$target"
 assert "brigade-watch references JulesAPI" $?
 
-# ── 9. Dynamic tab colors ──
-echo -e "\n9. Dynamic tab colors:"
+# ── 9. Pulse indicator ──
+echo -e "\n9. Pulse indicator:"
+for script in command-center.sh telos-dashboard.sh brigade-watch.sh; do
+  target="$SCRIPTS_DIR/$script"
+  grep -q 'pulse' "$target"
+  assert "$script has pulse indicator" $?
+done
+
+# ── 10. Dynamic tab colors ──
+echo -e "\n10. Dynamic tab colors:"
 for script in command-center.sh telos-dashboard.sh brigade-watch.sh; do
   target="$SCRIPTS_DIR/$script"
   grep -q "tab_ok\|tab_warn\|tab_crit" "$target"

@@ -150,3 +150,30 @@ tab_ok()    { set_tab_state "#4ade80" "#0f172a"; }
 tab_warn()  { set_tab_state "#fbbf24" "#0f172a"; }
 tab_crit()  { set_tab_state "#fb7185" "#ffffff"; }
 tab_reset() { [ -n "$KITTY_WINDOW_ID" ] && kitty @ set-tab-color active_background= active_foreground= >/dev/null 2>&1; }
+
+# ── Spinner (background process for API waits) ──
+# Usage: spin_start "Loading A0..."; result=$(curl ...); spin_stop
+SPIN_PID=""
+SPIN_FRAMES=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+
+spin_start() {
+  local msg="${1:-}"
+  (
+    local i=0
+    while true; do
+      printf '\r%b%s%b %b%s%b' "$VIO" "${SPIN_FRAMES[$((i % ${#SPIN_FRAMES[@]}))]}" "$RST" "$DIM" "$msg" "$RST"
+      i=$((i + 1))
+      sleep 0.1
+    done
+  ) &
+  SPIN_PID=$!
+}
+
+spin_stop() {
+  if [ -n "$SPIN_PID" ]; then
+    kill "$SPIN_PID" 2>/dev/null
+    wait "$SPIN_PID" 2>/dev/null
+    SPIN_PID=""
+    printf '\r\033[K'
+  fi
+}

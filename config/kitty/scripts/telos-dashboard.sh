@@ -189,15 +189,19 @@ poll() {
     spheres_str+="$sp_i $sp_short  "
   done < <(jq -r '.status.spheres[]? | [.name, .color] | @tsv' "$STATE_FILE" 2>/dev/null)
 
+  # Pulse
+  local pulse=" "
+  [ $(( 10#$(date +%S) % 2 )) -eq 0 ] && pulse="●"
+
   printf "\n"
   printf '%b%s%b\n' "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
-  printf "  %b%b🎯 TELOS RADAR%b  %s %b%-12s%b %b%s%b %b%3sд%b %b%3s%%%b  %bP:%b%b%s%b%s %bS:%b%b%s%b %bE:%b%b%s%b  %b%s%b\n" \
+  printf "  %b%b🎯 TELOS RADAR%b  %s %b%-12s%b %b%s%b %b%3sд%b %b%3s%%%b  %bP:%b%b%s%b%s %bS:%b%b%s%b %bE:%b%b%s%b %b%s%b %b%s%b\n" \
     "$VIO" "$BLD" "$RST" "$s_icon" "$CYN" "$s_label" "$RST" \
     "$YLW" "$cbar" "$RST" "$WHT" "$s_days" "$RST" "$SLT" "$s_pct" "$RST" \
     "$SLT" "$RST" "$WHT" "$perf_cur" "$RST" "$t_arrow" \
     "$SLT" "$RST" "$BLU" "$sess_wk" "$RST" \
     "$SLT" "$RST" "$SLT" "$evt_24h" "$RST" \
-    "$DIM" "$now" "$RST"
+    "$DIM" "$now" "$RST" "$VIO" "$pulse" "$RST"
   printf "  %s\n" "$spheres_str"
   printf '%b%s%b\n' "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
 
@@ -258,7 +262,7 @@ poll() {
 
   # --- Missions (full width) ---
   printf "  %b%b🎯 МИССИИ%b\n" "$VIO" "$BLD" "$RST"
-  printf "  %b%s%b\n" "$SEP" "$(hline 80)" "$RST"
+  printf "  %b%b%s%b\n" "$SEP" "$DIM" "$(hline 80)" "$RST"
 
   while IFS=$'\t' read -r m_id m_name m_progress m_goals_str; do
     local bar pcolor
@@ -306,10 +310,10 @@ poll() {
   local -a right_frozen=()
 
   left_active+=("$(printf "%b%b АКТИВНЫЕ ЦЕЛИ%b" "$GRN" "$BLD" "$RST")")
-  left_active+=("$(printf "%b%s%b" "$SEP" "$(hline 42)" "$RST")")
+  left_active+=("$(printf "%b%b%s%b" "$SEP" "$DIM" "$(hline 42)" "$RST")")
 
   right_frozen+=("$(printf "%b%b ❄ ЗАМОРОЖЕНО / ИДЕИ%b" "$SLT" "$BLD" "$RST")")
-  right_frozen+=("$(printf "%b%s%b" "$SEP" "$(hline 42)" "$RST")")
+  right_frozen+=("$(printf "%b%b%s%b" "$SEP" "$DIM" "$(hline 42)" "$RST")")
 
   while IFS=$'\t' read -r g_id g_status g_progress; do
     local emoji sname bar pcolor
@@ -356,7 +360,7 @@ poll() {
   # ══════════════════════════════════════════════════════════════════
 
   printf "  %b%b⚡ ВЫЗОВЫ → СТРАТЕГИИ%b\n" "$RED" "$BLD" "$RST"
-  printf "  %b%s%b\n" "$SEP" "$(hline 80)" "$RST"
+  printf "  %b%b%s%b\n" "$SEP" "$DIM" "$(hline 80)" "$RST"
 
   # Build C→S mapping
   # Extract challenges with their linked strategies, then for each strategy show effectiveness
@@ -403,7 +407,7 @@ poll() {
   local -a right_growth=()
 
   left_wins+=("$(printf "%b%b🏆 ПОБЕДЫ%b" "$GRN" "$BLD" "$RST")")
-  left_wins+=("$(printf "%b%s%b" "$SEP" "$(hline 42)" "$RST")")
+  left_wins+=("$(printf "%b%b%s%b" "$SEP" "$DIM" "$(hline 42)" "$RST")")
 
   while IFS=$'\t' read -r w_date w_text; do
     [ ${#w_text} -gt 38 ] && w_text="${w_text:0:37}."
@@ -413,7 +417,7 @@ poll() {
 
   # Growth metrics
   right_growth+=("$(printf "%b%b📈 РОСТ%b" "$BLU" "$BLD" "$RST")")
-  right_growth+=("$(printf "%b%s%b" "$SEP" "$(hline 42)" "$RST")")
+  right_growth+=("$(printf "%b%b%s%b" "$SEP" "$DIM" "$(hline 42)" "$RST")")
 
   local learn_data
   learn_data=$(jq -r '[
@@ -456,7 +460,7 @@ poll() {
   # LEVEL 5: COMPASS + CAPITAL (reference)
   # ══════════════════════════════════════════════════════════════════
   printf "\n"
-  printf "  %b%s%b\n" "$SEP" "$(hline 80)" "$RST"
+  printf "  %b%b%s%b\n" "$SEP" "$DIM" "$(hline 80)" "$RST"
 
   # Compass: rotating wisdom quote
   local quote_count

@@ -52,8 +52,10 @@ poll() {
 
   local a0_start a0_end a0_latency a0_json
   a0_start=$(date +%s%N)
+  spin_start "A0 health..."
   a0_json=$(curl -s --max-time "$API_TIMEOUT" "$A0_HEALTH_URL" 2>/dev/null)
   a0_end=$(date +%s%N)
+  spin_stop
 
   if [ -n "$a0_json" ]; then
     a0_latency=$(( (a0_end - a0_start) / 1000000 ))
@@ -118,7 +120,9 @@ poll() {
   section_header "📋" "JULES" "$YLW"
 
   local jules_out
+  spin_start "Jules API..."
   jules_out=$(cd "$HOME/.claude" && timeout "$API_TIMEOUT" bun "$JULES_TOOL" sessions 2>/dev/null)
+  spin_stop
 
   if [ -n "$jules_out" ]; then
     local clean_out
