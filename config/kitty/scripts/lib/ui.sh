@@ -8,7 +8,10 @@ export PAI_UI_WIDTH=${PAI_UI_WIDTH:-96}
 export LC_ALL=C.UTF-8
 
 # ── Colors (PAI 24-bit RGB Palette — canonical values, DO NOT change) ──
-RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'; ITL='\e[3m'
+RST='\e[0m'
+BLD='\e[1m'
+DIM='\e[2m'
+ITL='\e[3m'
 GRN='\e[38;2;74;222;128m'
 RED='\e[38;2;251;113;133m'
 YLW='\e[38;2;251;191;36m'
