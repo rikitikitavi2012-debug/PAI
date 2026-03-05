@@ -14,7 +14,7 @@ INTERVAL=10
 
 # ── Alternate buffer + clean exit ──
 alt_screen_enter
-set_tab_title "📊 Strategic"
+# Don't override tab title — this runs in ⬢ Center tab alongside Command Center
 trap 'alt_screen_exit' EXIT INT TERM
 
 # ── State variables ──
@@ -26,6 +26,13 @@ M_TELOS_ACTIVE=0 M_TELOS_TOP="" M_TELOS_PROGRESS=""
 M_COST_FIXED=0 M_COST_API="0.00" M_COST_TOTAL="0.00"
 M_API_COST="0.00"
 M_SESSIONS=0 M_WORK=0
+
+# Active work (PRDs in progress)
+M_ACTIVE_WORK=""
+M_ACTIVE_WORK_COUNT=0
+
+# Recent failure patterns
+M_RECENT_FAILURES=""
 
 # Brigade compact
 M_A0_STATUS="--" M_A0_LATENCY="--"
@@ -175,6 +182,39 @@ compute_brigade_compact() {
   [ -n "$raw" ] && IFS=$'\t' read -r M_SESSIONS M_WORK <<< "$raw"
 }
 
+compute_active_work() {
+  local work_dir="$HOME/.claude/MEMORY/WORK"
+  [ ! -d "$work_dir" ] && return
+
+  M_ACTIVE_WORK=""
+  M_ACTIVE_WORK_COUNT=0
+
+  # Find PRDs with non-complete phase
+  while IFS= read -r prd; do
+    [ -z "$prd" ] && continue
+    local slug phase progress
+    slug=$(grep '^slug:' "$prd" 2>/dev/null | head -1 | sed 's/^slug: *//')
+    phase=$(grep '^phase:' "$prd" 2>/dev/null | head -1 | sed 's/^phase: *//')
+    progress=$(grep '^progress:' "$prd" 2>/dev/null | head -1 | sed 's/^progress: *//')
+    [ -z "$slug" ] && continue
+    [ "$phase" = "complete" ] && continue
+    M_ACTIVE_WORK_COUNT=$(( M_ACTIVE_WORK_COUNT + 1 ))
+    M_ACTIVE_WORK+="${slug}\t${phase}\t${progress}\n"
+  done < <(find "$work_dir" -name "PRD.md" -mtime -7 2>/dev/null | sort -r | head -5)
+}
+
+compute_recent_failures() {
+  local fail_dir="$HOME/.claude/MEMORY/LEARNING/FAILURES"
+  M_RECENT_FAILURES=""
+
+  while IFS= read -r f; do
+    [ -z "$f" ] && continue
+    local avoid
+    avoid=$(grep '^  \[.*\] AVOID:' "$f" 2>/dev/null | head -1 | sed 's/.*AVOID: //' | head -c 60)
+    [ -n "$avoid" ] && M_RECENT_FAILURES+="${avoid}\n"
+  done < <(find "$fail_dir" -name "*.md" -type f 2>/dev/null | sort -r | head -3)
+}
+
 # ═══════════════════════════════════════════════════
 # ── Build panel ──
 # ═══════════════════════════════════════════════════
@@ -247,7 +287,46 @@ build_panel() {
     "$SLT" "$RST" "$WHT" "$M_COST_FIXED" "$RST" "$DIM" "$RST")")
   METRIC_LINES+=("$(printf '  %bAPI%b     %b$%s%b     %b(inference estimate)%b' \
     "$SLT" "$RST" "$WHT" "$M_COST_API" "$RST" "$DIM" "$RST")")
+  # Subscription breakdown (compact)
+  local config="$HOME/.claude/PAI/config/cost-budget.json"
+  if [ -f "$config" ]; then
+    local subs
+    subs=$(jq -r '.monthly_fixed | to_entries[] | "\(.key)\t\(.value)"' "$config" 2>/dev/null)
+    if [ -n "$subs" ]; then
+      while IFS=$'\t' read -r sname sval; do
+        [ -z "$sname" ] && continue
+        METRIC_LINES+=("$(printf '    %b%s%b %b$%s%b' "$DIM" "$sname" "$RST" "$SLT" "$sval" "$RST")")
+      done <<< "$subs"
+    fi
+  fi
   METRIC_LINES+=("")
+
+  # ── Active Work ──
+  if [ "$M_ACTIVE_WORK_COUNT" -gt 0 ]; then
+    METRIC_LINES+=("$(printf '%b%bACTIVE WORK%b  %b%s projects%b' "$GRN" "$BLD" "$RST" "$SLT" "$M_ACTIVE_WORK_COUNT" "$RST")")
+    while IFS=$'\t' read -r w_slug w_phase w_prog; do
+      [ -z "$w_slug" ] && continue
+      local w_phase_upper
+      w_phase_upper=$(echo "$w_phase" | tr '[:lower:]' '[:upper:]')
+      local w_display
+      w_display=$(truncate "$w_slug" 28)
+      METRIC_LINES+=("$(printf '  %b%s%b  %b%s%b  %b%s%b' \
+        "$WHT" "$w_display" "$RST" "$YLW" "$w_phase_upper" "$RST" "$SLT" "$w_prog" "$RST")")
+    done < <(printf '%b' "$M_ACTIVE_WORK")
+    METRIC_LINES+=("")
+  fi
+
+  # ── Recent Failures (avoid patterns) ──
+  if [ -n "$M_RECENT_FAILURES" ]; then
+    METRIC_LINES+=("$(printf '%b%bAVOID%b  %b(recent failure patterns)%b' "$RED" "$BLD" "$RST" "$DIM" "$RST")")
+    while IFS= read -r fail_line; do
+      [ -z "$fail_line" ] && continue
+      local fl_display
+      fl_display=$(truncate "$fail_line" 78)
+      METRIC_LINES+=("$(printf '  %b⚠%b %b%s%b' "$YLW" "$RST" "$SLT" "$fl_display" "$RST")")
+    done < <(printf '%b' "$M_RECENT_FAILURES")
+    METRIC_LINES+=("")
+  fi
 
   # ── Brigade compact ──
   local a0_color="$GRN"
@@ -285,6 +364,8 @@ poll() {
   compute_telos
   compute_cost
   compute_brigade_compact
+  compute_active_work
+  compute_recent_failures
   spin_stop
 
   build_panel
