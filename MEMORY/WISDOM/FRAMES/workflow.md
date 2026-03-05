@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 21
-- **Last Crystallized:** 2026-03-01
+- **Observation Count:** 26
+- **Last Crystallized:** 2026-03-05
 - **Source:** Converted from workflow.json
 
 ---
@@ -87,3 +87,9 @@
 ## Evolution Log
 - 2026-03-01: Frame created from workflow.json (21 observations)
 
+
+- 2026-03-05: [anti-pattern] Frustrated with repeated index.lock failures
+- 2026-03-05: [anti-pattern] Frustration over repeated failed attempts on same issue
+- 2026-03-05: [anti-pattern] Frustrated by repeated failed attempts across sessions
+- 2026-03-05: [anti-pattern] Frustrated — expected live event display not visible
+- 2026-03-05: [principle] Strong approval — concise satisfaction with completed work

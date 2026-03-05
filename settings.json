@@ -997,13 +997,13 @@
     "skills": 11,
     "workflows": 164,
     "hooks": 30,
-    "signals": 51,
+    "signals": 62,
     "files": 110,
-    "work": 82,
-    "sessions": 579,
+    "work": 118,
+    "sessions": 944,
     "research": 12,
-    "ratings": 109,
-    "updatedAt": "2026-03-03T14:56:33.148Z"
+    "ratings": 128,
+    "updatedAt": "2026-03-05T15:39:35.221Z"
   },
   "mcpServers": {
     "supabase": {

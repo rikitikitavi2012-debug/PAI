@@ -1,5 +1,5 @@
 {
-  "lastCheck": "2026-03-04T12:02:19.593Z",
+  "lastCheck": "2026-03-05T18:00:02.001Z",
   "processedSessions": [
     {
       "sessionId": "sessions/8584917624898497977",
@@ -234,11 +234,47 @@
       "repo": "rikitikitavi2012-debug/PAI-personal",
       "zaiReviewSeverity": "ERROR",
       "testOutput": "Originally failed, confirmed merged via gh pr list"
+    },
+    {
+      "sessionId": "sessions/11504721883619910077",
+      "prNumber": 24,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/24",
+      "result": "failed_tests",
+      "processedAt": "2026-03-05T12:00:54.174Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)"
+    },
+    {
+      "sessionId": "sessions/17184147288683739038",
+      "prNumber": 23,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/23",
+      "result": "failed_tests",
+      "processedAt": "2026-03-05T12:01:25.835Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)"
+    },
+    {
+      "sessionId": "sessions/11504721883619910077",
+      "prNumber": 24,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/24",
+      "result": "failed_tests",
+      "processedAt": "2026-03-05T12:17:36.054Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)"
+    },
+    {
+      "sessionId": "sessions/17184147288683739038",
+      "prNumber": 23,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/23",
+      "result": "failed_tests",
+      "processedAt": "2026-03-05T12:18:11.706Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)"
     }
   ],
   "stats": {
     "totalMerged": 16,
-    "totalFailed": 1,
+    "totalFailed": 5,
     "totalSkipped": 9
   }
 }

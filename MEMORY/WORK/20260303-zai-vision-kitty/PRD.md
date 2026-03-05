@@ -2,8 +2,8 @@
 task: "Create ZaiVision CLI tool and audit Kitty UI"
 slug: 20260303-zai-vision-kitty
 effort: extended
-phase: execute
-progress: 16/18
+phase: complete
+progress: 18/18
 mode: interactive
 started: 2026-03-03T21:47:00Z
 updated: 2026-03-03T21:52:00Z
@@ -49,6 +49,26 @@ Ivan хочет расширить использование Z.AI — созд�
 - [x] ISC-15: Скриншот текущего Kitty UI сделан и сохранён
 - [x] ISC-16: Z.AI vision анализ текущего Kitty UI выполнен
 - [x] ISC-17: Список UI проблем Kitty каталогизирован
-- [ ] ISC-18: Коммит с ZaiVision.ts создан
-- [ ] ISC-A-1: Anti: не зависит от сломанного zai-cli MCP
-- [ ] ISC-A-2: Anti: не хардкодит API key в исходнике
+- [x] ISC-18: Коммит с ZaiVision.ts создан
+- [x] ISC-A-1: Anti: не зависит от сломанного zai-cli MCP
+- [x] ISC-A-2: Anti: не хардкодит API key в исходнике
+
+## Verification
+
+- ISC-1: `ls PAI/Tools/ZaiVision.ts` — exists, 10864 bytes
+- ISC-2,3: `screenshot` → /tmp/zai-screenshot-*.png (371KB → 386KB resized)
+- ISC-4,5: `analyze` → Z.AI API returns structured content (191+ chars)
+- ISC-6,7: `diff` → Z.AI compares two images, lists 6 categories of changes
+- ISC-8: `check` → combines screenshot+analyze, full UI audit returned
+- ISC-9: stdout output confirmed for all commands
+- ISC-10: `grep ZAI_API_KEY` — loads from env/file, 5 references
+- ISC-11: error handling with `process.exit(1)` and descriptive messages
+- ISC-12: `API_TIMEOUT_MS = 120_000` confirmed
+- ISC-13: shebang `#!/usr/bin/env bun`, permissions `-rwxr-xr-x`
+- ISC-14: `--help` shows all 4 commands + examples
+- ISC-15: Screenshot at /tmp/zai-screenshot-2026-03-03T18-57-37-resized.png
+- ISC-16: Full Z.AI analysis returned with 4 categories, 15 issues
+- ISC-17: `kitty-ui-issues.md` — 40 lines, 15 issues in 4 categories with priority table
+- ISC-18: Commit b306291
+- ISC-A-1: 0 references to `zai-cli` in source
+- ISC-A-2: 0 hardcoded API keys found

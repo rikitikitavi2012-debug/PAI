@@ -63,6 +63,16 @@
 - ~~HIGH-03: Silent catch blocks~~ → Jules PR #11 добавил error logging (2026-03-03)
 
 ## Development Patterns (CRITICAL)
+- **TUI/Kitty Visual Verification Pattern (CRITICAL, 9/10 rated)**:
+  1. Сделать изменение в скрипте
+  2. `bash -n script.sh` — проверить синтаксис
+  3. Перезапустить скрипт в kitty: `kitty @ send-text --match id:N 'q'` + `kitty @ send-text --match id:N 'script.sh\n'` (НЕ exec — иначе таб умрёт при выходе)
+  4. `kitty @ focus-tab --match title:"TAB" && sleep 2 && bun PAI/Tools/ZaiVision.ts screenshot` — скриншот
+  5. Прочитать скриншот через Read — визуально проверить результат
+  6. Итерировать если нужно, коммитить только после визуального подтверждения
+  - Без этого цикла НЕ говорить "готово". Причина: 3+ сессий делали Telemetry таб вслепую — каждый раз баги
+- **Kitty TUI правила**: `printf %-Ns` ломается на кириллице (считает байты, не символы) — использовать `wc -L` + ручной padding. Двухколоночные лейауты с ANSI ломают выравнивание — предпочитать single-column compact. Контент должен влезать в ~35 строк (типичный терминал)
+- **Kitty symlinks**: скрипты в `~/.claude/config/kitty/` должны быть слинкованы в `~/.config/kitty/`. Новые файлы (lib/*.sh) НЕ линкуются автоматически — создавать `ln -sf` руками
 - **Always chmod +x** new .hook.ts files — shell executes them directly via shebang
 - **Always create patterns.yaml** when setting up SecurityValidator — без него система декоративна
 - **Always run `bun test hooks/tests/`** after hook changes — 171 tests across 34 suites verify nervous system
@@ -116,6 +126,8 @@
 - **Jules creates PRs as user**: Author is user account (rikitikitavi2012-debug), NOT app/jules-google. Don't filter by author.
 - **gh pr merge --admin**: Required for PAI-personal repo (personal access token lacks merge permissions without --admin)
 - **A0 Integration plan**: MEMORY/RESEARCH/2026-03/agent-zero-integration-plan.md — 5 coding integrations ranked by ROI
+- **jq pipeline context bug**: В jq -s, `[.[] | select(X)] | length as $var |` меняет pipeline context. `length as $total` ДОЛЖЕН быть в начале pipeline, ДО любых select-цепочек. Все промежуточные — оборачивать в `(...) as $var`
+- **git index.lock**: Параллельные Claude Code сессии/агенты создают stale locks. Автоочистка в .bashrc (функция git() с fuser проверкой)
 
 ## Gemini CLI (Google's Claude Code analog)
 - **Installed**: v0.31.0, path: ~/.npm-global/bin/gemini
@@ -132,17 +144,19 @@
 - **API Key**: ZAI_API_KEY in ~/.config/PAI/.env. Env var Z_AI_API_KEY exported in .bashrc
 - **Coding endpoint**: `https://api.z.ai/api/coding/paas/v4/chat/completions` (subscription). Regular endpoint (api/paas/v4/) requires token balance — will return error 1113
 - **Inference**: `bun PAI/Tools/Inference.ts --level glm5` — 5th provider, native fetch (no CLI needed, no proxy needed)
-- **Response format**: `reasoning_content` (thinking) + `content` (answer). Need max_tokens≥1000 for content
-- **zai-cli**: v1.1.0 installed globally. Commands: vision, search, read, repo, tools, call, doctor, code
+- **Response format**: `reasoning_content` (thinking) + `content` (answer). Vision needs max_tokens≥8000 (reasoning eats 80%+ tokens, content empty if <4000)
+- **zai-cli**: v1.1.0 installed globally. Commands: vision, search, read, repo, tools, call, doctor, code. **BROKEN**: search MCP server fails → blocks all `zai-cli vision` calls. Use direct API fetch instead
 - **MCP tools**: 13 total — vision (8: analyze_image, extract_text, diagnose_error, ui_diff, etc.), search (1: webSearchPrime), reader (1: webReader), zread (3: search_doc, read_file, get_repo_structure)
 - **MCP in Claude Code**: zai-vision MCP server added in settings.json (stdio via npx @z_ai/mcp-server@latest)
+- **ZaiVision CLI**: `bun PAI/Tools/ZaiVision.ts screenshot|analyze|diff|check` — direct API fetch (bypasses broken zai-cli). Screenshot via PowerShell .NET (WSL2). Auto-resize via ImageMagick `convert`. Model: glm-4.6v
+- **WSL2 screenshot**: Only PowerShell works. No grim/slurp/import. Captures full screen (not just Kitty window)
 - **Anthropic-compatible endpoint**: `https://api.z.ai/api/anthropic` — strategic backup if Anthropic blocks Russia
 - **Strategic value**: 3rd AI provider (Anthropic + Google + Zhipu). Direct access from Russia = geo-block resilience
 
 ## Agent Zero (Autonomous AI Agent on VPS)
 - **Server**: http://72.56.86.51:50002 (container 2 — primary brain)
 - **Auth**: A0_API_TOKEN in ~/.config/PAI/.env, used as X-API-KEY header
-- **LLM**: claude-sonnet-4-6 (Anthropic), agent0 profile
+- **LLM**: Z.AI GLM-5 (chat) + OpenCode Zen Kimi 2.5 (utility). Провайдер переключаемый (Anthropic, OpenRouter, OpenAI)
 - **CLI tool**: `bun PAI/Tools/AgentZero.ts` (message|async|log|terminate|health|scheduler)
 - **REST API**: `/api_message` (sync, blocks 5min), `/message_async` (fire-forget), `/api_log_get`, `/api_terminate_chat`
 - **Scheduler**: CSRF-protected (web UI only), `/scheduler_tasks_list` needs web session
@@ -175,23 +189,29 @@
 - **Voice resolution**: hooks use `getVoiceId()` (main) or `getAlgorithmVoice()` from identity.ts → reads settings.json
 - **All messages in Russian** — no English voice notifications
 
-## Brigade Pipeline (инструменты бригады)
-- **Navi (Claude)**: Руководитель — архитектура, triage, делегирование, code review
-- **Jules**: Async кодер — тесты, баги, рефакторинг. Использовать **Coding Plan** (детальный промпт с файлами/шагами/критериями)
-- **A0**: Deep review, security аудит, code review в JulesAutoMerge pipeline
-- **Gemini**: Второе мнение, независимый triage, альтернативный анализ. `gemini` CLI
-- **Z.AI**: Web search (`zai-cli search`), vision analysis, repo analysis. **НУЖНО АКТИВНЕЕ** — Ivan хочет отрабатывать подписку
-- **Z.AI в pipeline**: Добавить как reviewer/analyst рядом с A0 (code review, pattern analysis, vision для UI)
-- **Ivan хочет**: Чаще использовать Coding Plan для Jules, активнее Z.AI, каждый инструмент на своём месте
+## Brigade Pipeline (3-tier классификация, 2026-03-05)
+- **T1 Autonomous Agents** (получают задачу, работают сами):
+  - **Navi (Claude)**: Руководитель — архитектура, triage, делегирование. PAI контекст = только Navi
+  - **Jules**: Async кодер — тесты, баги, рефакторинг. Coding Plan (детальный промпт)
+  - **A0**: 24/7 VPS — deep research, browser, code execution, DevOps. LLM: Z.AI GLM-5 + Kimi 2.5
+  - **OpenCode CLI**: Мульти-провайдер кодер. `opencode run "задача"` — headless, Navi вызывает программно. `-m provider/model` для выбора модели. Кодинг P1/P3 проектов, code review, мульти-модель анализ
+- **T2 CLI Agents** (только интерактивные, Ivan в отдельном окне):
+  - **Gemini CLI**: Второе мнение, cross-check. Нет headless mode — только `gemi` интерактивно
+- **T3 Tools** (программный вызов, без автономии):
+  - **GLM-5**: Inference.ts --level glm5. Bulk inference, стратегический резерв
+  - **zai-cli**: MCP vision/search/read. ZaiVision.ts для скриншотов
+- **Алиасы с прокси**: `pai` (Claude), `gemi` (Gemini), `oc` (OpenCode) — все через NL VPS
+- **Ivan хочет**: Каждый инструмент на своём месте, Navi управляет автономно
 
 ## Стратегические направления (следующие сессии)
-1. **Z.AI интеграция в pipeline** — добавить Z.AI как code reviewer (zai-cli call для анализа diff), vision для UI проверок
-2. **JulesAutoMerge --admin fix** — автоматический --admin флаг для PAI-personal repo
-3. **events.jsonl rotation** — Jules задача IN_PROGRESS (MED-03)
-4. **fetch timeout во всех хуках** — Jules задача IN_PROGRESS (MED-05)
-5. **Upstream PR follow-up** — 7 PR открыты, через 3-5 дней пинг maintainer
-6. **LOW findings (8 шт)** — батчить в следующую итерацию, не срочно
-7. **A0 scheduled tasks** — расширить (weekly security scan, daily health check)
+1. ~~Z.AI pipeline~~ ✅ review в JulesAutoMerge + ZaiVision CLI
+2. ~~JulesAutoMerge merge~~ ✅ --squash→--merge для OAuth token (5a2d2cb)
+3. **events.jsonl rotation** — Jules sessions/9845240183732572243 (10 тестов готовы)
+4. ~~fetch timeout~~ ✅ Jules PR #19 merged
+5. **Upstream PR follow-up** — 7 PR, пинг maintainer 5-6 марта
+6. **LOW findings (8 шт)** — батчить
+7. **A0 scheduled tasks** — weekly security scan, daily health check
+8. **ContextualRules.hook.ts** — Фаза B, динамическая инжекция правил
 
 ## Session Patterns
 - Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10, today: 9/10)

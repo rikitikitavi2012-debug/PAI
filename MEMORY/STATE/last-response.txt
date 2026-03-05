@@ -1,33 +1,11 @@
 ════ PAI | NATIVE MODE ═══════════════════════
-🗒️ TASK: Brigade Dashboard — UX и функциональность PAI Events
-🔄 ITERATION on: Kitty PAI Workspace tab 4 Brigade — events display, timing, A0 chat, Z.AI visibility
-
+🗒️ TASK: Telemetry fix verified, layout restored
+🔄 ITERATION on: Float comparison fix + window placement in correct tab
 🔧 CHANGE:
-- **UTC→Local time** — events-tail.sh конвертирует timestamp в MSK (+3h), было UTC (3 часа разницы)
-- **Worktree noise filter** — test-wc-* события от тест-харнеса фильтруются (было 24% шума)
-- **Inference events** — Inference.ts эмитит `inference.ok/fail` в events.jsonl (Z.AI 🔮, Gemini 💎, Claude)
-- **A0 events** — AgentZero.ts эмитит `a0.message_sent/response/async_sent` + сохраняет context_id
-- **A0 Chat Live viewer** — новый скрипт a0-chat-tail.sh поллит чат A0, показывает сообщения
-- **3-pane Brigade tab** — session обновлена: watch | events + a0-chat (было 2 панели)
-- **New event colors** — 🔮 magenta для inference, 🧠 bold cyan для A0
-
+- Window 42 (telemetry dashboard) перемещён из Infra → Telemetry таб
+- Фикс `M_ERR_RATE_5M="${M_ERR_RATE_5M%%.*}"` работает — ноль ошибок
 ✅ VERIFY:
-- UTC 14:09:08 → MSK 17:09:08 — конвертация верна
-- worktree test-wc-* фильтруются, реальные проходят
-- `🔮 ok src=Inference │ lvl=glm5 │ via=zai │ 2.3s` — рендерится корректно
-- `🧠 response src=AgentZero │ ctx=... │ 22.1s │ "..."` — рендерится корректно
-- Inference.ts и AgentZero.ts компилируются без ошибок
-- Symlinks на месте, a0-chat-tail.sh executable
-
-🗣️ Navi: Dashboard переработан — время MSK, события Z.AI/A0, чат-вьюер Agent Zero, 3 панели.
-
-**Файлы изменены:**
-| Файл | Что |
-|------|-----|
-| `config/kitty/scripts/events-tail.sh` | UTC→local, фильтр шума, новые типы событий |
-| `config/kitty/scripts/a0-chat-tail.sh` | **NEW** — live A0 chat viewer |
-| `config/kitty/sessions/pai.session` | 3-pane layout для Brigade tab |
-| `PAI/Tools/Inference.ts` | Event emission при каждом inference вызове |
-| `PAI/Tools/AgentZero.ts` | Event emission + context_id tracking |
-
-**Для проверки:** перезапусти Kitty сессию (`kitty --session ~/.config/kitty/sessions/pai.session`) и переключись на Alt+4 — увидишь 3 панели с локальным временем.
+- `get-text --match id:42` — чистый вывод, все секции рендерятся
+- Нет `integer expression expected` в выводе
+- Все 7 секций на месте: AGENTS, GOLDEN SIGNALS, API PROVIDERS, RECENT, SYSTEM
+🗣️ Navi: Телеметрия починена и на месте. Готов к коммиту сессии.

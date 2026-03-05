@@ -2,8 +2,8 @@
 
 **Period:** Weekly
 **Generated:** 2026-03-03
-**Total Ratings:** 78
-**Average Rating:** 7.1/10
+**Total Ratings:** 82
+**Average Rating:** 7.2/10
 
 ---
 

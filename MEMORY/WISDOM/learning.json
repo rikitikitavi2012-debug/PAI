@@ -1,6 +1,6 @@
 {
   "domain": "learning",
-  "updated": "2026-03-01T14:59:48.571Z",
+  "updated": "2026-03-05T09:27:59.082Z",
   "observations": [
     {
       "type": "anti-pattern",
@@ -27,6 +27,13 @@
       "observation": "Impressed with learning approach, wants deeper interactive exploration",
       "timestamp": "2026-02-28T16:01:03+03:00",
       "session_id": "6c38d301-50ff-4959-bbc4-f9326e10a2b0",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Strong approval of improved TUI pattern and work quality",
+      "timestamp": "2026-03-05T11:50:07+03:00",
+      "session_id": "de245f91-db29-4f0a-94d2-4ec8293d4bc9",
       "confirmed": 1
     }
   ]

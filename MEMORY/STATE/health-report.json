@@ -1,26 +1,40 @@
 {
-  "timestamp": "2026-03-03T10:53:57.272Z",
+  "timestamp": "2026-03-05T10:08:31.487Z",
   "checks": [
     {
       "service": "AgentZero",
       "status": "up",
-      "latencyMs": 7599,
+      "latencyMs": 13890,
       "detail": "Response: OK",
-      "timestamp": "2026-03-03T10:53:57.272Z"
+      "timestamp": "2026-03-05T10:08:31.486Z"
+    },
+    {
+      "service": "Z.AI",
+      "status": "up",
+      "latencyMs": 8788,
+      "detail": "GLM-5: Got it. Let me know if you nee",
+      "timestamp": "2026-03-05T10:08:26.384Z"
     },
     {
       "service": "VoiceServer",
       "status": "up",
-      "latencyMs": 2922,
+      "latencyMs": 8787,
       "detail": "HTTP 200",
-      "timestamp": "2026-03-03T10:53:52.596Z"
+      "timestamp": "2026-03-05T10:08:26.384Z"
     },
     {
       "service": "GitHubCLI",
       "status": "up",
-      "latencyMs": 2921,
+      "latencyMs": 1571,
       "detail": "github.com",
-      "timestamp": "2026-03-03T10:53:52.595Z"
+      "timestamp": "2026-03-05T10:08:19.169Z"
+    },
+    {
+      "service": "GeminiCLI",
+      "status": "up",
+      "latencyMs": 7215,
+      "detail": "0.32.1",
+      "timestamp": "2026-03-05T10:08:26.384Z"
     }
   ],
   "allHealthy": true

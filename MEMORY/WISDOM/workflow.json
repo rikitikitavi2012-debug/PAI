@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-03-01T14:59:48.570Z",
+  "updated": "2026-03-05T15:39:35.251Z",
   "observations": [
     {
       "type": "principle",
@@ -248,6 +248,41 @@
       "observation": "Impressed with comprehensive audit scope and structured methodology",
       "timestamp": "2026-02-27T13:17:46+03:00",
       "session_id": "630c3480-28c3-4f4d-8dcf-580a9506b388",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated with repeated index.lock failures",
+      "timestamp": "2026-03-05T11:04:15+03:00",
+      "session_id": "de245f91-db29-4f0a-94d2-4ec8293d4bc9",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustration over repeated failed attempts on same issue",
+      "timestamp": "2026-03-05T11:08:53+03:00",
+      "session_id": "de245f91-db29-4f0a-94d2-4ec8293d4bc9",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated by repeated failed attempts across sessions",
+      "timestamp": "2026-03-05T11:13:55+03:00",
+      "session_id": "de245f91-db29-4f0a-94d2-4ec8293d4bc9",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — expected live event display not visible",
+      "timestamp": "2026-03-05T16:51:41+03:00",
+      "session_id": "7b125423-4ce6-41a4-8429-bedacc5055c7",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Strong approval — concise satisfaction with completed work",
+      "timestamp": "2026-03-05T18:34:14+03:00",
+      "session_id": "7b125423-4ce6-41a4-8429-bedacc5055c7",
       "confirmed": 1
     }
   ]
