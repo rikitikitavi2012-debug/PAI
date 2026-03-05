@@ -24,7 +24,7 @@ M_RATE_HIGH=0 M_RATE_LOW=0 M_RATE_TREND="=" M_RATE_COUNT=0
 M_LEARN_SIGNALS=0 M_LEARN_FAILURES=0
 M_TELOS_ACTIVE=0 M_TELOS_TOP="" M_TELOS_PROGRESS=""
 M_COST_FIXED=0 M_COST_API="0.00" M_COST_TOTAL="0.00"
-M_API_COST="0.00"
+M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE=""
 M_SESSIONS=0 M_WORK=0
 
 # Active work (PRDs in progress)
@@ -114,23 +114,31 @@ compute_telos() {
 compute_cost() {
   local config="$HOME/.claude/PAI/config/cost-budget.json"
   [ ! -f "$config" ] && return
-  M_COST_FIXED=$(jq -r '.monthly_fixed | to_entries | map(.value) | add // 0' "$config" 2>/dev/null)
-  [ -z "$M_COST_FIXED" ] && M_COST_FIXED=0
 
-  # API cost estimate from inference events
+  # Read from new structured format
+  local raw
+  raw=$(jq -r '
+    (.monthly_summary.fixed_usd // 0) as $fusd |
+    (.monthly_summary.fixed_rub_as_usd // 0) as $frusd |
+    ($fusd + $frusd) as $total_fixed |
+    [$fusd, $frusd, $total_fixed] | @tsv
+  ' "$config" 2>/dev/null)
+
+  local fixed_usd=0 fixed_rub_usd=0
+  [ -n "$raw" ] && IFS=$'\t' read -r fixed_usd fixed_rub_usd M_COST_FIXED <<< "$raw"
+
+  # API cost estimate from inference events (only non-subscription: A0 calls)
   M_API_COST=$(jq -sr '
-    [.[] | select(.type == "inference.ok")] |
+    [.[] | select(.type == "inference.ok" and (.data.source // .source // "" | test("^(AgentZero|A0|HealthMonitor)$")))] |
     map(
       (.data.provider // "unknown") as $prov |
       (.data.model // "unknown") as $model |
       ((.data.latency_s // "0") | tonumber) as $lat |
-      (if $prov == "anthropic" then
+      (if $prov == "anthropic" or $prov == "claude" then
         (if ($model | test("opus")) then 0.025
          elif ($model | test("sonnet")) then 0.005
          elif ($model | test("haiku")) then 0.001
          else 0.005 end)
-       elif $prov == "zai" then 0.002
-       elif $prov == "google" then 0.003
        else 0 end) as $rate |
       ($lat * $rate)
     ) | add // 0 |
@@ -144,6 +152,47 @@ compute_cost() {
   [ -z "$fixed_int" ] && fixed_int=0
   [ -z "$api_int" ] && api_int=0
   M_COST_TOTAL=$(( fixed_int + api_int ))
+
+  # Subscription details for display
+  M_COST_SUBS=$(jq -r '
+    .subscriptions | to_entries[] |
+    select(.value.cost > 0 or .value.total_rub > 0) |
+    if .value.total_rub then
+      "\(.key)\t\(.value.total_rub)₽"
+    elif .value.monthly_equiv then
+      "\(.key)\t$\(.value.monthly_equiv)/mo"
+    else
+      "\(.key)\t$\(.value.cost)/\(.value.period // "mo")"
+    end
+  ' "$config" 2>/dev/null)
+
+  # ElevenLabs live usage (cached, refresh every 5 min)
+  M_ELEVEN_USAGE=""
+  local cache="$HOME/.claude/MEMORY/STATE/elevenlabs-usage.cache"
+  local refresh=1
+  if [ -f "$cache" ]; then
+    local age=$(( $(date +%s) - $(stat -c %Y "$cache") ))
+    [ "$age" -lt 300 ] && refresh=0
+  fi
+  if [ "$refresh" -eq 1 ]; then
+    local el_key
+    el_key=$(grep ELEVENLABS_API_KEY "$HOME/.config/PAI/.env" 2>/dev/null | cut -d= -f2)
+    if [ -n "$el_key" ]; then
+      local el_raw
+      el_raw=$(curl -s --max-time 5 "https://api.elevenlabs.io/v1/user/subscription" -H "xi-api-key: $el_key" 2>/dev/null)
+      if [ -n "$el_raw" ]; then
+        echo "$el_raw" > "$cache"
+      fi
+    fi
+  fi
+  if [ -f "$cache" ]; then
+    M_ELEVEN_USAGE=$(jq -r '
+      (.character_count // 0) as $used |
+      (.character_limit // 100000) as $limit |
+      (($used * 100 / $limit) | floor) as $pct |
+      "\($used)/\($limit) (\($pct)%)"
+    ' "$cache" 2>/dev/null)
+  fi
 }
 
 compute_brigade_compact() {
@@ -285,19 +334,20 @@ build_panel() {
   METRIC_LINES+=("$(printf '%b%bCOST%b  %b$%s%b/mo' "$VIO" "$BLD" "$RST" "$total_color" "$M_COST_TOTAL" "$RST")")
   METRIC_LINES+=("$(printf '  %bFixed%b   %b$%s%b/mo  %b(subscriptions)%b' \
     "$SLT" "$RST" "$WHT" "$M_COST_FIXED" "$RST" "$DIM" "$RST")")
-  METRIC_LINES+=("$(printf '  %bAPI%b     %b$%s%b     %b(inference estimate)%b' \
+  METRIC_LINES+=("$(printf '  %bAPI%b     %b$%s%b     %b(A0 inference est.)%b' \
     "$SLT" "$RST" "$WHT" "$M_COST_API" "$RST" "$DIM" "$RST")")
-  # Subscription breakdown (compact)
-  local config="$HOME/.claude/PAI/config/cost-budget.json"
-  if [ -f "$config" ]; then
-    local subs
-    subs=$(jq -r '.monthly_fixed | to_entries[] | "\(.key)\t\(.value)"' "$config" 2>/dev/null)
-    if [ -n "$subs" ]; then
-      while IFS=$'\t' read -r sname sval; do
-        [ -z "$sname" ] && continue
-        METRIC_LINES+=("$(printf '    %b%s%b %b$%s%b' "$DIM" "$sname" "$RST" "$SLT" "$sval" "$RST")")
-      done <<< "$subs"
-    fi
+  # Subscription breakdown
+  if [ -n "$M_COST_SUBS" ]; then
+    while IFS=$'\t' read -r sname sval; do
+      [ -z "$sname" ] && continue
+      local sn_display
+      sn_display=$(truncate "$sname" 22)
+      METRIC_LINES+=("$(printf '    %b%-22s%b %b%s%b' "$DIM" "$sn_display" "$RST" "$SLT" "$sval" "$RST")")
+    done <<< "$M_COST_SUBS"
+  fi
+  # ElevenLabs live usage
+  if [ -n "$M_ELEVEN_USAGE" ]; then
+    METRIC_LINES+=("$(printf '    %bElevenLabs chars:%b %b%s%b' "$DIM" "$RST" "$CYN" "$M_ELEVEN_USAGE" "$RST")")
   fi
   METRIC_LINES+=("")
 

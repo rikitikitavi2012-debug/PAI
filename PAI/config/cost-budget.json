@@ -1,11 +1,103 @@
 {
-  "monthly_fixed": {
-    "Claude Max": 200,
-    "ElevenLabs Creator": 22,
-    "Z.AI Coding": 10,
-    "VPS (A0)": 20,
-    "GitHub Pro": 4
-  },
   "currency": "USD",
-  "notes": "Jules Pro included in Google One AI (not billed separately)"
+  "rub_rate": 78,
+  "subscriptions": {
+    "Claude Max": {
+      "cost": 100,
+      "currency": "USD",
+      "period": "monthly",
+      "includes": "Claude Code, claude.ai unlimited, all models",
+      "track_usage": false,
+      "notes": "Need to find billing date"
+    },
+    "Google One AI Pro": {
+      "cost": 250,
+      "currency": "USD",
+      "period": "yearly",
+      "monthly_equiv": 20.83,
+      "includes": "Gemini Advanced, Jules coding agent, Google One storage",
+      "renewal": "2026-12-05",
+      "track_usage": "GOOGLE_API_KEY",
+      "notes": "Cancels Dec 5 2026"
+    },
+    "Z.AI Coding Pro": {
+      "cost": 81,
+      "currency": "USD",
+      "period": "quarterly",
+      "monthly_equiv": 27,
+      "includes": "5x Lite usage, Vision, Web Search, MCP, priority models, 40-60% faster",
+      "renewal": "2026-05-14",
+      "track_usage": false,
+      "notes": "GLM Coding Pro-Quarterly Plan"
+    },
+    "OpenCode Go": {
+      "cost": 10,
+      "currency": "USD",
+      "period": "monthly",
+      "includes": "OpenCode AI coding assistant",
+      "track_usage": false,
+      "notes": "New subscription 2026-03-05, needs integration research"
+    },
+    "ElevenLabs Creator": {
+      "cost": 22,
+      "currency": "USD",
+      "period": "monthly",
+      "includes": "100K chars/month, voice cloning, API access",
+      "track_usage": "ELEVENLABS_API_KEY",
+      "api_endpoint": "https://api.elevenlabs.io/v1/user/subscription",
+      "notes": "Usage trackable via API"
+    },
+    "Timeweb Cloud": {
+      "servers": [
+        {
+          "name": "agent-zero",
+          "id": 6565331,
+          "spec": "4 CPU, 8GB RAM, 80GB NVMe",
+          "cost_rub": 3420,
+          "includes": "backup 480₽, floating IP 180₽"
+        },
+        {
+          "name": "AI-Agent Sovereign 1",
+          "id": 6382499,
+          "spec": "1 CPU, 1GB RAM, 15GB NVMe",
+          "cost_rub": 1290,
+          "includes": "backup 90₽, floating IP 180₽"
+        }
+      ],
+      "total_rub": 4710,
+      "currency": "RUB",
+      "period": "monthly",
+      "notes": "Balance 2011₽, enough for 13 days (until Mar 18)"
+    },
+    "GitHub": {
+      "cost": 0,
+      "notes": "Free plan"
+    }
+  },
+  "api_usage": {
+    "Anthropic API": {
+      "key_env": "ANTHROPIC_API_KEY",
+      "billing": "pay-per-use",
+      "track_method": "estimate_from_events",
+      "notes": "Used by A0. Token counting available via /v1/messages/count_tokens"
+    },
+    "Google AI API": {
+      "key_env": "GOOGLE_API_KEY",
+      "billing": "free tier + pay-per-use",
+      "notes": "44 models available. Free tier generous for Gemini Flash"
+    },
+    "Z.AI API": {
+      "key_env": "ZAI_API_KEY",
+      "billing": "coding plan quota",
+      "notes": "Covered by Coding Pro subscription. No billing API found"
+    }
+  },
+  "monthly_summary": {
+    "fixed_usd": 179.83,
+    "fixed_rub": 4710,
+    "fixed_rub_as_usd": 60.50,
+    "total_fixed_usd": 240.33,
+    "api_estimate_usd": "tracked_from_events",
+    "formula": "fixed_usd + (fixed_rub / rub_rate) + api_estimate"
+  }
 }
