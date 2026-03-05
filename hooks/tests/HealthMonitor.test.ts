@@ -26,12 +26,15 @@ describe('HealthMonitor.ts', () => {
 
     process.env.PAI_DIR = TEST_DIR;
 
+    process.env.A0_API_TOKEN = 'fake_token';
+    process.env.ZAI_API_KEY = 'fake_token';
+
     // Mock Bun.file to simulate the .env file containing the API token
     // This avoids globally mocking os.homedir(), which breaks other tests
     Bun.file = ((path: any, ...args: any[]) => {
       const p = path.toString();
       if (p.includes('.env')) {
-        return { text: async () => 'A0_API_TOKEN=fake_token\n' };
+        return { text: async () => 'A0_API_TOKEN=fake_token\nZAI_API_KEY=fake_token\n' };
       }
       return originalBunFile(path, ...args);
     }) as any;
@@ -47,6 +50,9 @@ describe('HealthMonitor.ts', () => {
       }
       if (urlStr.includes('api.z.ai')) {
         return new Response(JSON.stringify({ choices: [{ message: { content: 'OK' } }] }), { status: 200 });
+      }
+      if (urlStr.includes('localhost:8888/notify')) {
+        return new Response('OK', { status: 200 });
       }
       return new Response('Not Found', { status: 404 });
     });
@@ -126,6 +132,11 @@ describe('HealthMonitor.ts', () => {
 
   it('3. Each check has: service, status, latencyMs, timestamp', () => {
     expect(reportJson.checks.length).toBe(5);
+
+    const expectedServices = ['AgentZero', 'Z.AI', 'VoiceServer', 'GitHubCLI', 'GeminiCLI'];
+    const actualServices = reportJson.checks.map((c: any) => c.service);
+    expectedServices.forEach(s => expect(actualServices).toContain(s));
+
     for (const check of reportJson.checks) {
       expect(check).toHaveProperty('service');
       expect(typeof check.service).toBe('string');
