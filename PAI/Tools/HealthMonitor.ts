@@ -169,11 +169,30 @@ async function main() {
   const reportPath = join(getPaiDir(), 'MEMORY/STATE/health-report.json');
   await Bun.write(reportPath, JSON.stringify(report, null, 2));
 
+  // Emit health check event to events.jsonl
+  const failures = checks.filter(c => c.status === 'down');
+  const eventsPath = join(getPaiDir(), 'MEMORY/STATE/events.jsonl');
+  try {
+    const { mkdirSync, appendFileSync, existsSync } = require('fs');
+    const dir = require('path').dirname(eventsPath);
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+    const event = {
+      type: 'a0.health_check',
+      source: 'HealthMonitor',
+      all_healthy: report.allHealthy,
+      services_up: checks.filter(c => c.status === 'up').length,
+      services_down: failures.length,
+      failures: failures.map(f => f.service),
+      timestamp: new Date().toISOString(),
+      session_id: process.env.CLAUDE_SESSION_ID || 'cron',
+    };
+    appendFileSync(eventsPath, JSON.stringify(event) + '\n', 'utf-8');
+  } catch { /* observability, not critical */ }
+
   // Output to stdout
   console.log(JSON.stringify(report, null, 2));
 
   // Voice alert on failures
-  const failures = checks.filter(c => c.status === 'down');
   if (failures.length > 0) {
     const names = failures.map(f => f.service).join(', ');
     try {

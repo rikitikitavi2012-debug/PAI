@@ -556,6 +556,16 @@ async function cmdMerge(repos: RepoConfig[], dryRun: boolean): Promise<void> {
   const state = loadState();
   state.lastCheck = new Date().toISOString();
   let totalProcessed = 0;
+  let totalMergedThisCycle = 0;
+  let totalFailedThisCycle = 0;
+
+  // Emit cycle start
+  appendEvent({
+    type: 'automerge.cycle' as any,
+    source: 'JulesAutoMerge',
+    action: 'start',
+    repos_checked: repos.length,
+  });
 
   for (const repo of repos) {
     console.log(`\n${B}${repo.repo}${X} ${D}(${repo.remote}/${repo.branch})${X}`);
@@ -573,6 +583,8 @@ async function cmdMerge(repos: RepoConfig[], dryRun: boolean): Promise<void> {
           saveState(state); // Save after each PR (crash-safe)
         }
         totalProcessed++;
+        if (record.result === 'merged') totalMergedThisCycle++;
+        else if (record.result.startsWith('failed')) totalFailedThisCycle++;
       }
     } catch (e) {
       console.log(`  ${R}Error:${X} ${(e as Error).message}`);
@@ -580,6 +592,18 @@ async function cmdMerge(repos: RepoConfig[], dryRun: boolean): Promise<void> {
   }
 
   if (!dryRun) saveState(state);
+
+  // Emit cycle end
+  appendEvent({
+    type: 'automerge.cycle' as any,
+    source: 'JulesAutoMerge',
+    action: 'end',
+    repos_checked: repos.length,
+    prs_processed: totalProcessed,
+    merged: totalMergedThisCycle,
+    failed: totalFailedThisCycle,
+  });
+
   console.log(`\n${D}Processed: ${totalProcessed} | Merged: ${state.stats.totalMerged} | Failed: ${state.stats.totalFailed}${X}`);
 }
 

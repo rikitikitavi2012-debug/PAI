@@ -21,7 +21,7 @@ JQ_EVENT_FORMAT='
    elif $filt == "voice" then select(.type | startswith("voice."))
    elif $filt == "hooks" then select(.type | startswith("agent.") or startswith("task.") or startswith("hook."))
    elif $filt == "errors" then select(.type | startswith("hook.error"))
-   elif $filt == "brigade" then select(.type | startswith("a0.") or startswith("agent.") or startswith("rating.") or startswith("voice.") or startswith("merge.") or startswith("pr."))
+   elif $filt == "brigade" then select(.type | startswith("a0.") or startswith("agent.") or startswith("rating.") or startswith("voice.") or startswith("merge.") or startswith("pr.") or startswith("automerge."))
    else . end) |
 
   # Timestamp UTC → local
@@ -60,6 +60,8 @@ JQ_EVENT_FORMAT='
    elif ($typ | startswith("hook.error"))  then "\u001b[38;2;248;113;113m"
    elif $typ == "merge.fail"              then "\u001b[38;2;248;113;113m"
    elif $typ == "pr.tested"               then "\u001b[38;2;103;232;249m"
+   elif ($typ | startswith("automerge.")) then "\u001b[38;2;103;232;249m"
+   elif ($typ == "a0.health_check")       then "\u001b[38;2;103;232;249m\u001b[1m"
    elif ($typ | startswith("custom."))    then "\u001b[38;2;148;163;184m"
    elif ($typ | startswith("worktree"))   then "\u001b[2m"
    else "\u001b[38;2;203;213;225m"
@@ -110,7 +112,9 @@ JQ_EVENT_FORMAT='
    elif ($typ | startswith("hook.error"))    then "🔥"
    elif $typ == "merge.fail"                then "❌"
    elif $typ == "pr.tested"                 then "🧪"
-   elif ($typ | startswith("custom."))      then "⚡"
+   elif ($typ | startswith("automerge."))   then "🔄"
+   elif ($typ == "a0.health_check")        then "💊"
+   elif ($typ | startswith("custom."))     then "⚡"
    else "•" end) as $icon |
 
   (if $rel then "\u001b[38;2;100;116;139m\($ts)\u001b[0m \u001b[38;2;74;222;128m(\($rel))\u001b[0m"

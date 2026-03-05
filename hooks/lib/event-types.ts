@@ -164,6 +164,54 @@ export interface TaskCompletedEvent extends BaseEvent {
   task_subject?: string;
 }
 
+// ── Merge Events ──
+
+export interface MergeOkEvent extends BaseEvent {
+  type: 'merge.ok';
+  pr_number: number;
+  branch: string;
+  title: string;
+  repo?: string;
+}
+
+export interface MergeFailEvent extends BaseEvent {
+  type: 'merge.fail';
+  pr_number: number;
+  reason: string;
+  branch: string;
+  repo?: string;
+}
+
+export interface PrTestedEvent extends BaseEvent {
+  type: 'pr.tested';
+  pr_number: number;
+  result: 'pass' | 'fail';
+  branch: string;
+  duration_ms?: number;
+  repo?: string;
+}
+
+// ── A0 Health Check Events ──
+
+export interface A0HealthCheckEvent extends BaseEvent {
+  type: 'a0.health_check';
+  all_healthy: boolean;
+  services_up: number;
+  services_down: number;
+  failures?: string[];
+}
+
+// ── AutoMerge Cycle Events ──
+
+export interface AutoMergeCycleEvent extends BaseEvent {
+  type: 'automerge.cycle';
+  action: 'start' | 'end';
+  repos_checked: number;
+  prs_processed?: number;
+  merged?: number;
+  failed?: number;
+}
+
 // ── Custom Events ──
 
 export interface CustomEvent extends BaseEvent {
@@ -193,6 +241,11 @@ export type PAIEvent =
   | AgentStartEvent
   | AgentStopEvent
   | TaskCompletedEvent
+  | MergeOkEvent
+  | MergeFailEvent
+  | PrTestedEvent
+  | A0HealthCheckEvent
+  | AutoMergeCycleEvent
   | CustomEvent;
 
 // ── Input type for appendEvent (without auto-injected fields) ──
