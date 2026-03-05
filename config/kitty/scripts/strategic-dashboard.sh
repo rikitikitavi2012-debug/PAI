@@ -24,7 +24,7 @@ M_RATE_HIGH=0 M_RATE_LOW=0 M_RATE_TREND="=" M_RATE_COUNT=0
 M_LEARN_SIGNALS=0 M_LEARN_FAILURES=0
 M_TELOS_ACTIVE=0 M_TELOS_TOP="" M_TELOS_PROGRESS=""
 M_COST_FIXED=0 M_COST_API="0.00" M_COST_TOTAL="0.00"
-M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE=""
+M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE="" M_ZAI_USAGE=""
 M_SESSIONS=0 M_WORK=0
 
 # Active work (PRDs in progress)
@@ -193,6 +193,36 @@ compute_cost() {
       "\($used)/\($limit) (\($pct)%)"
     ' "$cache" 2>/dev/null)
   fi
+
+  # Z.AI live usage (cached, refresh every 5 min)
+  M_ZAI_USAGE=""
+  local zai_cache="$HOME/.claude/MEMORY/STATE/zai-usage.cache"
+  local zai_refresh=1
+  if [ -f "$zai_cache" ]; then
+    local zai_age=$(( $(date +%s) - $(stat -c %Y "$zai_cache") ))
+    [ "$zai_age" -lt 300 ] && zai_refresh=0
+  fi
+  if [ "$zai_refresh" -eq 1 ]; then
+    local zai_key
+    zai_key=$(grep ZAI_API_KEY "$HOME/.config/PAI/.env" 2>/dev/null | cut -d= -f2)
+    if [ -n "$zai_key" ]; then
+      local zai_raw
+      zai_raw=$(curl -s --max-time 5 "https://open.bigmodel.cn/api/monitor/usage/quota/limit" -H "Authorization: Bearer $zai_key" 2>/dev/null)
+      if [ -n "$zai_raw" ] && echo "$zai_raw" | jq -e '.code == 200' >/dev/null 2>&1; then
+        echo "$zai_raw" > "$zai_cache"
+      fi
+    fi
+  fi
+  if [ -f "$zai_cache" ]; then
+    M_ZAI_USAGE=$(jq -r '
+      (.data.level // "unknown") as $lvl |
+      [.data.limits // [] | .[] |
+        select(.currentValue != null and .usage != null and .usage > 0) |
+        "\(.type | if . == "TIME_LIMIT" then "req" else "tok" end):\(.currentValue)/\(.usage) (\(.percentage)%)"
+      ] |
+      if length > 0 then "\($lvl) " + join(" ") else $lvl end
+    ' "$zai_cache" 2>/dev/null)
+  fi
 }
 
 compute_brigade_compact() {
@@ -345,9 +375,12 @@ build_panel() {
       METRIC_LINES+=("$(printf '    %b%-22s%b %b%s%b' "$DIM" "$sn_display" "$RST" "$SLT" "$sval" "$RST")")
     done <<< "$M_COST_SUBS"
   fi
-  # ElevenLabs live usage
+  # Live usage from APIs
   if [ -n "$M_ELEVEN_USAGE" ]; then
-    METRIC_LINES+=("$(printf '    %bElevenLabs chars:%b %b%s%b' "$DIM" "$RST" "$CYN" "$M_ELEVEN_USAGE" "$RST")")
+    METRIC_LINES+=("$(printf '    %b🔊 ElevenLabs:%b %b%s%b' "$DIM" "$RST" "$CYN" "$M_ELEVEN_USAGE" "$RST")")
+  fi
+  if [ -n "$M_ZAI_USAGE" ]; then
+    METRIC_LINES+=("$(printf '    %b🤖 Z.AI quota:%b  %b%s%b' "$DIM" "$RST" "$CYN" "$M_ZAI_USAGE" "$RST")")
   fi
   METRIC_LINES+=("")
 
