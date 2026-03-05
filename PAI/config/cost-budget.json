@@ -89,7 +89,40 @@
     "Z.AI API": {
       "key_env": "ZAI_API_KEY",
       "billing": "coding plan quota",
-      "notes": "Covered by Coding Pro subscription. No billing API found"
+      "track_endpoint": "https://open.bigmodel.cn/api/monitor/usage/quota/limit",
+      "notes": "Covered by Coding Pro subscription"
+    },
+    "OpenRouter": {
+      "key_env": "OPENROUTER_API_KEY",
+      "billing": "prepaid credits",
+      "balance": "$3.22 of $200",
+      "track_endpoint": "https://openrouter.ai/api/v1/credits",
+      "notes": "Nearly depleted. 200+ models. Refill or stop using"
+    },
+    "OpenAI": {
+      "key_env": "OPENAI_API_KEY",
+      "billing": "pay-per-use",
+      "notes": "124 models. Need org-id for usage endpoint. Check console.openai.com"
+    },
+    "Replicate": {
+      "key_env": "REPLICATE_API_TOKEN",
+      "billing": "pay-per-use",
+      "notes": "ML model hosting. Account active (rikitikitavi2012-debug)"
+    },
+    "Exa": {
+      "key_env": "EXA_API_KEY",
+      "billing": "1000 free searches/month + pay-per-use",
+      "notes": "AI-powered search API"
+    },
+    "Apify": {
+      "key_env": "APIFY_TOKEN",
+      "billing": "free tier + pay-per-use",
+      "notes": "Token may be expired — returned null for user info"
+    },
+    "BrightData": {
+      "key_env": "BRIGHTDATA_API_KEY",
+      "billing": "pay-per-use",
+      "notes": "Proxy/scraping. Token lacks permissions — needs update in brightdata.com/cp"
     }
   },
   "monthly_summary": {

@@ -24,7 +24,7 @@ M_RATE_HIGH=0 M_RATE_LOW=0 M_RATE_TREND="=" M_RATE_COUNT=0
 M_LEARN_SIGNALS=0 M_LEARN_FAILURES=0
 M_TELOS_ACTIVE=0 M_TELOS_TOP="" M_TELOS_PROGRESS=""
 M_COST_FIXED=0 M_COST_API="0.00" M_COST_TOTAL="0.00"
-M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE="" M_ZAI_USAGE=""
+M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE="" M_ZAI_USAGE="" M_OR_BALANCE=""
 M_SESSIONS=0 M_WORK=0
 
 # Active work (PRDs in progress)
@@ -223,6 +223,34 @@ compute_cost() {
       if length > 0 then "\($lvl) " + join(" ") else $lvl end
     ' "$zai_cache" 2>/dev/null)
   fi
+
+  # OpenRouter balance (cached, refresh every 5 min)
+  M_OR_BALANCE=""
+  local or_cache="$HOME/.claude/MEMORY/STATE/openrouter-balance.cache"
+  local or_refresh=1
+  if [ -f "$or_cache" ]; then
+    local or_age=$(( $(date +%s) - $(stat -c %Y "$or_cache") ))
+    [ "$or_age" -lt 300 ] && or_refresh=0
+  fi
+  if [ "$or_refresh" -eq 1 ]; then
+    local or_key
+    or_key=$(grep OPENROUTER_API_KEY "$HOME/.config/PAI/.env" 2>/dev/null | cut -d= -f2)
+    if [ -n "$or_key" ]; then
+      local or_raw
+      or_raw=$(curl -s --max-time 5 "https://openrouter.ai/api/v1/credits" -H "Authorization: Bearer $or_key" 2>/dev/null)
+      if [ -n "$or_raw" ] && echo "$or_raw" | jq -e '.data' >/dev/null 2>&1; then
+        echo "$or_raw" > "$or_cache"
+      fi
+    fi
+  fi
+  if [ -f "$or_cache" ]; then
+    M_OR_BALANCE=$(jq -r '
+      .data |
+      ((.total_credits // 0) - (.total_usage // 0)) as $remaining |
+      ($remaining * 100 | floor | . / 100) as $r |
+      "$\($r) left of $\(.total_credits // 0)"
+    ' "$or_cache" 2>/dev/null)
+  fi
 }
 
 compute_brigade_compact() {
@@ -381,6 +409,14 @@ build_panel() {
   fi
   if [ -n "$M_ZAI_USAGE" ]; then
     METRIC_LINES+=("$(printf '    %b🤖 Z.AI quota:%b  %b%s%b' "$DIM" "$RST" "$CYN" "$M_ZAI_USAGE" "$RST")")
+  fi
+  if [ -n "$M_OR_BALANCE" ]; then
+    local or_color="$GRN"
+    # Warn if less than $10 remaining
+    local or_left
+    or_left=$(echo "$M_OR_BALANCE" | grep -oP '^\$[\d.]+' | tr -d '$')
+    [ -n "$or_left" ] && (( $(echo "$or_left < 10" | bc -l 2>/dev/null) )) && or_color="$RED"
+    METRIC_LINES+=("$(printf '    %b🔀 OpenRouter:%b  %b%s%b' "$DIM" "$RST" "$or_color" "$M_OR_BALANCE" "$RST")")
   fi
   METRIC_LINES+=("")
 
