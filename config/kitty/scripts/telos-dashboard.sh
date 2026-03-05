@@ -203,219 +203,68 @@ poll() {
   printf '%b%s%b\n' "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
 
   # ══════════════════════════════════════════════════════════════════
-  # LEVEL 1: ACTIONABLE — Focus + Blockers
+  # GOALS — all in one compact list
   # ══════════════════════════════════════════════════════════════════
 
-  printf "\n"
-
-  # Weekly focus (left) + Blockers (right)
-  local -a focus_lines=()
-  local -a blocker_lines=()
-
-  focus_lines+=("$(printf "%b%b📋 ФОКУС НЕДЕЛИ%b" "$CYN" "$BLD" "$RST")")
-
-  while IFS= read -r focus_item; do
-    [ -z "$focus_item" ] && continue
-    focus_lines+=("$(printf "  %b•%b %b%s%b" "$CYN" "$RST" "$WHT" "$focus_item" "$RST")")
-  done < <(jq -r '.status.weeklyFocus[]? // empty' "$STATE_FILE" 2>/dev/null)
-
-  [ ${#focus_lines[@]} -eq 1 ] && focus_lines+=("$(printf "  %b(не задан)%b" "$DIM" "$RST")")
-
-  blocker_lines+=("$(printf "%b%b🚧 БЛОКЕРЫ%b" "$RED" "$BLD" "$RST")")
-
-  while IFS=$'\t' read -r b_blocker b_linked b_urgency b_next; do
-    [ -z "$b_blocker" ] && continue
-    local b_short="${b_blocker:0:28}"
-    local urg_icon="⚪"
-    [[ "$b_urgency" == *"Высок"* ]] && urg_icon="🔴"
-    [[ "$b_urgency" == *"Средн"* ]] && urg_icon="🟡"
-    blocker_lines+=("$(printf "  %s %b%-28s%b %b→%s%b" \
-      "$urg_icon" "$WHT" "$b_short" "$RST" "$SLT" "$b_linked" "$RST")")
-  done < <(jq -r '.status.blockers[]? | [.blocker, .linked, .urgency, .next] | @tsv' "$STATE_FILE" 2>/dev/null)
-
-  [ ${#blocker_lines[@]} -eq 1 ] && blocker_lines+=("$(printf "  %b(нет блокеров)%b" "$DIM" "$RST")")
-
-  # Render two columns
-  local max_fb=${#focus_lines[@]}
-  [ ${#blocker_lines[@]} -gt "$max_fb" ] && max_fb=${#blocker_lines[@]}
-
-  for (( i=0; i<max_fb; i++ )); do
-    local fl="${focus_lines[$i]:-}"
-    local bl="${blocker_lines[$i]:-}"
-    if [ -n "$fl" ] && [ -n "$bl" ]; then
-      printf "  %-46b %b│%b  %b\n" "$fl" "$SEP" "$RST" "$bl"
-    elif [ -n "$fl" ]; then
-      printf "  %b\n" "$fl"
-    else
-      printf "  %-46s %b│%b  %b\n" "" "$SEP" "$RST" "$bl"
-    fi
-  done
-
-  printf "\n"
-
-  # ══════════════════════════════════════════════════════════════════
-  # LEVEL 2: PROGRESS — Missions + Goals
-  # ══════════════════════════════════════════════════════════════════
-
-  # --- Missions (full width) ---
-  printf "  %b%b🎯 МИССИИ%b\n" "$VIO" "$BLD" "$RST"
-  printf "  %b%b%s%b\n" "$SEP" "$DIM" "$(hline 80)" "$RST"
-
-  while IFS=$'\t' read -r m_id m_name m_progress m_goals_str; do
-    local bar pcolor
-    bar=$(progress_bar "$m_progress" 20)
-    pcolor="$SLT"
-    [ "$m_progress" -gt 0 ]  && pcolor="$YLW"
-    [ "$m_progress" -ge 25 ] && pcolor="$LO_GRN"
-    [ "$m_progress" -ge 50 ] && pcolor="$GRN"
-
-    printf "  %b%-3s%b %b%-20s%b %b%s%b  %b%3d%%%b\n" \
-      "$CYN" "$m_id" "$RST" "$WHT" "$m_name" "$RST" \
-      "$pcolor" "$bar" "$RST" "$pcolor" "$m_progress" "$RST"
-
-    # Show linked goals on next line
-    if [ -n "$m_goals_str" ]; then
-      printf "  %b    └─%b " "$SEP" "$RST"
-      IFS=',' read -ra gpairs <<< "$m_goals_str"
-      for gp in "${gpairs[@]}"; do
-        local gid="${gp%%(*}"
-        local gprog="${gp#*(}"
-        gprog="${gprog%)}"
-        printf "%b%s%b(%b%s%b)  " "$SLT" "$gid" "$RST" "$DIM" "$gprog" "$RST"
-      done
-      printf "\n"
-    fi
-  done < <(jq -r '
-    .goals as $all_goals |
-    .missions[] |
-    [
-      .id,
-      .name,
-      (.progress // 0 | tostring),
-      ((.linkedGoals // []) | map(
-        . as $gid |
-        ($all_goals | map(select(.id == $gid)) | .[0].progress // 0) as $gp |
-        "\($gid)(\($gp)%)"
-      ) | join(","))
-    ] | @tsv
-  ' "$STATE_FILE" 2>/dev/null)
-
-  printf "\n"
-
-  # --- Goals: two columns (Active | Frozen/Ideas) ---
-  local -a left_active=()
-  local -a right_frozen=()
-
-  left_active+=("$(printf "%b%b АКТИВНЫЕ ЦЕЛИ%b" "$GRN" "$BLD" "$RST")")
-  left_active+=("$(printf "%b%b%s%b" "$SEP" "$DIM" "$(hline 42)" "$RST")")
-
-  right_frozen+=("$(printf "%b%b ❄ ЗАМОРОЖЕНО / ИДЕИ%b" "$SLT" "$BLD" "$RST")")
-  right_frozen+=("$(printf "%b%b%s%b" "$SEP" "$DIM" "$(hline 42)" "$RST")")
+  printf "  %b%bЦЕЛИ%b\n" "$GRN" "$BLD" "$RST"
 
   while IFS=$'\t' read -r g_id g_status g_progress; do
     local emoji sname bar pcolor
     emoji=$(goal_emoji "$g_status")
     sname=$(short_goal "$g_id")
-    bar=$(progress_bar "$g_progress" 10)
+    bar=$(progress_bar "$g_progress" 12)
     pcolor="$SLT"
     [ "$g_progress" -gt 0 ]  && pcolor="$YLW"
     [ "$g_progress" -ge 25 ] && pcolor="$LO_GRN"
     [ "$g_progress" -ge 50 ] && pcolor="$GRN"
 
-    local line
-    line=$(printf " %s %b%-3s%b %b%-16s%b %b%s%b %b%3d%%%b" \
-      "$emoji" "$CYN" "$g_id" "$RST" "$WHT" "$sname" "$RST" \
-      "$pcolor" "$bar" "$RST" "$pcolor" "$g_progress" "$RST")
-
-    local st_lower="${g_status,,}"
-    if [[ "$st_lower" == *"заморожен"* ]] || [[ "$st_lower" == *"идея"* ]]; then
-      right_frozen+=("$line")
-    else
-      left_active+=("$line")
-    fi
+    local sname_vw
+    sname_vw=$(printf '%s' "$sname" | wc -L)
+    local sname_pad=$(( 18 - sname_vw ))
+    [ "$sname_pad" -lt 0 ] && sname_pad=0
+    printf "  %s %b%-3s%b %s%*s %b%s%b %b%3d%%%b\n" \
+      "$emoji" "$CYN" "$g_id" "$RST" "$sname" "$sname_pad" "" \
+      "$pcolor" "$bar" "$RST" "$pcolor" "$g_progress" "$RST"
   done < <(jq -r '.goals[] | [.id, .status, (.progress // 0 | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
 
-  local max_goals=${#left_active[@]}
-  [ ${#right_frozen[@]} -gt "$max_goals" ] && max_goals=${#right_frozen[@]}
-
-  for (( i=0; i<max_goals; i++ )); do
-    local ll="${left_active[$i]:-}"
-    local rl="${right_frozen[$i]:-}"
-    if [ -n "$ll" ] && [ -n "$rl" ]; then
-      printf "  %-46b %b│%b %b\n" "$ll" "$SEP" "$RST" "$rl"
-    elif [ -n "$ll" ]; then
-      printf "  %b\n" "$ll"
-    else
-      printf "  %-46s %b│%b %b\n" "" "$SEP" "$RST" "$rl"
-    fi
-  done
-
+  # ══════════════════════════════════════════════════════════════════
+  # CHALLENGES → STRATEGIES (compact)
+  # ══════════════════════════════════════════════════════════════════
   printf "\n"
+  printf "  %b%bВЫЗОВЫ → СТРАТЕГИИ%b\n" "$RED" "$BLD" "$RST"
 
-  # ══════════════════════════════════════════════════════════════════
-  # LEVEL 3: CHALLENGES → STRATEGIES (dependency graph)
-  # ══════════════════════════════════════════════════════════════════
-
-  printf "  %b%b⚡ ВЫЗОВЫ → СТРАТЕГИИ%b\n" "$RED" "$BLD" "$RST"
-  printf "  %b%b%s%b\n" "$SEP" "$DIM" "$(hline 80)" "$RST"
-
-  # Build C→S mapping
-  # Extract challenges with their linked strategies, then for each strategy show effectiveness
   while IFS=$'\t' read -r c_id c_name c_severity c_strats; do
     local sev_str
     sev_str=$(severity_icon "$c_severity")
-    printf "  %s %b%-3s%b %b%s%b\n" "$sev_str" "$CYN" "$c_id" "$RST" "$WHT" "${c_name:0:45}" "$RST"
 
+    # Inline strategies on same line as challenge
+    local strat_inline=""
     if [ -n "$c_strats" ]; then
       IFS=',' read -ra strat_ids <<< "$c_strats"
-      local si=0
-      local scount=${#strat_ids[@]}
       for sid in "${strat_ids[@]}"; do
-        # Get strategy name and effectiveness
-        local s_info
-        s_info=$(jq -r --arg sid "$sid" '
-          .strategies[] | select(.id == $sid) |
-          [.name[:35], .effectiveness // "unknown"] | @tsv
-        ' "$STATE_FILE" 2>/dev/null)
-
-        local s_name s_eff
-        IFS=$'\t' read -r s_name s_eff <<< "$s_info"
+        local s_eff
+        s_eff=$(jq -r --arg sid "$sid" '.strategies[] | select(.id == $sid) | .effectiveness // "unknown"' "$STATE_FILE" 2>/dev/null)
         local eff_str
         eff_str=$(effect_icon "$s_eff")
-
-        local branch="├──→"
-        [ "$si" -eq $(( scount - 1 )) ] && branch="└──→"
-
-        printf "  %b     %s%b  %b%s%b %b%-35s%b %s\n" \
-          "$SEP" "$branch" "$RST" "$SLT" "$sid" "$RST" "$WHT" "$s_name" "$RST" "$eff_str"
-        si=$((si + 1))
+        strat_inline+=" $sid$eff_str"
       done
     fi
-    printf "\n"
+
+    local c_short="${c_name:0:35}"
+    local c_vw
+    c_vw=$(printf '%s' "$c_short" | wc -L)
+    local c_pad=$(( 35 - c_vw ))
+    [ "$c_pad" -lt 0 ] && c_pad=0
+    printf "  %s %b%-3s%b %b%s%b%*s%b%s%b\n" \
+      "$sev_str" "$CYN" "$c_id" "$RST" "$WHT" "$c_short" "$RST" "$c_pad" "" "$SLT" "$strat_inline" "$RST"
   done < <(jq -r '.challenges[]? | [.id, .name, (.severity // "medium"), ((.linkedStrategies // []) | join(","))] | @tsv' "$STATE_FILE" 2>/dev/null)
 
+  # ══════════════════════════════════════════════════════════════════
+  # WINS + GROWTH (inline)
+  # ══════════════════════════════════════════════════════════════════
   printf "\n"
 
-  # ══════════════════════════════════════════════════════════════════
-  # LEVEL 4: WINS + GROWTH
-  # ══════════════════════════════════════════════════════════════════
-
-  local -a left_wins=()
-  local -a right_growth=()
-
-  left_wins+=("$(printf "%b%b🏆 ПОБЕДЫ%b" "$GRN" "$BLD" "$RST")")
-  left_wins+=("$(printf "%b%b%s%b" "$SEP" "$DIM" "$(hline 42)" "$RST")")
-
-  while IFS=$'\t' read -r w_date w_text; do
-    [ ${#w_text} -gt 38 ] && w_text="${w_text:0:37}."
-    left_wins+=("$(printf " %b✦%b %b%-10s%b %b%s%b" \
-      "$GRN" "$RST" "$SLT" "$w_date" "$RST" "$WHT" "$w_text" "$RST")")
-  done < <(jq -r '.status.recentWins[-5:][]? | [(.date // ""), .win] | @tsv' "$STATE_FILE" 2>/dev/null)
-
-  # Growth metrics
-  right_growth+=("$(printf "%b%b📈 РОСТ%b" "$BLU" "$BLD" "$RST")")
-  right_growth+=("$(printf "%b%b%s%b" "$SEP" "$DIM" "$(hline 42)" "$RST")")
-
+  # Growth metrics inline
   local learn_data
   learn_data=$(jq -r '[
     (.learning.sessionsWeek // 0 | tostring),
@@ -431,27 +280,24 @@ poll() {
   local l_tarrow
   l_tarrow=$(trend_arrow "$l_trend")
 
-  right_growth+=("$(printf " %bSessions:%b %b%b%s%b/wk  %bEvents:%b %b%b%s%b/24h" \
-    "$SLT" "$RST" "$BLU" "$BLD" "$l_sess" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$evt_24h" "$RST")")
-  right_growth+=("$(printf " %bФреймы:%b  %b%b%s%b (85%%+)  %bУроки:%b %b%b%s%b" \
-    "$SLT" "$RST" "$VIO" "$BLD" "$l_frames" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$l_lessons" "$RST")")
-  right_growth+=("$(printf " %bРейтинг:%b %b%b%s/10%b %s (%bнед: %s%b)" \
-    "$SLT" "$RST" "$WHT" "$BLD" "$l_perf" "$RST" "$l_tarrow" "$SLT" "$l_pavg" "$RST")")
+  printf "  %b%b📈 РОСТ%b  %bP:%b%b%s/10%b%s  %bS:%b%b%s%b/wk  %bE:%b%b%s%b/24h  %bF:%b%b%s%b  %bL:%b%b%s%b\n" \
+    "$BLU" "$BLD" "$RST" \
+    "$SLT" "$RST" "$WHT" "$l_perf" "$RST" "$l_tarrow" \
+    "$SLT" "$RST" "$BLU" "$l_sess" "$RST" \
+    "$SLT" "$RST" "$WHT" "$evt_24h" "$RST" \
+    "$SLT" "$RST" "$VIO" "$l_frames" "$RST" \
+    "$SLT" "$RST" "$WHT" "$l_lessons" "$RST"
 
-  local max_wg=${#left_wins[@]}
-  [ ${#right_growth[@]} -gt "$max_wg" ] && max_wg=${#right_growth[@]}
-
-  for (( i=0; i<max_wg; i++ )); do
-    local wl="${left_wins[$i]:-}"
-    local gl="${right_growth[$i]:-}"
-    if [ -n "$wl" ] && [ -n "$gl" ]; then
-      printf "  %-46b %b│%b  %b\n" "$wl" "$SEP" "$RST" "$gl"
-    elif [ -n "$wl" ]; then
-      printf "  %b\n" "$wl"
-    else
-      printf "  %-46s %b│%b  %b\n" "" "$SEP" "$RST" "$gl"
-    fi
-  done
+  # Recent wins (last 3, one line each)
+  printf "  %b%b🏆 ПОБЕДЫ%b " "$GRN" "$BLD" "$RST"
+  local win_count=0
+  while IFS=$'\t' read -r w_date w_text; do
+    [ "$win_count" -ge 3 ] && break
+    [ ${#w_text} -gt 35 ] && w_text="${w_text:0:34}…"
+    printf " %b✦%b%b%s%b" "$GRN" "$RST" "$DIM" " $w_text" "$RST"
+    win_count=$((win_count + 1))
+  done < <(jq -r '.status.recentWins[-3:][]? | [(.date // ""), .win] | @tsv' "$STATE_FILE" 2>/dev/null)
+  printf "\n"
 
   # ══════════════════════════════════════════════════════════════════
   # LEVEL 5: COMPASS + CAPITAL (reference)
