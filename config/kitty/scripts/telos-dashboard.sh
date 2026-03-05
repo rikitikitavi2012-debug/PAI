@@ -200,6 +200,18 @@ poll() {
     "$SLT" "$RST" "$SLT" "$evt_24h" "$RST" \
     "$DIM" "$now" "$RST" "$VIO" "$pulse" "$RST"
   printf "  %s\n" "$spheres_str"
+
+  # Weekly focus (compact inline)
+  local focus_str=""
+  while IFS= read -r focus_item; do
+    [ -z "$focus_item" ] && continue
+    [ -n "$focus_str" ] && focus_str+="  "
+    focus_str+="• $focus_item"
+  done < <(jq -r '.status.weeklyFocus[]? // empty' "$STATE_FILE" 2>/dev/null)
+  if [ -n "$focus_str" ]; then
+    printf "  %b%b📋 ФОКУС:%b %b%s%b\n" "$CYN" "$BLD" "$RST" "$WHT" "${focus_str:0:80}" "$RST"
+  fi
+
   printf '%b%s%b\n' "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
 
   # ══════════════════════════════════════════════════════════════════
