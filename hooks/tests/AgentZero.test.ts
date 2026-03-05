@@ -48,9 +48,8 @@ describe('AgentZero CLI Tool', () => {
         if (url.pathname === '/api_message') {
           return Response.json({ context_id: 'ctx-1', response: 'mock response' });
         }
-        if (url.pathname === '/message_async') {
-          return Response.json({ status: 'queued', context_id: 'ctx-2' });
-        }
+        // message_async is replaced by api_message in updated tool
+        // so no explicit message_async route needed, mock /api_message instead handles it
         if (url.pathname === '/api_log_get') {
           return Response.json({ log: ['msg1', 'msg2'] });
         }
@@ -58,7 +57,7 @@ describe('AgentZero CLI Tool', () => {
           return new Response('Chat terminated', { status: 200 });
         }
         if (url.pathname === '/scheduler_tasks_list') {
-          return Response.json([{ id: 1, task: 'mock task' }]);
+          return Response.json([{ id: 1, name: 'mock task', state: 'active', schedule: '1m', last_run: '1m ago', last_result: 'success' }]);
         }
         if (url.pathname === '/scheduler_task_run') {
           return Response.json({ status: 'started' });
@@ -381,5 +380,26 @@ describe('AgentZero CLI Tool', () => {
     expect(requestLogs[0].body).toEqual({
       context_id: 'ctx-99',
     });
+  });
+
+  it('scheduler results parses response and lists correct tasks', async () => {
+    requestLogs = [];
+    const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'scheduler', 'results'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+      env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl, A0_API_TOKEN: '' },
+    });
+
+    const stdout = await new Response(proc.stdout).text();
+    await proc.exited;
+
+    expect(proc.exitCode).toBe(0);
+    expect(stdout).toContain('── mock task ──');
+    expect(stdout).toContain('State: active | Schedule: 1m');
+    expect(stdout).toContain('Last run: 1m ago');
+    expect(stdout).toContain('Result: success');
+
+    expect(requestLogs.length).toBe(1);
+    expect(requestLogs[0].path).toBe('/scheduler_tasks_list');
   });
 });
