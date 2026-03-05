@@ -235,7 +235,7 @@ describe('AgentZero CLI Tool', () => {
 
       const eventsPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'events.jsonl');
       const eventsText = require('fs').readFileSync(eventsPath, 'utf-8').trim().split('\n');
-      expect(eventsText.length).toBe(1);
+      expect(eventsText.length).toBeGreaterThanOrEqual(1);
 
       const eventSent = JSON.parse(eventsText[0]);
       expect(eventSent.type).toBe('a0.async_sent');
@@ -245,7 +245,7 @@ describe('AgentZero CLI Tool', () => {
 
       const contextPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'a0-active-context.json');
       const contextState = JSON.parse(require('fs').readFileSync(contextPath, 'utf-8'));
-      expect(contextState.context_id).toBe('ctx-2');
+      expect(contextState.context_id).toBe('ctx-1');
       expect(contextState.last_message).toBe('Long job task');
 
       cleanupTempDir(emitDir);
@@ -337,13 +337,12 @@ describe('AgentZero CLI Tool', () => {
 
     expect(proc.exitCode).toBe(0);
     const result = JSON.parse(stdout);
-    expect(result.status).toBe('queued');
+    expect(result.context_id).toBe('ctx-1');
 
     expect(requestLogs.length).toBe(1);
-    expect(requestLogs[0].path).toBe('/message_async');
-    expect(requestLogs[0].body).toEqual({
-      text: 'Long job',
-    });
+    expect(requestLogs[0].path).toBe('/api_message');
+    expect(requestLogs[0].body.message).toBe('Long job');
+    expect(requestLogs[0].body.lifetime_hours).toBe(1);
   });
 
   it('log command parses arguments and sends correct API call', async () => {

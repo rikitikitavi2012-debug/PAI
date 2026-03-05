@@ -164,14 +164,14 @@ async function sendMessage(message: string, contextId?: string): Promise<void> {
   }, null, 2));
 }
 
-// Send async message (fire-and-forget)
+// Send async message (fire-and-forget via /api_message with short timeout)
 async function sendAsync(message: string, contextId?: string): Promise<void> {
-  const body: any = { text: message };
-  if (contextId) body.context = contextId;
+  const body: any = { message, lifetime_hours: 1 };
+  if (contextId) body.context_id = contextId;
 
   emitA0Event('async_sent', { context_id: contextId || 'new', preview: message.slice(0, 50) });
 
-  const result = await apiCall('/message_async', body, 15000);
+  const result = await apiCall('/api_message', body, 15000);
 
   // Track context if returned
   if (result.context_id) {
@@ -205,12 +205,20 @@ async function schedulerRun(task: string): Promise<void> {
 }
 
 async function schedulerResults(): Promise<void> {
-  // Pull last scheduled task results via A0 sync message (scheduler API is CSRF-protected)
-  const result = await sendMessage(
-    'Show results of your last completed scheduled task. Include: task name, when it ran, key findings, and status (clean/issues found). Be brief — 5 lines max.',
-    undefined
-  );
-  console.log(JSON.stringify(result, null, 2));
+  // Pull results directly from scheduler_tasks_list (contains last_result field)
+  const tasks = await apiCall('/scheduler_tasks_list', {}, 15000);
+  if (!Array.isArray(tasks)) {
+    console.log(JSON.stringify(tasks, null, 2));
+    return;
+  }
+  for (const task of tasks) {
+    console.log(`\n── ${task.name || 'Unnamed'} ──`);
+    console.log(`  State: ${task.state || '?'} | Schedule: ${task.schedule || 'adhoc'}`);
+    console.log(`  Last run: ${task.last_run || 'never'}`);
+    if (task.last_result) {
+      console.log(`  Result: ${task.last_result.slice(0, 200)}`);
+    }
+  }
 }
 
 // ─── CLI entry point ───────────────────────────────────────────────
@@ -228,7 +236,7 @@ async function main() {
   bun AgentZero.ts terminate <context_id>        — end conversation
   bun AgentZero.ts health                        — server check
   bun AgentZero.ts scheduler list                — list tasks
-  bun AgentZero.ts scheduler results             — last task results
+  bun AgentZero.ts scheduler results             — last run results for all tasks
   bun AgentZero.ts scheduler run "task"          — run ad-hoc task`);
     process.exit(1);
   }
