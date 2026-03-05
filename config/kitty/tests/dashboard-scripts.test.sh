@@ -203,19 +203,18 @@ grep -q 'fromjson' "$EVT_FMT"
 assert "lib/events-format.sh contains jq parser" $?
 
 # Both consumers source the shared lib
+# telemetry-dashboard uses its own compact jq (not shared verbose format)
 grep -q 'events-format.sh' "$SCRIPTS_DIR/telemetry-dashboard.sh"
-assert "telemetry-dashboard.sh sources events-format.sh" $?
+assert_not "telemetry-dashboard.sh uses own compact format (not shared)" $?
 grep -q 'events-format.sh' "$SCRIPTS_DIR/events-tail.sh"
 assert "events-tail.sh sources events-format.sh" $?
 
-# Neither consumer has inline jq formatter (no duplication)
-grep -q 'fromjson' "$SCRIPTS_DIR/telemetry-dashboard.sh"
-assert_not "telemetry-dashboard.sh no inline jq formatter (uses lib)" $?
+# events-tail.sh should not have inline jq formatter (uses lib)
 grep -q 'fromjson' "$SCRIPTS_DIR/events-tail.sh"
 assert_not "events-tail.sh no inline jq formatter (uses lib)" $?
 
-# ── 12. Telemetry dashboard (two layouts) ──
-echo -e "\n11. Telemetry dashboard:"
+# ── 12. Telemetry dashboard (split-view) ──
+echo -e "\n12. Telemetry dashboard:"
 target="$SCRIPTS_DIR/telemetry-dashboard.sh"
 bash -n "$target" 2>/dev/null
 assert "telemetry-dashboard.sh valid syntax" $?
@@ -230,51 +229,51 @@ assert "telemetry-dashboard.sh uses dynamic tab colors" $?
 grep -q 'pulse' "$target"
 assert "telemetry-dashboard.sh has pulse indicator" $?
 
-# Layout switching
-grep -q 'LAYOUT=' "$target"
-assert "telemetry-dashboard.sh has LAYOUT variable" $?
-grep -q 'poll_dashboard()' "$target"
-assert "telemetry-dashboard.sh has poll_dashboard function" $?
-grep -q 'render_legend()' "$target"
-assert "telemetry-dashboard.sh has render_legend function" $?
-grep -q 'start_livelog()' "$target"
-assert "telemetry-dashboard.sh has start_livelog function" $?
-grep -q 'stop_livelog()' "$target"
-assert "telemetry-dashboard.sh has stop_livelog function" $?
-grep -q 'DASHBOARD' "$target"
-assert "telemetry-dashboard.sh has Dashboard layout header" $?
-grep -q 'LIVE LOG' "$target"
-assert "telemetry-dashboard.sh has Live Log layout header" $?
+# Split-view layout (left metrics + right events)
+grep -q 'build_left_panel()' "$target"
+assert "telemetry-dashboard.sh has build_left_panel function" $?
+grep -q 'build_right_panel()' "$target"
+assert "telemetry-dashboard.sh has build_right_panel function" $?
+grep -q 'poll()' "$target"
+assert "telemetry-dashboard.sh has poll function" $?
+grep -q 'two_col_top' "$target"
+assert "telemetry-dashboard.sh uses two_col layout" $?
+grep -q 'LEFT_LINES' "$target"
+assert "telemetry-dashboard.sh builds left panel array" $?
+grep -q 'RIGHT_LINES' "$target"
+assert "telemetry-dashboard.sh builds right panel array" $?
 
-# Legend content
-grep -q 'СОБЫТИЯ' "$target"
-assert "telemetry-dashboard.sh legend has СОБЫТИЯ section" $?
-grep -q 'ПОЛЯ' "$target"
-assert "telemetry-dashboard.sh legend has ПОЛЯ section" $?
-grep -q 'inference.*API' "$target"
-assert "telemetry-dashboard.sh legend explains inference" $?
-grep -q 'voice.*ElevenLabs\|voice.*уведомление' "$target"
-assert "telemetry-dashboard.sh legend explains voice" $?
-grep -q 'agent.*субагент' "$target"
-assert "telemetry-dashboard.sh legend explains agents" $?
-
-# tail -f streaming
-grep -q 'tail.*-f.*EVENTS_FILE' "$target"
-assert "telemetry-dashboard.sh uses tail -f for streaming" $?
-grep -q 'jq.*unbuffered' "$target"
-assert "telemetry-dashboard.sh uses jq --unbuffered" $?
-grep -q 'TAIL_PID' "$target"
-assert "telemetry-dashboard.sh tracks tail PID for cleanup" $?
-
-# Golden Signals (core metrics)
-grep -q 'LATENCY' "$target"
+# Left panel: Golden Signals
+grep -q 'GOLDEN SIGNALS' "$target"
+assert "telemetry-dashboard.sh has Golden Signals section" $?
+grep -q 'Latency' "$target"
 assert "telemetry-dashboard.sh has latency metric" $?
-grep -q 'TRAFFIC' "$target"
+grep -q 'Traffic' "$target"
 assert "telemetry-dashboard.sh has traffic metric" $?
-grep -q 'ERRORS' "$target"
+grep -q 'Errors' "$target"
 assert "telemetry-dashboard.sh has errors metric" $?
-grep -q 'SATURATION' "$target"
+grep -q 'Saturat' "$target"
 assert "telemetry-dashboard.sh has saturation metric" $?
+
+# Left panel: Providers with error rate
+grep -q 'API PROVIDERS' "$target"
+assert "telemetry-dashboard.sh has providers section" $?
+grep -q 'prov_err' "$target"
+assert "telemetry-dashboard.sh computes provider error rate" $?
+
+# Left panel: System stats
+grep -q 'SYSTEM' "$target"
+assert "telemetry-dashboard.sh has system section" $?
+
+# Right panel: Events
+grep -q 'EVENTS' "$target"
+assert "telemetry-dashboard.sh has events panel" $?
+grep -q 'FILTER' "$target"
+assert "telemetry-dashboard.sh has event filtering" $?
+
+# Events use compact jq format (inline, different from verbose events-format.sh)
+grep -q 'fromjson' "$target"
+assert "telemetry-dashboard.sh has compact jq event parser" $?
 
 # ── Summary ──
 echo -e "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

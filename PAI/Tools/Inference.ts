@@ -28,13 +28,12 @@
  *   smart:    model=opus,         timeout=90s,  provider=claude
  *   gemini:   model=gemini-pro,   timeout=30s,  provider=gemini-cli
  *
- * BILLING: Claude levels use CLI subscription. Gemini uses GOOGLE_API_KEY (free 1000/day, Pro 5x).
+ * BILLING: Claude levels use ANTHROPIC_API_KEY (direct API). Gemini uses GOOGLE_API_KEY (free 1000/day, Pro 5x).
  *
  * ============================================================================
  */
 
-import { spawn } from "child_process";
-import { appendFileSync, existsSync, mkdirSync } from "fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync } from "fs";
 import { join, dirname } from "path";
 
 /** Emit inference event to events.jsonl (fire-and-forget, never throws) */
@@ -73,6 +72,13 @@ export interface InferenceResult {
   level: InferenceLevel;
 }
 
+// Anthropic API model IDs
+const CLAUDE_MODEL_MAP: Record<string, string> = {
+  haiku: 'claude-haiku-4-5-20251001',
+  sonnet: 'claude-sonnet-4-6',
+  opus: 'claude-opus-4-6',
+};
+
 // Level configurations
 const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: number; provider: 'claude' | 'gemini' | 'zai' }> = {
   fast: { model: 'haiku', defaultTimeout: 15000, provider: 'claude' },
@@ -82,6 +88,19 @@ const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: numb
   glm5: { model: 'glm-5', defaultTimeout: 30000, provider: 'zai' },
 };
 
+/** Load API key from env or .env file */
+function loadApiKey(envVar: string): string {
+  let key = process.env[envVar] || '';
+  if (!key) {
+    try {
+      const envContent = readFileSync(join(process.env.HOME || '', '.config', 'PAI', '.env'), 'utf-8');
+      const match = envContent.match(new RegExp(`^${envVar}=(.+)$`, 'm'));
+      if (match) key = match[1].trim();
+    } catch {}
+  }
+  return key;
+}
+
 /**
  * Run inference via Z.AI (GLM-5) OpenAI-compatible API
  */
@@ -89,17 +108,7 @@ async function inferenceZai(options: InferenceOptions, level: InferenceLevel, ti
   const startTime = Date.now();
   const config = LEVEL_CONFIG[level];
 
-  // Load ZAI_API_KEY from PAI .env
-  const envPath = `${process.env.HOME}/.config/PAI/.env`;
-  let apiKey = process.env.ZAI_API_KEY || '';
-  if (!apiKey) {
-    try {
-      const envContent = require('fs').readFileSync(envPath, 'utf-8');
-      const match = envContent.match(/^ZAI_API_KEY=(.+)$/m);
-      if (match) apiKey = match[1].trim();
-    } catch {}
-  }
-
+  const apiKey = loadApiKey('ZAI_API_KEY');
   if (!apiKey) {
     return { success: false, output: '', error: 'No ZAI_API_KEY found', latencyMs: Date.now() - startTime, level };
   }
@@ -169,17 +178,7 @@ async function inferenceZai(options: InferenceOptions, level: InferenceLevel, ti
 async function inferenceGemini(options: InferenceOptions, level: InferenceLevel, timeout: number): Promise<InferenceResult> {
   const startTime = Date.now();
 
-  // Load GOOGLE_API_KEY from PAI .env
-  const envPath = `${process.env.HOME}/.config/PAI/.env`;
-  let apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || '';
-  if (!apiKey) {
-    try {
-      const envContent = require('fs').readFileSync(envPath, 'utf-8');
-      const match = envContent.match(/^GOOGLE_API_KEY=(.+)$/m);
-      if (match) apiKey = match[1].trim();
-    } catch {}
-  }
-
+  const apiKey = loadApiKey('GOOGLE_API_KEY') || loadApiKey('GEMINI_API_KEY');
   if (!apiKey) {
     return { success: false, output: '', error: 'No GOOGLE_API_KEY found', latencyMs: Date.now() - startTime, level };
   }
@@ -262,137 +261,81 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
     return result;
   }
 
+  // Direct Anthropic API fetch (no subprocess overhead)
   const startTime = Date.now();
+  const apiKey = loadApiKey('ANTHROPIC_API_KEY');
 
-  return new Promise((resolve) => {
-    // Build environment WITHOUT ANTHROPIC_API_KEY to force subscription auth
-    // Also unset CLAUDECODE so nested `claude` invocations don't trigger the
-    // nested-session guard (hooks run inside Claude Code's environment).
-    const env = { ...process.env };
-    delete env.ANTHROPIC_API_KEY;
-    delete env.CLAUDECODE;
+  if (!apiKey) {
+    const latencyMs = Date.now() - startTime;
+    emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+    return { success: false, output: '', error: 'No ANTHROPIC_API_KEY found in env or .env', latencyMs, level };
+  }
 
-    const args = [
-      '--print',
-      '--model', config.model,
-      '--tools', '',  // Disable tools for faster response
-      '--output-format', 'text',
-      '--setting-sources', '',  // Disable hooks to prevent recursion
-      '--system-prompt', options.systemPrompt,
-    ];
+  const modelId = CLAUDE_MODEL_MAP[config.model] || config.model;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    let stdout = '';
-    let stderr = '';
-
-    const proc = spawn('claude', args, {
-      env,
-      stdio: ['pipe', 'pipe', 'pipe'],
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: modelId,
+        max_tokens: 4096,
+        system: options.systemPrompt,
+        messages: [{ role: 'user', content: options.userPrompt }],
+      }),
+      signal: controller.signal,
     });
 
-    // Write prompt via stdin to avoid ARG_MAX limits on large inputs
-    proc.stdin.write(options.userPrompt);
-    proc.stdin.end();
+    clearTimeout(timeoutId);
+    const latencyMs = Date.now() - startTime;
 
-    proc.stdout.on('data', (data) => {
-      stdout += data.toString();
-    });
-
-    proc.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-
-    // Handle timeout
-    const timeoutId = setTimeout(() => {
-      proc.kill('SIGTERM');
-      const latencyMs = Date.now() - startTime;
+    if (!response.ok) {
+      const errText = await response.text();
       emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
-      resolve({
-        success: false,
-        output: '',
-        error: `Timeout after ${timeout}ms`,
-        latencyMs,
-        level,
-      });
-    }, timeout);
+      return { success: false, output: '', error: `Anthropic API ${response.status}: ${errText.slice(0, 200)}`, latencyMs, level };
+    }
 
-    proc.on('close', (code) => {
-      clearTimeout(timeoutId);
-      const latencyMs = Date.now() - startTime;
+    const data = await response.json() as any;
+    const output = (data.content?.[0]?.text || '').trim();
 
-      if (code !== 0) {
-        emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
-        resolve({
-          success: false,
-          output: stdout,
-          error: stderr || `Process exited with code ${code}`,
-          latencyMs,
-          level,
-        });
-        return;
-      }
+    if (!output) {
+      emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+      return { success: false, output: '', error: 'Empty Anthropic response', latencyMs, level };
+    }
 
-      const output = stdout.trim();
-
-      // Parse JSON if requested
-      if (options.expectJson) {
-        const jsonMatch = output.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          try {
-            const parsed = JSON.parse(jsonMatch[0]);
-            emitInferenceEvent(level, 'claude', config.model, true, latencyMs);
-            resolve({
-              success: true,
-              output,
-              parsed,
-              latencyMs,
-              level,
-            });
-            return;
-          } catch {
-            emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
-            resolve({
-              success: false,
-              output,
-              error: 'Failed to parse JSON response',
-              latencyMs,
-              level,
-            });
-            return;
-          }
+    if (options.expectJson) {
+      const jsonMatch = output.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          const parsed = JSON.parse(jsonMatch[0]);
+          emitInferenceEvent(level, 'claude', config.model, true, latencyMs);
+          return { success: true, output, parsed, latencyMs, level };
+        } catch {
+          emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+          return { success: false, output, error: 'Failed to parse JSON response', latencyMs, level };
         }
-        emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
-        resolve({
-          success: false,
-          output,
-          error: 'No JSON found in response',
-          latencyMs,
-          level,
-        });
-        return;
       }
-
-      emitInferenceEvent(level, 'claude', config.model, true, latencyMs);
-      resolve({
-        success: true,
-        output,
-        latencyMs,
-        level,
-      });
-    });
-
-    proc.on('error', (err) => {
-      clearTimeout(timeoutId);
-      const latencyMs = Date.now() - startTime;
       emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
-      resolve({
-        success: false,
-        output: '',
-        error: err.message,
-        latencyMs,
-        level,
-      });
-    });
-  });
+      return { success: false, output, error: 'No JSON found in response', latencyMs, level };
+    }
+
+    emitInferenceEvent(level, 'claude', config.model, true, latencyMs);
+    return { success: true, output, latencyMs, level };
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    const latencyMs = Date.now() - startTime;
+    emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+    if (err.name === 'AbortError') {
+      return { success: false, output: '', error: `Timeout after ${timeout}ms`, latencyMs, level };
+    }
+    return { success: false, output: '', error: err.message, latencyMs, level };
+  }
 }
 
 /**
