@@ -37,6 +37,16 @@ M_SESSIONS=0 M_WORK=0 M_TOTAL=0
 M_TRAFFIC_1H=0
 M_PROV_DATA=""
 
+# Algorithm state
+M_ALGO_SLUG="" M_ALGO_PHASE="" M_ALGO_PROG="" M_ALGO_TOTAL=""
+
+# Active agents (newline-separated: type\tid\tdesc\tepoch)
+M_ACTIVE_AGENTS=""
+M_ACTIVE_AGENTS_COUNT=0
+
+# Recent events (newline-separated: time\ticon\ttype\tdetail)
+M_RECENT=""
+
 # Panel line array
 METRIC_LINES=()
 
@@ -112,6 +122,103 @@ compute_metrics() {
 }
 
 # ═══════════════════════════════════════════════════
+# ── Algorithm: current task from prd.synced events ──
+# ═══════════════════════════════════════════════════
+compute_algorithm() {
+  [ ! -f "$EVENTS_FILE" ] && return
+
+  local raw
+  raw=$(jq -sr '
+    [.[] | select(.type == "prd.synced")] |
+    if length == 0 then "|||" else
+      group_by(.slug) |
+      map(sort_by(.timestamp) | last) |
+      sort_by(.timestamp) | last |
+      [(.slug // ""), (.phase // ""), (.progress // "")] |
+      (.[2] | split("/") | if length == 2 then .[1] else "0" end) as $total |
+      (.[0] + "\t" + .[1] + "\t" + .[2] + "\t" + $total)
+    end
+  ' "$EVENTS_FILE" 2>/dev/null)
+
+  if [ -n "$raw" ] && [ "$raw" != "|||" ]; then
+    IFS=$'\t' read -r M_ALGO_SLUG M_ALGO_PHASE M_ALGO_PROG M_ALGO_TOTAL <<< "$raw"
+  fi
+}
+
+# ═══════════════════════════════════════════════════
+# ── Active Agents: start without matching stop ──
+# ═══════════════════════════════════════════════════
+compute_active_agents() {
+  [ ! -f "$EVENTS_FILE" ] && return
+
+  M_ACTIVE_AGENTS=$(jq -sr '
+    # Collect all agent events
+    [.[] | select(.type == "agent.start" or .type == "agent.stop")] |
+    # Group by agent_id
+    group_by(.agent_id) |
+    # Keep only those where last event is agent.start
+    map(sort_by(.timestamp) | last | select(.type == "agent.start")) |
+    # Format output
+    .[] |
+    [
+      (.agent_type // "unknown"),
+      (.agent_id // "?" | .[:7]),
+      (.description // ""),
+      (.timestamp // "")
+    ] | @tsv
+  ' "$EVENTS_FILE" 2>/dev/null)
+
+  M_ACTIVE_AGENTS_COUNT=0
+  if [ -n "$M_ACTIVE_AGENTS" ]; then
+    M_ACTIVE_AGENTS_COUNT=$(echo "$M_ACTIVE_AGENTS" | wc -l)
+  fi
+}
+
+# ═══════════════════════════════════════════════════
+# ── Recent: last 5 non-inference events ──
+# ═══════════════════════════════════════════════════
+compute_recent() {
+  [ ! -f "$EVENTS_FILE" ] && return
+
+  M_RECENT=$(jq -sr --argjson tz "$TZ_OFFSET_H" '
+    [.[] | select(.type | startswith("inference.") | not)] |
+    sort_by(.timestamp) | .[-5:] | reverse |
+    .[] |
+    # Extract HH:MM with timezone
+    (.timestamp // "" | .[:19] | split("T") |
+      if length == 2 then
+        (.[1] | split(":") | (.[0] | tonumber) + $tz |
+          if . < 0 then . + 24 elif . >= 24 then . - 24 else . end |
+          tostring | if length < 2 then "0" + . else . end
+        ) as $h |
+        (.[1] | split(":") | .[1]) as $m |
+        ($h + ":" + $m)
+      else "--:--"
+      end
+    ) as $time |
+    # Icon and detail by type
+    (
+      if   .type == "agent.start"          then ["🚀", (.agent_type // "") + " " + ((.agent_id // "")[:7])]
+      elif .type == "agent.stop"           then ["🏁", (.agent_id // "")[:7]]
+      elif .type == "prd.synced"           then ["📋", "φ=" + (.phase // "") + " " + (.progress // "")]
+      elif .type == "voice.sent"           then ["🔊", (.data.hook // .source // "")]
+      elif .type == "voice.failed"         then ["🔇", (.data.error // "fail")]
+      elif .type == "rating.captured"      then ["⭐", "★" + ((.data.rating // .rating // 0) | tostring)]
+      elif .type == "session.completed"    then ["📍", "done"]
+      elif .type == "work.completed"       then ["📦", "done"]
+      elif .type == "a0.response"          then ["🧠", "ctx=" + ((.data.context_id // .context_id // "")[:8])]
+      elif .type == "custom.post_compact_recovery" then ["♻️", "compact"]
+      elif .type == "task.completed"       then ["✅", (.task_subject // "")[:20]]
+      elif (.type | startswith("worktree")) then ["🌿", (.type | ltrimstr("worktree_"))]
+      elif .type == "security.alert"       then ["🛡️", (.data.severity // "")]
+      else ["•", ""]
+      end
+    ) as [$icon, $detail] |
+    [$time, $icon, .type, $detail] | @tsv
+  ' "$EVENTS_FILE" 2>/dev/null)
+}
+
+# ═══════════════════════════════════════════════════
 # ── Build metrics panel (full-width, single column) ──
 # ═══════════════════════════════════════════════════
 build_metrics() {
@@ -158,6 +265,53 @@ build_metrics() {
     sat_status="WARN"; sat_color="$YLW"
   fi
 
+  # ── Algorithm ──
+  METRIC_LINES+=("$(printf '%b%bALGORITHM%b' "$ORG" "$BLD" "$RST")")
+  if [ -n "$M_ALGO_SLUG" ] && [ "$M_ALGO_PHASE" != "complete" ] && [ "$M_ALGO_PHASE" != "COMPLETE" ]; then
+    local slug_display
+    slug_display=$(truncate "$M_ALGO_SLUG" 30)
+    local phase_upper
+    phase_upper=$(echo "$M_ALGO_PHASE" | tr '[:lower:]' '[:upper:]')
+    # Compute percentage for progress bar
+    local prog_pct=0
+    if [ -n "$M_ALGO_TOTAL" ] && [ "$M_ALGO_TOTAL" != "0" ]; then
+      local prog_done="${M_ALGO_PROG%%/*}"
+      prog_pct=$(( prog_done * 100 / M_ALGO_TOTAL ))
+    fi
+    local pbar
+    pbar=$(progress_bar "$prog_pct" 10)
+    METRIC_LINES+=("$(printf '  %b%s%b  %b%s%b  %s %b%s%b' \
+      "$WHT" "$slug_display" "$RST" \
+      "$YLW" "$phase_upper" "$RST" \
+      "$pbar" "$SLT" "$M_ALGO_PROG" "$RST")")
+  else
+    METRIC_LINES+=("$(printf '  %b(idle)%b' "$DIM" "$RST")")
+  fi
+  METRIC_LINES+=("")
+
+  # ── Active Agents ──
+  METRIC_LINES+=("$(printf '%b%bAGENTS%b %b(%s active)%b' "$CYN" "$BLD" "$RST" "$SLT" "$M_ACTIVE_AGENTS_COUNT" "$RST")")
+  if [ -n "$M_ACTIVE_AGENTS" ] && [ "$M_ACTIVE_AGENTS_COUNT" -gt 0 ]; then
+    while IFS=$'\t' read -r a_type a_id a_desc a_ts; do
+      [ -z "$a_type" ] && continue
+      local elapsed=""
+      if [ -n "$a_ts" ]; then
+        local ts_epoch
+        ts_epoch=$(date -d "${a_ts}" +%s 2>/dev/null || echo 0)
+        [ "$ts_epoch" -gt 0 ] && elapsed=$(time_ago "$ts_epoch")
+      fi
+      local desc_display=""
+      [ -n "$a_desc" ] && desc_display=$(truncate "$a_desc" 25)
+      METRIC_LINES+=("$(printf '  %b%-10s%b %b%s%b  %s  %b%s%b' \
+        "$WHT" "$a_type" "$RST" "$DIM" "$a_id" "$RST" \
+        "$desc_display" "$SLT" "$elapsed" "$RST")")
+    done <<< "$M_ACTIVE_AGENTS"
+  else
+    METRIC_LINES+=("$(printf '  %b(no active agents)%b' "$DIM" "$RST")")
+  fi
+  METRIC_LINES+=("")
+
+  # ── Golden Signals ──
   METRIC_LINES+=("$(printf '%b%bGOLDEN SIGNALS%b' "$WHT" "$BLD" "$RST")")
   METRIC_LINES+=("$(printf '%b⏱ Latency%b  P50:%b%ss%b  P95:%b%ss%b  %b%s%b' \
     "$SLT" "$RST" "$WHT" "$M_P50" "$RST" "$lat_color" "$M_P95" "$RST" "$lat_color" "$lat_status" "$RST")")
@@ -195,6 +349,24 @@ build_metrics() {
     done <<< "$M_PROV_DATA"
   else
     METRIC_LINES+=("$(printf '%b— no data%b' "$DIM" "$RST")")
+  fi
+  METRIC_LINES+=("")
+
+  # ── Recent Activity ──
+  METRIC_LINES+=("$(printf '%b%bRECENT%b' "$BLU" "$BLD" "$RST")")
+  if [ -n "$M_RECENT" ]; then
+    while IFS=$'\t' read -r r_time r_icon r_type r_detail; do
+      [ -z "$r_time" ] && continue
+      local type_short
+      type_short=$(truncate "$r_type" 18)
+      local detail_short
+      detail_short=$(truncate "$r_detail" 25)
+      METRIC_LINES+=("$(printf '  %b%s%b %s %b%-18s%b %b%s%b' \
+        "$DIM" "$r_time" "$RST" "$r_icon" "$WHT" "$type_short" "$RST" \
+        "$SLT" "$detail_short" "$RST")")
+    done <<< "$M_RECENT"
+  else
+    METRIC_LINES+=("$(printf '  %b(no events)%b' "$DIM" "$RST")")
   fi
   METRIC_LINES+=("")
 
@@ -265,6 +437,9 @@ poll() {
   # Compute
   spin_start "metrics..."
   compute_metrics
+  compute_algorithm
+  compute_active_agents
+  compute_recent
   spin_stop
 
   build_metrics
