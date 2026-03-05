@@ -45,6 +45,9 @@ describe('HealthMonitor.ts', () => {
       if (urlStr.includes('localhost:8888/health')) {
         return new Response('OK', { status: 200 });
       }
+      if (urlStr.includes('api.z.ai')) {
+        return new Response(JSON.stringify({ choices: [{ message: { content: 'OK' } }] }), { status: 200 });
+      }
       return new Response('Not Found', { status: 404 });
     });
 
@@ -114,7 +117,7 @@ describe('HealthMonitor.ts', () => {
   });
 
   it('3. Each check has: service, status, latencyMs, timestamp', () => {
-    expect(reportJson.checks.length).toBe(3);
+    expect(reportJson.checks.length).toBe(4);
     for (const check of reportJson.checks) {
       expect(check).toHaveProperty('service');
       expect(typeof check.service).toBe('string');

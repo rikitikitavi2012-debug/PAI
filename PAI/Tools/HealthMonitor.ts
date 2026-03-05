@@ -112,9 +112,48 @@ async function checkA0(): Promise<CheckResult> {
   }
 }
 
+async function checkZai(): Promise<CheckResult> {
+  const start = Date.now();
+  const apiKey = (() => {
+    let k = process.env.ZAI_API_KEY || process.env.Z_AI_API_KEY || '';
+    if (!k) {
+      try {
+        const env = require('fs').readFileSync(join(homedir(), '.config', 'PAI', '.env'), 'utf-8');
+        const m = env.match(/^ZAI_API_KEY=(.+)$/m);
+        if (m) k = m[1].trim();
+      } catch {}
+    }
+    return k;
+  })();
+  if (!apiKey) return { service: 'Z.AI', status: 'down', latencyMs: 0, detail: 'No API key', timestamp: new Date().toISOString() };
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15_000);
+    const res = await fetch('https://api.z.ai/api/coding/paas/v4/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: 'glm-5', messages: [{ role: 'user', content: 'respond: OK' }], max_tokens: 8000 }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    const data = await res.json() as any;
+    const content = data.choices?.[0]?.message?.content || data.choices?.[0]?.message?.reasoning_content || '';
+    return {
+      service: 'Z.AI',
+      status: res.ok && content ? 'up' : 'down',
+      latencyMs: Date.now() - start,
+      detail: res.ok ? `GLM-5: ${content.slice(0, 30)}` : `HTTP ${res.status}`,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (err: any) {
+    return { service: 'Z.AI', status: 'down', latencyMs: Date.now() - start, detail: err.message, timestamp: new Date().toISOString() };
+  }
+}
+
 async function main() {
   const checks = await Promise.all([
     checkA0(),
+    checkZai(),
     checkHttp('VoiceServer', 'http://localhost:8888/health'),
     Promise.resolve(checkCli('GitHubCLI', ['gh', 'auth', 'status'])),
   ]);
