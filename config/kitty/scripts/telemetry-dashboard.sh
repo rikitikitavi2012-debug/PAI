@@ -49,6 +49,7 @@ compute_metrics() {
   local raw
   raw=$(jq -sr '
     (now - 3600) as $hour_ago |
+    length as $total |
 
     # Inference
     [.[] | select(.type == "inference.ok")]  as $ok |
@@ -63,24 +64,22 @@ compute_metrics() {
     (if $ln > 0 then $lats[([$ln - 1, ($ln * 95 / 100 | floor)] | min)] else 0 end) as $p95 |
 
     # Traffic last hour
-    [.[] | select(
+    ([.[] | select(
       (.timestamp // "" | length) > 10 and
       ((.timestamp[:19] + "Z" | try strptime("%Y-%m-%dT%H:%M:%SZ") | mktime) // 0) > $hour_ago
-    )] | length as $traffic |
+    )] | length) as $traffic |
 
     # Voice
-    [.[] | select(.type == "voice.sent")] | length as $vs |
-    [.[] | select(.type == "voice.failed")] | length as $vf |
+    ([.[] | select(.type == "voice.sent")] | length) as $vs |
+    ([.[] | select(.type == "voice.failed")] | length) as $vf |
 
     # Agents
-    [.[] | select(.type == "agent.start")] | length as $as |
-    [.[] | select(.type == "agent.stop")] | length as $ao |
+    ([.[] | select(.type == "agent.start")] | length) as $as |
+    ([.[] | select(.type == "agent.stop")] | length) as $ao |
 
     # Sessions / Work
-    [.[] | select(.type == "session.completed")] | length as $sc |
-    [.[] | select(.type == "work.completed")] | length as $wc |
-
-    length as $total |
+    ([.[] | select(.type == "session.completed")] | length) as $sc |
+    ([.[] | select(.type == "work.completed")] | length) as $wc |
 
     [
       $ok_n, $fail_n,
