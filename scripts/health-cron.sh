@@ -16,8 +16,8 @@ LOG_FILE="$LOG_DIR/health-$(date +%Y-%m-%d).jsonl"
 # Run health monitor, capture output
 RESULT=$(bun "$HOME/.claude/PAI/Tools/HealthMonitor.ts" 2>/dev/null) || RESULT='{"error":"HealthMonitor crashed","timestamp":"'"$TIMESTAMP"'"}'
 
-# Append to daily log (JSONL)
-echo "$RESULT" >> "$LOG_FILE"
+# Append to daily log (JSONL — one JSON object per line)
+echo "$RESULT" | jq -c '.' >> "$LOG_FILE" 2>/dev/null || echo "$RESULT" >> "$LOG_FILE"
 
 # Rotate: keep last 30 days
 find "$LOG_DIR" -name "health-*.jsonl" -mtime +30 -delete 2>/dev/null || true

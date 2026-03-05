@@ -6,12 +6,15 @@
 A0_HOST="72.56.86.51:50002"
 A0_CONTEXT_FILE="$HOME/.claude/MEMORY/STATE/a0-active-context.json"
 A0_ENV="$HOME/.config/PAI/.env"
+A0_CLI="$HOME/.claude/PAI/Tools/AgentZero.ts"
 
 # A0 is direct WAN — bypass VPN proxy
 export NO_PROXY="${NO_PROXY:+$NO_PROXY,}72.56.86.51"
 export no_proxy="${no_proxy:+$no_proxy,}72.56.86.51"
+export PATH="$HOME/.bun/bin:$PATH"
 POLL_INTERVAL=5
 LAST_NO=-1
+NO_CTX_COUNT=0
 
 # ── Colors (24-bit RGB — PAI palette, shared across all dashboards) ──
 RST='\e[0m'
@@ -88,6 +91,79 @@ get_context_info() {
       fi
     fi
   fi
+}
+
+# ── Idle panel (no active context) ──
+show_idle_panel() {
+  box_top
+  box_line "$(printf '%b%b  A0 CHAT%b  %b  нет активного диалога%b' "${CYN}" "${BLD}" "${RST}" "${SLT}" "${RST}")"
+  box_sep
+  box_line ""
+  box_line "$(printf '%b  Команды:%b' "${WHT}${BLD}" "${RST}")"
+  box_line "$(printf '%b  m%b = отправить сообщение     %bl%b = посмотреть лог' "${CYN}" "${RST}" "${CYN}" "${RST}")"
+  box_line "$(printf '%b  t%b = задачи scheduler        %bh%b = проверить здоровье' "${CYN}" "${RST}" "${CYN}" "${RST}")"
+  box_line "$(printf '%b  c%b = ввести context_id       %br%b = обновить' "${CYN}" "${RST}" "${CYN}" "${RST}")"
+  box_line ""
+  box_sep
+  box_line "$(printf '%b  CLI:%b' "${WHT}${BLD}" "${RST}")"
+  box_line "$(printf '%b  bun AgentZero.ts message \"текст\"%b' "${DIM}" "${RST}")"
+  box_line "$(printf '%b  bun AgentZero.ts async \"длинная задача\"%b' "${DIM}" "${RST}")"
+  box_line "$(printf '%b  bun AgentZero.ts scheduler results%b' "${DIM}" "${RST}")"
+  box_line ""
+  box_bot
+}
+
+# ── Show scheduled tasks ──
+show_scheduler_tasks() {
+  printf "\n"
+  section_header "" "Scheduled Tasks" "$VIO"
+  printf "\n"
+  bun "$A0_CLI" scheduler results 2>/dev/null | head -15
+  printf "\n"
+}
+
+# ── Send message interactively ──
+do_send_message() {
+  printf "\n  %bСообщение:%b " "${CYN}" "${RST}"
+  read -r msg
+  if [ -n "$msg" ]; then
+    local ctx_flag=""
+    [ -n "$CTX_ID" ] && ctx_flag="--context $CTX_ID"
+    printf "  %bОтправляю...%b\n" "${DIM}" "${RST}"
+    bun "$A0_CLI" message "$msg" $ctx_flag 2>&1
+    printf "\n"
+  fi
+}
+
+# ── Check health ──
+do_health_check() {
+  printf "\n  %bПроверяю здоровье A0...%b\n" "${DIM}" "${RST}"
+  bun "$A0_CLI" health 2>&1
+  printf "\n"
+}
+
+# ── Show last log ──
+do_show_log() {
+  printf "\n  %bЗапрашиваю лог...%b\n" "${DIM}" "${RST}"
+  bun "$A0_CLI" log 2>&1 | head -20
+  printf "\n"
+}
+
+# ── Enter context manually ──
+do_enter_context() {
+  printf "\n  %bContext ID:%b " "${CYN}" "${RST}"
+  read -r new_ctx
+  if [ -n "$new_ctx" ]; then
+    CTX_ID="$new_ctx"
+    LAST_CTX=""
+    LAST_NO=-1
+    printf "  %bКонтекст установлен: %s%b\n" "${GRN}" "${new_ctx:0:24}" "${RST}"
+  fi
+}
+
+# ── Status bar ──
+print_status_bar() {
+  printf "  %b── r=обновить  m=сообщение  t=задачи  h=health  c=контекст  q=выход ──%b" "${SEP}" "${RST}"
 }
 
 # ── Fetch and display chat log ──
@@ -187,15 +263,16 @@ fetch_chat() {
 # ── Main loop ──
 print_header
 
-printf "\n  %bОжидаю активный контекст A0...%b\n" "${DIM}" "${RST}"
-printf "  %bОтправь сообщение через: bun AgentZero.ts message \"...\"%b\n" "${DIM}" "${RST}"
-
 LAST_CTX=""
+IDLE_SHOWN=0
 
 while true; do
   CTX_ID=$(get_context_id)
 
   if [ -n "$CTX_ID" ]; then
+    NO_CTX_COUNT=0
+    IDLE_SHOWN=0
+
     # Context changed — reset and redraw
     if [ "$CTX_ID" != "$LAST_CTX" ]; then
       print_header
@@ -207,13 +284,35 @@ while true; do
     fi
 
     fetch_chat "$CTX_ID"
+  else
+    # No active context — show idle panel once
+    if [ "$IDLE_SHOWN" -eq 0 ]; then
+      print_header
+      printf "\n"
+      show_idle_panel
+      IDLE_SHOWN=1
+    fi
+
+    # Auto-show scheduler tasks every 30s (6 * 5s poll)
+    NO_CTX_COUNT=$((NO_CTX_COUNT + 1))
+    if [ $((NO_CTX_COUNT % 6)) -eq 0 ]; then
+      show_scheduler_tasks
+    fi
   fi
 
-  # Interruptible sleep — r to refresh, q to quit
+  # Status bar
+  printf "\r\033[K"
+  print_status_bar
+
+  # Interruptible sleep — keyboard commands
   read -r -t "$POLL_INTERVAL" -n 1 key 2>/dev/null
-  if [[ "$key" == "q" || "$key" == "Q" ]]; then
-    break
-  elif [[ "$key" == "r" || "$key" == "R" ]]; then
-    printf "  %bОбновляю...%b\n" "${DIM}" "${RST}"
-  fi
+  case "$key" in
+    q|Q) break ;;
+    r|R) printf "\n  %bОбновляю...%b\n" "${DIM}" "${RST}"; IDLE_SHOWN=0 ;;
+    m|M) do_send_message ;;
+    t|T) show_scheduler_tasks ;;
+    h|H) do_health_check ;;
+    l|L) do_show_log ;;
+    c|C) do_enter_context ;;
+  esac
 done

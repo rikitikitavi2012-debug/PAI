@@ -13,6 +13,11 @@ export no_proxy="${no_proxy:+$no_proxy,}72.56.86.51"
 
 A0_HOST="72.56.86.51:50002"
 A0_HEALTH_URL="http://${A0_HOST}/health"
+A0_ENV="$HOME/.config/PAI/.env"
+A0_TOKEN=""
+if [ -f "$A0_ENV" ]; then
+  A0_TOKEN=$(grep '^A0_API_TOKEN=' "$A0_ENV" | cut -d= -f2-)
+fi
 JULES_TOOL="$HOME/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts"
 JAM_STATE="$HOME/.claude/MEMORY/STATE/jules-automerge.json"
 
@@ -194,6 +199,111 @@ poll() {
   else
     box_line "$(printf '%bНет данных%b %b(bun JulesAutoMerge.ts merge)%b' "$SLT" "$RST" "$DIM" "$RST")"
   fi
+
+  # ═══════════════════════════════════════════════════
+  # ── A0 Scheduled Tasks ──
+  # ═══════════════════════════════════════════════════
+  section_header "📋" "A0 TASKS" "$CYN"
+
+  if [ -n "$a0_json" ]; then
+    # Scheduler API is CSRF-protected — show known tasks from cache or hardcoded
+    local a0_tasks_cache="$HOME/.claude/MEMORY/STATE/a0-scheduler-cache.json"
+    if [ -f "$a0_tasks_cache" ]; then
+      local tasks_line=""
+      while IFS= read -r task_entry; do
+        [ -z "$task_entry" ] && continue
+        local tname tschedule
+        tname=$(echo "$task_entry" | jq -r '.name // "?"' 2>/dev/null)
+        tname=$(truncate "$tname" 16)
+        tschedule=$(echo "$task_entry" | jq -r '.schedule // ""' 2>/dev/null)
+        [ -n "$tasks_line" ] && tasks_line+="  "
+        tasks_line+=$(printf '%b%s%b %b%s%b' "$WHT" "$tname" "$RST" "$DIM" "$tschedule" "$RST")
+      done < <(jq -c '.[]' "$a0_tasks_cache" 2>/dev/null | head -5)
+      box_line "${tasks_line:-$(printf '%bзадач нет%b' "$DIM" "$RST")}"
+    else
+      # Hardcoded known tasks (updated manually when tasks change)
+      box_line "$(printf '%bULC%b %bdaily%b  %bTELOS%b %badhoc%b  %bSecScan%b %bweekly%b' \
+        "$WHT" "$RST" "$DIM" "$RST" "$WHT" "$RST" "$DIM" "$RST" "$WHT" "$RST" "$DIM" "$RST")"
+    fi
+  else
+    box_line "$(printf '%bA0 offline%b' "$DIM" "$RST")"
+  fi
+
+  # ═══════════════════════════════════════════════════
+  # ── Health Sparkline ──
+  # ═══════════════════════════════════════════════════
+  section_header "🏥" "HEALTH" "$GRN"
+
+  local health_dir="$HOME/.claude/MEMORY/STATE/health-logs"
+  local today_file="$health_dir/health-$(date '+%Y-%m-%d').jsonl"
+  local yester_file="$health_dir/health-$(date -d 'yesterday' '+%Y-%m-%d' 2>/dev/null || date -v-1d '+%Y-%m-%d' 2>/dev/null).jsonl"
+  local health_entries=""
+  [ -f "$yester_file" ] && health_entries+=$(cat "$yester_file" 2>/dev/null)
+  [ -f "$yester_file" ] && [ -f "$today_file" ] && health_entries+=$'\n'
+  [ -f "$today_file" ] && health_entries+=$(cat "$today_file" 2>/dev/null)
+
+  if [ -n "$health_entries" ]; then
+    local sparkline="" last_time="" all_ok=true
+    # Parse multi-line pretty JSON: slurp into array, take last 8
+    while IFS= read -r hentry; do
+      [ -z "$hentry" ] && continue
+      local h_ok h_ts
+      h_ok=$(echo "$hentry" | jq -r '.allHealthy // false' 2>/dev/null)
+      h_ts=$(echo "$hentry" | jq -r '.timestamp // ""' 2>/dev/null)
+      if [ "$h_ok" = "true" ]; then
+        sparkline+="${GRN}✅${RST}"
+      else
+        sparkline+="${RED}❌${RST}"
+        all_ok=false
+      fi
+      [ -n "$h_ts" ] && last_time=$(echo "$h_ts" | sed 's/T/ /' | cut -c12-16)
+    done < <(echo "$health_entries" | jq -c '.' 2>/dev/null | tail -8)
+
+    local h_status
+    if [ "$all_ok" = true ]; then
+      h_status=$(printf '%ball OK%b' "$GRN" "$RST")
+    else
+      h_status=$(printf '%bс ошибками%b' "$YLW" "$RST")
+    fi
+    box_line "$(printf '%s  %blast: %s%b %s' "$sparkline" "$DIM" "$last_time" "$RST" "$h_status")"
+  else
+    box_line "$(printf '%bнет данных%b' "$DIM" "$RST")"
+  fi
+
+  # ═══════════════════════════════════════════════════
+  # ── Cron Activity ──
+  # ═══════════════════════════════════════════════════
+  section_header "⏱" "CRON" "$SLT"
+
+  local cron_line=""
+  # Health cron: last modified health file
+  local last_health_file
+  last_health_file=$(ls -t "$health_dir"/health-*.jsonl 2>/dev/null | head -1)
+  if [ -n "$last_health_file" ]; then
+    local h_mtime
+    h_mtime=$(date -r "$last_health_file" '+%H:%M' 2>/dev/null || stat -c '%Y' "$last_health_file" 2>/dev/null | xargs -I{} date -d @{} '+%H:%M' 2>/dev/null || echo "?")
+    cron_line+=$(printf '%bhealth:%b %b%s%b %b✅%b' "$SLT" "$RST" "$WHT" "$h_mtime" "$RST" "$GRN" "$RST")
+  else
+    cron_line+=$(printf '%bhealth:%b %b—%b' "$SLT" "$RST" "$DIM" "$RST")
+  fi
+
+  # AutoMerge cron
+  cron_line+=$(printf '  %b│%b  ' "$SEP" "$RST")
+  if [ -f "$JAM_STATE" ]; then
+    local am_last am_time am_merged_count
+    am_last=$(jq -r '.lastCheck // ""' "$JAM_STATE" 2>/dev/null)
+    am_merged_count=$(jq -r '.stats.totalMerged // 0' "$JAM_STATE" 2>/dev/null)
+    if [ -n "$am_last" ] && [ "$am_last" != "null" ]; then
+      am_time=$(echo "$am_last" | sed 's/T/ /' | cut -c12-16)
+      cron_line+=$(printf '%bautomerge:%b %b%s%b' "$SLT" "$RST" "$WHT" "$am_time" "$RST")
+      [ "$am_merged_count" -gt 0 ] 2>/dev/null && cron_line+=$(printf ' %b+%sPR%b' "$GRN" "$am_merged_count" "$RST")
+    else
+      cron_line+=$(printf '%bautomerge:%b %b—%b' "$SLT" "$RST" "$DIM" "$RST")
+    fi
+  else
+    cron_line+=$(printf '%bautomerge:%b %b—%b' "$SLT" "$RST" "$DIM" "$RST")
+  fi
+  box_line "$cron_line"
 
   # ── Open PRs ──
   box_sep
