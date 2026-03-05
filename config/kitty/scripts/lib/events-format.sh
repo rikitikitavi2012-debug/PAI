@@ -19,8 +19,9 @@ JQ_EVENT_FORMAT='
   (if $filt == "fail" then select(.type | endswith("fail"))
    elif $filt == "inference" then select(.type | startswith("inference."))
    elif $filt == "voice" then select(.type | startswith("voice."))
-   elif $filt == "hooks" then select(.type | startswith("agent.") or startswith("task."))
-   elif $filt == "brigade" then select(.type | startswith("a0.") or startswith("agent.") or startswith("rating.") or startswith("voice."))
+   elif $filt == "hooks" then select(.type | startswith("agent.") or startswith("task.") or startswith("hook."))
+   elif $filt == "errors" then select(.type | startswith("hook.error"))
+   elif $filt == "brigade" then select(.type | startswith("a0.") or startswith("agent.") or startswith("rating.") or startswith("voice.") or startswith("merge.") or startswith("pr."))
    else . end) |
 
   # Timestamp UTC → local
@@ -55,6 +56,10 @@ JQ_EVENT_FORMAT='
    elif ($typ | startswith("prd."))       then "\u001b[38;2;59;130;246m"
    elif ($typ | startswith("inference.")) then "\u001b[38;2;232;121;249m"
    elif ($typ | startswith("a0."))        then "\u001b[38;2;103;232;249m\u001b[1m"
+   elif $typ == "merge.ok"                then "\u001b[38;2;74;222;128m"
+   elif ($typ | startswith("hook.error"))  then "\u001b[38;2;248;113;113m"
+   elif $typ == "merge.fail"              then "\u001b[38;2;248;113;113m"
+   elif $typ == "pr.tested"               then "\u001b[38;2;103;232;249m"
    elif ($typ | startswith("custom."))    then "\u001b[38;2;148;163;184m"
    elif ($typ | startswith("worktree"))   then "\u001b[2m"
    else "\u001b[38;2;203;213;225m"
@@ -77,6 +82,8 @@ JQ_EVENT_FORMAT='
       (.data.pr_number // empty | "PR#\(.)"),
       (.data.event // .event // empty | "ev=\(.)"),
       (.data.context_id // empty | "ctx=\(.[:8])"),
+      (.hook_name // empty | "hook=\(.)"),
+      (.error // .data.error // empty | "err=\(.[:40])"),
       (if .data.preview then
         (.data.preview[:30] | gsub("\n"; " ") | "\"\(.)\"")
        elif .data.last_message_preview then
@@ -99,6 +106,10 @@ JQ_EVENT_FORMAT='
    elif ($typ | startswith("worktree"))     then "🌳"
    elif ($typ | startswith("inference."))   then "🔮"
    elif ($typ | startswith("a0."))          then "🧠"
+   elif $typ == "merge.ok"                   then "🔀"
+   elif ($typ | startswith("hook.error"))    then "🔥"
+   elif $typ == "merge.fail"                then "❌"
+   elif $typ == "pr.tested"                 then "🧪"
    elif ($typ | startswith("custom."))      then "⚡"
    else "•" end) as $icon |
 

@@ -18,6 +18,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { getPaiDir } from './lib/paths';
 import { loadWisdomDomains } from '../PAI/lib/vocabulary-loader';
+import { emitHookError } from './lib/hook-error-emitter';
 
 const BASE_DIR = getPaiDir();
 const WISDOM_DIR = join(BASE_DIR, 'MEMORY', 'WISDOM');
@@ -321,4 +322,4 @@ async function main(): Promise<void> {
   process.exit(0);
 }
 
-main().catch(() => process.exit(0));
+main().catch((err) => { emitHookError('WisdomSync', err); process.exit(0); });

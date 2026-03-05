@@ -47,6 +47,17 @@ M_ACTIVE_AGENTS_COUNT=0
 # Recent events (newline-separated: time\ticon\ttype\tdetail)
 M_RECENT=""
 
+# API cost (only non-subscription calls: A0, Z.AI, direct Anthropic API)
+M_API_COST="0.00"
+
+# Compact pressure (compacts in last hour)
+M_COMPACT_1H=0
+M_COMPACT_TOTAL=0
+
+# Alert state
+M_ERR_RATE_5M=0
+ALERT_SENT=0
+
 # Panel line array
 METRIC_LINES=()
 
@@ -219,6 +230,92 @@ compute_recent() {
 }
 
 # ═══════════════════════════════════════════════════
+# ── API Cost: estimate from inference events ──
+# ═══════════════════════════════════════════════════
+compute_api_cost() {
+  [ ! -f "$EVENTS_FILE" ] && return
+
+  # Cost per model (approximate $/1K output tokens, using latency as proxy)
+  # Only API calls count — claude via subscription is free
+  # Providers with API billing: anthropic (direct API), zai, google
+  M_API_COST=$(jq -sr '
+    [.[] | select(.type == "inference.ok")] |
+    # Estimate cost: latency_s * rate_per_sec by provider/model
+    map(
+      (.data.provider // .provider // "unknown") as $prov |
+      (.data.model // .model // "unknown") as $model |
+      ((.data.latency_s // .latency_s // "0") | tonumber) as $lat |
+      # Cost per second of inference (rough estimate)
+      (if $prov == "anthropic" then
+        (if ($model | test("opus")) then 0.025
+         elif ($model | test("sonnet")) then 0.005
+         elif ($model | test("haiku")) then 0.001
+         else 0.005 end)
+       elif $prov == "zai" then 0.002
+       elif $prov == "google" then 0.003
+       else 0 end) as $rate |
+      ($lat * $rate)
+    ) | add // 0 |
+    . * 100 | floor | . / 100 | tostring
+  ' "$EVENTS_FILE" 2>/dev/null)
+}
+
+# ═══════════════════════════════════════════════════
+# ── Compact pressure: frequency of compact events ──
+# ═══════════════════════════════════════════════════
+compute_compact() {
+  [ ! -f "$EVENTS_FILE" ] && return
+
+  local raw
+  raw=$(jq -sr '
+    (now - 3600) as $hour_ago |
+    [.[] | select(.type == "custom.post_compact_recovery")] |
+    length as $total |
+    ([.[] | select(
+      (.timestamp // "" | length) > 10 and
+      ((.timestamp[:19] + "Z" | try strptime("%Y-%m-%dT%H:%M:%SZ") | mktime) // 0) > $hour_ago
+    )] | length) as $recent |
+    [$total, $recent] | @tsv
+  ' "$EVENTS_FILE" 2>/dev/null)
+
+  if [ -n "$raw" ]; then
+    IFS=$'\t' read -r M_COMPACT_TOTAL M_COMPACT_1H <<< "$raw"
+  fi
+}
+
+# ═══════════════════════════════════════════════════
+# ── Error rate alert: check 5-min window ──
+# ═══════════════════════════════════════════════════
+compute_error_alert() {
+  [ ! -f "$EVENTS_FILE" ] && return
+
+  M_ERR_RATE_5M=$(jq -sr '
+    (now - 300) as $five_ago |
+    [.[] | select(
+      (.type | startswith("inference.")) and
+      (.timestamp // "" | length) > 10 and
+      ((.timestamp[:19] + "Z" | try strptime("%Y-%m-%dT%H:%M:%SZ") | mktime) // 0) > $five_ago
+    )] |
+    (length) as $total |
+    ([.[] | select(.type == "inference.fail")] | length) as $fails |
+    (if $total > 0 then ($fails * 100 / $total) else 0 end)
+  ' "$EVENTS_FILE" 2>/dev/null)
+
+  [ -z "$M_ERR_RATE_5M" ] && M_ERR_RATE_5M=0
+
+  # Voice alert if error rate >30% and not already alerted this cycle
+  if [ "$M_ERR_RATE_5M" -gt 30 ] && [ "$ALERT_SENT" -eq 0 ]; then
+    ALERT_SENT=1
+    curl -s -X POST http://localhost:8888/notify \
+      -H "Content-Type: application/json" \
+      -d "{\"message\": \"Внимание! Высокий процент ошибок: ${M_ERR_RATE_5M}% за последние 5 минут\", \"voice_id\": \"ogi2DyUAKJb7CEdqqvlU\", \"voice_enabled\": true}" \
+      >/dev/null 2>&1 &
+  elif [ "$M_ERR_RATE_5M" -le 30 ]; then
+    ALERT_SENT=0  # Reset when error rate drops
+  fi
+}
+
+# ═══════════════════════════════════════════════════
 # ── Build metrics panel (full-width, single column) ──
 # ═══════════════════════════════════════════════════
 build_metrics() {
@@ -322,6 +419,36 @@ build_metrics() {
     "$err_color" "$err_rate" "$RST" "$err_color" "$err_status" "$RST")")
   METRIC_LINES+=("$(printf '%b📦 Saturat%b  %b%s%b events  %b%s%b' \
     "$SLT" "$RST" "$sat_color" "$M_TOTAL" "$RST" "$sat_color" "$sat_status" "$RST")")
+
+  # API cost (only non-subscription calls)
+  local cost_color="$SLT"
+  local cost_val="${M_API_COST:-0.00}"
+  local cost_int="${cost_val%.*}"
+  [ -z "$cost_int" ] && cost_int=0
+  if [ "$cost_int" -gt 5 ]; then
+    cost_color="$RED"
+  elif [ "$cost_int" -gt 1 ]; then
+    cost_color="$YLW"
+  elif [ "$cost_int" -gt 0 ]; then
+    cost_color="$GRN"
+  fi
+  METRIC_LINES+=("$(printf '%b💰 API$%b    %b$%s%b  %b(A0+Z.AI+direct)%b' \
+    "$SLT" "$RST" "$cost_color" "$cost_val" "$RST" "$DIM" "$RST")")
+
+  # Compact pressure
+  local compact_color="$SLT"
+  if [ "$M_COMPACT_1H" -gt 5 ]; then
+    compact_color="$RED"
+  elif [ "$M_COMPACT_1H" -gt 2 ]; then
+    compact_color="$YLW"
+  fi
+  METRIC_LINES+=("$(printf '%b♻️ Compact%b  %b%s%b/h  %b%s%b total' \
+    "$SLT" "$RST" "$compact_color" "$M_COMPACT_1H" "$RST" "$SLT" "$M_COMPACT_TOTAL" "$RST")")
+
+  # 5-min error rate alert indicator
+  if [ "$M_ERR_RATE_5M" -gt 30 ]; then
+    METRIC_LINES+=("$(printf '%b%b🚨 ALERT: %s%% ошибок за 5мин%b' "$RED" "$BLD" "$M_ERR_RATE_5M" "$RST")")
+  fi
   METRIC_LINES+=("")
 
   # ── Providers ──
@@ -440,6 +567,9 @@ poll() {
   compute_algorithm
   compute_active_agents
   compute_recent
+  compute_api_cost
+  compute_compact
+  compute_error_alert
   spin_stop
 
   build_metrics

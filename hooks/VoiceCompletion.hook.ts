@@ -19,6 +19,7 @@
 import { readHookInput, parseTranscriptFromInput } from './lib/hook-io';
 import { handleVoice } from './handlers/VoiceNotification';
 import { appendEvent } from './lib/event-emitter';
+import { emitHookError } from './lib/hook-error-emitter';
 
 /**
  * Voice gate: only main terminal sessions get voice.
@@ -56,5 +57,6 @@ async function main() {
 
 main().catch((err) => {
   console.error('[VoiceCompletion] Fatal:', err);
+  emitHookError('VoiceCompletion', err);
   process.exit(0);
 });

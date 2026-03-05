@@ -38,6 +38,7 @@ import { captureFailure } from '../PAI/Tools/FailureCapture';
 import { appendEvent } from './lib/event-emitter';
 import { getPaiDir } from './lib/paths';
 import { loadRatingVocabulary } from '../PAI/lib/vocabulary-loader';
+import { emitHookError } from './lib/hook-error-emitter';
 
 // ── Shared Types ──
 
@@ -549,4 +550,4 @@ async function main() {
   }
 }
 
-main().catch((err) => { process.stderr.write(`[RatingCapture] error description: ${err}\n`); process.exit(0); });
+main().catch((err) => { emitHookError('RatingCapture', err); process.stderr.write(`[RatingCapture] error description: ${err}\n`); process.exit(0); });

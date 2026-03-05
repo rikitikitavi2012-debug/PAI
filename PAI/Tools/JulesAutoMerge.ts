@@ -370,11 +370,30 @@ export async function processPR(
   const test = await runTestsOnBranch(repo, pr.headRefName);
   console.log(`  ${D}Tests: ${test.passed ? 'PASS' : 'FAIL'} (${(test.durationMs / 1000).toFixed(1)}s)${X}`);
 
+  // Emit pr.tested event
+  appendEvent({
+    type: 'pr.tested',
+    source: 'JulesAutoMerge',
+    pr_number: pr.number,
+    result: test.passed ? 'pass' : 'fail',
+    branch: pr.headRefName,
+    duration_ms: test.durationMs,
+    repo: repo.repo,
+  });
+
   if (!test.passed) {
     record.result = 'failed_tests';
     record.testOutput = test.output;
     console.log(`  ${R}FAIL${X} PR #${pr.number}: tests failed`);
     state.stats.totalFailed++;
+    appendEvent({
+      type: 'merge.fail',
+      source: 'JulesAutoMerge',
+      pr_number: pr.number,
+      reason: 'tests_failed',
+      branch: pr.headRefName,
+      repo: repo.repo,
+    });
     return record;
   }
 
@@ -396,6 +415,14 @@ export async function processPR(
     record.testOutput = review.summary;
     console.log(`  ${R}BLOCKED${X} PR #${pr.number}: A0 found HIGH severity issues`);
     state.stats.totalFailed++;
+    appendEvent({
+      type: 'merge.fail',
+      source: 'JulesAutoMerge',
+      pr_number: pr.number,
+      reason: 'a0_review_high',
+      branch: pr.headRefName,
+      repo: repo.repo,
+    });
     return record;
   }
 
@@ -408,6 +435,14 @@ export async function processPR(
     record.testOutput = `Z.AI: ${zaiReview.summary}`;
     console.log(`  ${R}BLOCKED${X} PR #${pr.number}: Z.AI found HIGH severity issues`);
     state.stats.totalFailed++;
+    appendEvent({
+      type: 'merge.fail',
+      source: 'JulesAutoMerge',
+      pr_number: pr.number,
+      reason: 'zai_review_high',
+      branch: pr.headRefName,
+      repo: repo.repo,
+    });
     return record;
   }
 
@@ -421,6 +456,14 @@ export async function processPR(
     record.testOutput = merge.stderr;
     console.log(`  ${R}FAIL${X} PR #${pr.number}: merge failed — ${merge.stderr.slice(0, 100)}`);
     state.stats.totalFailed++;
+    appendEvent({
+      type: 'merge.fail',
+      source: 'JulesAutoMerge',
+      pr_number: pr.number,
+      reason: 'gh_merge_failed',
+      branch: pr.headRefName,
+      repo: repo.repo,
+    });
     return record;
   }
 
@@ -434,17 +477,15 @@ export async function processPR(
   state.stats.totalMerged++;
   console.log(`  ${G}MERGED${X} PR #${pr.number}: ${pr.title}`);
 
-  // Log event
+  // Log events
   appendEvent({
-    type: 'custom.jules_automerge' as any,
+    type: 'merge.ok',
     source: 'JulesAutoMerge',
-    session_id: sessionId,
     pr_number: pr.number,
+    branch: pr.headRefName,
+    title: pr.title,
     repo: repo.repo,
-    test_duration_ms: test.durationMs,
-    review_severity: review.severity,
-    zai_review_severity: zaiReview.severity,
-  } as any);
+  });
 
   return record;
 }

@@ -24,6 +24,7 @@
  */
 
 import { appendEvent } from './lib/event-emitter';
+import { emitHookError } from './lib/hook-error-emitter';
 
 // ── Shared stdin reader ──
 
@@ -101,10 +102,11 @@ async function main() {
     }
 
     process.exit(0);
-  } catch {
+  } catch (err) {
     // Fail-open — never block any event
+    emitHookError('EventLogger', err);
     process.exit(0);
   }
 }
 
-main().catch((err) => { process.stderr.write(`[EventLogger] error description: ${err}\n`); process.exit(0); });
+main().catch((err) => { emitHookError('EventLogger', err); process.stderr.write(`[EventLogger] error description: ${err}\n`); process.exit(0); });

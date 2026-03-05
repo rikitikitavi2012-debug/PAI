@@ -21,6 +21,7 @@ import {
 import { setPhaseTab } from './lib/tab-setter';
 import type { AlgorithmTabPhase } from './lib/tab-constants';
 import { appendEvent } from './lib/event-emitter';
+import { emitHookError } from './lib/hook-error-emitter';
 
 let input: any;
 try {
@@ -93,7 +94,7 @@ async function main() {
 
 }
 
-main().catch((err) => { process.stderr.write(`[PRDSync] error description: ${err}\n`); }).finally(() => {
+main().catch((err) => { emitHookError('PRDSync', err); process.stderr.write(`[PRDSync] error description: ${err}\n`); }).finally(() => {
   console.log(JSON.stringify({ continue: true }));
   process.exit(0);
 });
