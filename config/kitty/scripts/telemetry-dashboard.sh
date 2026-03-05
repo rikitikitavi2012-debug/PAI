@@ -51,11 +51,6 @@ M_API_COST="0.00"
 M_COMPACT_1H=0
 M_COMPACT_TOTAL=0
 
-# Brigade state
-M_A0_STATUS="--" M_A0_LATENCY="--" M_A0_LAST=""
-M_JULES_MERGED_TODAY=0 M_JULES_FAILED_TODAY=0 M_JULES_PRS_TESTED=0
-M_AM_LAST_ACTION="" M_AM_LAST_RESULT="" M_AM_LAST_TIME=""
-
 # Alert state
 M_ERR_RATE_5M=0
 ALERT_SENT=0
@@ -288,6 +283,8 @@ compute_error_alert() {
   ' "$EVENTS_FILE" 2>/dev/null)
 
   [ -z "$M_ERR_RATE_5M" ] && M_ERR_RATE_5M=0
+  M_ERR_RATE_5M="${M_ERR_RATE_5M%%.*}"
+  [ -z "$M_ERR_RATE_5M" ] && M_ERR_RATE_5M=0
 
   # Voice alert if error rate >30% and not already alerted this cycle
   if [ "$M_ERR_RATE_5M" -gt 30 ] && [ "$ALERT_SENT" -eq 0 ]; then
@@ -298,91 +295,6 @@ compute_error_alert() {
       >/dev/null 2>&1 &
   elif [ "$M_ERR_RATE_5M" -le 30 ]; then
     ALERT_SENT=0  # Reset when error rate drops
-  fi
-}
-
-# ═══════════════════════════════════════════════════
-# ── Brigade: A0 + Jules + AutoMerge status ──
-# ═══════════════════════════════════════════════════
-compute_brigade() {
-  [ ! -f "$EVENTS_FILE" ] && return
-
-  local raw
-  # A0: last health_check or a0.response event
-  raw=$(jq -sr '
-    (
-      ([.[] | select(.type == "a0.health_check")] | sort_by(.timestamp) | last) //
-      ([.[] | select(.type == "a0.response")] | sort_by(.timestamp) | last) //
-      null
-    ) |
-    if . then
-      (if .type == "a0.health_check" then
-        (if .all_healthy then "up" else "down" end) + "\t" +
-        (.services_down // 0 | tostring) + "\t" +
-        (.timestamp // "")
-       else
-        "up\t0\t" + (.timestamp // "")
-       end)
-    else "--\t0\t" end
-  ' "$EVENTS_FILE" 2>/dev/null)
-
-  if [ -n "$raw" ] && [ "$raw" != "--	0	" ]; then
-    IFS=$'\t' read -r M_A0_STATUS _a0_down M_A0_LAST <<< "$raw"
-    if [ -n "$M_A0_LAST" ]; then
-      local ts_epoch
-      ts_epoch=$(date -d "${M_A0_LAST}" +%s 2>/dev/null || echo 0)
-      [ "$ts_epoch" -gt 0 ] && M_A0_LATENCY=$(time_ago "$ts_epoch")
-    fi
-  fi
-
-  # A0 response latency (last a0.response event)
-  local a0_lat
-  a0_lat=$(jq -sr '
-    [.[] | select(.type == "a0.response") | .data.latency_s // null | select(.)] |
-    if length > 0 then last | tostring else "--" end
-  ' "$EVENTS_FILE" 2>/dev/null)
-  [ -n "$a0_lat" ] && [ "$a0_lat" != "--" ] && M_A0_LATENCY="${a0_lat}s"
-
-  # Jules: today's merge/fail counts from merge.ok/merge.fail events
-  local today
-  today=$(date -u +%Y-%m-%d)
-  raw=$(jq -sr --arg today "$today" '
-    [.[] | select(
-      (.type == "merge.ok" or .type == "merge.fail") and
-      (.timestamp // "" | startswith($today))
-    )] |
-    ([.[] | select(.type == "merge.ok")] | length) as $merged |
-    ([.[] | select(.type == "merge.fail")] | length) as $failed |
-    [$merged, $failed] | @tsv
-  ' "$EVENTS_FILE" 2>/dev/null)
-
-  if [ -n "$raw" ]; then
-    IFS=$'\t' read -r M_JULES_MERGED_TODAY M_JULES_FAILED_TODAY <<< "$raw"
-  fi
-
-  # PRs tested today
-  M_JULES_PRS_TESTED=$(jq -sr --arg today "$today" '
-    [.[] | select(.type == "pr.tested" and (.timestamp // "" | startswith($today)))] | length
-  ' "$EVENTS_FILE" 2>/dev/null)
-
-  # AutoMerge: last cycle end event
-  raw=$(jq -sr '
-    [.[] | select(.type == "automerge.cycle" and .action == "end")] |
-    sort_by(.timestamp) | last // null |
-    if . then
-      [(.prs_processed // 0), (.merged // 0), (.failed // 0), (.timestamp // "")] | @tsv
-    else "0\t0\t0\t" end
-  ' "$EVENTS_FILE" 2>/dev/null)
-
-  if [ -n "$raw" ]; then
-    local am_processed am_merged am_failed am_ts
-    IFS=$'\t' read -r am_processed am_merged am_failed am_ts <<< "$raw"
-    M_AM_LAST_RESULT="${am_merged}m/${am_failed}f/${am_processed}p"
-    if [ -n "$am_ts" ]; then
-      local ts_epoch
-      ts_epoch=$(date -d "${am_ts}" +%s 2>/dev/null || echo 0)
-      [ "$ts_epoch" -gt 0 ] && M_AM_LAST_TIME=$(time_ago "$ts_epoch")
-    fi
   fi
 }
 
@@ -432,40 +344,6 @@ build_metrics() {
   elif [ "$M_TOTAL" -gt 1000 ]; then
     sat_status="WARN"; sat_color="$YLW"
   fi
-
-  # ── Brigade Status ──
-  METRIC_LINES+=("$(printf '%b%bBRIGADE%b' "$CYN" "$BLD" "$RST")")
-
-  # A0
-  local a0_icon a0_color
-  if [ "$M_A0_STATUS" = "up" ]; then
-    a0_icon="●"; a0_color="$GRN"
-  elif [ "$M_A0_STATUS" = "down" ]; then
-    a0_icon="○"; a0_color="$RED"
-  else
-    a0_icon="?"; a0_color="$SLT"
-  fi
-  METRIC_LINES+=("$(printf '  %b%s%b %bA0%b        %b%s%b  %b%s%b' \
-    "$a0_color" "$a0_icon" "$RST" "$WHT" "$RST" \
-    "$a0_color" "$M_A0_STATUS" "$RST" "$SLT" "$M_A0_LATENCY" "$RST")")
-
-  # Jules
-  local jules_color="$GRN"
-  [ "$M_JULES_FAILED_TODAY" -gt 0 ] && jules_color="$YLW"
-  [ "$M_JULES_FAILED_TODAY" -gt 3 ] && jules_color="$RED"
-  METRIC_LINES+=("$(printf '  %b⚙%b %bJules%b     %b+%s%b merged  %b-%s%b fail  %b%s%b tested' \
-    "$VIO" "$RST" "$WHT" "$RST" \
-    "$GRN" "$M_JULES_MERGED_TODAY" "$RST" \
-    "$jules_color" "$M_JULES_FAILED_TODAY" "$RST" \
-    "$SLT" "$M_JULES_PRS_TESTED" "$RST")")
-
-  # AutoMerge
-  local am_display="(no cycles)"
-  [ -n "$M_AM_LAST_RESULT" ] && [ "$M_AM_LAST_RESULT" != "0m/0f/0p" ] && am_display="$M_AM_LAST_RESULT"
-  METRIC_LINES+=("$(printf '  %b🔄%b %bAutoMerge%b %b%s%b  %b%s%b' \
-    "$CYN" "$RST" "$WHT" "$RST" \
-    "$SLT" "$am_display" "$RST" "$DIM" "$M_AM_LAST_TIME" "$RST")")
-  METRIC_LINES+=("")
 
   # ── Active Agents ──
   METRIC_LINES+=("$(printf '%b%bAGENTS%b %b(%s active)%b' "$CYN" "$BLD" "$RST" "$SLT" "$M_ACTIVE_AGENTS_COUNT" "$RST")")
@@ -654,7 +532,6 @@ poll() {
   compute_api_cost
   compute_compact
   compute_error_alert
-  compute_brigade
   spin_stop
 
   build_metrics

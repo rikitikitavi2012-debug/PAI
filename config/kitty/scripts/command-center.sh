@@ -3,7 +3,7 @@
 # Scope: system health, AI brigade, sessions, PRs, hooks (NO goal/strategy duplication with Telos tab)
 # Refresh: every 30 seconds | r = refresh now | q = exit
 
-export PATH="$HOME/.bun/bin:$PATH"
+export PATH="$HOME/.bun/bin:$HOME/.npm-global/bin:$HOME/.opencode/bin:$PATH"
 export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:8118}"
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:8118}"
 # A0 is direct WAN — bypass proxy
@@ -92,15 +92,10 @@ poll() {
     "$VIO" "$BLD" "$RST" "$WHT" "$now_date" "$now_time" "$RST" "$VIO" "$pulse" "$RST" "$DIM" "$INTERVAL" "$RST")"
 
   # ═══════════════════════════════════════════════════
-  # ── 2. Two-column: СИСТЕМА + AI БРИГАДА ──
+  # ── 2. СИСТЕМА + БРИГАДА (single column) ──
   # ═══════════════════════════════════════════════════
-  two_col_top
-  two_col \
-    "$(printf '%b%b СИСТЕМА%b' "$CYN" "$BLD" "$RST")" \
-    "$(printf '%b%b AI БРИГАДА%b' "$VIO" "$BLD" "$RST")"
-  two_col_mid
+  section_header "🖥" "СИСТЕМА" "$CYN"
 
-  # -- Left: System health --
   local hook_count test_count events_24h events_7d
   hook_count=$(jq_val '.system.hookCount' '?')
   test_count=$(jq_val '.system.testCount' '?')
@@ -108,87 +103,51 @@ poll() {
   events_7d=$(jq_val '.system.eventCount7d' '?')
 
   # VoiceServer check
-  local vs_icon
   local vs_http
   vs_http=$(curl -s --max-time 2 -o /dev/null -w "%{http_code}" "http://localhost:8888/" 2>/dev/null)
-  if [ "$vs_http" = "200" ]; then
-    vs_icon=$(printf '%b✅%b' "$GRN" "$RST")
-  else
-    vs_icon=$(printf '%b❌%b' "$RED" "$RST")
-  fi
 
   # Agent Zero check
-  local a0_icon a0_latency_str a0_latency_val=""
-  local a0_start a0_end a0_json
-  a0_start=$(date +%s%N)
+  local a0_json
   spin_start "A0..."
   a0_json=$(curl -s --max-time 10 "$A0_HEALTH_URL" 2>/dev/null)
   spin_stop
-  a0_end=$(date +%s%N)
-  if [ -n "$a0_json" ]; then
-    a0_latency_val=$(( (a0_end - a0_start) / 1000000 ))
-    if [ "$a0_latency_val" -lt 2000 ]; then
-      a0_icon=$(printf '%b✅%b' "$GRN" "$RST")
-    else
-      a0_icon=$(printf '%b⚠%b' "$YLW" "$RST")
-    fi
-    a0_latency_str="${a0_latency_val}ms"
-  else
-    a0_icon=$(printf '%b❌%b' "$RED" "$RST")
-    a0_latency_str="timeout"
+
+  box_line "$(printf '%bPAI%b %b%bv4.0.3%b  %b%s хуков  %s тестов  Events: 24ч=%s 7д=%s%b' \
+    "$SLT" "$RST" "$WHT" "$BLD" "$RST" "$SLT" "$hook_count" "$test_count" "$events_24h" "$events_7d" "$RST")"
+
+  # ── Brigade traffic-light ──
+  # Members: Navi (always up), A0, Voice, Jules (always up), OpenCode (always up)
+  local brigade_up=5 brigade_total=5 brigade_down=""
+
+  if [ "$vs_http" != "200" ]; then
+    brigade_up=$((brigade_up - 1))
+    brigade_down="${brigade_down:+$brigade_down, }Voice"
+  fi
+  if [ -z "$a0_json" ]; then
+    brigade_up=$((brigade_up - 1))
+    brigade_down="${brigade_down:+$brigade_down, }A0"
   fi
 
-  # Z.AI / Gemini key checks
-  local zai_icon gemini_icon
-  if [ -n "$ZAI_API_KEY" ]; then
-    zai_icon=$(printf '%b✅ Key set%b' "$GRN" "$RST")
+  local brigade_icon
+  if [ "$brigade_up" -eq "$brigade_total" ]; then
+    brigade_icon=$(printf '%b✅%b' "$GRN" "$RST")
+  elif [ "$brigade_up" -ge 3 ]; then
+    brigade_icon=$(printf '%b⚠%b' "$YLW" "$RST")
   else
-    zai_icon=$(printf '%b⚠ No key%b' "$YLW" "$RST")
-  fi
-  if [ -n "$GEMINI_API_KEY" ]; then
-    gemini_icon=$(printf '%b✅ Key set%b' "$GRN" "$RST")
-  else
-    gemini_icon=$(printf '%b⚠ No key%b' "$YLW" "$RST")
+    brigade_icon=$(printf '%b❌%b' "$RED" "$RST")
   fi
 
-  # -- Right: AI brigade --
+  local brigade_detail=""
+  if [ -n "$brigade_down" ]; then
+    brigade_detail=$(printf '  %b%s down%b' "$RED" "$brigade_down" "$RST")
+  fi
+
+  box_line "$(printf '%b%bБРИГАДА:%b %b%s/%s%b %s%s' \
+    "$VIO" "$BLD" "$RST" "$WHT" "$brigade_up" "$brigade_total" "$RST" "$brigade_icon" "$brigade_detail")"
+
   # Jules open PRs (cache for reuse in PR section)
-  local jules_pr_json jules_prs="?"
+  local jules_pr_json
   jules_pr_json=$(timeout 5 gh pr list --repo rikitikitavi2012-debug/PAI-personal --state open --json number,title --limit 5 2>/dev/null)
-  jules_prs=$(echo "$jules_pr_json" | jq 'length' 2>/dev/null || echo "?")
-
-  # AutoMerge stats
-  local am_merged am_failed am_skipped
-  am_merged=$(jq_val '.system.automerge.merged' '0')
-  am_failed=$(jq_val '.system.automerge.failed' '0')
-  am_skipped=$(jq_val '.system.automerge.skipped' '0')
-
-  # Gemini CLI
-  local gemini_cli_icon
-  if command -v gemini >/dev/null 2>&1; then
-    gemini_cli_icon=$(printf '%b✅%b' "$GRN" "$RST")
-  else
-    gemini_cli_icon=$(printf '%b❌%b' "$RED" "$RST")
-  fi
-
-  # Render rows
-  two_col \
-    "$(printf '%bPAI%b    %b%bv4.0.3%b  %b%s хуков  %s тестов%b' "$SLT" "$RST" "$WHT" "$BLD" "$RST" "$SLT" "$hook_count" "$test_count" "$RST")" \
-    "$(printf '%bNavi%b   %b✅ Claude Code%b' "$SLT" "$RST" "$GRN" "$RST")"
-
-  two_col \
-    "$(printf '%bVoice%b  %s  %b:8888%b' "$SLT" "$RST" "$vs_icon" "$SLT" "$RST")" \
-    "$(printf '%bJules%b  %bPR:%b %b%b%s%b %bоткрыто%b' "$SLT" "$RST" "$SLT" "$RST" "$YLW" "$BLD" "$jules_prs" "$RST" "$SLT" "$RST")"
-
-  two_col \
-    "$(printf '%bA0%b     %s  %b%s%b' "$SLT" "$RST" "$a0_icon" "$SLT" "$a0_latency_str" "$RST")" \
-    "$(printf '%bMerge%b  %b+%s%b %b✗%s%b %b~%s%b' "$SLT" "$RST" "$GRN" "$am_merged" "$RST" "$RED" "$am_failed" "$RST" "$SLT" "$am_skipped" "$RST")"
-
-  two_col \
-    "$(printf '%bZ.AI%b   %s' "$SLT" "$RST" "$zai_icon")" \
-    "$(printf '%bGemini%b %s  %bCLI%b %s' "$SLT" "$RST" "$gemini_icon" "$SLT" "$RST" "$gemini_cli_icon")"
-
-  two_col_bot
   box_line ""
   section_header "💼" "АКТИВНЫЕ СЕССИИ" "$BLU"
 

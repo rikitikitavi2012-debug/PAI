@@ -25,6 +25,7 @@ M_LEARN_SIGNALS=0 M_LEARN_FAILURES=0
 M_TELOS_ACTIVE=0 M_TELOS_TOP="" M_TELOS_PROGRESS=""
 M_COST_FIXED=0 M_COST_API="0.00" M_COST_TOTAL="0.00"
 M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE="" M_ZAI_USAGE="" M_OR_BALANCE="" M_TW_BALANCE=""
+M_ANTHROPIC_BALANCE="" M_ANTHROPIC_SPENT="" M_ANTHROPIC_TODAY="" M_ANTHROPIC_DATE=""
 M_SESSIONS=0 M_WORK=0
 
 # Active work (PRDs in progress)
@@ -222,6 +223,39 @@ compute_cost() {
       ] |
       if length > 0 then "\($lvl) " + join(" ") else $lvl end
     ' "$zai_cache" 2>/dev/null)
+  fi
+
+  # Anthropic API balance + estimated spend (from cost-budget.json + events)
+  M_ANTHROPIC_BALANCE="" M_ANTHROPIC_SPENT=""
+  local anth_data
+  anth_data=$(jq -r '.api_usage["Anthropic API"] | "\(.balance_remaining // "")\t\(.total_spent // "")\t\(.last_updated // "")"' "$config" 2>/dev/null)
+  if [ -n "$anth_data" ] && [ "$anth_data" != "		" ]; then
+    IFS=$'\t' read -r anth_bal anth_spent anth_date <<< "$anth_data"
+    [ -n "$anth_bal" ] && [ "$anth_bal" != "null" ] && M_ANTHROPIC_BALANCE="\$${anth_bal} bal"
+    [ -n "$anth_spent" ] && [ "$anth_spent" != "null" ] && M_ANTHROPIC_SPENT="\$${anth_spent} spent"
+    [ -n "$anth_date" ] && [ "$anth_date" != "null" ] && M_ANTHROPIC_DATE="$anth_date"
+  fi
+  # Estimate today's Anthropic inference cost from events
+  M_ANTHROPIC_TODAY=""
+  if [ -f "$EVENTS_FILE" ]; then
+    local today_str
+    today_str=$(date -u +%Y-%m-%d)
+    M_ANTHROPIC_TODAY=$(jq -sr --arg today "$today_str" '
+      [.[] | select(.type == "inference.ok" and (.timestamp // "" | startswith($today)) and
+        ((.data.provider // "") | test("anthropic|claude")))] |
+      length as $calls |
+      map(
+        (.data.model // "unknown") as $model |
+        ((.data.latency_s // "0") | tonumber) as $lat |
+        (if ($model | test("opus")) then 0.025
+         elif ($model | test("sonnet")) then 0.005
+         elif ($model | test("haiku")) then 0.001
+         else 0.003 end) as $rate |
+        ($lat * $rate)
+      ) | (add // 0) |
+      . * 100 | floor | . / 100 |
+      "\(.)|\($calls)"
+    ' "$EVENTS_FILE" 2>/dev/null)
   fi
 
   # OpenRouter balance (cached, refresh every 5 min)
@@ -432,6 +466,24 @@ build_panel() {
     done <<< "$M_COST_SUBS"
   fi
   # Live usage from APIs
+  # Anthropic API balance
+  if [ -n "$M_ANTHROPIC_BALANCE" ]; then
+    local anth_color="$GRN"
+    local anth_bal_num="${M_ANTHROPIC_BALANCE#\$}"
+    anth_bal_num="${anth_bal_num% bal}"
+    local anth_int="${anth_bal_num%.*}"
+    [ -n "$anth_int" ] && [ "$anth_int" -lt 5 ] 2>/dev/null && anth_color="$YLW"
+    [ -n "$anth_int" ] && [ "$anth_int" -lt 2 ] 2>/dev/null && anth_color="$RED"
+    local anth_detail="$M_ANTHROPIC_BALANCE"
+    [ -n "$M_ANTHROPIC_SPENT" ] && anth_detail="$anth_detail  $M_ANTHROPIC_SPENT"
+    # Add today's calls if available
+    if [ -n "$M_ANTHROPIC_TODAY" ] && [ "$M_ANTHROPIC_TODAY" != "0|0" ]; then
+      local anth_today_cost="${M_ANTHROPIC_TODAY%%|*}"
+      local anth_today_calls="${M_ANTHROPIC_TODAY##*|}"
+      anth_detail="$anth_detail  today:\$${anth_today_cost}/${anth_today_calls}calls"
+    fi
+    METRIC_LINES+=("$(printf '    %b🅰️  Anthropic:%b  %b%s%b' "$DIM" "$RST" "$anth_color" "$anth_detail" "$RST")")
+  fi
   if [ -n "$M_ELEVEN_USAGE" ]; then
     METRIC_LINES+=("$(printf '    %b🔊 ElevenLabs:%b %b%s%b' "$DIM" "$RST" "$CYN" "$M_ELEVEN_USAGE" "$RST")")
   fi
@@ -488,11 +540,12 @@ build_panel() {
   local a0_color="$GRN"
   [ "$M_A0_STATUS" = "down" ] && a0_color="$RED"
   [ "$M_A0_STATUS" = "--" ] && a0_color="$SLT"
-  METRIC_LINES+=("$(printf '%b%bBRIGADE%b  A0:%b%s%b  Jules:%b+%s%b/%b-%s%b  Sessions:%b%s%b' \
+  METRIC_LINES+=("$(printf '%b%bBRIGADE%b  A0:%b%s%b  Jules:%b+%s%b/%b-%s%b  OC:%b1.2%b  S:%b%s%b' \
     "$CYN" "$BLD" "$RST" \
     "$a0_color" "$M_A0_STATUS" "$RST" \
     "$GRN" "$M_JULES_MERGED_TODAY" "$RST" \
     "$RED" "$M_JULES_FAILED_TODAY" "$RST" \
+    "$GRN" "$RST" \
     "$SLT" "$M_SESSIONS" "$RST")")
 }
 

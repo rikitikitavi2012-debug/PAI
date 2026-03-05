@@ -1,9 +1,10 @@
 #!/bin/bash
 # Brigade Watch — AI Brigade Dashboard for Kitty
+# Shows all 7 brigade members grouped by tier (T1/T2/T3)
 # Polls: Agent Zero health, Jules sessions, JulesAutoMerge status
 # Refresh: every 30 seconds | Exit: Ctrl+C | r = refresh now
 
-export PATH="$HOME/.bun/bin:$PATH"
+export PATH="$HOME/.bun/bin:$HOME/.npm-global/bin:$HOME/.opencode/bin:$PATH"
 # VPN proxy required for Jules API and GitHub CLI
 export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:8118}"
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:8118}"
@@ -44,14 +45,18 @@ poll() {
 
   # ── Header ──
   box_top
-  box_line "$(printf '%b%b🤖 AI BRIGADE%b                                   %b%s%b %b%s%b  %b↻%sс%b' \
-    "$VIO" "$BLD" "$RST" "$WHT" "$now" "$RST" "$VIO" "$pulse" "$RST" "$DIM" "$INTERVAL" "$RST")"
+  box_line "$(printf '%b%b🤖 AI BRIGADE%b  %b7 members (4 T1 · 1 T2 · 2 T3)%b   %b%s%b %b%s%b  %b↻%sс%b' \
+    "$VIO" "$BLD" "$RST" "$DIM" "$RST" "$WHT" "$now" "$RST" "$VIO" "$pulse" "$RST" "$DIM" "$INTERVAL" "$RST")"
 
   # ═══════════════════════════════════════════════════
-  # ── Agent Zero ──
+  # ── T1 АВТОНОМНЫЕ АГЕНТЫ ──
   # ═══════════════════════════════════════════════════
-  section_header "🧠" "AGENT ZERO" "$CYN"
+  section_header "🚀" "T1 АВТОНОМНЫЕ АГЕНТЫ" "$CYN"
 
+  # --- Navi (always online — this IS the Claude Code session) ---
+  box_line "$(printf '  %bNavi%b      %b✅%b %bClaude Code%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$RST")"
+
+  # --- Agent Zero ---
   local a0_start a0_end a0_latency a0_json
   a0_start=$(date +%s%N)
   spin_start "A0 health..."
@@ -61,66 +66,48 @@ poll() {
 
   if [ -n "$a0_json" ]; then
     a0_latency=$(( (a0_end - a0_start) / 1000000 ))
-    local a0_error a0_sha
 
-    # Status + latency + SHA on one line
-    local status_str
+    # Parse fields cleanly — avoid JSON leak
+    local a0_sha_raw a0_sha_short a0_branch a0_containers
+    a0_sha_raw=$(echo "$a0_json" | jq -r '.gitinfo.sha // .sha // empty' 2>/dev/null)
+    [ -z "$a0_sha_raw" ] && a0_sha_raw=$(echo "$a0_json" | jq -r '.gitinfo // empty' 2>/dev/null)
+    # If gitinfo is a JSON object stringified or raw, extract just the sha
+    if echo "$a0_sha_raw" | jq -r '.sha' >/dev/null 2>&1; then
+      local parsed_sha
+      parsed_sha=$(echo "$a0_sha_raw" | jq -r '.sha // empty' 2>/dev/null)
+      [ -n "$parsed_sha" ] && a0_sha_raw="$parsed_sha"
+    fi
+    a0_sha_short="${a0_sha_raw:0:8}"
+    a0_branch=$(echo "$a0_json" | jq -r '.gitinfo.branch // .branch // empty' 2>/dev/null)
+    a0_containers=$(echo "$a0_json" | jq -r '.containers // 3' 2>/dev/null)
+
+    local a0_status_icon a0_status_color
     if [ "$a0_latency" -lt 1000 ]; then
-      status_str=$(printf '%b✅ Online%b %b%sms%b' "$GRN" "$RST" "$DIM" "$a0_latency" "$RST")
+      a0_status_icon="✅"
+      a0_status_color="$GRN"
     else
-      status_str=$(printf '%b⚠ Slow%b %b%sms%b' "$YLW" "$RST" "$YLW" "$a0_latency" "$RST")
+      a0_status_icon="⚠"
+      a0_status_color="$YLW"
     fi
 
-    a0_sha=$(echo "$a0_json" | jq -r '.gitinfo // empty' 2>/dev/null)
-    if [ -n "$a0_sha" ] && [ "$a0_sha" != "null" ]; then
-      status_str+=$(printf '  %bSHA:%b%b%s%b' "$SLT" "$RST" "$DIM" "${a0_sha:0:8}" "$RST")
-    fi
-
-    box_line "$(printf '%s  %bHost:%b%b%s%b  %b3 containers%b' \
-      "$status_str" "$SLT" "$RST" "$DIM" "$A0_HOST" "$RST" "$DIM" "$RST")"
+    local a0_line
+    a0_line=$(printf '  %bA0%b        %b%s%b %b%sms%b  %b%s%b' \
+      "$WHT" "$RST" "$a0_status_color" "$a0_status_icon" "$RST" "$DIM" "$a0_latency" "$RST" "$DIM" "72.56.86.51" "$RST")
+    [ -n "$a0_containers" ] && [ "$a0_containers" != "null" ] && \
+      a0_line+=$(printf '  %b%s containers%b' "$DIM" "$a0_containers" "$RST")
+    box_line "$a0_line"
 
     # Error if present
+    local a0_error
     a0_error=$(echo "$a0_json" | jq -r '.error // empty' 2>/dev/null)
     if [ -n "$a0_error" ] && [ "$a0_error" != "null" ]; then
-      box_line "$(printf '%b⚙ %s%b' "$DIM" "${a0_error:0:80}" "$RST")"
+      box_line "$(printf '            %b⚙ %s%b' "$DIM" "${a0_error:0:70}" "$RST")"
     fi
   else
-    box_line "$(printf '%b❌ Недоступен%b  %bssh agentzero docker ps%b' "$RED" "$RST" "$DIM" "$RST")"
+    box_line "$(printf '  %bA0%b        %b❌%b %bНедоступен%b' "$WHT" "$RST" "$RED" "$RST" "$DIM" "$RST")"
   fi
 
-  # ═══════════════════════════════════════════════════
-  # ── Local Services ──
-  # ═══════════════════════════════════════════════════
-  section_header "⚡" "ЛОКАЛЬНЫЕ СЕРВИСЫ" "$VIO"
-
-  # VoiceServer
-  local vs_http vs_str
-  vs_http=$(curl -s --max-time 2 -o /dev/null -w "%{http_code}" "http://localhost:8888/health" 2>/dev/null)
-  if [ "$vs_http" = "200" ]; then
-    vs_str=$(printf '%b✅%b %bVoice%b %b:8888%b' "$GRN" "$RST" "$WHT" "$RST" "$DIM" "$RST")
-  elif [ -n "$vs_http" ] && [ "$vs_http" != "000" ]; then
-    vs_str=$(printf '%b⚠%b  %bVoice%b %bHTTP %s%b' "$YLW" "$RST" "$WHT" "$RST" "$DIM" "$vs_http" "$RST")
-  else
-    vs_str=$(printf '%b❌%b %bVoice%b' "$RED" "$RST" "$WHT" "$RST")
-  fi
-
-  # Z.AI
-  local zai_str
-  local zai_key
-  zai_key=$(grep '^ZAI_API_KEY=' "$HOME/.config/PAI/.env" 2>/dev/null | cut -d= -f2)
-  if [ -n "$zai_key" ]; then
-    zai_str=$(printf '%b✅%b %bZ.AI%b %bGLM-5%b' "$GRN" "$RST" "$WHT" "$RST" "$DIM" "$RST")
-  else
-    zai_str=$(printf '%b⚠%b  %bZ.AI%b %bno key%b' "$YLW" "$RST" "$WHT" "$RST" "$DIM" "$RST")
-  fi
-
-  box_line "$(printf '%s          %s' "$vs_str" "$zai_str")"
-
-  # ═══════════════════════════════════════════════════
-  # ── Jules Sessions ──
-  # ═══════════════════════════════════════════════════
-  section_header "📋" "JULES" "$YLW"
-
+  # --- Jules (from API) ---
   local jules_out
   spin_start "Jules API..."
   jules_out=$(cd "$HOME/.claude" && timeout "$API_TIMEOUT" bun "$JULES_TOOL" sessions 2>/dev/null)
@@ -131,30 +118,81 @@ poll() {
     # shellcheck disable=SC2001
     clean_out=$(echo "$jules_out" | sed 's/\x1b\[[0-9;]*m//g')
 
-    local in_progress completed failed
+    local in_progress completed
     in_progress=$(echo "$clean_out" | grep -c "IN_PROGRESS")
     completed=$(echo "$clean_out" | grep -c "COMPLETED")
-    failed=$(echo "$clean_out" | grep -c "FAILED")
 
-    local summary=""
-    summary+=$(printf '%b▸%b%b%s%b %bработе%b' "$YLW" "$RST" "$WHT" "$in_progress" "$RST" "$SLT" "$RST")
-    summary+=$(printf '  %b▸%b%b%s%b %bготово%b' "$GRN" "$RST" "$WHT" "$completed" "$RST" "$SLT" "$RST")
-    if [ "$failed" -gt 0 ] 2>/dev/null; then
-      summary+=$(printf '  %b▸%b%b%s%b %bошибки%b' "$RED" "$RST" "$WHT" "$failed" "$RST" "$SLT" "$RST")
-    fi
-    box_line "$summary"
-
-    # Active sessions
-    if [ "$in_progress" -gt 0 ] 2>/dev/null; then
-      echo "$clean_out" | grep "IN_PROGRESS" | while IFS= read -r line; do
-        local title
-        title=$(echo "$line" | sed 's/^[^|]*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//')
-        title=$(truncate "$title" 70)
-        [ -n "$title" ] && box_line "$(printf '  %b⚡%b %b%s%b' "$YLW" "$RST" "$WHT" "$title" "$RST")"
-      done
-    fi
+    box_line "$(printf '  %bJules%b     %b▸%b%b%s%b %bработе%b  %b▸%b%b%s%b %bготово%b' \
+      "$WHT" "$RST" "$YLW" "$RST" "$WHT" "$in_progress" "$RST" "$SLT" "$RST" \
+      "$GRN" "$RST" "$WHT" "$completed" "$RST" "$SLT" "$RST")"
   else
-    box_line "$(printf '%bAPI недоступен%b' "$DIM" "$RST")"
+    box_line "$(printf '  %bJules%b     %bAPI недоступен%b' "$WHT" "$RST" "$DIM" "$RST")"
+  fi
+
+  # --- OpenCode ---
+  local oc_version oc_str
+  if command -v opencode >/dev/null 2>&1; then
+    oc_version=$(opencode --version 2>/dev/null | head -1 | grep -oP 'v?[\d.]+' | head -1)
+    [ -z "$oc_version" ] && oc_version="ok"
+    oc_str=$(printf '  %bOpenCode%b  %b✅%b %b%s%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$oc_version" "$RST")
+  else
+    oc_str=$(printf '  %bOpenCode%b  %b❌%b %bне найден%b' "$WHT" "$RST" "$RED" "$RST" "$DIM" "$RST")
+  fi
+  box_line "$oc_str"
+
+  # ═══════════════════════════════════════════════════
+  # ── T2 CLI АГЕНТЫ ──
+  # ═══════════════════════════════════════════════════
+  section_header "💻" "T2 CLI АГЕНТЫ" "$VIO"
+
+  local gem_version gem_str
+  if command -v gemini >/dev/null 2>&1; then
+    gem_version=$(gemini --version 2>/dev/null | head -1 | grep -oP 'v?[\d.]+' | head -1)
+    [ -z "$gem_version" ] && gem_version="ok"
+    gem_str=$(printf '  %bGemini%b    %b✅%b %b%s%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$gem_version" "$RST")
+  else
+    gem_str=$(printf '  %bGemini%b    %b❌%b %bне найден%b' "$WHT" "$RST" "$RED" "$RST" "$DIM" "$RST")
+  fi
+  box_line "$gem_str"
+
+  # ═══════════════════════════════════════════════════
+  # ── T3 ИНСТРУМЕНТЫ ──
+  # ═══════════════════════════════════════════════════
+  section_header "🔧" "T3 ИНСТРУМЕНТЫ" "$ORG"
+
+  # VoiceServer
+  local vs_http vs_str
+  vs_http=$(curl -s --max-time 2 -o /dev/null -w "%{http_code}" "http://localhost:8888/health" 2>/dev/null)
+  if [ "$vs_http" = "200" ]; then
+    vs_str=$(printf '  %bVoice%b     %b✅%b %b:8888%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$RST")
+  elif [ -n "$vs_http" ] && [ "$vs_http" != "000" ]; then
+    vs_str=$(printf '  %bVoice%b     %b⚠%b  %bHTTP %s%b' "$WHT" "$RST" "$YLW" "$RST" "$DIM" "$vs_http" "$RST")
+  else
+    vs_str=$(printf '  %bVoice%b     %b❌%b' "$WHT" "$RST" "$RED" "$RST")
+  fi
+  box_line "$vs_str"
+
+  # Z.AI
+  local zai_str zai_key
+  zai_key=$(grep '^ZAI_API_KEY=' "$HOME/.config/PAI/.env" 2>/dev/null | cut -d= -f2)
+  if [ -n "$zai_key" ]; then
+    zai_str=$(printf '  %bZ.AI%b      %b✅%b %bGLM-5%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$RST")
+  else
+    zai_str=$(printf '  %bZ.AI%b      %b⚠%b  %bno key%b' "$WHT" "$RST" "$YLW" "$RST" "$DIM" "$RST")
+  fi
+  box_line "$zai_str"
+
+  # ═══════════════════════════════════════════════════
+  # ── Jules Active Sessions ──
+  # ═══════════════════════════════════════════════════
+  if [ -n "$jules_out" ] && [ "$in_progress" -gt 0 ] 2>/dev/null; then
+    section_header "📋" "JULES АКТИВНЫЕ" "$YLW"
+    echo "$clean_out" | grep "IN_PROGRESS" | while IFS= read -r line; do
+      local title
+      title=$(echo "$line" | sed 's/^[^|]*|[[:space:]]*//' | sed 's/[[:space:]]*|.*//')
+      title=$(truncate "$title" 70)
+      [ -n "$title" ] && box_line "$(printf '  %b⚡%b %b%s%b' "$YLW" "$RST" "$WHT" "$title" "$RST")"
+    done
   fi
 
   # ═══════════════════════════════════════════════════
