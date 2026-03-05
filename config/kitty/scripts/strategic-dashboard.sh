@@ -24,7 +24,7 @@ M_RATE_HIGH=0 M_RATE_LOW=0 M_RATE_TREND="=" M_RATE_COUNT=0
 M_LEARN_SIGNALS=0 M_LEARN_FAILURES=0
 M_TELOS_ACTIVE=0 M_TELOS_TOP="" M_TELOS_PROGRESS=""
 M_COST_FIXED=0 M_COST_API="0.00" M_COST_TOTAL="0.00"
-M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE="" M_ZAI_USAGE="" M_OR_BALANCE=""
+M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE="" M_ZAI_USAGE="" M_OR_BALANCE="" M_TW_BALANCE=""
 M_SESSIONS=0 M_WORK=0
 
 # Active work (PRDs in progress)
@@ -251,6 +251,34 @@ compute_cost() {
       "$\($r) left of $\(.total_credits // 0)"
     ' "$or_cache" 2>/dev/null)
   fi
+  # Timeweb balance (cached, refresh every 10 min)
+  M_TW_BALANCE=""
+  local tw_cache="$HOME/.claude/MEMORY/STATE/timeweb-balance.cache"
+  local tw_refresh=1
+  if [ -f "$tw_cache" ]; then
+    local tw_age=$(( $(date +%s) - $(stat -c %Y "$tw_cache") ))
+    [ "$tw_age" -lt 600 ] && tw_refresh=0
+  fi
+  if [ "$tw_refresh" -eq 1 ]; then
+    local tw_key
+    tw_key=$(grep TIMEWEB_API_KEY "$HOME/.config/PAI/.env" 2>/dev/null | cut -d= -f2)
+    if [ -n "$tw_key" ]; then
+      local tw_raw
+      tw_raw=$(curl -s --max-time 5 "https://api.timeweb.cloud/api/v1/account/finances" -H "Authorization: Bearer $tw_key" 2>/dev/null)
+      if [ -n "$tw_raw" ] && echo "$tw_raw" | jq -e '.finances' >/dev/null 2>&1; then
+        echo "$tw_raw" > "$tw_cache"
+      fi
+    fi
+  fi
+  if [ -f "$tw_cache" ]; then
+    M_TW_BALANCE=$(jq -r '
+      .finances |
+      (.balance | floor) as $bal |
+      (.hours_left // 0) as $hrs |
+      (($hrs / 24) | floor) as $days |
+      "\($bal)₽ (\($days)d left)"
+    ' "$tw_cache" 2>/dev/null)
+  fi
 }
 
 compute_brigade_compact() {
@@ -417,6 +445,15 @@ build_panel() {
     or_left=$(echo "$M_OR_BALANCE" | grep -oP '^\$[\d.]+' | tr -d '$')
     [ -n "$or_left" ] && (( $(echo "$or_left < 10" | bc -l 2>/dev/null) )) && or_color="$RED"
     METRIC_LINES+=("$(printf '    %b🔀 OpenRouter:%b  %b%s%b' "$DIM" "$RST" "$or_color" "$M_OR_BALANCE" "$RST")")
+  fi
+  if [ -n "$M_TW_BALANCE" ]; then
+    local tw_color="$GRN"
+    # Warn if less than 7 days remaining
+    local tw_days
+    tw_days=$(echo "$M_TW_BALANCE" | grep -oP '\d+(?=d left)')
+    [ -n "$tw_days" ] && [ "$tw_days" -lt 14 ] && tw_color="$YLW"
+    [ -n "$tw_days" ] && [ "$tw_days" -lt 7 ] && tw_color="$RED"
+    METRIC_LINES+=("$(printf '    %b🖥 Timeweb:%b    %b%s%b' "$DIM" "$RST" "$tw_color" "$M_TW_BALANCE" "$RST")")
   fi
   METRIC_LINES+=("")
 

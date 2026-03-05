@@ -2,8 +2,8 @@
 task: PAI accounting system — live usage tracking, OpenCode brigade, API audit
 slug: pai-accounting
 effort: Advanced
-phase: execute
-progress: 19/20
+phase: complete
+progress: 20/20
 mode: algorithm
 started: 2026-03-05
 updated: 2026-03-05
@@ -25,7 +25,7 @@ Ivan wants precise financial tracking for all PAI infrastructure. Real subscript
 - [x] ISC-10: OpenCode Go installed and callable via `opencode run`
 - [x] ISC-11: OpenCode configured with Z.AI provider (12 models) + vision MCP
 - [x] ISC-12: Timeweb API token setup instructions provided to Ivan
-- [ ] ISC-13: Timeweb balance live display in dashboard (when token available)
+- [x] ISC-13: Timeweb balance live display in dashboard — 2005₽ (12d left)
 - [x] ISC-14: OpenAI API key validated — balance/org status checked
 - [x] ISC-15: Apify token tested — works on FREE plan
 - [x] ISC-16: BrightData token permissions checked — needs Finance/Admin token
