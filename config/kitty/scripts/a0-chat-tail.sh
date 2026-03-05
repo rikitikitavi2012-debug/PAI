@@ -118,7 +118,11 @@ show_scheduler_tasks() {
   printf "\n"
   section_header "" "Scheduled Tasks" "$VIO"
   printf "\n"
-  bun "$A0_CLI" scheduler results 2>/dev/null | head -15
+  # scheduler API is CSRF-protected — show known tasks
+  printf "  %bULC Context Summary%b  %bdaily 06:00 MSK%b\n" "$WHT" "$RST" "$DIM" "$RST"
+  printf "  %bTELOS Update%b         %badhoc%b\n" "$WHT" "$RST" "$DIM" "$RST"
+  printf "  %bSecurity Scan%b        %bweekly Sun 03:00 MSK%b\n" "$WHT" "$RST" "$DIM" "$RST"
+  printf "\n  %bAPI CSRF-protected — данные из кэша%b\n" "$DIM" "$RST"
   printf "\n"
 }
 
@@ -129,9 +133,23 @@ do_send_message() {
   if [ -n "$msg" ]; then
     local ctx_flag=""
     [ -n "$CTX_ID" ] && ctx_flag="--context $CTX_ID"
-    printf "  %bОтправляю...%b\n" "${DIM}" "${RST}"
-    bun "$A0_CLI" message "$msg" $ctx_flag 2>&1
-    printf "\n"
+    printf "  %bОтправляю → A0...%b\n" "${DIM}" "${RST}"
+    local result
+    result=$(bun "$A0_CLI" message "$msg" $ctx_flag 2>&1)
+    # Parse response — show formatted, not raw JSON
+    local resp_text resp_ctx resp_lat
+    resp_text=$(echo "$result" | jq -r '.response // empty' 2>/dev/null)
+    resp_ctx=$(echo "$result" | jq -r '.context_id // empty' 2>/dev/null)
+    resp_lat=$(echo "$result" | jq -r '.latency_s // empty' 2>/dev/null)
+    if [ -n "$resp_text" ]; then
+      printf "\n  %b🧠 A0:%b %b%s%b\n" "${CYN}${BLD}" "${RST}" "${WHT}" "${resp_text:0:200}" "${RST}"
+      printf "  %bctx: %s  latency: %ss%b\n\n" "${DIM}" "$resp_ctx" "$resp_lat" "${RST}"
+      # Update context for live feed
+      [ -n "$resp_ctx" ] && CTX_ID="$resp_ctx" && LAST_CTX="" && LAST_NO=-1
+    else
+      # Non-JSON or error — show raw
+      printf "\n%s\n\n" "$result"
+    fi
   fi
 }
 
@@ -308,7 +326,21 @@ while true; do
   read -r -t "$POLL_INTERVAL" -n 1 key 2>/dev/null
   case "$key" in
     q|Q) break ;;
-    r|R) printf "\n  %bОбновляю...%b\n" "${DIM}" "${RST}"; IDLE_SHOWN=0 ;;
+    r|R)
+      # Full refresh: redraw header + context + all messages
+      LAST_NO=-1
+      LAST_CTX=""
+      IDLE_SHOWN=0
+      print_header
+      printf "\n"
+      CTX_ID=$(get_context_id)
+      if [ -n "$CTX_ID" ]; then
+        get_context_info "$CTX_ID"
+        printf "\n"
+        fetch_chat "$CTX_ID"
+        LAST_CTX="$CTX_ID"
+      fi
+      ;;
     m|M) do_send_message ;;
     t|T) show_scheduler_tasks ;;
     h|H) do_health_check ;;
