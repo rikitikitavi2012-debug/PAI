@@ -20,6 +20,7 @@ JQ_EVENT_FORMAT='
    elif $filt == "inference" then select(.type | startswith("inference."))
    elif $filt == "voice" then select(.type | startswith("voice."))
    elif $filt == "hooks" then select(.type | startswith("agent.") or startswith("task."))
+   elif $filt == "brigade" then select(.type | startswith("a0.") or startswith("agent.") or startswith("rating.") or startswith("voice."))
    else . end) |
 
   # Timestamp UTC → local

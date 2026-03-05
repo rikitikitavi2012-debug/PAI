@@ -4,6 +4,7 @@
 # Converts UTC timestamps to local time, filters test noise
 
 EVENTS="$HOME/.claude/MEMORY/STATE/events.jsonl"
+FILTER="${1:-all}"  # all|fail|inference|voice|hooks|brigade
 
 # ── Timezone offset (hours from UTC, e.g. 3 for MSK, -5 for EST) ──
 _tz_raw=$(date +%z)
@@ -21,7 +22,9 @@ unset _tz_raw _tz_sign _tz_abs _tz_h
 . "$HOME/.config/kitty/scripts/lib/events-format.sh"
 
 box_top
-box_line "$(printf "%b%b📡 PAI EVENTS%b  %b(live · UTC%+d)%b" "${VIO}" "${BLD}" "${RST}" "${DIM}" "${TZ_OFFSET_H}" "${RST}")"
+_filt_label=""
+[ "$FILTER" != "all" ] && _filt_label=" · filter: ${FILTER}"
+box_line "$(printf "%b%b📡 PAI EVENTS%b  %b(live · UTC%+d%s)%b" "${VIO}" "${BLD}" "${RST}" "${DIM}" "${TZ_OFFSET_H}" "${_filt_label}" "${RST}")"
 box_bot
 printf "\n"
 
@@ -36,5 +39,5 @@ fi
 # Show last 20 events, then follow — single jq process
 # TZ_OFFSET_H passed as jq arg for UTC→local conversion
 tail -n 20 -f "$EVENTS" | jq --unbuffered -r -R \
-  --argjson tz "$TZ_OFFSET_H" --arg filt "all" \
+  --argjson tz "$TZ_OFFSET_H" --arg filt "$FILTER" \
   "$JQ_EVENT_FORMAT" 2>/dev/null

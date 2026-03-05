@@ -206,24 +206,53 @@ poll() {
   section_header "📋" "A0 TASKS" "$CYN"
 
   if [ -n "$a0_json" ]; then
-    # Scheduler API is CSRF-protected — show known tasks from cache or hardcoded
-    local a0_tasks_cache="$HOME/.claude/MEMORY/STATE/a0-scheduler-cache.json"
-    if [ -f "$a0_tasks_cache" ]; then
+    # Live scheduler API (CSRF bypass via API key)
+    local sched_json=""
+    if [ -n "$A0_TOKEN" ]; then
+      sched_json=$(curl -s -m "$API_TIMEOUT" -X POST "http://${A0_HOST}/scheduler_tasks_list" \
+        -H "Content-Type: application/json" -H "X-API-KEY: $A0_TOKEN" \
+        -d '{"timezone": "Europe/Moscow"}' 2>/dev/null)
+    fi
+
+    local tasks_ok=""
+    tasks_ok=$(echo "$sched_json" | jq -r '.ok // false' 2>/dev/null)
+
+    if [ "$tasks_ok" = "true" ]; then
+      # Cache for offline fallback
+      echo "$sched_json" | jq -c '.tasks' > "$HOME/.claude/MEMORY/STATE/a0-scheduler-cache.json" 2>/dev/null
       local tasks_line=""
       while IFS= read -r task_entry; do
         [ -z "$task_entry" ] && continue
-        local tname tschedule
+        local tname tstate ttype
         tname=$(echo "$task_entry" | jq -r '.name // "?"' 2>/dev/null)
         tname=$(truncate "$tname" 16)
-        tschedule=$(echo "$task_entry" | jq -r '.schedule // ""' 2>/dev/null)
+        tstate=$(echo "$task_entry" | jq -r '.state // "?"' 2>/dev/null)
+        ttype=$(echo "$task_entry" | jq -r '.type // ""' 2>/dev/null)
+        local state_color="$DIM"
+        [ "$tstate" = "running" ] && state_color="$GRN"
+        [ "$tstate" = "error" ] && state_color="$RED"
         [ -n "$tasks_line" ] && tasks_line+="  "
-        tasks_line+=$(printf '%b%s%b %b%s%b' "$WHT" "$tname" "$RST" "$DIM" "$tschedule" "$RST")
-      done < <(jq -c '.[]' "$a0_tasks_cache" 2>/dev/null | head -5)
+        tasks_line+=$(printf '%b%s%b %b%s%b' "$WHT" "$tname" "$RST" "$state_color" "$ttype" "$RST")
+      done < <(echo "$sched_json" | jq -c '.tasks[]' 2>/dev/null | head -5)
       box_line "${tasks_line:-$(printf '%bзадач нет%b' "$DIM" "$RST")}"
     else
-      # Hardcoded known tasks (updated manually when tasks change)
-      box_line "$(printf '%bULC%b %bdaily%b  %bTELOS%b %badhoc%b  %bSecScan%b %bweekly%b' \
-        "$WHT" "$RST" "$DIM" "$RST" "$WHT" "$RST" "$DIM" "$RST" "$WHT" "$RST" "$DIM" "$RST")"
+      # Fallback to cache
+      local a0_tasks_cache="$HOME/.claude/MEMORY/STATE/a0-scheduler-cache.json"
+      if [ -f "$a0_tasks_cache" ]; then
+        local tasks_line=""
+        while IFS= read -r task_entry; do
+          [ -z "$task_entry" ] && continue
+          local tname ttype
+          tname=$(echo "$task_entry" | jq -r '.name // "?"' 2>/dev/null)
+          tname=$(truncate "$tname" 16)
+          ttype=$(echo "$task_entry" | jq -r '.type // ""' 2>/dev/null)
+          [ -n "$tasks_line" ] && tasks_line+="  "
+          tasks_line+=$(printf '%b%s%b %b%s%b' "$WHT" "$tname" "$RST" "$DIM" "$ttype" "$RST")
+        done < <(jq -c '.[]' "$a0_tasks_cache" 2>/dev/null | head -5)
+        box_line "$(printf '%b(cached)%b ' "$DIM" "$RST")${tasks_line}"
+      else
+        box_line "$(printf '%bscheduler недоступен%b' "$DIM" "$RST")"
+      fi
     fi
   else
     box_line "$(printf '%bA0 offline%b' "$DIM" "$RST")"

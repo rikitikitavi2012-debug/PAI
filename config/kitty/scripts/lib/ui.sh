@@ -65,7 +65,7 @@ box_line() {
 two_col() {
   local left="$1" right="$2"
   local half=$(( (PAI_UI_WIDTH - 4) / 2 ))
-  local right_w=$((PAI_UI_WIDTH - 4 - half - 1))
+  local right_w=$((PAI_UI_WIDTH - 4 - half))
 
   local vw_l vw_r
   vw_l=$(vwidth "$left")
@@ -150,6 +150,60 @@ tab_ok()    { set_tab_state "#4ade80" "#0f172a"; }
 tab_warn()  { set_tab_state "#fbbf24" "#0f172a"; }
 tab_crit()  { set_tab_state "#fb7185" "#ffffff"; }
 tab_reset() { [ -n "$KITTY_WINDOW_ID" ] && kitty @ set-tab-color active_background= active_foreground= >/dev/null 2>&1; }
+
+# ── Screen Management (btop/k9s pattern) ──
+
+# Screen management — normal buffer for scrollback support
+alt_screen_enter() {
+  tput civis 2>/dev/null    # hide cursor during render
+  printf '\033[2J\033[H'    # clear + home
+}
+
+alt_screen_exit() {
+  tput cnorm 2>/dev/null    # show cursor
+  tab_reset                 # restore tab colors
+}
+
+# ── Text Helpers ──
+
+# Truncate plain text with ellipsis: truncate "long string" 20 → "long string with lo…"
+truncate() {
+  local str="$1" max="${2:-40}"
+  if [ "${#str}" -gt "$max" ]; then
+    printf '%s…' "${str:0:$((max - 1))}"
+  else
+    printf '%s' "$str"
+  fi
+}
+
+# Human-relative time from epoch: time_ago 1709571600 → "3ч"
+time_ago() {
+  local epoch="${1:-0}"
+  local now
+  now=$(date +%s)
+  local diff=$(( now - epoch ))
+  if   [ "$diff" -lt 60 ];    then printf '%dс' "$diff"
+  elif [ "$diff" -lt 3600 ];  then printf '%dм' "$(( diff / 60 ))"
+  elif [ "$diff" -lt 86400 ]; then printf '%dч' "$(( diff / 3600 ))"
+  elif [ "$diff" -lt 604800 ]; then printf '%dд' "$(( diff / 86400 ))"
+  else printf '%dн' "$(( diff / 604800 ))"; fi
+}
+
+# Right-align text at column N using ANSI cursor positioning
+right_align() {
+  local text="$1" col="${2:-$PAI_UI_WIDTH}"
+  local vw
+  vw=$(vwidth "$text")
+  local target_col=$(( col - vw ))
+  [ "$target_col" -lt 1 ] && target_col=1
+  printf '\033[%dG%s' "$target_col" "$text"
+}
+
+# ── Kitty Tab Title ──
+
+set_tab_title() {
+  printf '\033]2;%s\007' "$1"
+}
 
 # ── Spinner (background process for API waits) ──
 # Usage: spin_start "Loading A0..."; result=$(curl ...); spin_stop
