@@ -204,6 +204,15 @@ async function schedulerRun(task: string): Promise<void> {
   console.log(JSON.stringify(result, null, 2));
 }
 
+async function schedulerResults(): Promise<void> {
+  // Pull last scheduled task results via A0 sync message (scheduler API is CSRF-protected)
+  const result = await sendMessage(
+    'Show results of your last completed scheduled task. Include: task name, when it ran, key findings, and status (clean/issues found). Be brief — 5 lines max.',
+    undefined
+  );
+  console.log(JSON.stringify(result, null, 2));
+}
+
 // ─── CLI entry point ───────────────────────────────────────────────
 
 async function main() {
@@ -219,6 +228,7 @@ async function main() {
   bun AgentZero.ts terminate <context_id>        — end conversation
   bun AgentZero.ts health                        — server check
   bun AgentZero.ts scheduler list                — list tasks
+  bun AgentZero.ts scheduler results             — last task results
   bun AgentZero.ts scheduler run "task"          — run ad-hoc task`);
     process.exit(1);
   }
@@ -268,8 +278,10 @@ async function main() {
         const task = args[2];
         if (!task) { console.error('Error: task description required'); process.exit(1); }
         await schedulerRun(task);
+      } else if (args[1] === 'results') {
+        await schedulerResults();
       } else {
-        console.error('Scheduler subcommands: list, run "task"');
+        console.error('Scheduler subcommands: list, run "task", results');
         process.exit(1);
       }
       break;

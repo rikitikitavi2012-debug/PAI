@@ -156,6 +156,7 @@ async function main() {
     checkZai(),
     checkHttp('VoiceServer', 'http://localhost:8888/health'),
     Promise.resolve(checkCli('GitHubCLI', ['gh', 'auth', 'status'])),
+    Promise.resolve(checkCli('GeminiCLI', ['gemini', '--version'])),
   ]);
 
   const report: HealthReport = {

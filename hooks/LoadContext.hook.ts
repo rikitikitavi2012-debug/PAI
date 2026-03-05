@@ -610,6 +610,18 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
         } catch { /* non-fatal */ }
       }
 
+      // A0 scheduled tasks status (from health report)
+      if (existsSync(healthPath)) {
+        try {
+          const health = JSON.parse(readFileSync(healthPath, 'utf-8'));
+          const a0Check = (health.checks || []).find((c: any) => c.service === 'AgentZero');
+          if (a0Check) {
+            const status = a0Check.status === 'up' ? '🧠 A0 online' : '⚠️ A0 offline';
+            briefingParts.push(`  ${status} (3 tasks: ULC daily, TELOS adhoc, SecScan weekly)`);
+          }
+        } catch { /* non-fatal */ }
+      }
+
       if (briefingParts.length > 0) {
         console.log('\n🤖 BRIGADE BRIEFING:');
         for (const part of briefingParts) {

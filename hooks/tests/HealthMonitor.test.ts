@@ -61,6 +61,14 @@ describe('HealthMonitor.ts', () => {
           success: true,
         } as any;
       }
+      if (cmd[0] === 'gemini') {
+        return {
+          exitCode: 0,
+          stdout: Buffer.from('0.31.0\n'),
+          stderr: Buffer.from(''),
+          success: true,
+        } as any;
+      }
       return { exitCode: 1, stdout: Buffer.from(''), stderr: Buffer.from(''), success: false } as any;
     });
 
@@ -117,7 +125,7 @@ describe('HealthMonitor.ts', () => {
   });
 
   it('3. Each check has: service, status, latencyMs, timestamp', () => {
-    expect(reportJson.checks.length).toBe(4);
+    expect(reportJson.checks.length).toBe(5);
     for (const check of reportJson.checks) {
       expect(check).toHaveProperty('service');
       expect(typeof check.service).toBe('string');
