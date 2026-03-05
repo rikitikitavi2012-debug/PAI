@@ -1,0 +1,8 @@
+{
+  "rating": 4,
+  "summary": "Frustrated — expected live event display not visible",
+  "detailed_context": "Ivan was expecting to see a live event display on screen after the telemetry dashboard was set up and committed. The dashboard was just created with 6 sections including ALGORITHM and AGENTS status. Ivan's message (in Russian: 'But why don't I see the screen with live event, I don't see') indicates frustration that the expected real-time event visualization is not appearing. This suggests either: (1) the dashboard isn't displaying live data properly, (2) events aren't being captured/shown, or (3) Ivan expected visual output that hasn't materialized. The typos and casual tone ('почему', 'эвент') suggest mild frustration rather than anger. This is a correction/complaint about missing expected functionality — Navi should have ensured the live event display was working before completing the task. Ivan is pointing out that despite the dashboard being 'ready', the core feature (live events) isn't functioning as expected.",
+  "session_id": "7b125423-4ce6-41a4-8429-bedacc5055c7",
+  "captured_at": "2026-03-05T13:51:43.388Z",
+  "transcript_source": "7b125423-4ce6-41a4-8429-bedacc5055c7.jsonl"
+}
