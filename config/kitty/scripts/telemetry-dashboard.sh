@@ -59,6 +59,17 @@ M_A0_STATUS="--" M_A0_LATENCY="--" M_A0_LAST=""
 M_JULES_MERGED_TODAY=0 M_JULES_FAILED_TODAY=0 M_JULES_PRS_TESTED=0
 M_AM_LAST_ACTION="" M_AM_LAST_RESULT="" M_AM_LAST_TIME=""
 
+# Navi Growth state
+M_RATE_TODAY="--" M_RATE_WEEK="--" M_RATE_MONTH="--"
+M_RATE_HIGH=0 M_RATE_LOW=0 M_RATE_TREND="=" M_RATE_COUNT=0
+M_LEARN_SIGNALS=0 M_LEARN_FAILURES=0
+
+# TELOS state
+M_TELOS_ACTIVE=0 M_TELOS_TOP="" M_TELOS_PROGRESS=""
+
+# Cost state
+M_COST_FIXED=0 M_COST_API="0.00" M_COST_TOTAL="0.00"
+
 # Alert state
 M_ERR_RATE_5M=0
 ALERT_SENT=0
@@ -414,6 +425,90 @@ compute_brigade() {
 }
 
 # ═══════════════════════════════════════════════════
+# ── Navi Growth: ratings + learning signals ──
+# ═══════════════════════════════════════════════════
+compute_navi_growth() {
+  [ ! -f "$EVENTS_FILE" ] && return
+
+  local raw
+  raw=$(jq -sr '
+    (now | strftime("%Y-%m-%d")) as $today |
+    (now - 7*86400 | strftime("%Y-%m-%d")) as $week_ago |
+    (now - 14*86400 | strftime("%Y-%m-%d")) as $prev_week |
+    (now - 30*86400 | strftime("%Y-%m-%d")) as $month_ago |
+    [.[] | select(.type == "rating.captured")] |
+    (length) as $total |
+    ([.[] | select(.timestamp[:10] >= $today) | (.data.rating // .rating // 0)] |
+      if length > 0 then (add / length * 10 | floor) / 10 else 0 end) as $avg_today |
+    ([.[] | select(.timestamp[:10] >= $week_ago) | (.data.rating // .rating // 0)] |
+      if length > 0 then (add / length * 10 | floor) / 10 else 0 end) as $avg_week |
+    ([.[] | select(.timestamp[:10] >= $week_ago and .timestamp[:10] < $today) | (.data.rating // .rating // 0)] |
+      if length > 0 then add / length else 0 end) as $this_week_raw |
+    ([.[] | select(.timestamp[:10] >= $prev_week and .timestamp[:10] < $week_ago) | (.data.rating // .rating // 0)] |
+      if length > 0 then add / length else 0 end) as $prev_week_raw |
+    ([.[] | select(.timestamp[:10] >= $month_ago) | (.data.rating // .rating // 0)] |
+      if length > 0 then (add / length * 10 | floor) / 10 else 0 end) as $avg_month |
+    ([.[] | select((.data.rating // .rating // 0) >= 9)] | length) as $high |
+    ([.[] | select((.data.rating // .rating // 0) <= 4)] | length) as $low |
+    (if $this_week_raw > $prev_week_raw + 0.3 then "up"
+     elif $this_week_raw < $prev_week_raw - 0.3 then "down"
+     else "flat" end) as $trend |
+    [$avg_today, $avg_week, $avg_month, $high, $low, $trend, $total] | @tsv
+  ' "$EVENTS_FILE" 2>/dev/null)
+
+  if [ -n "$raw" ]; then
+    IFS=$'\t' read -r M_RATE_TODAY M_RATE_WEEK M_RATE_MONTH \
+      M_RATE_HIGH M_RATE_LOW M_RATE_TREND M_RATE_COUNT <<< "$raw"
+  fi
+
+  # Learning signals and failures (count files in current month dir)
+  local month_dir
+  month_dir=$(date +%Y-%m)
+  M_LEARN_SIGNALS=$(find "$HOME/.claude/MEMORY/LEARNING/ALGORITHM/$month_dir" -type f 2>/dev/null | wc -l)
+  M_LEARN_FAILURES=$(find "$HOME/.claude/MEMORY/LEARNING/FAILURES/$month_dir" -type f 2>/dev/null | wc -l)
+}
+
+# ═══════════════════════════════════════════════════
+# ── TELOS: active goals from GOALS.md ──
+# ═══════════════════════════════════════════════════
+compute_telos() {
+  local goals_file="$HOME/.claude/PAI/USER/TELOS/GOALS.md"
+  [ ! -f "$goals_file" ] && return
+
+  # Count active goals (### G lines not containing "Завершена" or "Заморожена")
+  M_TELOS_ACTIVE=$(grep -c '^### G[0-9]' "$goals_file" 2>/dev/null || echo 0)
+
+  # Top priority: first ### G line with "Высокий приоритет"
+  M_TELOS_TOP=$(grep -A1 '^### G[0-9]' "$goals_file" 2>/dev/null | grep -B1 'Высокий' | head -1 | sed 's/^### G[0-9]*: //' | head -c 35)
+
+  # Progress of top goal: count [x] vs [ ] after first ### G
+  local done total
+  done=$(awk '/^### G0:/,/^### G[1-9]/' "$goals_file" 2>/dev/null | grep -c '\[x\]' || echo 0)
+  total=$(awk '/^### G0:/,/^### G[1-9]/' "$goals_file" 2>/dev/null | grep -c '\[.\]' || echo 0)
+  [ "$total" -gt 0 ] && M_TELOS_PROGRESS="${done}/${total}" || M_TELOS_PROGRESS="--"
+}
+
+# ═══════════════════════════════════════════════════
+# ── Cost: fixed + API estimate ──
+# ═══════════════════════════════════════════════════
+compute_cost() {
+  local config="$HOME/.claude/PAI/config/cost-budget.json"
+  [ ! -f "$config" ] && return
+
+  # Sum fixed costs from config
+  M_COST_FIXED=$(jq -r '.monthly_fixed | to_entries | map(.value) | add // 0' "$config" 2>/dev/null)
+  [ -z "$M_COST_FIXED" ] && M_COST_FIXED=0
+
+  # API cost already computed in compute_api_cost → M_API_COST
+  M_COST_API="${M_API_COST:-0.00}"
+  local fixed_int="${M_COST_FIXED%.*}"
+  local api_int="${M_COST_API%.*}"
+  [ -z "$fixed_int" ] && fixed_int=0
+  [ -z "$api_int" ] && api_int=0
+  M_COST_TOTAL=$(( fixed_int + api_int ))
+}
+
+# ═══════════════════════════════════════════════════
 # ── Build metrics panel (full-width, single column) ──
 # ═══════════════════════════════════════════════════
 build_metrics() {
@@ -646,6 +741,45 @@ build_metrics() {
     "$SLT" "$RST" "$CYN" "$M_AGENT_START" "$RST" "$SLT" "$M_AGENT_STOP" "$RST")")
   METRIC_LINES+=("$(printf '%bTotal%b   %b%s%b events  %b%s%b sessions' \
     "$SLT" "$RST" "$WHT" "$M_TOTAL" "$RST" "$SLT" "$M_SESSIONS" "$RST")")
+  METRIC_LINES+=("")
+
+  # ── Navi Growth ──
+  local trend_icon trend_color
+  case "$M_RATE_TREND" in
+    up)   trend_icon="▲"; trend_color="$GRN" ;;
+    down) trend_icon="▼"; trend_color="$RED" ;;
+    *)    trend_icon="─"; trend_color="$SLT" ;;
+  esac
+
+  METRIC_LINES+=("$(printf '%b%bNAVI GROWTH%b' "$ORG" "$BLD" "$RST")")
+  METRIC_LINES+=("$(printf '  %bRating%b  day:%b%s%b  week:%b%s%b  month:%b%s%b  %b%s%b %b(%s signals)%b' \
+    "$SLT" "$RST" "$WHT" "$M_RATE_TODAY" "$RST" "$WHT" "$M_RATE_WEEK" "$RST" \
+    "$WHT" "$M_RATE_MONTH" "$RST" "$trend_color" "$trend_icon" "$RST" \
+    "$DIM" "$M_RATE_COUNT" "$RST")")
+
+  local high_color="$GRN" low_color="$SLT"
+  [ "$M_RATE_LOW" -gt 3 ] && low_color="$YLW"
+  [ "$M_RATE_LOW" -gt 5 ] && low_color="$RED"
+  METRIC_LINES+=("$(printf '  %bLearn%b   %b%s%b signals  %b%s%b failures  %b★9+:%s%b  %b★≤4:%s%b' \
+    "$SLT" "$RST" "$CYN" "$M_LEARN_SIGNALS" "$RST" "$RED" "$M_LEARN_FAILURES" "$RST" \
+    "$high_color" "$M_RATE_HIGH" "$RST" "$low_color" "$M_RATE_LOW" "$RST")")
+
+  # ── TELOS ──
+  METRIC_LINES+=("$(printf '%b%bTELOS%b %b(%s goals)%b' "$BLU" "$BLD" "$RST" "$SLT" "$M_TELOS_ACTIVE" "$RST")")
+  if [ -n "$M_TELOS_TOP" ]; then
+    METRIC_LINES+=("$(printf '  %b►%b %b%s%b  %b%s%b' \
+      "$YLW" "$RST" "$WHT" "$M_TELOS_TOP" "$RST" "$SLT" "$M_TELOS_PROGRESS" "$RST")")
+  else
+    METRIC_LINES+=("$(printf '  %b(no active goals)%b' "$DIM" "$RST")")
+  fi
+
+  # ── Cost ──
+  local cost_color="$GRN"
+  [ "$M_COST_TOTAL" -gt 300 ] && cost_color="$YLW"
+  [ "$M_COST_TOTAL" -gt 500 ] && cost_color="$RED"
+  METRIC_LINES+=("$(printf '%b%bCOST%b  %b$%s%b/mo fixed  %b+$%s%b API  %b= $%s%b/mo' \
+    "$VIO" "$BLD" "$RST" "$SLT" "$M_COST_FIXED" "$RST" \
+    "$SLT" "$M_COST_API" "$RST" "$cost_color" "$M_COST_TOTAL" "$RST")")
 }
 
 # ═══════════════════════════════════════════════════
@@ -705,6 +839,9 @@ poll() {
   compute_compact
   compute_error_alert
   compute_brigade
+  compute_navi_growth
+  compute_telos
+  compute_cost
   spin_stop
 
   build_metrics

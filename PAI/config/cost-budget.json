@@ -1,0 +1,11 @@
+{
+  "monthly_fixed": {
+    "Claude Max": 200,
+    "ElevenLabs Creator": 22,
+    "Z.AI Coding": 10,
+    "VPS (A0)": 20,
+    "GitHub Pro": 4
+  },
+  "currency": "USD",
+  "notes": "Jules Pro included in Google One AI (not billed separately)"
+}
