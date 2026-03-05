@@ -6,16 +6,16 @@
 
 ---
 
-## Последнее обновление: 2026-03-03
+## Последнее обновление: 2026-03-05
 
 ---
 
 ## Общий статус
 
-**Текущий фокус:** PAI Система (Navi + хуки + скиллы + бригада + workspace + апстрим) → Timber Frame сайт (продукт → независимость)
-**Уровень энергии:** Высокий — система работает как оркестр, инструменты налажены
-**Общее настроение:** Стратегическое — 9 операционных принципов вшиты в нервную систему. Kitty Workspace заменяет PAI Dashboard. Бригада (5 AI) координирована. Осталось отточить и применить на продукте.
-**Сезон:** Межсезонье (декабрь-март) — ПОСЛЕДНЯЯ неделя свободного времени перед сезоном
+**Текущий фокус:** PAI Система (бригада 4 T1 + 1 T2 + 2 T3 агентов, бухгалтерия, workspace) → Timber Frame сайт
+**Уровень энергии:** Высокий — система растёт органично, каждая сессия добавляет слой
+**Общее настроение:** Стратегическое — бригада классифицирована (T1/T2/T3), цифровая бухгалтерия заложена (FINANCES.md), 24 файла TELOS, центр управления в Kitty (2 таба: Center + Telemetry)
+**Сезон:** Межсезонье (декабрь-март) — ПОСЛЕДНИЕ дни свободного времени перед сезоном
 
 ---
 
@@ -61,19 +61,21 @@
 
 | Сфера | Метрика | Текущее | Цель |
 |-------|---------|---------|------|
-| TELOS | Файлы контекста | 23 файла | Актуальные и глубокие |
+| TELOS | Файлы контекста | 24 файла (+FINANCES.md) | Актуальные и глубокие |
 | PAI | Хуки | 30 | Все defensive/fail-open |
-| PAI | Тесты | 171 / 34 сюит | 100% pass |
-| PAI | AI Agents | 3+2 (Navi, Jules, A0, Gemini tool, GLM-5 tool) | Оркестр работает, A0 подключён |
-| PAI | Inference providers | 5 (Haiku, Sonnet, Opus, Gemini, GLM-5) | Unified tool, 3 AI компании |
+| PAI | Тесты | 226 / 34+ сюит | 100% pass |
+| PAI | AI Brigade | 4 T1 + 1 T2 + 2 T3 = 7 членов | Navi, Jules, A0, OpenCode, Gemini, GLM-5, zai-cli |
+| PAI | Inference providers | 5 (Haiku, Sonnet, Opus, Gemini, GLM-5) | 3 AI компании |
 | PAI | Скиллы | 11 | Аудит по v4 (G10) |
-| PAI | Community PRs | 6 (4 open) | Регулярный вклад |
-| PAI | Рейтинги | 92 (avg ~7.1, today 8.8) | Тренд вверх |
-| Финансы | Накопления | 3 500 000 ₽ | Распределить по S4 |
-| Проекты | PAI Workspace (Kitty) | 7 табов v1 | v2 с TELOS panel |
-| Карьера | Доход от проектов | 0 ₽ | > зарплаты (M0) |
-| Инфра | Серверы | 2 VPS (NL) | + Venice AI |
-| Инфра | CLI инструменты | Claude Code + Gemini CLI + zai-cli | 2 через прокси NL, 1 прямой |
+| PAI | Community PRs | 8 (6 open, 2 merged) | Регулярный вклад |
+| PAI | Рейтинги | 133 (avg ~7.1, today 9) | Тренд вверх |
+| Финансы | IT Infrastructure OpEx | $240.33/мес | Трекинг live (4 API) |
+| Финансы | Бригада LLM | ~$131/мес | 4 подписки + pay-per-use |
+| Финансы | Накопления | 3 500 000 RUB | Распределить по S4 |
+| Проекты | PAI Workspace (Kitty) | 2 таба (Center + Telemetry) | Strategic + Operational |
+| Карьера | Доход от проектов | 0 RUB | > зарплаты (M0) |
+| Инфра | Серверы | 2 VPS (Timeweb, 2005 RUB) | Live balance трекинг |
+| Инфра | CLI агенты | pai + gemi + oc | 3 через прокси NL |
 
 ---
 
@@ -108,6 +110,12 @@
 
 | Победа | Дата | Связано с |
 |--------|------|-----------|
+| FINANCES.md создан — 24-й файл TELOS, фундамент цифровой бухгалтерии | 2026-03-05 | M0, G3, P0 |
+| Бригада классифицирована T1/T2/T3 — 4 автономных + 1 CLI + 2 инструмента | 2026-03-05 | M3, S1, MO9 |
+| OpenCode CLI повышен до T1 — headless mode, Navi вызывает программно | 2026-03-05 | M3, S1 |
+| Live cost tracking — 4 API (ElevenLabs, Z.AI, OpenRouter, Timeweb) в Strategic dashboard | 2026-03-05 | M0, P0 |
+| Infrastructure OpEx: $240.33/мес fixed + API tracked, 13 ключей задокументированы | 2026-03-05 | M0, P0 |
+| Kitty Workspace: 2 таба (Center: Command+Strategic, Telemetry: Events+Operational) | 2026-03-05 | P0, G13 |
 | Agent Zero подключён к Navi через REST API (AgentZero.ts) — 24/7 VPS, 9 навыков | 2026-03-03 | I3, MO9, S1 |
 | Z.AI GLM-5 интегрирован: 5-й inference provider + zai-cli MCP (vision/search/read/repo) | 2026-03-03 | I3, S1, S3, MO9 |
 | 3 AI-провайдера: Anthropic + Google + Zhipu AI = полный суверенитет | 2026-03-03 | S3, M3, C2 |

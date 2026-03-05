@@ -267,9 +267,12 @@
 **Прогресс:**
 - [x] Kitty Workspace v1 — 7 табов (Command Center, TELOS, Code, Brigade, Logs, Research, Comms)
 - [x] Brigade Dashboard — AUTOMERGE, A0 info, Events tail с цветами
+- [x] Workspace v2 — 2 таба: Center (Command+Strategic vsplit), Telemetry (Events+Operational tall)
+- [x] Strategic Dashboard — Algorithm, Navi Growth, TELOS, Cost, Active Work, Failures, Brigade
+- [x] Financial tracker — live cost tracking: ElevenLabs, Z.AI, OpenRouter, Timeweb
+- [x] Brigade status — T1/T2/T3 классификация, 7 членов в оперативном дашборде
 - [ ] TELOS panel — goals, status, projects прямо в терминале
 - [ ] Project switcher — быстрое переключение контекста между P0/P1/P3
-- [ ] Financial tracker — метрики портфеля (3.5M распределение)
 - [ ] Hotkeys — быстрый доступ к частым действиям
 **Связано с:** P0, принцип #2 (Code > Prompts)
 

@@ -102,6 +102,28 @@
 
 *Полная коллекция: `~/.claude/MEMORY/RESEARCH/2026-03/miessler-philosophy.md`*
 
+### Jim Collins (Good to Great, Flywheel)
+Концепция маховика — почему momentum важнее скорости.
+
+> "No matter how dramatic the end result, good-to-great transformations never happen in one fell swoop. There was no single defining action, no grand program, no one killer innovation, no solitary lucky break, no miracle moment."
+— Good to Great (2001)
+
+> "Each turn of the flywheel builds upon work done earlier, compounding your investment of effort."
+— Turning the Flywheel (2019)
+
+*Применение: PAI не появился за день. Каждая сессия — один оборот маховика. Momentum = MEMORY + WISDOM + FRAMES.*
+
+### Warren Buffett (The Snowball, Compounding)
+Сложный процент — единственная сила, работающая пока ты спишь.
+
+> "Life is like a snowball. All you need is wet snow and a really long hill."
+— The Snowball: Warren Buffett and the Business of Life (2008)
+
+> "The first rule of compounding: never interrupt it unnecessarily."
+— приписывается Чарли Мангеру (партнёр Баффетта)
+
+*Применение: "Мокрый снег" = качество scaffolding (hooks, skills, TELOS). "Длинная гора" = время + постоянство направления. Не прерывай маховик сменой фокуса.*
+
 ### Navi
 Сначала точим топор, потом рубим дерево.
 

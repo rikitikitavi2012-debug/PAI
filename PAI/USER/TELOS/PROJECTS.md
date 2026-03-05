@@ -39,12 +39,12 @@
   - #800 fix: Inference.ts JSON parsing (CLOSED)
 - **Признание:** @rikitikitavi2012-debug отмечен в release notes PAI v4.0.3
 **Подпроекты:**
-- **PAI Workspace (Kitty)** — 7-tab terminal workspace: Command Center, TELOS, Code, Brigade Dashboard, Logs, Research, Comms. Заменяет PAI Dashboard (web). Детерминизм + zero overhead.
+- **PAI Workspace (Kitty)** — 2 таба: Center (Command Center + Strategic Dashboard vsplit) и Telemetry (Events Live + Operational tall). Live cost tracking, brigade status, TELOS metrics. Заменяет PAI Dashboard (web). Детерминизм + zero overhead.
 - ~~**PAI Dashboard**~~ — ❌ Заменён на Kitty Workspace (март 2026). Web UI = лишний overhead для соло-разработчика. Terminal-native = быстрее, проще, надёжнее.
-- **TELOS контекст** — 23 файла заполнены, эволюция продолжается
+- **TELOS контекст** — 24 файла заполнены (+FINANCES.md), эволюция продолжается
 - **PAI инфраструктура** — хуки, скиллы, агенты, воркфлоу
 - **Community contribution** — PRs, issues, code review в upstream PAI
-- **AI Brigade** — Navi (архитектор) + Jules (async-кодер) + Agent Zero (ревьюер/исследователь) + Z.AI (vision/search) + Gemini (второе мнение)
+- **AI Brigade (7 членов, T1/T2/T3)** — T1: Navi (архитектор) + Jules (async-кодер) + A0 (24/7 VPS) + OpenCode (headless coder). T2: Gemini CLI (interactive). T3: GLM-5 + zai-cli (tools)
 - **JulesAutoMerge** — автоматизация merge Jules PRs с A0 code review
 - **Miessler Philosophy** — 9 операционных принципов вшиты в нервную систему (CLAUDE.md + AISTEERINGRULES.md)
 **Результаты (февраль-март 2026):**
@@ -71,8 +71,11 @@
 - [x] Community: 6 PRs в upstream
 - [x] Git workflow: fork, main/master, worktrees
 - [ ] Аудит скиллов по v4 структуре (11 скиллов, новая архитектура)
-- [ ] PAI Workspace v2 (Kitty): TELOS panel, project switcher, financial tracker
-- [ ] Z.AI интеграция в pipeline (code reviewer, vision для UI)
+- [x] PAI Workspace v2: 2 таба (Center + Telemetry), Strategic Dashboard с live cost tracking
+- [x] Z.AI интеграция в pipeline (GLM-5 inference, zai-cli MCP, ZaiVision screenshots)
+- [x] FINANCES.md — цифровая бухгалтерия ($240/мес fixed, 13 API keys, live trackers)
+- [x] OpenCode CLI — T1 автономный агент, headless mode, Kimi 2.5 + Z.AI models
+- [ ] TELOS panel в Kitty — goals, status прямо в терминале
 - [ ] A0 расширение scheduled tasks (health check, security scan, community watcher)
 - [ ] Углубить контекст в заполненных TELOS файлах
 **Связано с:** M1, M3, B1, B2, MO9, S7

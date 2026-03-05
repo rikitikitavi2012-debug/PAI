@@ -22,6 +22,7 @@ This document represents your complete TELOS (purpose/end goal) framework - enco
 | FRAMES | FR# | Useful perspectives for seeing the world |
 | MODELS | MO# | Your understanding of how things work |
 | TRAUMAS | TR# | Formative experiences that shaped you |
+| FINANCES | -- | Digital accounting: infra, business, investments, personal |
 
 ---
 

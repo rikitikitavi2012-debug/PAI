@@ -77,9 +77,25 @@
   "api_usage": {
     "Anthropic API": {
       "key_env": "ANTHROPIC_API_KEY",
-      "billing": "pay-per-use",
-      "track_method": "estimate_from_events",
-      "notes": "Used by A0. Token counting available via /v1/messages/count_tokens"
+      "billing": "pay-per-use (prepaid credits)",
+      "credits_purchased": 15.00,
+      "balance_remaining": 9.79,
+      "total_spent": 5.21,
+      "last_updated": "2026-03-05",
+      "auto_reload": false,
+      "payment_method": "Visa ****9336",
+      "invoices": [
+        {"date": "2026-02-25", "type": "Credit grant", "amount": 5.00, "expires": "2027-02-26"},
+        {"date": "2026-03-02", "type": "Monthly Invoice", "amount": 0.00},
+        {"date": "2026-03-05", "type": "Credit grant", "amount": 10.00}
+      ],
+      "track_method": "console",
+      "track_url": "https://console.anthropic.com → Settings → Billing",
+      "key_name": "Navi",
+      "workspace": "Default",
+      "org": "John's Individual Org",
+      "consumers": ["PAI Inference.ts (hooks: RatingCapture, SessionAutoName, UpdateTabTitle)"],
+      "notes": "Hooks call haiku/sonnet via Inference.ts. ~$5.21 spent in 8 days. Consider enabling auto-reload to prevent 100% error alerts"
     },
     "Google AI API": {
       "key_env": "GOOGLE_API_KEY",
@@ -97,7 +113,8 @@
       "billing": "prepaid credits",
       "balance": "$3.22 of $200",
       "track_endpoint": "https://openrouter.ai/api/v1/credits",
-      "notes": "Nearly depleted. 200+ models. Refill or stop using"
+      "track_url": "https://openrouter.ai/activity",
+      "notes": "Nearly depleted. 200+ models. Can be used as A0 provider — costs tracked here. Refill or stop using"
     },
     "OpenAI": {
       "key_env": "OPENAI_API_KEY",

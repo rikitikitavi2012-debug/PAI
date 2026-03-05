@@ -51,6 +51,13 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | Wisdom | `PAI/USER/TELOS/WISDOM.md` |
 | Favorite books | `PAI/USER/TELOS/BOOKS.md` |
 | Favorite movies | `PAI/USER/TELOS/MOVIES.md` |
+| Projects & priorities | `PAI/USER/TELOS/PROJECTS.md` |
+| Current status | `PAI/USER/TELOS/STATUS.md` |
+| Strategies | `PAI/USER/TELOS/STRATEGIES.md` |
+| Models (mental) | `PAI/USER/TELOS/MODELS.md` |
+| Finances & accounting | `PAI/USER/TELOS/FINANCES.md` |
+| Infrastructure costs (detail) | `PAI/config/cost-budget.json` |
+| API keys audit | `MEMORY/RESEARCH/2026-03/api-keys-audit.md` |
 
 ## {DAIDENTITY.NAME} (DA Identity)
 
