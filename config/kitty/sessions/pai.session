@@ -31,11 +31,13 @@ cd ~
 launch --title "Brigade Watch" bash -c 'exec ~/.config/kitty/scripts/brigade-watch.sh'
 launch --location=vsplit --title "A0 Chat" bash -c 'exec ~/.config/kitty/scripts/a0-chat-tail.sh'
 
-# ── Tab 4: Telemetry — полноэкранный мониторинг нервной системы (LIVE) ──
+# ── Tab 4: Telemetry — нервная система (2-pane: events live | metrics) ──
+# Layout: events-tail (left) | telemetry-dashboard (right)
 new_tab  📡 Telemetry
-layout splits
+layout tall
 cd ~
-launch --title "Telemetry" bash -c 'exec ~/.config/kitty/scripts/telemetry-dashboard.sh'
+launch --title "Events Live" bash -c 'exec ~/.config/kitty/scripts/events-tail.sh'
+launch --location=vsplit --title "Telemetry" bash -c 'exec ~/.config/kitty/scripts/telemetry-dashboard.sh'
 
 # ── Tab 5: Infra — серверы + мониторинг (4-pane grid) ──
 # Grid: agentzero (TL) | xray-vps (TR) / htop (BL) | docker (BR)
