@@ -563,6 +563,64 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
       console.error(`⚠️ Community check failed: ${err}`);
     }
 
+    // Brigade briefing — quick status of A0, Jules, AutoMerge
+    try {
+      const briefingParts: string[] = [];
+
+      // Health report
+      const healthPath = join(paiDir, 'MEMORY', 'STATE', 'health-report.json');
+      if (existsSync(healthPath)) {
+        try {
+          const health = JSON.parse(readFileSync(healthPath, 'utf-8'));
+          const age = Date.now() - new Date(health.timestamp).getTime();
+          const ageH = Math.floor(age / 3600000);
+          const down = (health.checks || []).filter((c: any) => c.status === 'down');
+          if (down.length > 0) {
+            briefingParts.push(`  ⚠️ ${down.map((c: any) => c.service).join(', ')} DOWN (${ageH}h ago)`);
+          } else {
+            briefingParts.push(`  ✅ All ${health.checks?.length || 0} services UP (${ageH}h ago)`);
+          }
+        } catch { /* non-fatal */ }
+      }
+
+      // Jules AutoMerge state
+      const jamPath = join(paiDir, 'MEMORY', 'STATE', 'jules-automerge.json');
+      if (existsSync(jamPath)) {
+        try {
+          const jam = JSON.parse(readFileSync(jamPath, 'utf-8'));
+          const stats = jam.stats || {};
+          const recent = (jam.processedSessions || []).slice(-5);
+          const pendingMerges = recent.filter((s: any) => s.result?.startsWith('failed_')).length;
+          briefingParts.push(`  🔀 AutoMerge: +${stats.totalMerged || 0} merged, ${stats.totalFailed || 0} failed`);
+        } catch { /* non-fatal */ }
+      }
+
+      // Open PRs count (only if we have automerge state — skip in test environments)
+      if (existsSync(jamPath)) {
+        try {
+          const prResult = spawnSync('gh', ['pr', 'list', '--repo', 'rikitikitavi2012-debug/PAI-personal', '--state', 'open', '--json', 'number'], {
+            encoding: 'utf-8', timeout: 5000,
+          });
+          if (prResult.stdout?.trim()) {
+            const prs = JSON.parse(prResult.stdout);
+            if (prs.length > 0) {
+              briefingParts.push(`  📋 ${prs.length} open PR(s) awaiting merge`);
+            }
+          }
+        } catch { /* non-fatal */ }
+      }
+
+      if (briefingParts.length > 0) {
+        console.log('\n🤖 BRIGADE BRIEFING:');
+        for (const part of briefingParts) {
+          console.log(part);
+        }
+        console.error(`🤖 Brigade briefing loaded (${briefingParts.length} items)`);
+      }
+    } catch (err) {
+      console.error(`⚠️ Brigade briefing failed: ${err}`);
+    }
+
     // Active work summary
     if (isDynamicEnabled(settings, 'activeWorkSummary')) {
       const activeProgress = await checkActiveProgress(paiDir);
