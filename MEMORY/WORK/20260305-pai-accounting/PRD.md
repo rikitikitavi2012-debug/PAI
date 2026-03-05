@@ -3,7 +3,7 @@ task: PAI accounting system — live usage tracking, OpenCode brigade, API audit
 slug: pai-accounting
 effort: Advanced
 phase: execute
-progress: 18/20
+progress: 19/20
 mode: algorithm
 started: 2026-03-05
 updated: 2026-03-05
@@ -23,7 +23,7 @@ Ivan wants precise financial tracking for all PAI infrastructure. Real subscript
 - [x] ISC-8: OpenRouter balance ($3.22 remaining) displayed in dashboard
 - [x] ISC-9: Anthropic Admin API key instructions verified and documented
 - [x] ISC-10: OpenCode Go installed and callable via `opencode run`
-- [ ] ISC-11: OpenCode added to PAI Inference.ts or standalone Brigade tool
+- [x] ISC-11: OpenCode configured with Z.AI provider (12 models) + vision MCP
 - [x] ISC-12: Timeweb API token setup instructions provided to Ivan
 - [ ] ISC-13: Timeweb balance live display in dashboard (when token available)
 - [x] ISC-14: OpenAI API key validated — balance/org status checked
