@@ -30,7 +30,7 @@ set_tab_title "📡 Telemetry"
 trap 'alt_screen_exit' EXIT INT TERM
 
 # ── Metric variables (populated by compute_metrics) ──
-M_INF_OK=0 M_INF_FAIL=0 M_P50="0" M_P95="0"
+M_INF_OK=0 M_INF_FAIL=0 M_INF_PARSE=0 M_P50="0" M_P95="0"
 M_VOICE_SENT=0 M_VOICE_FAIL=0
 M_AGENT_START=0 M_AGENT_STOP=0
 M_SESSIONS=0 M_WORK=0 M_TOTAL=0
@@ -77,14 +77,16 @@ compute_metrics() {
     (now - 3600) as $hour_ago |
     length as $total |
 
-    # Inference
+    # Inference (fail = real API error, parse_fail = response format issue)
     [.[] | select(.type == "inference.ok")]  as $ok |
     [.[] | select(.type == "inference.fail")] as $fail |
+    [.[] | select(.type == "inference.parse_fail")] as $parse |
     ($ok | length) as $ok_n |
     ($fail | length) as $fail_n |
+    ($parse | length) as $parse_n |
 
     # Latency percentiles from ALL inference events with latency > 0
-    ([$ok[], $fail[]] | map((.data.latency_s // "0") | tonumber) | map(select(. > 0)) | sort) as $lats |
+    ([$ok[], $fail[], $parse[]] | map((.data.latency_s // "0") | tonumber) | map(select(. > 0)) | sort) as $lats |
     ($lats | length) as $ln |
     (if $ln > 0 then $lats[($ln * 50 / 100 | floor)] else 0 end) as $p50 |
     (if $ln > 0 then $lats[([$ln - 1, ($ln * 95 / 100 | floor)] | min)] else 0 end) as $p95 |
@@ -108,7 +110,7 @@ compute_metrics() {
     ([.[] | select(.type == "work.completed")] | length) as $wc |
 
     [
-      $ok_n, $fail_n,
+      $ok_n, $fail_n, $parse_n,
       ($p50 * 10 | floor | . / 10),
       ($p95 * 10 | floor | . / 10),
       $vs, $vf, $as, $ao, $sc, $wc, $total, $traffic
@@ -116,7 +118,7 @@ compute_metrics() {
   ' "$EVENTS_FILE" 2>/dev/null)
 
   if [ -n "$raw" ]; then
-    IFS=$'\t' read -r M_INF_OK M_INF_FAIL M_P50 M_P95 \
+    IFS=$'\t' read -r M_INF_OK M_INF_FAIL M_INF_PARSE M_P50 M_P95 \
       M_VOICE_SENT M_VOICE_FAIL M_AGENT_START M_AGENT_STOP \
       M_SESSIONS M_WORK M_TOTAL M_TRAFFIC_1H <<< "$raw"
   fi
@@ -299,10 +301,11 @@ compute_compact() {
 compute_error_alert() {
   [ ! -f "$EVENTS_FILE" ] && return
 
+  # Only count real API failures (inference.fail), not parse failures (inference.parse_fail)
   M_ERR_RATE_5M=$(jq -sr '
     (now - 300) as $five_ago |
     [.[] | select(
-      (.type | startswith("inference.")) and
+      (.type == "inference.ok" or .type == "inference.fail") and
       (.timestamp // "" | length) > 10 and
       ((.timestamp[:19] + "Z" | try strptime("%Y-%m-%dT%H:%M:%SZ") | mktime) // 0) > $five_ago
     )] |
@@ -543,9 +546,11 @@ build_metrics() {
     "$SLT" "$RST" "$WHT" "$M_P50" "$RST" "$lat_color" "$M_P95" "$RST" "$lat_color" "$lat_status" "$RST")")
   METRIC_LINES+=("$(printf '%b📊 Traffic%b  %b%s%b evt/h  %b%s%b' \
     "$SLT" "$RST" "$traf_color" "$M_TRAFFIC_1H" "$RST" "$traf_color" "$traf_status" "$RST")")
-  METRIC_LINES+=("$(printf '%b❌ Errors%b   %b%s%b/%b%s%b  %b%s%%%b fail  %b%s%b' \
+  local parse_info=""
+  [ "$M_INF_PARSE" -gt 0 ] && parse_info="  ${YLW}${M_INF_PARSE}${RST}${SLT}parse${RST}"
+  METRIC_LINES+=("$(printf '%b❌ Errors%b   %b%s%b ok  %b%s%b fail  %b%s%%%b %b%s%b%s' \
     "$SLT" "$RST" "$GRN" "$M_INF_OK" "$RST" "$RED" "$M_INF_FAIL" "$RST" \
-    "$err_color" "$err_rate" "$RST" "$err_color" "$err_status" "$RST")")
+    "$err_color" "$err_rate" "$RST" "$err_color" "$err_status" "$RST" "$parse_info")")
   METRIC_LINES+=("$(printf '%b📦 Saturat%b  %b%s%b events  %b%s%b' \
     "$SLT" "$RST" "$sat_color" "$M_TOTAL" "$RST" "$sat_color" "$sat_status" "$RST")")
 

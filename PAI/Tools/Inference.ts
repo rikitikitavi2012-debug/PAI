@@ -36,16 +36,17 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from "fs";
 import { join, dirname } from "path";
 
-/** Emit inference event to events.jsonl (fire-and-forget, never throws) */
-function emitInferenceEvent(level: InferenceLevel, provider: string, model: string, success: boolean, latencyMs: number): void {
+/** Emit inference event to events.jsonl (fire-and-forget, never throws)
+ * result: 'ok' | 'fail' (real API/network error) | 'parse_fail' (API answered but format wrong) */
+function emitInferenceEvent(level: InferenceLevel, provider: string, model: string, result: 'ok' | 'fail' | 'parse_fail', latencyMs: number, error?: string): void {
   try {
     const eventsPath = join(process.env.HOME || '', '.claude', 'MEMORY', 'STATE', 'events.jsonl');
     const dir = dirname(eventsPath);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
     const event = {
-      type: `inference.${success ? 'ok' : 'fail'}`,
+      type: `inference.${result}`,
       source: 'Inference',
-      data: { level, provider, model, latency_s: (latencyMs / 1000).toFixed(1) },
+      data: { level, provider, model, latency_s: (latencyMs / 1000).toFixed(1), ...(error ? { error } : {}) },
       timestamp: new Date().toISOString(),
       session_id: process.env.CLAUDE_SESSION_ID || 'unknown',
     };
@@ -252,12 +253,12 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
   // Route to alternative providers
   if (config.provider === 'gemini') {
     const result = await inferenceGemini(options, level, timeout);
-    emitInferenceEvent(level, 'gemini', config.model, result.success, result.latencyMs);
+    emitInferenceEvent(level, 'gemini', config.model, result.success ? 'ok' : 'fail', result.latencyMs, result.error);
     return result;
   }
   if (config.provider === 'zai') {
     const result = await inferenceZai(options, level, timeout);
-    emitInferenceEvent(level, 'zai', config.model, result.success, result.latencyMs);
+    emitInferenceEvent(level, 'zai', config.model, result.success ? 'ok' : 'fail', result.latencyMs, result.error);
     return result;
   }
 
@@ -267,7 +268,7 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
 
   if (!apiKey) {
     const latencyMs = Date.now() - startTime;
-    emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+    emitInferenceEvent(level, 'claude', config.model, 'fail', latencyMs, 'no_api_key');
     return { success: false, output: '', error: 'No ANTHROPIC_API_KEY found in env or .env', latencyMs, level };
   }
 
@@ -297,7 +298,7 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
 
     if (!response.ok) {
       const errText = await response.text();
-      emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+      emitInferenceEvent(level, 'claude', config.model, 'fail', latencyMs, `http_${response.status}`);
       return { success: false, output: '', error: `Anthropic API ${response.status}: ${errText.slice(0, 200)}`, latencyMs, level };
     }
 
@@ -305,7 +306,7 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
     const output = (data.content?.[0]?.text || '').trim();
 
     if (!output) {
-      emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+      emitInferenceEvent(level, 'claude', config.model, 'parse_fail', latencyMs, 'empty_response');
       return { success: false, output: '', error: 'Empty Anthropic response', latencyMs, level };
     }
 
@@ -314,23 +315,23 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
       if (jsonMatch) {
         try {
           const parsed = JSON.parse(jsonMatch[0]);
-          emitInferenceEvent(level, 'claude', config.model, true, latencyMs);
+          emitInferenceEvent(level, 'claude', config.model, 'ok', latencyMs);
           return { success: true, output, parsed, latencyMs, level };
         } catch {
-          emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+          emitInferenceEvent(level, 'claude', config.model, 'parse_fail', latencyMs, 'json_invalid');
           return { success: false, output, error: 'Failed to parse JSON response', latencyMs, level };
         }
       }
-      emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+      emitInferenceEvent(level, 'claude', config.model, 'parse_fail', latencyMs, 'no_json');
       return { success: false, output, error: 'No JSON found in response', latencyMs, level };
     }
 
-    emitInferenceEvent(level, 'claude', config.model, true, latencyMs);
+    emitInferenceEvent(level, 'claude', config.model, 'ok', latencyMs);
     return { success: true, output, latencyMs, level };
   } catch (err: any) {
     clearTimeout(timeoutId);
     const latencyMs = Date.now() - startTime;
-    emitInferenceEvent(level, 'claude', config.model, false, latencyMs);
+    emitInferenceEvent(level, 'claude', config.model, 'fail', latencyMs, err.name === 'AbortError' ? 'timeout' : 'network');
     if (err.name === 'AbortError') {
       return { success: false, output: '', error: `Timeout after ${timeout}ms`, latencyMs, level };
     }
