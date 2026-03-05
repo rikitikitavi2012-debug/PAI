@@ -34,7 +34,7 @@ echo "Running Kitty dashboard script tests..."
 
 # ── 1. Syntax validation ──
 echo -e "\n1. Syntax validation:"
-for script in command-center.sh telos-dashboard.sh brigade-watch.sh events-tail.sh a0-chat-tail.sh; do
+for script in command-center.sh telos-dashboard.sh brigade-watch.sh events-tail.sh a0-chat-tail.sh telemetry-dashboard.sh; do
   target="$SCRIPTS_DIR/$script"
   if [ ! -f "$target" ]; then
     assert "$script exists" 1
@@ -54,7 +54,7 @@ bash -n "$LIB" 2>/dev/null
 assert "lib/ui.sh valid syntax" $?
 
 # Verify lib exports required functions
-for fn in box_top box_bot box_sep box_line two_col two_col_top two_col_mid two_col_bot hline vwidth progress_bar section_header badge_active badge_done badge_fail tab_ok tab_warn tab_crit tab_reset set_tab_state spin_start spin_stop; do
+for fn in box_top box_bot box_sep box_line two_col two_col_top two_col_mid two_col_bot hline vwidth progress_bar section_header badge_active badge_done badge_fail tab_ok tab_warn tab_crit tab_reset set_tab_state spin_start spin_stop alt_screen_enter alt_screen_exit truncate time_ago right_align set_tab_title; do
   grep -q "^${fn}()" "$LIB"
   assert "lib/ui.sh defines $fn" $?
 done
@@ -88,8 +88,9 @@ done
 echo -e "\n4. Flicker-free refresh:"
 for script in command-center.sh telos-dashboard.sh brigade-watch.sh; do
   target="$SCRIPTS_DIR/$script"
-  grep -q 'FIRST_RENDER' "$target"
-  assert "$script uses FIRST_RENDER flag" $?
+  # Check for alternate buffer (alt_screen_enter) or legacy FIRST_RENDER
+  grep -qE '(alt_screen_enter|FIRST_RENDER)' "$target"
+  assert "$script uses alt buffer or FIRST_RENDER" $?
 
   grep -q '\\033\[H' "$target"
   assert "$script uses cursor-home escape" $?
@@ -188,6 +189,92 @@ for script in command-center.sh telos-dashboard.sh brigade-watch.sh; do
   grep -q "tab_ok\|tab_warn\|tab_crit" "$target"
   assert "$script uses dynamic tab colors" $?
 done
+
+# ── 11. Shared event formatter library ──
+echo -e "\n11. Shared event formatter (lib/events-format.sh):"
+EVT_FMT="$SCRIPTS_DIR/lib/events-format.sh"
+[ -f "$EVT_FMT" ]
+assert "lib/events-format.sh exists" $?
+bash -n "$EVT_FMT" 2>/dev/null
+assert "lib/events-format.sh valid syntax" $?
+grep -q 'JQ_EVENT_FORMAT' "$EVT_FMT"
+assert "lib/events-format.sh defines JQ_EVENT_FORMAT" $?
+grep -q 'fromjson' "$EVT_FMT"
+assert "lib/events-format.sh contains jq parser" $?
+
+# Both consumers source the shared lib
+grep -q 'events-format.sh' "$SCRIPTS_DIR/telemetry-dashboard.sh"
+assert "telemetry-dashboard.sh sources events-format.sh" $?
+grep -q 'events-format.sh' "$SCRIPTS_DIR/events-tail.sh"
+assert "events-tail.sh sources events-format.sh" $?
+
+# Neither consumer has inline jq formatter (no duplication)
+grep -q 'fromjson' "$SCRIPTS_DIR/telemetry-dashboard.sh"
+assert_not "telemetry-dashboard.sh no inline jq formatter (uses lib)" $?
+grep -q 'fromjson' "$SCRIPTS_DIR/events-tail.sh"
+assert_not "events-tail.sh no inline jq formatter (uses lib)" $?
+
+# ── 12. Telemetry dashboard (two layouts) ──
+echo -e "\n11. Telemetry dashboard:"
+target="$SCRIPTS_DIR/telemetry-dashboard.sh"
+bash -n "$target" 2>/dev/null
+assert "telemetry-dashboard.sh valid syntax" $?
+grep -q 'lib/ui.sh' "$target"
+assert "telemetry-dashboard.sh sources lib/ui.sh" $?
+grep -q 'alt_screen_enter' "$target"
+assert "telemetry-dashboard.sh uses alt buffer" $?
+grep -q '\\033\[H' "$target"
+assert "telemetry-dashboard.sh uses cursor-home" $?
+grep -q 'tab_ok\|tab_warn\|tab_crit' "$target"
+assert "telemetry-dashboard.sh uses dynamic tab colors" $?
+grep -q 'pulse' "$target"
+assert "telemetry-dashboard.sh has pulse indicator" $?
+
+# Layout switching
+grep -q 'LAYOUT=' "$target"
+assert "telemetry-dashboard.sh has LAYOUT variable" $?
+grep -q 'poll_dashboard()' "$target"
+assert "telemetry-dashboard.sh has poll_dashboard function" $?
+grep -q 'render_legend()' "$target"
+assert "telemetry-dashboard.sh has render_legend function" $?
+grep -q 'start_livelog()' "$target"
+assert "telemetry-dashboard.sh has start_livelog function" $?
+grep -q 'stop_livelog()' "$target"
+assert "telemetry-dashboard.sh has stop_livelog function" $?
+grep -q 'DASHBOARD' "$target"
+assert "telemetry-dashboard.sh has Dashboard layout header" $?
+grep -q 'LIVE LOG' "$target"
+assert "telemetry-dashboard.sh has Live Log layout header" $?
+
+# Legend content
+grep -q 'СОБЫТИЯ' "$target"
+assert "telemetry-dashboard.sh legend has СОБЫТИЯ section" $?
+grep -q 'ПОЛЯ' "$target"
+assert "telemetry-dashboard.sh legend has ПОЛЯ section" $?
+grep -q 'inference.*API' "$target"
+assert "telemetry-dashboard.sh legend explains inference" $?
+grep -q 'voice.*ElevenLabs\|voice.*уведомление' "$target"
+assert "telemetry-dashboard.sh legend explains voice" $?
+grep -q 'agent.*субагент' "$target"
+assert "telemetry-dashboard.sh legend explains agents" $?
+
+# tail -f streaming
+grep -q 'tail.*-f.*EVENTS_FILE' "$target"
+assert "telemetry-dashboard.sh uses tail -f for streaming" $?
+grep -q 'jq.*unbuffered' "$target"
+assert "telemetry-dashboard.sh uses jq --unbuffered" $?
+grep -q 'TAIL_PID' "$target"
+assert "telemetry-dashboard.sh tracks tail PID for cleanup" $?
+
+# Golden Signals (core metrics)
+grep -q 'LATENCY' "$target"
+assert "telemetry-dashboard.sh has latency metric" $?
+grep -q 'TRAFFIC' "$target"
+assert "telemetry-dashboard.sh has traffic metric" $?
+grep -q 'ERRORS' "$target"
+assert "telemetry-dashboard.sh has errors metric" $?
+grep -q 'SATURATION' "$target"
+assert "telemetry-dashboard.sh has saturation metric" $?
 
 # ── Summary ──
 echo -e "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

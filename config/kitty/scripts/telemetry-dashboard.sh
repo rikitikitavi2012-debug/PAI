@@ -1,8 +1,8 @@
 #!/bin/bash
 # PAI Telemetry Dashboard — Full-screen nervous system monitor (Tab 4: 📡 Telemetry)
 # Data: events.jsonl (16 event types, 10 sources)
-# Golden Signals: Latency / Traffic / Errors / Saturation
-# Refresh: 10s | r=refresh | q=quit | f/i/v/a/h=filter
+# Layouts: 1=Dashboard (Golden Signals + Provider + System), 2=Live Log (legend + tail -f)
+# Refresh: 10s (dashboard only) | 1/2=layout | r=refresh | q=quit | f/i/v/h/a=filter (live log)
 
 export PATH="$HOME/.bun/bin:$PATH"
 # shellcheck disable=SC1091
@@ -14,7 +14,8 @@ EVENTS_FILE="$HOME/.claude/MEMORY/STATE/events.jsonl"
 HOOKS_DIR="$HOME/.claude/hooks"
 HOOKS_TESTS="$HOME/.claude/hooks/tests"
 INTERVAL=10
-EVENT_LINES=25
+LAYOUT="dashboard"  # "dashboard" | "livelog"
+TAIL_PID=""
 FILTER="all"
 FILTER_LABEL="ALL"
 
@@ -30,7 +31,11 @@ unset _tz_raw _tz_sign _tz_abs _tz_h
 # ── Alternate buffer + clean exit ──
 alt_screen_enter
 set_tab_title "📡 Telemetry"
-trap 'alt_screen_exit' EXIT INT TERM
+cleanup() {
+  stop_livelog
+  alt_screen_exit
+}
+trap 'cleanup' EXIT INT TERM
 
 # ── Metric variables (populated by compute_metrics) ──
 M_INF_OK=0 M_INF_FAIL=0 M_P50="0" M_P95="0"
@@ -39,6 +44,11 @@ M_AGENT_START=0 M_AGENT_STOP=0
 M_SESSIONS=0 M_WORK=0 M_TOTAL=0
 M_TRAFFIC_1H=0
 M_PROV_DATA=""
+
+
+# ── Shared jq event formatter ──
+# shellcheck disable=SC1091
+. "$HOME/.config/kitty/scripts/lib/events-format.sh"
 
 # ═══════════════════════════════════════════════════
 # ── Compute all metrics in single jq pass ──
@@ -181,126 +191,6 @@ render_golden_signals() {
 }
 
 # ═══════════════════════════════════════════════════
-# ── Render: Live Event Stream ──
-# ═══════════════════════════════════════════════════
-render_event_stream() {
-  [ ! -f "$EVENTS_FILE" ] && { box_line "$(printf '%bНет данных%b' "$DIM" "$RST")"; return; }
-
-  # Build jq filter based on FILTER
-  local jq_filter="."
-  case "$FILTER" in
-    fail)      jq_filter='select(.type | endswith("fail"))' ;;
-    inference) jq_filter='select(.type | startswith("inference."))' ;;
-    voice)     jq_filter='select(.type | startswith("voice."))' ;;
-    hooks)     jq_filter='select(.type | startswith("agent.") or startswith("task."))' ;;
-    all)       jq_filter='.' ;;
-  esac
-
-  local lines
-  lines=$(tail -n 80 "$EVENTS_FILE" | jq -r -R --argjson tz "$TZ_OFFSET_H" --arg filt "$FILTER" '
-    fromjson? // null | select(.) |
-
-    # Filter: skip worktree test noise
-    select(
-      ((.type // "") | startswith("worktree")) and
-      ((.data.worktree_path // .worktree_path // "") | test("test-wc-"))
-      | not
-    ) |
-
-    # Apply user filter
-    (if $filt == "fail" then select(.type | endswith("fail"))
-     elif $filt == "inference" then select(.type | startswith("inference."))
-     elif $filt == "voice" then select(.type | startswith("voice."))
-     elif $filt == "hooks" then select(.type | startswith("agent.") or startswith("task."))
-     else . end) |
-
-    # Timestamp UTC → local
-    ((.timestamp // "" | split("T")[1] // "?" | split(".")[0]) // "??:??:??") as $utc_ts |
-    (if $utc_ts == "??:??:??" then $utc_ts
-     else
-       ($utc_ts | split(":")) as $parts |
-       (($parts[0] | tonumber) + $tz) as $raw_h |
-       (if $raw_h >= 24 then $raw_h - 24
-        elif $raw_h < 0 then $raw_h + 24
-        else $raw_h end) as $h |
-       "\(if $h < 10 then "0\($h)" else "\($h)" end):\($parts[1]):\($parts[2])"
-     end) as $ts |
-
-    # Relative time
-    (.timestamp // null | if . then
-      (gsub("[.].*$"; "") + "Z" | gsub("Z$"; "") | try strptime("%Y-%m-%dT%H:%M:%S") | mktime) as $evt_epoch |
-      (now - $evt_epoch) as $age |
-      (if $age >= 0 and $age < 10 then "сейчас"
-       elif $age >= 10 and $age < 60 then "\($age | floor)с"
-       else null end)
-     else null end) as $rel |
-
-    (.type // "unknown") as $typ |
-
-    # Color by category
-    (if ($typ | startswith("agent."))       then "\u001b[38;2;103;232;249m"
-     elif ($typ | startswith("voice."))     then "\u001b[38;2;167;139;250m"
-     elif ($typ | startswith("rating."))    then "\u001b[38;2;251;191;36m"
-     elif ($typ | startswith("work."))      then "\u001b[38;2;74;222;128m"
-     elif ($typ | startswith("session."))   then "\u001b[38;2;56;189;248m"
-     elif ($typ | startswith("prd."))       then "\u001b[38;2;59;130;246m"
-     elif ($typ | startswith("inference.")) then "\u001b[38;2;232;121;249m"
-     elif ($typ | startswith("a0."))        then "\u001b[38;2;103;232;249m\u001b[1m"
-     elif ($typ | startswith("custom."))    then "\u001b[38;2;148;163;184m"
-     elif ($typ | startswith("worktree"))   then "\u001b[2m"
-     else "\u001b[38;2;203;213;225m"
-     end) as $color |
-
-    # Detail fields
-    (
-      [
-        (.source // .data.source // empty | "src=\(.)"),
-        (.data.hook // .hook // empty | "hook=\(.)"),
-        (.phase // .data.phase // empty | "φ=\(.)"),
-        (.progress // empty | "prog=\(.)"),
-        (.slug // .data.slug // empty | "slug=\(.[:20])"),
-        (.data.agent_type // empty | "agent=\(.)"),
-        (.data.agent_id // empty | "id=\(.[:8])"),
-        (.data.level // empty | "lvl=\(.)"),
-        (.data.provider // empty | "via=\(.)"),
-        (.data.latency_s // empty | "\(.)s"),
-        (.data.rating // .rating // empty | "★\(.)"),
-        (.data.pr_number // empty | "PR#\(.)")
-      ] | join(" │ ")
-    ) as $detail_raw |
-    ($detail_raw | if length > 78 then .[:75] + "..." else . end) as $detail |
-
-    ($typ | split(".") | last) as $short |
-
-    # Icon
-    (if ($typ | startswith("agent.start"))    then "🚀"
-     elif ($typ | startswith("agent.stop"))   then "🏁"
-     elif ($typ | startswith("voice."))       then "🔊"
-     elif ($typ | startswith("rating."))      then "⭐"
-     elif ($typ | startswith("work."))        then "📦"
-     elif ($typ | startswith("session."))     then "🔄"
-     elif ($typ | startswith("prd."))         then "📋"
-     elif ($typ | startswith("worktree"))     then "🌳"
-     elif ($typ | startswith("inference."))   then "🔮"
-     elif ($typ | startswith("a0."))          then "🧠"
-     elif ($typ | startswith("custom."))      then "⚡"
-     else "•" end) as $icon |
-
-    (if $rel then "\u001b[38;2;100;116;139m\($ts)\u001b[0m \u001b[38;2;74;222;128m(\($rel))\u001b[0m"
-     else "\u001b[38;2;100;116;139m\($ts)\u001b[0m" end) as $ts_display |
-    "\($ts_display) \($icon) \($color)\($short)\u001b[0m \u001b[2m\($detail)\u001b[0m"
-  ' 2>/dev/null | tail -n "$EVENT_LINES")
-
-  if [ -z "$lines" ]; then
-    box_line "$(printf '%bНет событий для фильтра "%s"%b' "$DIM" "$FILTER" "$RST")"
-  else
-    while IFS= read -r line; do
-      printf '│ %b│\n' "$line"
-    done <<< "$lines"
-  fi
-}
-
-# ═══════════════════════════════════════════════════
 # ── Render: Provider + System Stats (two-column) ──
 # ═══════════════════════════════════════════════════
 render_bottom_panels() {
@@ -373,9 +263,9 @@ compute_tab_color() {
 }
 
 # ═══════════════════════════════════════════════════
-# ── Main poll function ──
+# ── Layout 1: Dashboard poll ──
 # ═══════════════════════════════════════════════════
-poll() {
+poll_dashboard() {
   printf '\033[2J\033[H'
 
   local now_time now_date
@@ -410,22 +300,13 @@ poll() {
 
   # ── Header ──
   box_top
-  box_line "$(printf '%b%b📡 PAI TELEMETRY%b                          %b%s %s%b  %b%s%b  %b↻%sс%b' \
+  box_line "$(printf '%b%b📡 DASHBOARD%b                              %b%s %s%b  %b%s%b  %b↻%sс%b' \
     "$VIO" "$BLD" "$RST" "$WHT" "$now_date" "$now_time" "$RST" "$VIO" "$pulse" "$RST" "$DIM" "$INTERVAL" "$RST")"
   box_sep
 
   # ── Golden Signals ──
   render_golden_signals
   box_sep
-
-  # ── Live Events header ──
-  box_line "$(printf '%b%b📡 LIVE EVENTS%b  %b(f=fails i=inference v=voice h=hooks a=all)%b%*s%bфильтр: %s%b' \
-    "$CYN" "$BLD" "$RST" "$DIM" "$RST" \
-    "$(( PAI_UI_WIDTH - 72 ))" "" "$YLW" "$FILTER_LABEL" "$RST")"
-  box_sep
-
-  # ── Event Stream ──
-  render_event_stream
 
   # ── Bottom panels ──
   render_bottom_panels
@@ -436,28 +317,107 @@ poll() {
   # ── Footer ──
   box_sep
   local footer_left footer_right
-  footer_left=$(printf '%b↻ %sс │ r = обновить │ q = выход │ f/i/v/a/h = фильтр%b' "$DIM" "$INTERVAL" "$RST")
+  footer_left=$(printf '%b1=dashboard │ 2=live log │ r=обновить │ q=выход%b' "$DIM" "$RST")
   footer_right=$(printf '%b%s%b' "$DIM" "$(date '+%H:%M')" "$RST")
   box_line "$(printf '%s%*s%s' "$footer_left" "$(( PAI_UI_WIDTH - 4 - $(vwidth "$footer_left") - $(vwidth "$footer_right") ))" "" "$footer_right")"
   box_bot
 }
 
-# ── Initial poll ──
-poll
+# ═══════════════════════════════════════════════════
+# ── Layout 2: Live Log ──
+# ═══════════════════════════════════════════════════
+render_legend() {
+  box_top
+  box_line "$(printf '%b%b📡 LIVE LOG%b                     %b(1=dashboard  q=выход  f/i/v/h/a=фильтр)%b' \
+    "$CYN" "$BLD" "$RST" "$DIM" "$RST")"
+  box_sep
 
-# ── Main loop with interruptible sleep ──
+  # Event types legend
+  box_line "$(printf '%b%bСОБЫТИЯ%b' "$WHT" "$BLD" "$RST")"
+  box_line "$(printf '%b🔮 inference%b  — API вызов к LLM (провайдер, latency, уровень)' "$VIO" "$RST")"
+  box_line "$(printf '%b🔊 voice%b     — голосовое уведомление ElevenLabs (отправка/ошибка)' "$VIO" "$RST")"
+  box_line "$(printf '%b🚀 agent.start%b — спавн субагента Claude Code (тип, id)' "$CYN" "$RST")"
+  box_line "$(printf '%b🏁 agent.stop%b  — субагент завершил работу' "$CYN" "$RST")"
+  box_line "$(printf '%b⭐ rating%b    — оценка сессии пользователем (★1-10)' "$YLW" "$RST")"
+  box_line "$(printf '%b📦 work%b      — рабочий блок (WORK/) создан или завершён' "$GRN" "$RST")"
+  box_line "$(printf '%b🔄 session%b   — сессия Claude Code завершена' "$CYN" "$RST")"
+  box_line "$(printf '%b📋 prd%b       — синхронизация PRD (фаза, прогресс, задачи)' "$CYN" "$RST")"
+  box_line "$(printf '%b🧠 a0%b        — Agent Zero (VPS) — ревью, задачи, коммуникация' "$CYN" "$RST")"
+  box_line "$(printf '%b🌳 worktree%b  — создание/удаление git worktree для агентов' "$SLT" "$RST")"
+  box_line "$(printf '%b⚡ custom%b    — кастомные события от хуков и скиллов' "$SLT" "$RST")"
+  box_sep
+
+  # Field descriptions
+  box_line "$(printf '%b%bПОЛЯ%b' "$WHT" "$BLD" "$RST")"
+  box_line "$(printf '%bsrc=%b источник (хук/скилл)    %bvia=%b провайдер API (anthropic/google/zhipu)' "$WHT" "$RST" "$WHT" "$RST")"
+  box_line "$(printf '%bφ=%b   фаза алгоритма (A/B/C)   %bprog=%b прогресс задачи (%%)' "$WHT" "$RST" "$WHT" "$RST")"
+  box_line "$(printf '%bhook=%b имя хука (.hook.ts)      %b★%b    рейтинг сессии (1-10)' "$WHT" "$RST" "$WHT" "$RST")"
+  box_line "$(printf '%bagent=%b тип субагента           %bid=%b   ID агента (первые 8 символов)' "$WHT" "$RST" "$WHT" "$RST")"
+  box_line "$(printf '%blvl=%b  уровень inference        %bctx=%b  ID контекста сессии' "$WHT" "$RST" "$WHT" "$RST")"
+  box_line "$(printf '%bPR#%b  номер Pull Request        %bev=%b   подтип события' "$WHT" "$RST" "$WHT" "$RST")"
+  box_sep
+  box_line "$(printf '%bФильтры:%b  %bf%b=ошибки  %bi%b=inference  %bv%b=voice  %bh%b=hooks/agents  %ba%b=все      %bфильтр: %b%b%s%b' \
+    "$WHT" "$RST" "$RED" "$RST" "$VIO" "$RST" "$VIO" "$RST" "$CYN" "$RST" "$GRN" "$RST" "$SLT" "$YLW" "$BLD" "$FILTER_LABEL" "$RST")"
+  box_sep
+}
+
+stop_livelog() {
+  if [ -n "$TAIL_PID" ] && kill -0 "$TAIL_PID" 2>/dev/null; then
+    kill "$TAIL_PID" 2>/dev/null
+    wait "$TAIL_PID" 2>/dev/null
+  fi
+  TAIL_PID=""
+}
+
+start_livelog() {
+  printf '\033[2J\033[H'
+  render_legend
+
+  [ ! -f "$EVENTS_FILE" ] && {
+    printf '%b  Ожидание events.jsonl...%b\n' "$DIM" "$RST"
+    return
+  }
+
+  # Launch tail -f with jq formatting in background
+  tail -n 30 -f "$EVENTS_FILE" | jq --unbuffered -r -R \
+    --argjson tz "$TZ_OFFSET_H" --arg filt "$FILTER" \
+    "$JQ_EVENT_FORMAT" 2>/dev/null &
+  TAIL_PID=$!
+}
+
+# ═══════════════════════════════════════════════════
+# ── Main loop ──
+# ═══════════════════════════════════════════════════
+
+# Initial render
+poll_dashboard
+
 while true; do
-  for ((i=INTERVAL; i>0; i--)); do
+  if [ "$LAYOUT" = "dashboard" ]; then
+    # Dashboard: poll every INTERVAL seconds, check keys each second
+    for ((countdown=INTERVAL; countdown>0; countdown--)); do
+      read -rsn1 -t1 key
+      case "$key" in
+        1) ;; # already on dashboard
+        2) LAYOUT="livelog"; start_livelog; break ;;
+        r|R) break ;;
+        q|Q) exit 0 ;;
+      esac
+    done
+    [ "$LAYOUT" = "dashboard" ] && poll_dashboard
+
+  else
+    # Live Log: tail -f runs in background, we just listen for keys
     read -rsn1 -t1 key
     case "$key" in
-      f) FILTER="fail"; FILTER_LABEL="FAILS"; break ;;
-      i) FILTER="inference"; FILTER_LABEL="INFERENCE"; break ;;
-      v) FILTER="voice"; FILTER_LABEL="VOICE"; break ;;
-      h) FILTER="hooks"; FILTER_LABEL="HOOKS"; break ;;
-      a) FILTER="all"; FILTER_LABEL="ALL"; break ;;
-      r|R) break ;;
+      1) stop_livelog; LAYOUT="dashboard"; poll_dashboard ;;
+      2) ;; # already on livelog
+      f) FILTER="fail"; FILTER_LABEL="FAILS"; stop_livelog; start_livelog ;;
+      i) FILTER="inference"; FILTER_LABEL="INFERENCE"; stop_livelog; start_livelog ;;
+      v) FILTER="voice"; FILTER_LABEL="VOICE"; stop_livelog; start_livelog ;;
+      h) FILTER="hooks"; FILTER_LABEL="HOOKS"; stop_livelog; start_livelog ;;
+      a) FILTER="all"; FILTER_LABEL="ALL"; stop_livelog; start_livelog ;;
       q|Q) exit 0 ;;
     esac
-  done
-  poll
+  fi
 done
