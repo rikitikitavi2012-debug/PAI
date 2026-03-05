@@ -3,7 +3,7 @@ task: PAI accounting system — live usage tracking, OpenCode brigade, API audit
 slug: pai-accounting
 effort: Advanced
 phase: execute
-progress: 7/20
+progress: 18/20
 mode: algorithm
 started: 2026-03-05
 updated: 2026-03-05
@@ -20,19 +20,19 @@ Ivan wants precise financial tracking for all PAI infrastructure. Real subscript
 - [x] ISC-5: API cost estimate scoped to non-subscription calls only (A0)
 - [x] ISC-6: Strategic dashboard in Center tab (vsplit with Command Center)
 - [x] ISC-7: Telemetry tab restored to 2-window (Events + Operational)
-- [ ] ISC-8: OpenRouter balance ($3.22 remaining) displayed in dashboard
-- [ ] ISC-9: Anthropic Admin API key instructions verified and documented
-- [ ] ISC-10: OpenCode Go installed and callable via `opencode run`
+- [x] ISC-8: OpenRouter balance ($3.22 remaining) displayed in dashboard
+- [x] ISC-9: Anthropic Admin API key instructions verified and documented
+- [x] ISC-10: OpenCode Go installed and callable via `opencode run`
 - [ ] ISC-11: OpenCode added to PAI Inference.ts or standalone Brigade tool
-- [ ] ISC-12: Timeweb API token setup instructions provided to Ivan
+- [x] ISC-12: Timeweb API token setup instructions provided to Ivan
 - [ ] ISC-13: Timeweb balance live display in dashboard (when token available)
-- [ ] ISC-14: OpenAI API key validated — balance/org status checked
-- [ ] ISC-15: Apify token tested — refresh if expired
-- [ ] ISC-16: BrightData token permissions checked
-- [ ] ISC-17: Replicate account billing status verified
-- [ ] ISC-18: Exa usage tracking method documented
-- [ ] ISC-19: cost-budget.json updated with all API key statuses
-- [ ] ISC-20: bash -n passes on all modified .sh files
+- [x] ISC-14: OpenAI API key validated — balance/org status checked
+- [x] ISC-15: Apify token tested — works on FREE plan
+- [x] ISC-16: BrightData token permissions checked — needs Finance/Admin token
+- [x] ISC-17: Replicate account billing status verified — active, no billing API
+- [x] ISC-18: Exa usage tracking method documented — 1K free/mo, web dashboard
+- [x] ISC-19: cost-budget.json updated with all API key statuses
+- [x] ISC-20: bash -n passes on all modified .sh files
 
 ## Decisions
 - OpenRouter: add live balance fetch (same pattern as ElevenLabs/Z.AI cache)

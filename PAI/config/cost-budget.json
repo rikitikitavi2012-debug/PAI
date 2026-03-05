@@ -101,28 +101,40 @@
     },
     "OpenAI": {
       "key_env": "OPENAI_API_KEY",
-      "billing": "pay-per-use",
-      "notes": "124 models. Need org-id for usage endpoint. Check console.openai.com"
+      "billing": "pay-per-use (prepaid credits)",
+      "status": "active",
+      "notes": "125 models. Key needs api.usage.read scope for tracking. Regenerate at platform.openai.com"
     },
     "Replicate": {
       "key_env": "REPLICATE_API_TOKEN",
-      "billing": "pay-per-use",
-      "notes": "ML model hosting. Account active (rikitikitavi2012-debug)"
+      "billing": "pay-per-use (per-second GPU)",
+      "status": "active",
+      "notes": "rikitikitavi2012-debug. No billing API — web dashboard only"
     },
     "Exa": {
       "key_env": "EXA_API_KEY",
-      "billing": "1000 free searches/month + pay-per-use",
-      "notes": "AI-powered search API"
+      "billing": "free 1K req/mo, then $7/1K search",
+      "status": "active",
+      "notes": "AI-powered search. Usage via dashboard.exa.ai"
     },
     "Apify": {
       "key_env": "APIFY_TOKEN",
-      "billing": "free tier + pay-per-use",
-      "notes": "Token may be expired — returned null for user info"
+      "billing": "free $5/mo credits",
+      "status": "active",
+      "track_endpoint": "https://api.apify.com/v2/users/me/usage/monthly?token=TOKEN",
+      "notes": "FREE plan (Ivan Skripkin). Token works — ~$0 used this cycle"
     },
     "BrightData": {
       "key_env": "BRIGHTDATA_API_KEY",
-      "billing": "pay-per-use",
-      "notes": "Proxy/scraping. Token lacks permissions — needs update in brightdata.com/cp"
+      "billing": "pay-per-use (per GB)",
+      "status": "broken",
+      "notes": "Token lacks Finance/Admin permission. Create new at brightdata.com/cp/setting/users"
+    },
+    "Ref.tools": {
+      "key_env": "REF_API_KEY",
+      "billing": "free 200 credits (no expiry), then $9/1K",
+      "status": "active",
+      "notes": "Documentation search MCP server. Usage at ref.tools/account"
     }
   },
   "monthly_summary": {
