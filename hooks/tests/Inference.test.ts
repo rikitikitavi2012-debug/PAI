@@ -190,28 +190,29 @@ exit 1
       mkdirSync(stateDir, { recursive: true });
       chmodSync(stateDir, 0o444); // read-only
 
-      const mockBinDirLocal = join(emitDir, 'bin');
-      mkdirSync(mockBinDirLocal, { recursive: true });
-      const mockClaudePathLocal = join(mockBinDirLocal, 'claude');
-      writeFileSync(mockClaudePathLocal, `#!/bin/sh\necho "mocked claude response"\nexit 0\n`);
-      chmodSync(mockClaudePathLocal, 0o755);
+      const { inference } = require('../../PAI/Tools/Inference.ts');
+      const originalFetch = global.fetch;
+      global.fetch = async () => new Response(JSON.stringify({
+        content: [{ text: 'mocked claude response' }]
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
 
-      const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'fast', 'sys', 'test'], {
-        stdout: 'pipe',
-        stderr: 'pipe',
-        env: {
-          ...process.env,
-          HOME: emitDir,
-          PATH: `${mockBinDirLocal}:${process.env.PATH}`,
-        },
+      const originalHome = process.env.HOME;
+      process.env.HOME = emitDir;
+
+      const result = await inference({
+        systemPrompt: 'sys',
+        userPrompt: 'test',
+        level: 'fast',
+        expectJson: false,
+        timeout: 5000,
       });
 
-      const stdout = await new Response(proc.stdout).text();
-      await proc.exited;
+      process.env.HOME = originalHome;
+      global.fetch = originalFetch;
 
-      // Should still output correct response and exit 0 despite failing to write event
-      expect(proc.exitCode).toBe(0);
-      expect(stdout.trim()).toBe('mocked claude response');
+      // Should still return success despite failing to write event
+      expect(result.success).toBe(true);
+      expect(result.output).toBe('mocked claude response');
 
       chmodSync(stateDir, 0o755); // restore permission so cleanup works
       cleanupTempDir(emitDir);
@@ -258,55 +259,63 @@ exit 1
   });
 
   it('resolves fast level (Anthropic) correctly', async () => {
-    const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'fast', 'system prompt', 'user test'], {
-      stdout: 'pipe',
-      stderr: 'pipe',
-      env: {
-        ...process.env,
-        PATH: `${mockBinDir}:${process.env.PATH}`,
-      },
+    const { inference } = require('../../PAI/Tools/Inference.ts');
+    const originalFetch = global.fetch;
+    global.fetch = async () => new Response(JSON.stringify({
+      content: [{ text: 'mocked claude response' }]
+    }), { status: 200, headers: { 'content-type': 'application/json' } });
+
+    const result = await inference({
+      systemPrompt: 'system prompt',
+      userPrompt: 'user test',
+      level: 'fast',
+      expectJson: false,
+      timeout: 5000,
     });
 
-    const stdout = await new Response(proc.stdout).text();
-    await proc.exited;
-
-    expect(proc.exitCode).toBe(0);
-    expect(stdout.trim()).toBe('mocked claude response');
+    global.fetch = originalFetch;
+    expect(result.success).toBe(true);
+    expect(result.output).toBe('mocked claude response');
   });
 
   it('resolves standard level correctly and respects --timeout', async () => {
-    const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'standard', '--timeout', '1000', 'sys', 'standard test'], {
-      stdout: 'pipe',
-      stderr: 'pipe',
-      env: {
-        ...process.env,
-        PATH: `${mockBinDir}:${process.env.PATH}`,
-      },
+    const { inference } = require('../../PAI/Tools/Inference.ts');
+    const originalFetch = global.fetch;
+    global.fetch = async () => new Response(JSON.stringify({
+      content: [{ text: 'mocked claude response' }]
+    }), { status: 200, headers: { 'content-type': 'application/json' } });
+
+    const result = await inference({
+      systemPrompt: 'sys',
+      userPrompt: 'standard test',
+      level: 'standard',
+      expectJson: false,
+      timeout: 1000,
     });
 
-    const stdout = await new Response(proc.stdout).text();
-    await proc.exited;
-
-    expect(proc.exitCode).toBe(0);
-    expect(stdout.trim()).toBe('mocked claude response');
+    global.fetch = originalFetch;
+    expect(result.success).toBe(true);
+    expect(result.output).toBe('mocked claude response');
   });
 
   it('resolves smart level with JSON (Anthropic) correctly', async () => {
-    const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'smart', '--json', 'sys', 'JSON test'], {
-      stdout: 'pipe',
-      stderr: 'pipe',
-      env: {
-        ...process.env,
-        PATH: `${mockBinDir}:${process.env.PATH}`,
-      },
+    const { inference } = require('../../PAI/Tools/Inference.ts');
+    const originalFetch = global.fetch;
+    global.fetch = async () => new Response(JSON.stringify({
+      content: [{ text: '{"status": "mocked claude json"}' }]
+    }), { status: 200, headers: { 'content-type': 'application/json' } });
+
+    const result = await inference({
+      systemPrompt: 'sys',
+      userPrompt: 'JSON test',
+      level: 'smart',
+      expectJson: true,
+      timeout: 5000,
     });
 
-    const stdout = await new Response(proc.stdout).text();
-    await proc.exited;
-
-    expect(proc.exitCode).toBe(0);
-    const result = JSON.parse(stdout);
-    expect(result.status).toBe('mocked claude json');
+    global.fetch = originalFetch;
+    expect(result.success).toBe(true);
+    expect(result.parsed).toEqual({ status: 'mocked claude json' });
   });
 
   it('resolves gemini level correctly via direct HTTP API', async () => {

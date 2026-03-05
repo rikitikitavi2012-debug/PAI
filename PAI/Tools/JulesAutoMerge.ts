@@ -411,8 +411,11 @@ export async function processPR(
     return record;
   }
 
-  // Merge
-  const merge = run(['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo, '--merge', '--delete-branch', '--admin']);
+  // Merge via REST API (GraphQL --admin fails with OAuth tokens)
+  const merge = run(['gh', 'api', '--method', 'PUT',
+    `repos/${repo.repo}/pulls/${pr.number}/merge`,
+    '-f', 'merge_method=merge',
+    '-f', `commit_title=Merge PR #${pr.number}: ${pr.title}`]);
   if (!merge.ok) {
     record.result = 'failed_merge';
     record.testOutput = merge.stderr;
@@ -420,6 +423,9 @@ export async function processPR(
     state.stats.totalFailed++;
     return record;
   }
+
+  // Delete remote branch after merge
+  run(['gh', 'api', '--method', 'DELETE', `repos/${repo.repo}/git/refs/heads/${pr.headRefName}`]);
 
   // Sync local
   run(['git', 'pull', repo.remote, repo.branch]);

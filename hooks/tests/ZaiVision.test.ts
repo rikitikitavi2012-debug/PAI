@@ -23,6 +23,8 @@ async function runZaiVision(args: string[], env?: Record<string, string>) {
 describe('ZaiVision CLI Tool', () => {
   let tempDir: string;
   let testImagePath: string;
+  let mockServer: ReturnType<typeof Bun.serve> | null = null;
+  let mockServerUrl: string;
 
   beforeAll(() => {
     tempDir = createTempDir('zaivision-test-');
@@ -32,7 +34,6 @@ describe('ZaiVision CLI Tool', () => {
     const result = Bun.spawnSync(['convert', '-size', '1x1', 'xc:red', testImagePath]);
     if (result.exitCode !== 0) {
       // Fallback: write minimal PNG bytes directly
-      // Minimal 1x1 red PNG (67 bytes)
       const png = Buffer.from(
         '89504e470d0a1a0a0000000d4948445200000001000000010802000000907753de' +
         '0000000c4944415408d763f8cfc000000002000160e7274a0000000049454e44ae426082',
@@ -44,9 +45,21 @@ describe('ZaiVision CLI Tool', () => {
     // Create mock .env
     mkdirSync(join(tempDir, '.config', 'PAI'), { recursive: true });
     writeFileSync(join(tempDir, '.config', 'PAI', '.env'), 'ZAI_API_KEY=test_mock_key\n');
+
+    // Start mock HTTP server for Z.AI API
+    mockServer = Bun.serve({
+      port: 0,
+      fetch() {
+        return new Response(JSON.stringify({
+          choices: [{ message: { content: 'mock vision response' } }]
+        }), { headers: { 'content-type': 'application/json' } });
+      },
+    });
+    mockServerUrl = `http://localhost:${mockServer.port}`;
   });
 
   afterAll(() => {
+    mockServer?.stop();
     cleanupTempDir(tempDir);
   });
 
@@ -124,12 +137,11 @@ describe('ZaiVision CLI Tool', () => {
 
   describe('API key loading', () => {
     it('loads ZAI_API_KEY from environment variable', async () => {
-      // analyze with a valid image but no real API → will fail on fetch, not on key loading
       const r = await runZaiVision(['analyze', testImagePath, 'test'], {
         ZAI_API_KEY: 'env_test_key',
         Z_AI_API_KEY: '',
+        ZAI_API_URL: mockServerUrl,
       });
-      // Should fail on API call, NOT on missing key
       expect(r.stderr).not.toContain('No ZAI_API_KEY');
     });
 
@@ -137,6 +149,7 @@ describe('ZaiVision CLI Tool', () => {
       const r = await runZaiVision(['analyze', testImagePath, 'test'], {
         ZAI_API_KEY: '',
         Z_AI_API_KEY: 'fallback_key',
+        ZAI_API_URL: mockServerUrl,
       });
       expect(r.stderr).not.toContain('No ZAI_API_KEY');
     });
@@ -146,8 +159,8 @@ describe('ZaiVision CLI Tool', () => {
         HOME: tempDir,
         ZAI_API_KEY: '',
         Z_AI_API_KEY: '',
+        ZAI_API_URL: mockServerUrl,
       });
-      // Should find key in tempDir/.config/PAI/.env
       expect(r.stderr).not.toContain('No ZAI_API_KEY');
     });
 
@@ -157,6 +170,7 @@ describe('ZaiVision CLI Tool', () => {
         HOME: emptyDir,
         ZAI_API_KEY: '',
         Z_AI_API_KEY: '',
+        ZAI_API_URL: mockServerUrl,
       });
       expect(r.exitCode).toBe(1);
       expect(r.stderr).toContain('No ZAI_API_KEY');
@@ -181,11 +195,10 @@ describe('ZaiVision CLI Tool', () => {
     });
 
     it('accepts images under 5MB', async () => {
-      // testImagePath is tiny (< 1KB) — should pass size check
       const r = await runZaiVision(['analyze', testImagePath, 'test'], {
         ZAI_API_KEY: 'test_key',
+        ZAI_API_URL: mockServerUrl,
       });
-      // Will fail on API (no real server) but should pass size validation
       expect(r.stderr).not.toContain('too large');
     });
   });

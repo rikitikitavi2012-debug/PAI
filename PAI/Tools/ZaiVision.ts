@@ -27,7 +27,7 @@ import { spawnSync } from "child_process";
 
 // ── Config ──────────────────────────────────────────────────────────────
 
-const ZAI_API_URL = "https://api.z.ai/api/coding/paas/v4/chat/completions";
+const ZAI_API_URL = process.env.ZAI_API_URL || "https://api.z.ai/api/coding/paas/v4/chat/completions";
 const ZAI_VISION_MODEL = "glm-4.6v";
 const MAX_TOKENS = 8000;
 const API_TIMEOUT_MS = 120_000;
