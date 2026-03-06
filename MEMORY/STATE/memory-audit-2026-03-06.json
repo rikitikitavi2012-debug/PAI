@@ -1,0 +1,216 @@
+{
+  "dead_references": [
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 41,
+      "path": "PAI/.env",
+      "exists": false
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 52,
+      "path": "PAI/.env",
+      "exists": false
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 134,
+      "path": "PAI/.env",
+      "exists": false
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 144,
+      "path": "PAI/.env.",
+      "exists": false
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 158,
+      "path": "PAI/.env",
+      "exists": false
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 177,
+      "path": "PAI/.env",
+      "exists": false
+    },
+    {
+      "file": "settings.json",
+      "line": 951,
+      "path": "hooks/lib/identity.ts.",
+      "exists": false
+    },
+    {
+      "file": "PAI/USER/AISTEERINGRULES.md",
+      "line": 3,
+      "path": "SYSTEM/AISTEERINGRULES.md",
+      "exists": false
+    },
+    {
+      "file": "PAI/USER/AISTEERINGRULES.md",
+      "line": 107,
+      "path": "scripts/health-check.sh",
+      "exists": false
+    }
+  ],
+  "duplicates": [
+    {
+      "fact": "Ivan works 6/1 from April to November",
+      "locations": [
+        "CLAUDE.md:78",
+        "PAI/USER/AISTEERINGRULES.md:241",
+        "projects/-home-ser--claude/memory/MEMORY.md:23"
+      ]
+    },
+    {
+      "fact": "Scaffolding > Model rule",
+      "locations": [
+        "CLAUDE.md:69",
+        "PAI/USER/AISTEERINGRULES.md:150",
+        "projects/-home-ser--claude/memory/MEMORY.md:14"
+      ]
+    },
+    {
+      "fact": "Code before Prompts (Goal -> Code -> CLI -> Prompt -> Agent)",
+      "locations": [
+        "CLAUDE.md:70",
+        "PAI/USER/AISTEERINGRULES.md:164",
+        "projects/-home-ser--claude/memory/MEMORY.md:15"
+      ]
+    },
+    {
+      "fact": "Job vs Gym",
+      "locations": [
+        "CLAUDE.md:71",
+        "PAI/USER/AISTEERINGRULES.md:178",
+        "projects/-home-ser--claude/memory/MEMORY.md:16"
+      ]
+    },
+    {
+      "fact": "Clarity > Complexity",
+      "locations": [
+        "CLAUDE.md:72",
+        "PAI/USER/AISTEERINGRULES.md:192",
+        "projects/-home-ser--claude/memory/MEMORY.md:17"
+      ]
+    },
+    {
+      "fact": "Anti-fragile Scaffolding",
+      "locations": [
+        "CLAUDE.md:73",
+        "PAI/USER/AISTEERINGRULES.md:206",
+        "projects/-home-ser--claude/memory/MEMORY.md:18"
+      ]
+    },
+    {
+      "fact": "Algorithm Phase boundary compacting / 5 operational principles",
+      "locations": [
+        "CLAUDE.md:67",
+        "PAI/USER/AISTEERINGRULES.md:150",
+        "projects/-home-ser--claude/memory/MEMORY.md:13"
+      ]
+    }
+  ],
+  "contradictions": [
+    {
+      "rule1": "Only Make Requested Changes",
+      "file1": "SYSTEM/AISTEERINGRULES.md",
+      "rule2": "Высокая проактивность - замечать и предлагать",
+      "file2": "PAI/USER/AISTEERINGRULES.md"
+    }
+  ],
+  "stale_entries": [
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 48,
+      "reason": "marked resolved but still present (Wisdom pipeline disconnected)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 49,
+      "reason": "marked resolved but still present (RelationshipMemory wrong event)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 50,
+      "reason": "marked resolved but still present (TrendingAnalysis.ts missing)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 51,
+      "reason": "marked resolved but still present (.env symlink missing)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 52,
+      "reason": "marked resolved but still present (WISDOM/FRAMES/ missing)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 53,
+      "reason": "marked resolved but still present (WisdomSync permission denied)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 54,
+      "reason": "marked resolved but still present (PreCompact permission denied)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 55,
+      "reason": "marked resolved but still present (SecurityValidator fail-open)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 56,
+      "reason": "marked resolved but still present (RatingCapture 52% false-positive)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 57,
+      "reason": "marked resolved but still present (settings.json in readOnly)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 58,
+      "reason": "marked resolved but still present (PRDSync 40% event noise)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 59,
+      "reason": "marked resolved but still present (CRIT-01: SecurityValidator triple fail-open)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 60,
+      "reason": "marked resolved but still present (CRIT-02: WorktreeRemove path traversal)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 61,
+      "reason": "marked resolved but still present (HIGH-01: LoadContext 20s blocking)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 62,
+      "reason": "marked resolved but still present (HIGH-03: Silent catch blocks)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 207,
+      "reason": "marked resolved but still present (Z.AI pipeline review in JulesAutoMerge)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 208,
+      "reason": "marked resolved but still present (JulesAutoMerge merge --squash->--merge)"
+    },
+    {
+      "file": "projects/-home-ser--claude/memory/MEMORY.md",
+      "line": 210,
+      "reason": "marked resolved but still present (fetch timeout Jules PR #19 merged)"
+    }
+  ]
+}
