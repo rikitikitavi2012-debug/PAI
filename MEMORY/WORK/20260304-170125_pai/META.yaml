@@ -1,0 +1,11 @@
+id: "20260304-170125_pai"
+title: "PAI"
+session_id: "297c60f7-504c-4a14-9a07-d196b538acf8"
+created_at: "2026-03-04T17:01:25+03:00"
+completed_at: "2026-03-04T17:03:56+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

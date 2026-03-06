@@ -1,0 +1,11 @@
+id: "20260304-170557_task"
+title: "В последней сессии мы пытались исправить скрол не "
+session_id: "84c8fbfa-af96-49e9-8a6a-0f43b51a4546"
+created_at: "2026-03-04T17:05:57+03:00"
+completed_at: "2026-03-04T17:48:10+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

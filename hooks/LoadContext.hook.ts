@@ -563,6 +563,20 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
       console.error(`⚠️ Community check failed: ${err}`);
     }
 
+    // Pull latest A0 results from private remote (non-blocking, best-effort)
+    try {
+      const pullResult = spawnSync('git', ['fetch', 'private', 'master', '--quiet'], {
+        cwd: paiDir, encoding: 'utf-8', timeout: 5000,
+      });
+      if (pullResult.status === 0) {
+        // Merge only MEMORY/STATE files (safe, no conflicts expected)
+        spawnSync('git', ['checkout', 'private/master', '--', 'MEMORY/STATE/'], {
+          cwd: paiDir, encoding: 'utf-8', timeout: 5000,
+        });
+        console.error('📥 Pulled latest A0 results from private remote');
+      }
+    } catch { /* non-fatal — offline or no remote */ }
+
     // Brigade briefing — quick status of A0, Jules, AutoMerge
     try {
       const briefingParts: string[] = [];
@@ -620,6 +634,52 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
             briefingParts.push(`  ${status} (3 tasks: ULC daily, TELOS adhoc, SecScan weekly)`);
           }
         } catch { /* non-fatal */ }
+      }
+
+      // A0 scheduled results — action items from automated scans
+      const a0Reports = [
+        { file: 'telos-integrity.json', icon: '🎯', label: 'TELOS Integrity' },
+        { file: 'telos-progress.json', icon: '📊', label: 'TELOS Progress' },
+        { file: 'learning-patterns.json', icon: '🧠', label: 'Learning Patterns' },
+        { file: 'memory-compaction-report.json', icon: '📦', label: 'Memory Compaction' },
+        { file: 'memory-audit-2026-03-06.json', icon: '🔍', label: 'Memory Audit' },
+      ];
+      const actionItems: string[] = [];
+      for (const report of a0Reports) {
+        const rPath = join(paiDir, 'MEMORY', 'STATE', report.file);
+        if (!existsSync(rPath)) continue;
+        try {
+          const data = JSON.parse(readFileSync(rPath, 'utf-8'));
+          const age = Date.now() - new Date(data.timestamp || 0).getTime();
+          const ageD = Math.floor(age / 86400000);
+          if (ageD > 14) continue; // skip stale reports
+          // Extract key metrics
+          const contradictions = data.contradictions?.length || 0;
+          const orphans = data.orphans?.length || 0;
+          const stale = data.stale?.length || data.stale_entries?.length || 0;
+          const duplicates = data.duplicates?.length || 0;
+          const deadRefs = data.dead_references?.length || 0;
+          const newPatterns = data.new_patterns?.length || 0;
+          const stalledGoals = data.summary?.stalled || 0;
+          const recommendations = data.recommendations?.length || 0;
+          const issues = contradictions + orphans + stale + duplicates + deadRefs + newPatterns + stalledGoals;
+          if (issues > 0 || recommendations > 0) {
+            const parts = [];
+            if (contradictions) parts.push(`${contradictions} contradictions`);
+            if (orphans) parts.push(`${orphans} orphans`);
+            if (deadRefs) parts.push(`${deadRefs} dead refs`);
+            if (duplicates) parts.push(`${duplicates} duplicates`);
+            if (stalledGoals) parts.push(`${stalledGoals} stalled goals`);
+            if (newPatterns) parts.push(`${newPatterns} new patterns`);
+            if (stale) parts.push(`${stale} stale`);
+            if (recommendations) parts.push(`${recommendations} recommendations`);
+            actionItems.push(`  ${report.icon} ${report.label} (${ageD}d ago): ${parts.join(', ')}`);
+          }
+        } catch { /* non-fatal */ }
+      }
+      if (actionItems.length > 0) {
+        briefingParts.push('  ── A0 Reports with Action Items ──');
+        briefingParts.push(...actionItems);
       }
 
       if (briefingParts.length > 0) {

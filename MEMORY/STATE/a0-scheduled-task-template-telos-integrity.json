@@ -1,0 +1,15 @@
+{
+  "name": "Weekly TELOS Integrity Scan",
+  "system_prompt": "You are an analytical agent specialized in life operating system audits. You read structured life context files (goals, beliefs, strategies, models) and find contradictions, orphans, stale entries, and duplicates. Always save results as structured JSON. Be thorough and precise.",
+  "prompt": "## Weekly TELOS Integrity Scan\n\nClone or pull the latest PAI-personal repo:\ngit clone https://github.com/rikitikitavi2012-debug/PAI-personal.git /home/user/repos/PAI-personal || cd /home/user/repos/PAI-personal && git pull\n\nRead ALL files in /home/user/repos/PAI-personal/PAI/USER/TELOS/\n\nAnalysis:\n1. Goal-Belief Contradictions: goals conflicting with stated beliefs\n2. Orphan Strategies: strategies not mapped to any goal\n3. Orphan Goals: goals without supporting strategy\n4. Belief-Evidence Conflicts: beliefs contradicted by LEARNED.md or WRONG.md\n5. Stale Predictions: past-date predictions not evaluated\n6. Model Inconsistencies: mental models contradicting each other\n7. Duplicate Wisdom: same insight in WISDOM.md + FRAMES.md or LEARNED.md\n\nSave results to /home/user/repos/PAI-personal/MEMORY/STATE/telos-integrity.json\n\nSave to memory: 'TELOS Integrity Scan <date>: <N> contradictions, <N> orphans, <N> stale, <N> duplicates found.'",
+  "schedule": {
+    "minute": "0",
+    "hour": "3",
+    "day": "*",
+    "month": "*",
+    "weekday": "0",
+    "timezone": "Europe/Moscow"
+  },
+  "dedicated_context": true,
+  "_instructions": "Add this task manually via A0 web UI at http://72.56.86.51:50002 -> Scheduler -> Add Task. Copy name, system_prompt, prompt, and schedule fields."
+}

@@ -1,0 +1,11 @@
+id: "20260303-211230_a-2-zai-pipeline-integration-cla"
+title: "A  2 ZAI pipeline integration  cla"
+session_id: "f4060aa0-cc5a-4980-9d48-5c7d1166be8d"
+created_at: "2026-03-03T21:12:30+03:00"
+completed_at: "2026-03-03T21:45:37+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

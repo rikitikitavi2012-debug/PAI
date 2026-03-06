@@ -1,0 +1,76 @@
+{
+  "_instructions": "Add these tasks via A0 web UI: http://72.56.86.51:50002 -> Scheduler -> Add Task",
+
+  "tasks": [
+    {
+      "name": "Daily PAI Health Check",
+      "system_prompt": "You are a DevOps monitoring agent. Check system health, compare against baselines, and save structured results. Be concise. Always save results to the specified file path.",
+      "prompt": "## Daily PAI Health Check\n\nClone/pull repo:\ncd /home/user/repos/PAI-personal && git pull || git clone https://github.com/rikitikitavi2012-debug/PAI-personal.git /home/user/repos/PAI-personal\n\n### Checks (run ALL):\n\n1. **VoiceServer**: curl -s --max-time 5 http://host.docker.internal:8888/health || echo 'DOWN'\n2. **GitHub auth**: Test with GITHUB_PERSONAL_TOKEN — curl -s -H \"Authorization: token $GITHUB_PERSONAL_TOKEN\" https://api.github.com/user | jq .login\n3. **Hooks count**: ls /home/user/repos/PAI-personal/hooks/*.hook.ts | wc -l (baseline: 30, alert if changed)\n4. **events.jsonl size**: wc -l /home/user/repos/PAI-personal/MEMORY/STATE/events.jsonl (alert if >4000)\n5. **Disk space**: df -h /home/user (alert if >85%)\n6. **Open PRs**: curl -s -H \"Authorization: token $GITHUB_PERSONAL_TOKEN\" 'https://api.github.com/repos/rikitikitavi2012-debug/PAI-personal/pulls?state=open' | jq length\n7. **Stale PRs (>3 days)**: Check PR dates, flag any older than 3 days\n8. **Test suite**: cd /home/user/repos/PAI-personal && bun test hooks/tests/ 2>&1 | tail -5\n\n### Output:\nSave JSON to /home/user/repos/PAI-personal/MEMORY/STATE/health-report.json:\n{\n  \"timestamp\": \"ISO\",\n  \"checks\": {\n    \"voice_server\": {\"status\": \"UP|DOWN\", \"latency_ms\": N},\n    \"github_auth\": {\"status\": \"OK|FAIL\", \"user\": \"login\"},\n    \"hooks_count\": {\"count\": N, \"baseline\": 30, \"alert\": bool},\n    \"events_size\": {\"lines\": N, \"alert\": bool},\n    \"disk_usage\": {\"percent\": N, \"alert\": bool},\n    \"open_prs\": {\"count\": N, \"stale\": [list]},\n    \"tests\": {\"passed\": N, \"failed\": N, \"alert\": bool}\n  },\n  \"overall\": \"HEALTHY|WARNING|CRITICAL\",\n  \"alerts\": [\"list of alert messages\"]\n}\n\nThen git add + commit + push the health report:\ncd /home/user/repos/PAI-personal && git add MEMORY/STATE/health-report.json && git commit -m \"health: daily check $(date +%Y-%m-%d)\" && git push origin master\n\nSave to memory: 'Health Check <date>: <HEALTHY|WARNING|CRITICAL>. <alerts summary>'",
+      "schedule": {
+        "minute": "0",
+        "hour": "4",
+        "day": "*",
+        "month": "*",
+        "weekday": "*",
+        "timezone": "Europe/Moscow"
+      },
+      "dedicated_context": true
+    },
+    {
+      "name": "Weekly TELOS Progress Tracker",
+      "system_prompt": "You are a life goal tracking analyst. You read structured goal files, compare with previous snapshots, calculate progress percentages, and identify stalled goals. Be quantitative and honest. Save results as structured JSON.",
+      "prompt": "## Weekly TELOS Progress Tracker\n\nClone/pull:\ncd /home/user/repos/PAI-personal && git pull || git clone https://github.com/rikitikitavi2012-debug/PAI-personal.git /home/user/repos/PAI-personal\n\n### Steps:\n\n1. Read /home/user/repos/PAI-personal/PAI/USER/TELOS/GOALS.md — extract ALL goals with IDs (G0-G12+)\n2. Read /home/user/repos/PAI-personal/PAI/USER/TELOS/PROJECTS.md — extract project statuses\n3. Read /home/user/repos/PAI-personal/PAI/USER/TELOS/STATUS.md — current snapshot\n4. Read previous tracker (if exists): /home/user/repos/PAI-personal/MEMORY/STATE/telos-progress.json\n\n### Analysis:\n- For each goal: estimate % completion based on sub-items, checkboxes, status keywords\n- Compare with previous week's % (if available)\n- Delta = current % - previous %\n- Flag STALLED: goals with delta=0 for 2+ consecutive weeks\n- Flag REGRESSED: goals with negative delta\n- Identify TOP 3 most progressed goals this week\n\n### Output:\nSave to /home/user/repos/PAI-personal/MEMORY/STATE/telos-progress.json:\n{\n  \"timestamp\": \"ISO\",\n  \"week\": \"YYYY-WW\",\n  \"goals\": [\n    {\"id\": \"G0\", \"name\": \"...\", \"progress_pct\": N, \"prev_pct\": N, \"delta\": N, \"status\": \"active|stalled|regressed|completed\", \"weeks_stalled\": N}\n  ],\n  \"summary\": {\n    \"total_goals\": N,\n    \"active\": N,\n    \"stalled\": N,\n    \"completed\": N,\n    \"avg_progress\": N,\n    \"top_3\": [\"G1\", \"G5\", \"G8\"],\n    \"needs_attention\": [\"G3\", \"G7\"]\n  }\n}\n\nGit commit + push.\nSave to memory: 'TELOS Progress <date>: avg <N>%, <N> stalled, top movers: <list>.'",
+      "schedule": {
+        "minute": "0",
+        "hour": "3",
+        "day": "*",
+        "month": "*",
+        "weekday": "1",
+        "timezone": "Europe/Moscow"
+      },
+      "dedicated_context": true
+    },
+    {
+      "name": "Weekly Learning Pattern Mining",
+      "system_prompt": "You are a meta-learning analyst. You analyze learning signals, wisdom frames, and workflow patterns to find recurring themes that haven't been formalized yet. You propose new frames and pattern updates. Be thorough — read every file completely before analyzing.",
+      "prompt": "## Weekly Learning Pattern Mining\n\nClone/pull:\ncd /home/user/repos/PAI-personal && git pull || git clone https://github.com/rikitikitavi2012-debug/PAI-personal.git /home/user/repos/PAI-personal\n\n### Files to read:\n1. /home/user/repos/PAI-personal/MEMORY/WISDOM/FRAMES/*.md — all frame files\n2. /home/user/repos/PAI-personal/MEMORY/WISDOM/learning.json — learning signals\n3. /home/user/repos/PAI-personal/MEMORY/WISDOM/workflow.json — workflow signals\n4. /home/user/repos/PAI-personal/MEMORY/LEARNING/ — all synthesis files\n5. /home/user/repos/PAI-personal/MEMORY/STATE/events.jsonl — last 500 events for pattern context\n\n### Analysis:\n1. **Recurring patterns**: Find themes appearing 3+ times across different sources that aren't captured in any FRAME\n2. **Frame staleness**: Frames that haven't been updated in 2+ weeks despite relevant new signals\n3. **Contradictory signals**: Learning signals that contradict existing frames\n4. **Emerging patterns**: New patterns from last 7 days that might become frames\n5. **Frame effectiveness**: Which frames have the highest confidence? Which are declining?\n\n### Output:\nSave to /home/user/repos/PAI-personal/MEMORY/STATE/learning-patterns.json:\n{\n  \"timestamp\": \"ISO\",\n  \"new_patterns\": [\n    {\"pattern\": \"description\", \"evidence\": [\"source1\", \"source2\", \"source3\"], \"suggested_frame\": \"category\", \"confidence\": N}\n  ],\n  \"stale_frames\": [{\"file\": \"path\", \"last_updated\": \"date\", \"days_stale\": N}],\n  \"contradictions\": [{\"signal\": \"text\", \"frame\": \"text\", \"file\": \"path\"}],\n  \"frame_health\": [{\"name\": \"frame\", \"confidence\": N, \"trend\": \"up|stable|down\"}],\n  \"recommendations\": [\"actionable suggestion 1\", \"suggestion 2\"]\n}\n\nGit commit + push.\nSave to memory: 'Learning Mining <date>: <N> new patterns, <N> stale frames, <N> contradictions.'",
+      "schedule": {
+        "minute": "0",
+        "hour": "4",
+        "day": "*",
+        "month": "*",
+        "weekday": "1",
+        "timezone": "Europe/Moscow"
+      },
+      "dedicated_context": true
+    },
+    {
+      "name": "Monthly MEMORY Compaction",
+      "system_prompt": "You are a memory management agent. You maintain structured memory files, archive old data, and ensure memory stays within size limits. You understand that MEMORY.md has a 200-line limit enforced by the system. Be surgical — move content to topic files, don't delete it.",
+      "prompt": "## Monthly MEMORY Compaction\n\nClone/pull:\ncd /home/user/repos/PAI-personal && git pull || git clone https://github.com/rikitikitavi2012-debug/PAI-personal.git /home/user/repos/PAI-personal\n\nBASE=/home/user/repos/PAI-personal\n\n### Tasks:\n\n1. **MEMORY.md size check**: wc -l $BASE/projects/-home-ser--claude/memory/MEMORY.md\n   - If >200 lines: identify sections that can be moved to topic files\n   - Suggest which sections to extract (DO NOT modify — only report)\n\n2. **events.jsonl stats**: \n   - Total lines: wc -l $BASE/MEMORY/STATE/events.jsonl\n   - Events by type: jq -r .type $BASE/MEMORY/STATE/events.jsonl | sort | uniq -c | sort -rn\n   - Events last 7 days vs previous 7 days (trend)\n   - Archive files: ls $BASE/MEMORY/STATE/events-archive-*.jsonl\n\n3. **WORK/ cleanup candidates**:\n   - ls -la $BASE/MEMORY/WORK/ — list all work directories\n   - Flag directories older than 14 days\n   - Count total size: du -sh $BASE/MEMORY/WORK/\n\n4. **Stale state files**:\n   - Check all files in $BASE/MEMORY/STATE/ — flag any older than 30 days\n   - Check for temp files, .bak files, orphaned locks\n\n### Output:\nSave to $BASE/MEMORY/STATE/memory-compaction-report.json:\n{\n  \"timestamp\": \"ISO\",\n  \"memory_md\": {\"lines\": N, \"over_limit\": bool, \"sections_to_extract\": [\"section names\"]},\n  \"events\": {\"total\": N, \"by_type\": {}, \"trend\": \"growing|stable|shrinking\", \"archives\": N},\n  \"work_dirs\": {\"total\": N, \"archivable\": N, \"total_size_mb\": N, \"candidates\": [\"dir names\"]},\n  \"stale_files\": [{\"path\": \"...\", \"age_days\": N}],\n  \"recommendations\": [\"actionable items\"]\n}\n\nGit commit + push.\nSave to memory: 'Memory Compaction <date>: MEMORY.md <N> lines, <N> archivable work dirs, <N> stale files.'",
+      "schedule": {
+        "minute": "0",
+        "hour": "2",
+        "day": "1",
+        "month": "*",
+        "weekday": "*",
+        "timezone": "Europe/Moscow"
+      },
+      "dedicated_context": true
+    },
+    {
+      "name": "Weekly Competitive Intelligence",
+      "system_prompt": "You are a competitive intelligence analyst focused on AI coding tools. You monitor releases, changelogs, and feature announcements. You identify features that could be adapted for PAI. Be concise and actionable.",
+      "prompt": "## Weekly Competitive Intelligence Scan\n\n### Sources to check (use browser_agent and search_engine tools):\n\n1. **Claude Code**: https://github.com/anthropics/claude-code/releases — new releases since last scan\n2. **Cursor**: https://www.cursor.com/changelog — new features\n3. **Gemini CLI**: https://github.com/google-gemini/gemini-cli/releases — new releases\n4. **Windsurf/Codeium**: https://codeium.com/changelog — updates\n5. **Aider**: https://github.com/Aider-AI/aider/releases — new releases\n6. **OpenCode**: https://github.com/opencode-ai/opencode/releases — new releases\n\n### For each tool:\n- Latest version number and release date\n- New features (bullet list)\n- Breaking changes\n- Features PAI could adapt (flag with [ADAPT])\n\n### Also search for:\n- 'AI coding agent' news from last 7 days\n- New MCP servers relevant to coding\n- Claude API changes or new features\n\n### Output:\nSave to memory with tag 'competitive-intel':\n\n'Competitive Intel <date>:\n- Claude Code: v<X> (<changes summary>)\n- Cursor: <changes summary>\n- Gemini CLI: v<X> (<changes summary>)\n[ADAPT] <list of features worth adapting>\n[TREND] <emerging trend>'",
+      "schedule": {
+        "minute": "0",
+        "hour": "5",
+        "day": "*",
+        "month": "*",
+        "weekday": "0",
+        "timezone": "Europe/Moscow"
+      },
+      "dedicated_context": true
+    }
+  ]
+}

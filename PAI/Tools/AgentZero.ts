@@ -164,21 +164,37 @@ async function sendMessage(message: string, contextId?: string): Promise<void> {
   }, null, 2));
 }
 
-// Send async message (fire-and-forget via /api_message with short timeout)
+// Send async message (fire-and-forget via /api_message)
+// Strategy: try with 30s timeout first. If it times out, that's OK —
+// A0 received the message and is processing. We just didn't get the context_id back.
 async function sendAsync(message: string, contextId?: string): Promise<void> {
   const body: any = { message, lifetime_hours: 1 };
   if (contextId) body.context_id = contextId;
 
   emitA0Event('async_sent', { context_id: contextId || 'new', preview: message.slice(0, 50) });
 
-  const result = await apiCall('/api_message', body, 15000);
+  try {
+    const result = await apiCall('/api_message', body, 30000);
 
-  // Track context if returned
-  if (result.context_id) {
-    saveActiveContext(result.context_id, message);
+    // Track context if returned
+    if (result.context_id) {
+      saveActiveContext(result.context_id, message);
+    }
+
+    console.log(JSON.stringify(result, null, 2));
+  } catch (err: any) {
+    if (err.message?.includes('Timeout')) {
+      // A0 received the message but is still processing — this is expected for async
+      console.log(JSON.stringify({
+        status: 'delivered',
+        note: 'A0 is processing (response timeout is normal for async tasks)',
+        context_id: contextId || 'new',
+      }, null, 2));
+      emitA0Event('async_delivered', { context_id: contextId || 'new', timeout: true });
+    } else {
+      throw err;
+    }
   }
-
-  console.log(JSON.stringify(result, null, 2));
 }
 
 // Get conversation log
@@ -221,6 +237,58 @@ async function schedulerResults(): Promise<void> {
   }
 }
 
+// Pull A0 results from git (A0 pushes to PAI-personal, we pull)
+async function pullResults(): Promise<void> {
+  const { spawnSync } = require('child_process');
+  const paiDir = process.env.HOME + '/.claude';
+
+  // Pull latest from private remote
+  const pull = spawnSync('git', ['pull', '--rebase', 'private', 'master'], {
+    cwd: paiDir, encoding: 'utf-8', timeout: 15000,
+  });
+
+  if (pull.status !== 0) {
+    // Try without rebase
+    const pull2 = spawnSync('git', ['pull', '--no-rebase', 'private', 'master'], {
+      cwd: paiDir, encoding: 'utf-8', timeout: 15000,
+    });
+    if (pull2.status !== 0) {
+      console.error('⚠️ git pull failed — may have local changes. Try: git stash && git pull private master');
+      return;
+    }
+  }
+
+  // Check for A0 result files
+  const stateDir = path.join(paiDir, 'MEMORY', 'STATE');
+  const reports = [
+    { file: 'health-report.json', label: 'Health Check' },
+    { file: 'telos-integrity.json', label: 'TELOS Integrity' },
+    { file: 'telos-progress.json', label: 'TELOS Progress' },
+    { file: 'learning-patterns.json', label: 'Learning Patterns' },
+    { file: 'memory-compaction-report.json', label: 'Memory Compaction' },
+    { file: 'a0-comms-research.json', label: 'A0 Comms Research' },
+  ];
+
+  console.log('📥 A0 Results:');
+  for (const r of reports) {
+    const fpath = path.join(stateDir, r.file);
+    if (fs.existsSync(fpath)) {
+      try {
+        const data = JSON.parse(fs.readFileSync(fpath, 'utf-8'));
+        const age = Date.now() - new Date(data.timestamp || 0).getTime();
+        const ageH = Math.floor(age / 3600000);
+        const isNew = ageH < 24;
+        console.log(`  ${isNew ? '🆕' : '📄'} ${r.label}: ${ageH}h ago${isNew ? ' ← NEW' : ''}`);
+        // Show summary if available
+        if (data.overall) console.log(`     Status: ${data.overall}`);
+        if (data.alerts?.length) console.log(`     Alerts: ${data.alerts.join(', ')}`);
+        if (data.contradictions?.length) console.log(`     Contradictions: ${data.contradictions.length}`);
+        if (data.recommendations?.length) console.log(`     Recommendations: ${data.recommendations.length}`);
+      } catch { console.log(`  ⚠️ ${r.label}: parse error`); }
+    }
+  }
+}
+
 // ─── CLI entry point ───────────────────────────────────────────────
 
 async function main() {
@@ -235,6 +303,7 @@ async function main() {
   bun AgentZero.ts log <context_id>              — conversation log
   bun AgentZero.ts terminate <context_id>        — end conversation
   bun AgentZero.ts health                        — server check
+  bun AgentZero.ts poll                          — pull & show A0 results
   bun AgentZero.ts scheduler list                — list tasks
   bun AgentZero.ts scheduler results             — last run results for all tasks
   bun AgentZero.ts scheduler run "task"          — run ad-hoc task`);
@@ -278,6 +347,10 @@ async function main() {
       await terminateChat(contextId);
       break;
     }
+
+    case 'poll':
+      await pullResults();
+      break;
 
     case 'scheduler':
       if (args[1] === 'list') {

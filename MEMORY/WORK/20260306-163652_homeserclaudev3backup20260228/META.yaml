@@ -1,0 +1,11 @@
+id: "20260306-163652_homeserclaudev3backup20260228"
+title: "homeserclaudev3backup20260228"
+session_id: "5f1cb09a-0b48-4681-8dc4-3cf60e444e0e"
+created_at: "2026-03-06T16:36:52+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -1,0 +1,11 @@
+id: "20260304-164619_pai"
+title: "Pai"
+session_id: "a5083645-4e54-4d35-ad34-85b7bf395f1f"
+created_at: "2026-03-04T16:46:19+03:00"
+completed_at: "2026-03-04T16:58:09+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

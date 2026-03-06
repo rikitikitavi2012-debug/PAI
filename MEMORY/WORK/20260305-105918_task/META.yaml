@@ -1,0 +1,11 @@
+id: "20260305-105918_task"
+title: "Делали изменения в табе телеметрии не визжу лайв с"
+session_id: "de245f91-db29-4f0a-94d2-4ec8293d4bc9"
+created_at: "2026-03-05T10:59:18+03:00"
+completed_at: "2026-03-05T12:22:58+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []
