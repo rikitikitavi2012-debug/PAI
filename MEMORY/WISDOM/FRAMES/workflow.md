@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 26
-- **Last Crystallized:** 2026-03-05
+- **Observation Count:** 28
+- **Last Crystallized:** 2026-03-06
 - **Source:** Converted from workflow.json
 
 ---
@@ -78,6 +78,19 @@
 
 ---
 
+## Brigade Work Pattern (crystallized 2026-03-06) [CRYSTAL: 90%]
+
+**Pattern: Git-as-Message-Bus for multi-agent collaboration**
+- Navi (architect) delegates to Jules (async coder) and A0 (24/7 researcher/DevOps)
+- All agents write structured JSON results to `MEMORY/STATE/` and git push
+- LoadContext auto-pulls at session start → Brigade Briefing shows action items
+- Key insight: `/message_async` (<1s ack) vs `/api_message` (22s block) — always use async for fire-and-forget
+- Key insight: `.gitignore` blocks `MEMORY/STATE/*.json` — A0 must use `git add -f`
+- Scheduled tasks (A0) = autonomous maintenance loop: health, TELOS progress, learning mining, memory compaction, competitive intel
+- Jules best for: tests, mechanical refactoring, lint fixes (93% success rate)
+- A0 best for: deep analysis, contradictions, scheduled maintenance, code review (24/7)
+- Result: 22 TELOS issues found, 5 scheduled tasks running, 3 PRs merged in one session
+
 ## Cross-Frame Connections
 
 *To be discovered through cross-frame synthesis.*
@@ -93,3 +106,5 @@
 - 2026-03-05: [anti-pattern] Frustrated by repeated failed attempts across sessions
 - 2026-03-05: [anti-pattern] Frustrated — expected live event display not visible
 - 2026-03-05: [principle] Strong approval — concise satisfaction with completed work
+- 2026-03-06: [principle] High trust, ambitious vision, wants excellence
+- 2026-03-06: [principle] Praised UI/UX concept and Navi's improvement on TUI tasks
