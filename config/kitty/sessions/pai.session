@@ -7,11 +7,12 @@
 # 🟡 ДОМЕН: СТРАТЕГИЯ (amber) — зачем и куда
 # ══════════════════════════════════════════════════════════
 
-# ── Tab 1: TELOS — стратегический радар (LIVE) ──
+# ── Tab 1: TELOS — Radar (left) + Navigator (right) ──
 new_tab  🎯 TELOS
-layout splits
+layout tall
 cd ~
-launch --title "TELOS Dashboard" bash -c 'while true; do ~/.config/kitty/scripts/telos-dashboard.sh; echo "TELOS crashed, restarting in 3s..."; sleep 3; done'
+launch --title "TELOS Radar" bash -c 'while true; do ~/.config/kitty/scripts/telos-radar.sh; echo "Radar crashed, restarting in 3s..."; sleep 3; done'
+launch --location=vsplit --title "TELOS Nav" bash -c 'while true; do ~/.config/kitty/scripts/telos-navigator.sh; echo "Nav crashed, restarting in 3s..."; sleep 3; done'
 
 # ── Tab 2: Command Center + Strategic Dashboard (2-pane vsplit) ──
 # Layout: command-center (left) | strategic-dashboard (right)
