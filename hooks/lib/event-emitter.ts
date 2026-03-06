@@ -12,9 +12,12 @@ import { appendFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import type { EventInput, PAIEvent } from './event-types';
 import { getPaiDir } from './paths';
+import { rotateIfNeeded } from './event-rotation';
 
 const BASE_DIR = getPaiDir();
 const EVENTS_PATH = join(BASE_DIR, 'MEMORY', 'STATE', 'events.jsonl');
+
+let appendCount = 0;
 
 /**
  * Get the events.jsonl file path (for external consumers like fs.watch)
@@ -47,6 +50,12 @@ export function appendEvent(input: EventInput): void {
     }
 
     appendFileSync(EVENTS_PATH, JSON.stringify(event) + '\n', 'utf-8');
+
+    appendCount++;
+    if (appendCount >= 100) {
+      rotateIfNeeded(EVENTS_PATH, 5000);
+      appendCount = 0;
+    }
   } catch {
     // Graceful failure — events are observability, not critical path
   }

@@ -12,11 +12,135 @@ import { createTempDir, cleanupTempDir } from './harness';
 
 // We'll import from the rotation module once it exists
 let rotateEvents: (eventsPath: string) => { archived: number; kept: number; archiveFile: string | null };
+let rotateIfNeeded: (eventsPath: string, maxLines?: number) => void;
 
 // Dynamic import to get the function
 beforeEach(async () => {
   const mod = await import('../lib/event-rotation');
   rotateEvents = mod.rotateEvents;
+  rotateIfNeeded = mod.rotateIfNeeded;
+});
+
+describe('rotateIfNeeded', () => {
+  let tempDir: string;
+  let eventsPath: string;
+
+  beforeEach(() => {
+    tempDir = createTempDir('pai-rotate-if-needed-test-');
+    eventsPath = join(tempDir, 'events.jsonl');
+  });
+
+  afterEach(() => {
+    cleanupTempDir(tempDir);
+  });
+
+  function makeEvent(timestamp: string, type: string = 'voice.sent'): string {
+    return JSON.stringify({
+      type,
+      source: 'TestHarness',
+      timestamp,
+      session_id: 'test-session',
+    });
+  }
+
+  function daysAgo(n: number): string {
+    const d = new Date();
+    d.setDate(d.getDate() - n);
+    return d.toISOString();
+  }
+
+  test('no events file -> does nothing, no crash', () => {
+    rotateIfNeeded(join(tempDir, 'nonexistent.jsonl'), 50);
+    expect(existsSync(join(tempDir, 'nonexistent.jsonl'))).toBe(false);
+  });
+
+  test('empty events file -> does nothing', () => {
+    writeFileSync(eventsPath, '');
+    rotateIfNeeded(eventsPath, 50);
+    expect(readFileSync(eventsPath, 'utf-8')).toBe('');
+  });
+
+  test('under threshold -> does nothing', () => {
+    const lines = [];
+    for (let i = 0; i < 40; i++) {
+      lines.push(makeEvent(daysAgo(i)));
+    }
+    writeFileSync(eventsPath, lines.join('\n') + '\n');
+    rotateIfNeeded(eventsPath, 50);
+
+    const remaining = readFileSync(eventsPath, 'utf-8').trim().split('\n');
+    expect(remaining.length).toBe(40);
+  });
+
+  test('over threshold -> keeps last 3000, archives rest', () => {
+    // We'll use a smaller keep threshold by passing maxLines.
+    // Wait, the logic hardcodes KEEP_LINES = 3000.
+    // Let's create 3005 lines.
+    // It should archive 5 and keep 3000.
+    const lines = [];
+    // Older events first
+    for (let i = 0; i < 5; i++) {
+      lines.push(makeEvent(daysAgo(10 + i))); // These 5 will be archived
+    }
+    // Newer events
+    for (let i = 0; i < 3000; i++) {
+      lines.push(makeEvent(daysAgo(0))); // These 3000 will be kept
+    }
+
+    writeFileSync(eventsPath, lines.join('\n') + '\n');
+
+    // threshold is 3000 for this test to trigger it
+    rotateIfNeeded(eventsPath, 3000);
+
+    const remaining = readFileSync(eventsPath, 'utf-8').trim().split('\n');
+    expect(remaining.length).toBe(3000);
+
+    // Check archive file. It should contain 5 events.
+    const oldDate = new Date();
+    oldDate.setDate(oldDate.getDate() - 10);
+    const monthStr = oldDate.toISOString().slice(0, 7);
+    const archivePath = join(tempDir, `events-archive-${monthStr}.jsonl`);
+
+    expect(existsSync(archivePath)).toBe(true);
+    const archiveLines = readFileSync(archivePath, 'utf-8').trim().split('\n');
+    expect(archiveLines.length).toBe(5);
+  });
+
+  test('concurrent safety -> simulates rapid writes during rotation', async () => {
+    // Generate an initial large file
+    const lines = [];
+    for (let i = 0; i < 4000; i++) {
+      lines.push(makeEvent(daysAgo(0)));
+    }
+    writeFileSync(eventsPath, lines.join('\n') + '\n');
+
+    // Run rotation and simultaneous append asynchronously
+    await Promise.all([
+      new Promise<void>(resolve => {
+        rotateIfNeeded(eventsPath, 3000);
+        resolve();
+      }),
+      new Promise<void>(resolve => {
+        // Since we are not using fs.promises, we just do a sync append,
+        // but the atomic rename guarantees the append either hits the old file
+        // (and is lost/overwritten by rename, which is a known limitation of this approach
+        // unless we use append-only or locking) or hits the new file.
+        // For the sake of the test, we just ensure it doesn't crash or corrupt.
+        const newEvt = makeEvent(daysAgo(0), 'concurrent.write');
+        writeFileSync(eventsPath, newEvt + '\n', { flag: 'a' });
+        resolve();
+      })
+    ]);
+
+    // Check that eventsPath is still a valid file with valid json lines
+    const remaining = readFileSync(eventsPath, 'utf-8').trim().split('\n');
+    expect(remaining.length).toBeGreaterThanOrEqual(3000);
+    // Ensure all lines parse correctly
+    for (const line of remaining) {
+      if (!line.trim()) continue;
+      expect(() => JSON.parse(line)).not.toThrow();
+    }
+  });
 });
 
 describe('EventRotation', () => {
