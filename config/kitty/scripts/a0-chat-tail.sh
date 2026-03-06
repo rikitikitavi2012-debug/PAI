@@ -1,6 +1,6 @@
 #!/bin/bash
-# A0 Chat Live — Agent Zero conversation viewer v3.0
-# Chat bubbles, animated spinner, voice notifications
+# A0 Chat Live — Agent Zero conversation viewer v3.1
+# Chat bubbles, animated spinner, voice notifications, markdown-lite
 # Context ID read from state file (written by AgentZero.ts)
 
 A0_HOST="72.56.86.51:50002"
@@ -19,12 +19,14 @@ NO_CTX_COUNT=0
 VERBOSE=0
 MSG_COUNT=0
 RESP_COUNT=0
+LAST_LATENCY=0
 
 # ── Colors (24-bit RGB) ──
 RST='\e[0m'
 BLD='\e[1m'
 DIM='\e[2m'
 ITL='\e[3m'
+UND='\e[4m'
 CYN='\e[38;2;103;232;249m'
 VIO='\e[38;2;167;139;250m'
 GRN='\e[38;2;74;222;128m'
@@ -35,17 +37,28 @@ WHT='\e[38;2;203;213;225m'
 SLT='\e[38;2;148;163;184m'
 BLU='\e[38;2;96;165;250m'
 ORG='\e[38;2;251;146;60m'
+PNK='\e[38;2;244;114;182m'
+EMR='\e[38;2;52;211;153m'
+# Gradient header colors
+GH1='\e[38;2;56;189;248m'
+GH2='\e[38;2;99;102;241m'
+GH3='\e[38;2;167;139;250m'
 # Backgrounds for bubbles
 BG_IVAN='\e[48;2;22;40;28m'   # dark green tint
 BG_A0='\e[48;2;20;30;45m'     # dark blue tint
+BG_SYS='\e[48;2;35;25;40m'    # dark purple tint for system
 BG_RST='\e[49m'
 
 # ── Box drawing chars ──
 TL='╭' TR='╮' BL='╰' BR='╯' HZ='─' VT='│'
+# Double-line for A0 response emphasis
+DTL='╔' DTR='╗' DBL='╚' DBR='╝' DHZ='═' DVT='║'
 
-# ── Spinner frames ──
+# ── Spinner frames (dual mode) ──
 SPIN_FRAMES=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+DOTS_FRAMES=('·  ' '·· ' '···' ' ··' '  ·' '   ')
 SPIN_IDX=0
+DOTS_IDX=0
 
 # ── Load API token ──
 A0_TOKEN=""
@@ -92,6 +105,63 @@ strip_agent_prefix() {
   echo "$t"
 }
 
+# ── Markdown-lite rendering ──
+# Converts **bold**, ## headers, `code` to ANSI
+md_render() {
+  local text="$1" color="$2"
+  # ## Headers → colored + bold
+  if [[ "$text" =~ ^##[[:space:]] ]]; then
+    text="${text#\#\# }"
+    printf '%b%b%s%b' "$EMR" "$BLD" "$text" "$RST"
+    return
+  fi
+  # ### Sub-headers
+  if [[ "$text" =~ ^###[[:space:]] ]]; then
+    text="${text#\#\#\# }"
+    printf '%b%b%s%b' "$VIO" "$BLD" "$text" "$RST"
+    return
+  fi
+  # - List items → bullet
+  if [[ "$text" =~ ^[[:space:]]*-[[:space:]] ]]; then
+    local indent="${text%%[-]*}"
+    text="${text#*- }"
+    printf '%s%b●%b %s' "$indent" "$EMR" "$RST" "$text"
+    return
+  fi
+  # Inline: **bold** → BLD, `code` → colored
+  local result=""
+  local remaining="$text"
+  while [ -n "$remaining" ]; do
+    case "$remaining" in
+      '**'*)
+        remaining="${remaining#\*\*}"
+        local bold_end="${remaining%%\*\**}"
+        if [ "$bold_end" != "$remaining" ]; then
+          result+="${BLD}${bold_end}${RST}${color}"
+          remaining="${remaining#*\*\*}"
+        else
+          result+="**"
+        fi
+        ;;
+      '`'*)
+        remaining="${remaining#\`}"
+        local code_end="${remaining%%\`*}"
+        if [ "$code_end" != "$remaining" ]; then
+          result+="${ORG}${code_end}${RST}${color}"
+          remaining="${remaining#*\`}"
+        else
+          result+="\`"
+        fi
+        ;;
+      *)
+        result+="${remaining:0:1}"
+        remaining="${remaining:1}"
+        ;;
+    esac
+  done
+  printf '%s' "$result"
+}
+
 # ── Format timestamp ──
 to_local_time() {
   local ts="$1"
@@ -107,12 +177,12 @@ to_local_time() {
   fi
 }
 
-# ── Voice notify (fire-and-forget) ──
+# ── Voice notify (fire-and-forget) — Denis voice for A0 ──
 voice_notify() {
   local msg="$1"
   curl -s -X POST "$VOICE_URL" \
     -H "Content-Type: application/json" \
-    -d "{\"message\": \"${msg:0:100}\", \"voice_id\": \"ogi2DyUAKJb7CEdqqvlU\", \"voice_enabled\": true}" \
+    -d "{\"message\": \"${msg:0:100}\", \"voice_id\": \"0BcDz9UPwL3MpsnTeUlO\", \"voice_enabled\": true}" \
     >/dev/null 2>&1 &
 }
 
@@ -129,6 +199,29 @@ add_msg() {
   if [ ${#MSG_BUFFER[@]} -gt 500 ]; then
     MSG_BUFFER=("${MSG_BUFFER[@]:100}")
   fi
+}
+
+# ── Word-wrap text into lines ──
+word_wrap() {
+  local text="$1" width="$2"
+  local -a result=()
+  while [ ${#text} -gt 0 ]; do
+    if [ ${#text} -le "$width" ]; then
+      result+=("$text")
+      break
+    fi
+    local chunk="${text:0:$width}"
+    local last_sp="${chunk% *}"
+    if [ "$last_sp" != "$chunk" ] && [ ${#last_sp} -gt $((width / 3)) ]; then
+      result+=("$last_sp")
+      text="${text:${#last_sp}}"
+      text="${text# }"
+    else
+      result+=("$chunk")
+      text="${text:$width}"
+    fi
+  done
+  printf '%s\n' "${result[@]}"
 }
 
 # ── Draw a chat bubble ──
@@ -148,51 +241,78 @@ draw_bubble() {
   local fill
   fill=$(printf '%*s' "$fill_len" '' | tr ' ' "$HZ")
 
-  add_msg "$(printf '  %b%s%b %b%b%s%b %b%s%b %b%s%b' \
-    "$color" "$TL$HZ" "$RST" "$color" "$BLD" "$sender" "$RST" \
+  # Use double-line for A0 response emphasis
+  local tl="$TL" bl="$BL" hz="$HZ" vt="$VT"
+  if [ "$sender" = "A0" ]; then
+    tl="$DTL" bl="$DBL" hz="$DHZ" vt="$DVT"
+  fi
+
+  add_msg "$(printf '  %b%s%s%b %b%b%s%b %b%s%b %b%s%b' \
+    "$color" "$tl" "$hz" "$RST" "$color" "$BLD" "$sender" "$RST" \
     "$color" "$fill" "$RST" "$DIM" "$ts" "$RST")"
 
-  # Content lines
+  # Content lines with md rendering
   for line in "${lines[@]}"; do
     local truncated="${line:0:$inner}"
-    add_msg "$(printf '  %b%s%b %b%s%b' "$color" "$VT" "$RST" "$bg$WHT" "$truncated" "$BG_RST$RST")"
+    local rendered
+    rendered=$(md_render "$truncated" "$WHT")
+    add_msg "$(printf '  %b%s%b %b%s%b' "$color" "$vt" "$RST" "$bg$WHT" "$rendered" "$BG_RST$RST")"
   done
 
   # Bottom border
   local bot_fill
-  bot_fill=$(printf '%*s' "$((w - 1))" '' | tr ' ' "$HZ")
-  add_msg "$(printf '  %b%s%s%b' "$color" "$BL" "$bot_fill" "$RST")"
+  bot_fill=$(printf '%*s' "$((w - 1))" '' | tr ' ' "$hz")
+  add_msg "$(printf '  %b%s%s%b' "$color" "$bl" "$bot_fill" "$RST")"
 }
 
-# ── Draw header ──
+# ── Draw header with gradient ──
 draw_header() {
   local ctx="$1" status="$2"
   printf '\033[H\033[K'
   local mode_label="clean"
   [ "$VERBOSE" -eq 1 ] && mode_label="verbose"
 
-  # Gradient-style header
-  printf '  %b%b' "$CYN" "$BLD"
-  printf '  A0 CHAT'
-  printf '%b' "$RST"
+  # Gradient header: ◆ A0 CHAT ◆
+  printf '  %b◆%b %b%bA0%b %b%bCHAT%b %b◆%b' \
+    "$GH1" "$RST" "$GH2" "$BLD" "$RST" "$GH3" "$BLD" "$RST" "$GH1" "$RST"
 
   if [ -n "$ctx" ]; then
     printf '  %b%s%b' "$SLT" "${ctx:0:10}" "$RST"
     printf '  %b%s%b' "$DIM" "$mode_label" "$RST"
-    printf '  %b%s%b' "$GRN" "$status" "$RST"
-    # Stats
-    if [ "$MSG_COUNT" -gt 0 ]; then
-      printf '  %b%s msgs%b' "$DIM" "$MSG_COUNT" "$RST"
+
+    # Status with color coding
+    case "$status" in
+      live)     printf '  %b● %s%b' "$GRN" "$status" "$RST" ;;
+      thinking) printf '  %b◉ %s%b' "$YLW" "$status" "$RST" ;;
+      *)        printf '  %b○ %s%b' "$SLT" "$status" "$RST" ;;
+    esac
+
+    # Latency indicator
+    if [ "$LAST_LATENCY" -gt 0 ]; then
+      local lat_color="$GRN"
+      [ "$LAST_LATENCY" -gt 500 ] && lat_color="$YLW"
+      [ "$LAST_LATENCY" -gt 2000 ] && lat_color="$RED"
+      printf '  %b%sms%b' "$lat_color" "$LAST_LATENCY" "$RST"
+    fi
+
+    # Stats badge
+    if [ "$MSG_COUNT" -gt 0 ] || [ "$RESP_COUNT" -gt 0 ]; then
+      printf '  %b↑%s ↓%s%b' "$DIM" "$MSG_COUNT" "$RESP_COUNT" "$RST"
     fi
   else
     printf '  %bno context%b' "$SLT" "$RST"
   fi
   printf '\n\033[K'
 
-  # Thin separator line
-  local sep_line
-  sep_line=$(printf '%*s' "$((TERM_COLS - 2))" '' | tr ' ' '─')
-  printf '  %b%s%b\n\033[K' "$SEP" "$sep_line" "$RST"
+  # Gradient separator line
+  local sep_w=$((TERM_COLS - 4))
+  printf '  '
+  local third=$((sep_w / 3))
+  local i
+  for ((i=0; i<third; i++)); do printf '%b─%b' "$GH1" "$RST"; done
+  for ((i=0; i<third; i++)); do printf '%b─%b' "$GH2" "$RST"; done
+  for ((i=0; i<(sep_w - third*2); i++)); do printf '%b─%b' "$GH3" "$RST"; done
+  printf '\n\033[K'
 }
 
 # ── Draw status bar ──
@@ -201,18 +321,27 @@ draw_status_bar() {
   # Progress line
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 1))"
   if [ -n "$progress" ]; then
-    # Animated spinner
+    # Animated spinner + dots
     local frame="${SPIN_FRAMES[$SPIN_IDX]}"
+    local dots="${DOTS_FRAMES[$DOTS_IDX]}"
     SPIN_IDX=$(( (SPIN_IDX + 1) % ${#SPIN_FRAMES[@]} ))
-    printf '  %b%s %s%b' "$YLW" "$frame" "${progress:0:$((TERM_COLS - 8))}" "$RST"
+    DOTS_IDX=$(( (DOTS_IDX + 1) % ${#DOTS_FRAMES[@]} ))
+    printf '  %b%s%b %b%s%b %b%s%b' \
+      "$VIO" "$frame" "$RST" \
+      "$YLW" "${progress:0:$((TERM_COLS - 16))}" "$RST" \
+      "$DIM" "$dots" "$RST"
   fi
   # Key hints
   printf '\033[%d;1H\033[K' "$TERM_LINES"
   local v_label="verbose"
   [ "$VERBOSE" -eq 1 ] && v_label="clean"
-  printf '  %bm%b=msg %bn%b=new %bv%b=%s %br%b=refresh %bh%b=health  %b%s%b' \
-    "$GRN" "$SEP" "$CYN" "$SEP" "$CYN" "$SEP" "$v_label" \
-    "$CYN" "$SEP" "$CYN" "$SEP" "$DIM" "$(date +%H:%M:%S)" "$RST"
+  printf '  %b%bm%b%b=msg %b%bn%b%b=new %b%bv%b%b=%s %b%br%b%b=refresh %b%bh%b%b=health  %b%s%b' \
+    "$GRN" "$BLD" "$RST" "$SEP" \
+    "$CYN" "$BLD" "$RST" "$SEP" \
+    "$CYN" "$BLD" "$RST" "$SEP" "$v_label" \
+    "$CYN" "$BLD" "$RST" "$SEP" \
+    "$CYN" "$BLD" "$RST" "$SEP" \
+    "$DIM" "$(date +%H:%M:%S)" "$RST"
 }
 
 # ── Redraw chat from buffer ──
@@ -247,48 +376,39 @@ format_item() {
   case "$type" in
     user)
       MSG_COUNT=$((MSG_COUNT + 1))
-      # Ivan bubble — green
-      local msg="${content:0:$((max_text * 2))}"
-      [ -z "$msg" ] && msg="${heading:0:$max_text}"
-      # Split into lines
+      # Ivan bubble — green, full content
+      local msg="$content"
+      [ -z "$msg" ] && msg="$heading"
+      msg="${msg//\\n/$'\n'}"
+      # Word-wrap into lines — no truncation
       local -a lines=()
-      while [ ${#msg} -gt 0 ]; do
-        if [ ${#msg} -le "$max_text" ]; then
-          lines+=("$msg")
-          break
-        fi
-        local chunk="${msg:0:$max_text}"
-        local last_sp="${chunk% *}"
-        if [ "$last_sp" != "$chunk" ] && [ ${#last_sp} -gt $((max_text / 2)) ]; then
-          lines+=("$last_sp")
-          msg="${msg:${#last_sp}}"
-          msg="${msg# }"
-        else
-          lines+=("$chunk")
-          msg="${msg:$max_text}"
-        fi
-      done
+      while IFS= read -r wline; do
+        lines+=("$wline")
+      done < <(word_wrap "$msg" "$max_text")
       draw_bubble "Ivan" "$GRN" "$BG_IVAN" "$local_ts" "${lines[@]}"
       ;;
 
     response)
       RESP_COUNT=$((RESP_COUNT + 1))
-      # A0 response bubble — cyan
-      local resp="${content:0:$((max_text * 4))}"
-      [ -z "$resp" ] && resp="${heading:0:$max_text}"
+      # A0 response bubble — cyan, FULL content (no truncation!)
+      local resp="$content"
+      [ -z "$resp" ] && resp="$heading"
       resp="${resp//\\n/$'\n'}"
-      # Split into lines (max 5 for preview)
+      # Split by real newlines, then word-wrap each paragraph
       local -a lines=()
-      local line_count=0
-      while IFS= read -r line || [ -n "$line" ]; do
-        [ "$line_count" -ge 5 ] && lines+=("...") && break
-        lines+=("${line:0:$max_text}")
-        line_count=$((line_count + 1))
+      while IFS= read -r paragraph; do
+        if [ -z "$paragraph" ]; then
+          lines+=("")
+          continue
+        fi
+        while IFS= read -r wline; do
+          lines+=("$wline")
+        done < <(word_wrap "$paragraph" "$max_text")
       done <<< "$resp"
       draw_bubble "A0" "$CYN" "$BG_A0" "$local_ts" "${lines[@]}"
-      # Voice notification for new responses
-      local first_line="${lines[0]:-response}"
-      voice_notify "A0: ${first_line:0:60}"
+      # Voice notification for new responses (Denis voice)
+      local first_line="${lines[0]:-ответ получен}"
+      voice_notify "Агент Зеро: ${first_line:0:60}"
       ;;
 
     agent)
@@ -296,39 +416,39 @@ format_item() {
         case "$heading" in
           ""|-|*Reasoning*|*Calling*LLM*|*Calling*subordinate*|*thoughts*|*json*) return ;;
         esac
-        local thought="${heading:0:$((TERM_COLS - 8))}"
-        add_msg "$(printf '  %b%s %s%b' "$DIM" "$local_ts" "$thought" "$RST")"
+        local thought="${heading:0:$((TERM_COLS - 12))}"
+        add_msg "$(printf '  %b%s%b %b⚡ %s%b' "$DIM" "$local_ts" "$RST" "$VIO" "$thought" "$RST")"
       else
-        local thought="${heading:0:$((TERM_COLS - 8))}"
-        add_msg "$(printf '  %b%s%b %b%s%b' "$SLT" "$local_ts" "$RST" "$BLU" "$thought" "$RST")"
+        local thought="${heading:0:$((TERM_COLS - 12))}"
+        add_msg "$(printf '  %b%s%b %b⚡ %s%b' "$SLT" "$local_ts" "$RST" "$BLU" "$thought" "$RST")"
       fi
       ;;
 
     code_exe)
       if [ "$VERBOSE" -eq 1 ]; then
-        local detail="${heading:0:$((TERM_COLS - 8))}"
-        add_msg "$(printf '  %b%s%b %b> %s%b' "$SLT" "$local_ts" "$RST" "$ORG" "$detail" "$RST")"
+        local detail="${heading:0:$((TERM_COLS - 12))}"
+        add_msg "$(printf '  %b%s%b %b❯ %s%b' "$SLT" "$local_ts" "$RST" "$ORG" "$detail" "$RST")"
       fi
       ;;
 
     tool)
       if [ "$VERBOSE" -eq 1 ]; then
-        local tool_info="${heading:0:$((TERM_COLS - 8))}"
-        add_msg "$(printf '  %b%s%b %b%s%b' "$SLT" "$local_ts" "$RST" "$DIM" "$tool_info" "$RST")"
+        local tool_info="${heading:0:$((TERM_COLS - 12))}"
+        add_msg "$(printf '  %b%s%b %b🔧 %s%b' "$SLT" "$local_ts" "$RST" "$PNK" "$tool_info" "$RST")"
       fi
       ;;
 
     util)
       if [ "$VERBOSE" -eq 1 ]; then
-        local util_info="${heading:0:$((TERM_COLS - 8))}"
-        add_msg "$(printf '  %b%s%b %b%s%b' "$SLT" "$local_ts" "$RST" "$DIM" "$util_info" "$RST")"
+        local util_info="${heading:0:$((TERM_COLS - 12))}"
+        add_msg "$(printf '  %b%s%b %b💾 %s%b' "$SLT" "$local_ts" "$RST" "$DIM" "$util_info" "$RST")"
       fi
       ;;
 
     *)
       if [ "$VERBOSE" -eq 1 ]; then
         local other="${heading:-$content}"
-        other="${other:0:$((TERM_COLS - 8))}"
+        other="${other:0:$((TERM_COLS - 12))}"
         add_msg "$(printf '  %b%s%b %b[%s] %s%b' "$SLT" "$local_ts" "$RST" "$DIM" "$type" "$other" "$RST")"
       fi
       ;;
@@ -341,12 +461,16 @@ CURRENT_PROGRESS=""
 fetch_chat() {
   local ctx_id="$1"
   local log_json
+  local lat_start lat_end
 
+  lat_start=$(date +%s%N)
   log_json=$(curl -s --max-time 8 \
     -H "X-API-KEY: $A0_TOKEN" \
     -H "Content-Type: application/json" \
     -d "{\"context_id\": \"$ctx_id\", \"length\": 50}" \
     "http://${A0_HOST}/api_log_get" 2>/dev/null)
+  lat_end=$(date +%s%N)
+  LAST_LATENCY=$(( (lat_end - lat_start) / 1000000 ))
 
   [ -z "$log_json" ] && return 1
 
@@ -367,7 +491,7 @@ fetch_chat() {
     CURRENT_PROGRESS=""
   fi
 
-  # Parse new items
+  # Parse new items — fetch FULL content (no .[:500] truncation)
   local new_items
   new_items=$(echo "$log_json" | jq -r --argjson last "$LAST_NO" '
     [.log.items[] | select(.no > $last)] |
@@ -377,7 +501,7 @@ fetch_chat() {
       (.timestamp // 0 | tostring),
       (.type // "?"),
       ((.heading // "") | gsub("\n"; " ") | .[:200]),
-      ((.content // "" | tostring) | gsub("\n"; "\\n") | .[:500])
+      ((.content // "" | tostring) | gsub("\n"; "\\n") | .[:2000])
     ] | join("\t")
   ' 2>/dev/null)
 
@@ -405,35 +529,47 @@ fetch_chat() {
 show_idle() {
   MSG_BUFFER=()
   add_msg ""
-  add_msg "$(printf '  %b%b  A0 CHAT%b' "$CYN" "$BLD" "$RST")"
-  add_msg "$(printf '  %bNo active dialog%b' "$SLT" "$RST")"
+  add_msg "$(printf '  %b◆%b %b%bA0 CHAT%b %b◆%b' "$GH1" "$RST" "$GH2" "$BLD" "$RST" "$GH1" "$RST")"
+  add_msg "$(printf '  %bНет активного диалога%b' "$SLT" "$RST")"
   add_msg ""
-  local -a help_lines=(
-    "m  send message (current chat)"
-    "n  new chat (new dialog)"
-    "v  clean/verbose toggle"
-    "r  refresh screen"
-    "h  A0 health check"
-    "c  switch context (enter ID)"
+
+  # Connection indicator
+  local h_result
+  h_result=$(curl -s --max-time 3 "http://${A0_HOST}/health" 2>/dev/null)
+  if [ -n "$h_result" ]; then
+    add_msg "$(printf '  %b● Agent Zero онлайн%b' "$GRN" "$RST")"
+  else
+    add_msg "$(printf '  %b○ Agent Zero оффлайн%b' "$RED" "$RST")"
+  fi
+  add_msg ""
+
+  local -a keys=("m" "n" "v" "r" "h" "c" "t" "l")
+  local -a descs=(
+    "отправить сообщение"
+    "новый диалог"
+    "clean/verbose"
+    "обновить экран"
+    "проверка здоровья"
+    "сменить контекст"
+    "расписание задач"
+    "последний лог"
   )
-  for hl in "${help_lines[@]}"; do
-    local key="${hl:0:1}"
-    local desc="${hl:3}"
-    add_msg "$(printf '  %b%s%b  %b%s%b' "$CYN" "$key" "$RST" "$SLT" "$desc" "$RST")"
+  for i in "${!keys[@]}"; do
+    add_msg "$(printf '  %b%b%s%b  %b%s%b' "$CYN" "$BLD" "${keys[$i]}" "$RST" "$SLT" "${descs[$i]}" "$RST")"
   done
   add_msg ""
-  add_msg "$(printf '  %bCLI: bun AgentZero.ts message \"text\"%b' "$DIM" "$RST")"
+  add_msg "$(printf '  %bCLI: bun AgentZero.ts message \"текст\"%b' "$DIM" "$RST")"
   redraw_chat
 }
 
 # ── Send message ──
 do_send_message() {
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
-  printf "  %b%bMessage:%b " "${GRN}" "${BLD}" "${RST}"
+  printf "  %b%bСообщение:%b " "${GRN}" "${BLD}" "${RST}"
   read -r msg
   if [ -n "$msg" ]; then
     printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
-    printf "  %bSending...%b" "${DIM}" "${RST}"
+    printf "  %bОтправка...%b" "${DIM}" "${RST}"
     local ctx_flag=""
     [ -n "$CTX_ID" ] && ctx_flag="--context $CTX_ID"
     local result
@@ -449,10 +585,19 @@ do_send_message() {
         "$resp_ctx" "$(date -Iseconds)" "${msg:0:60}" > "$A0_CONTEXT_FILE"
     fi
     if [ -n "$resp_text" ]; then
-      # Show as bubbles
-      draw_bubble "Ivan" "$GRN" "$BG_IVAN" "$(date +%H:%M:%S)" "${msg:0:$BUBBLE_W}"
-      draw_bubble "A0" "$CYN" "$BG_A0" "$(date +%H:%M:%S)" "${resp_text:0:$((BUBBLE_W * 3))}"
-      voice_notify "A0: ${resp_text:0:60}"
+      # Full content bubbles
+      local -a ivan_lines=()
+      while IFS= read -r wline; do
+        ivan_lines+=("$wline")
+      done < <(word_wrap "$msg" "$((BUBBLE_W - 6))")
+      draw_bubble "Ivan" "$GRN" "$BG_IVAN" "$(date +%H:%M:%S)" "${ivan_lines[@]}"
+
+      local -a a0_lines=()
+      while IFS= read -r wline; do
+        a0_lines+=("$wline")
+      done < <(word_wrap "$resp_text" "$((BUBBLE_W - 6))")
+      draw_bubble "A0" "$CYN" "$BG_A0" "$(date +%H:%M:%S)" "${a0_lines[@]}"
+      voice_notify "Агент Зеро: ${resp_text:0:60}"
       redraw_chat
     fi
     printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
@@ -464,11 +609,11 @@ do_send_message() {
 # ── New chat ──
 do_new_chat() {
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
-  printf "  %b%bNew chat:%b " "${CYN}" "${BLD}" "${RST}"
+  printf "  %b%bНовый чат:%b " "${CYN}" "${BLD}" "${RST}"
   read -r msg
   if [ -n "$msg" ]; then
     printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
-    printf "  %bCreating new chat...%b" "${DIM}" "${RST}"
+    printf "  %bСоздание нового чата...%b" "${DIM}" "${RST}"
     local result
     result=$(bun "$A0_CLI" message "$msg" 2>&1)
     local resp_text resp_ctx
@@ -484,12 +629,22 @@ do_new_chat() {
       printf '{"context_id":"%s","updated":"%s","last_message":"%s"}' \
         "$resp_ctx" "$(date -Iseconds)" "${msg:0:60}" > "$A0_CONTEXT_FILE"
       add_msg ""
-      add_msg "$(printf '  %b%b  NEW CHAT  %s%b' "$CYN" "$BLD" "${resp_ctx:0:12}" "$RST")"
+      add_msg "$(printf '  %b%b  ◆ НОВЫЙ ДИАЛОГ ◆  %s%b' "$CYN" "$BLD" "${resp_ctx:0:12}" "$RST")"
       add_msg ""
-      draw_bubble "Ivan" "$GRN" "$BG_IVAN" "$(date +%H:%M:%S)" "${msg:0:$BUBBLE_W}"
+
+      local -a ivan_lines=()
+      while IFS= read -r wline; do
+        ivan_lines+=("$wline")
+      done < <(word_wrap "$msg" "$((BUBBLE_W - 6))")
+      draw_bubble "Ivan" "$GRN" "$BG_IVAN" "$(date +%H:%M:%S)" "${ivan_lines[@]}"
+
       if [ -n "$resp_text" ]; then
-        draw_bubble "A0" "$CYN" "$BG_A0" "$(date +%H:%M:%S)" "${resp_text:0:$((BUBBLE_W * 3))}"
-        voice_notify "A0: ${resp_text:0:60}"
+        local -a a0_lines=()
+        while IFS= read -r wline; do
+          a0_lines+=("$wline")
+        done < <(word_wrap "$resp_text" "$((BUBBLE_W - 6))")
+        draw_bubble "A0" "$CYN" "$BG_A0" "$(date +%H:%M:%S)" "${a0_lines[@]}"
+        voice_notify "Агент Зеро: ${resp_text:0:60}"
       fi
       redraw_chat
     fi
@@ -507,16 +662,18 @@ do_health() {
   lat_end=$(date +%s%N)
   lat_ms=$(( (lat_end - lat_start) / 1000000 ))
   if [ -n "$h_json" ]; then
-    add_msg "$(printf '  %b%b  A0 ONLINE%b  %b%sms%b' "$GRN" "$BLD" "$RST" "$DIM" "$lat_ms" "$RST")"
+    add_msg "$(printf '  %b%b● A0 ONLINE%b  %b%sms  %blatency%b' "$GRN" "$BLD" "$RST" "$EMR" "$lat_ms" "$DIM" "$RST")"
+    voice_notify "Агент Зеро онлайн, задержка ${lat_ms} миллисекунд"
   else
-    add_msg "$(printf '  %b%b  A0 UNREACHABLE%b' "$RED" "$BLD" "$RST")"
+    add_msg "$(printf '  %b%b○ A0 UNREACHABLE%b' "$RED" "$BLD" "$RST")"
+    voice_notify "Агент Зеро недоступен"
   fi
   redraw_chat
 }
 
 # ── Show log ──
 do_log() {
-  add_msg "$(printf '  %b--- recent log ---%b' "$DIM" "$RST")"
+  add_msg "$(printf '  %b── последний лог ──%b' "$DIM" "$RST")"
   local log_out
   log_out=$(bun "$A0_CLI" log 2>&1 | head -10)
   while IFS= read -r line; do
@@ -528,7 +685,7 @@ do_log() {
 # ── Enter context ──
 do_context() {
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
-  printf "  %bContext ID (Enter=cancel):%b " "${CYN}" "${RST}"
+  printf "  %bContext ID (Enter=отмена):%b " "${CYN}" "${RST}"
   read -r new_ctx
   if [ -n "$new_ctx" ]; then
     CTX_ID="$new_ctx"
@@ -539,7 +696,7 @@ do_context() {
     RESP_COUNT=0
     printf '{"context_id":"%s","updated":"%s","last_message":"manual switch"}' \
       "$new_ctx" "$(date -Iseconds)" > "$A0_CONTEXT_FILE"
-    add_msg "$(printf '  %b%b  Context: %s%b' "$GRN" "$BLD" "$new_ctx" "$RST")"
+    add_msg "$(printf '  %b%b  ◆ Контекст: %s%b' "$GRN" "$BLD" "$new_ctx" "$RST")"
   fi
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
 }
@@ -579,7 +736,10 @@ while true; do
       if [ "$rc" -eq 0 ]; then
         redraw_chat
       fi
-      draw_header "$CTX_ID" "live"
+      # Show thinking state when progress is active
+      hdr_status="live"
+      [ -n "$CURRENT_PROGRESS" ] && hdr_status="thinking"
+      draw_header "$CTX_ID" "$hdr_status"
       draw_status_bar "$CURRENT_PROGRESS"
     fi
   else
@@ -620,12 +780,12 @@ while true; do
     l|L) do_log ;;
     c|C) do_context ;;
     t|T)
-      add_msg "$(printf '  %b--- scheduled tasks ---%b' "$DIM" "$RST")"
-      add_msg "$(printf '  %bDaily PAI Health%b     %bdaily%b' "$WHT" "$RST" "$DIM" "$RST")"
-      add_msg "$(printf '  %bWeekly Security%b      %bSun%b' "$WHT" "$RST" "$DIM" "$RST")"
-      add_msg "$(printf '  %bWeekly TELOS%b         %bMon%b' "$WHT" "$RST" "$DIM" "$RST")"
-      add_msg "$(printf '  %bWeekly Learning%b      %bMon%b' "$WHT" "$RST" "$DIM" "$RST")"
-      add_msg "$(printf '  %bMonthly Memory%b       %b1st%b' "$WHT" "$RST" "$DIM" "$RST")"
+      add_msg "$(printf '  %b── расписание задач ──%b' "$DIM" "$RST")"
+      add_msg "$(printf '  %b●%b %bDaily PAI Health%b     %bdaily%b' "$GRN" "$RST" "$WHT" "$RST" "$DIM" "$RST")"
+      add_msg "$(printf '  %b●%b %bWeekly Security%b      %bSun%b' "$RED" "$RST" "$WHT" "$RST" "$DIM" "$RST")"
+      add_msg "$(printf '  %b●%b %bWeekly TELOS%b         %bMon%b' "$CYN" "$RST" "$WHT" "$RST" "$DIM" "$RST")"
+      add_msg "$(printf '  %b●%b %bWeekly Learning%b      %bMon%b' "$VIO" "$RST" "$WHT" "$RST" "$DIM" "$RST")"
+      add_msg "$(printf '  %b●%b %bMonthly Memory%b       %b1st%b' "$ORG" "$RST" "$WHT" "$RST" "$DIM" "$RST")"
       redraw_chat
       draw_status_bar ""
       ;;
