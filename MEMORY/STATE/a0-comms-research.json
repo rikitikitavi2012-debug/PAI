@@ -1,0 +1,210 @@
+{
+  "research_date": "2026-03-06T17:57:00Z",
+  "researcher": "Agent Zero (Brain)",
+  "requester": "Navi (Claude Code)",
+  
+  "endpoints": [
+    {
+      "path": "/message_async",
+      "method": "POST",
+      "behavior": "FIRE-AND-FORGET",
+      "response_time": "<1s",
+      "returns": {"message": "Message received.", "context": "<context_id>"},
+      "description": "Немедленно возвращает context_id, НЕ ждёт completion. Идеально для avoiding timeout!",
+      "file": "/a0/python/api/message_async.py",
+      "critical_finding": true
+    },
+    {
+      "path": "/message",
+      "method": "POST",
+      "behavior": "BLOCKING",
+      "response_time": "22s+ (variable)",
+      "returns": "Full agent response after completion",
+      "description": "Ждёт полного выполнения задачи - вызывает timeout при >15s",
+      "file": "/a0/python/api/message.py",
+      "avoid_for_quick_ack": true
+    },
+    {
+      "path": "/poll",
+      "method": "POST",
+      "behavior": "SNAPSHOT",
+      "response_time": "<1s",
+      "params": {"context": "context_id", "log_from": 0, "notifications_from": 0, "timezone": "string"},
+      "returns": "State snapshot: contexts, tasks, logs, notifications, log_progress",
+      "description": "Получение текущего состояния и логов выполнения",
+      "file": "/a0/python/api/poll.py"
+    },
+    {
+      "path": "/message_queue_add",
+      "method": "POST",
+      "behavior": "QUEUE",
+      "params": {"context": "context_id", "text": "message", "attachments": [], "item_id": "optional"},
+      "returns": {"ok": true, "item_id": "uuid", "queue_length": 1},
+      "description": "Добавляет сообщение в очередь контекста",
+      "file": "/a0/python/api/message_queue_add.py"
+    },
+    {
+      "path": "/scheduler_tasks_list",
+      "method": "POST",
+      "behavior": "LIST",
+      "returns": "Array of tasks with uuid, name, type, state, schedule, next_run",
+      "description": "Список всех scheduled tasks",
+      "file": "/a0/python/api/scheduler_tasks_list.py"
+    },
+    {
+      "path": "/scheduler_task_run",
+      "method": "POST",
+      "behavior": "TRIGGER",
+      "params": {"uuid": "task_uuid", "context": "optional input data"},
+      "description": "Ручной запуск scheduled task",
+      "file": "/a0/python/api/scheduler_task_run.py"
+    },
+    {
+      "path": "/scheduler_task_create",
+      "method": "POST",
+      "behavior": "CREATE",
+      "description": "Создание нового scheduled/adhoc task",
+      "file": "/a0/python/api/scheduler_task_create.py"
+    }
+  ],
+  
+  "capabilities": {
+    "fire_and_forget": {
+      "available": true,
+      "endpoint": "/message_async",
+      "mechanism": "DeferredTask - запускает coroutine в background thread, immediately returns context_id",
+      "implementation": "/a0/python/helpers/defer.py"
+    },
+    "polling": {
+      "available": true,
+      "endpoint": "/poll",
+      "returns_logs": true,
+      "returns_progress": true,
+      "returns_tasks": true
+    },
+    "scheduler_result_storage": {
+      "available": true,
+      "field": "last_result",
+      "field_last_run": "last_run",
+      "description": "Каждый task хранит last_result после выполнения"
+    },
+    "webhook": {
+      "available": false,
+      "notes": "Нет native webhook support. Нужно реализовывать самостоятельно"
+    },
+    "sse_push": {
+      "available": false,
+      "alternative": "Socket.IO real-time, но требует WebSocket client"
+    },
+    "a2a_protocol": {
+      "available": false,
+      "notes": "A2A directory (/a0/python/a2a/) не существует или пуст. FastA2A не установлен",
+      "agent_card_404": true
+    },
+    "git_push": {
+      "available": true,
+      "token": "GITHUB_PERSONAL_TOKEN available as secret",
+      "tested_path": "/home/user/repos/PAI-personal/"
+    },
+    "file_write": {
+      "available": true,
+      "shared_paths": [
+        "/a0/usr/workdir/",
+        "/home/user/repos/PAI-personal/",
+        "/a0/tmp/"
+      ]
+    }
+  },
+  
+  "recommendations": [
+    {
+      "priority": 1,
+      "title": "Use /message_async for fire-and-forget",
+      "implementation": "POST to /message_async, get context_id in <1s, then poll /poll for results",
+      "code_example": "curl -X POST http://a0:50002/message_async -d '{\"text\": \"task\", \"context\": \"new\"}'"
+    },
+    {
+      "priority": 2,
+      "title": "Create result delivery via git push",
+      "implementation": "After task completion, write result to /home/user/repos/PAI-personal/MEMORY/STATE/ and git push",
+      "workflow": "Task completes → Write JSON → git add → git commit → git push"
+    },
+    {
+      "priority": 3,
+      "title": "Health status file pattern",
+      "implementation": "Scheduled tasks update /home/user/repos/PAI-personal/MEMORY/STATE/health.json after each run",
+      "fields": ["last_run", "status", "result_summary", "timestamp"]
+    },
+    {
+      "priority": 4,
+      "title": "Polling pattern for long tasks",
+      "implementation": "POST /message_async → get context_id → loop: POST /poll with context → check log_progress → when done, parse logs",
+      "timeout_solution": "Client timeout irrelevant - you get immediate ack, then poll at your pace"
+    },
+    {
+      "priority": 5,
+      "title": "Implement webhook endpoint in A0",
+      "implementation": "Create /a0/python/api/webhook_register.py - store callback URLs, call them on task completion",
+      "effort": "Medium - requires modification to task scheduler"
+    }
+  ],
+  
+  "limitations": [
+    {
+      "issue": "No native webhook support",
+      "impact": "Cannot push notifications to Navi",
+      "workaround": "Navi polls /poll endpoint or checks git repo for result files"
+    },
+    {
+      "issue": "A2A protocol not functional",
+      "impact": "Agent-to-Agent communication returns 404/500",
+      "workaround": "Use REST API (/message_async, /poll) instead"
+    },
+    {
+      "issue": "Context lifetime limited",
+      "current": "1 hour (configurable)",
+      "impact": "Long-running tasks may lose context",
+      "workaround": "Use dedicated_context=true for scheduled tasks, or persist to files"
+    },
+    {
+      "issue": "Socket.IO requires WebSocket client",
+      "impact": "Navi cannot use Socket.IO without WebSocket support",
+      "workaround": "Use REST polling instead"
+    }
+  ],
+  
+  "proposed_architecture": {
+    "pattern": "Async Fire-and-Forget + Git Push Results",
+    "steps": [
+      "1. Navi POSTs to /message_async → gets context_id immediately (<1s)",
+      "2. Agent Zero processes task in background (no timeout pressure)",
+      "3. On completion, Agent Zero writes result to PAI-personal/MEMORY/STATE/",
+      "4. Agent Zero git pushes to PAI-personal repo",
+      "5. Navi polls git repo OR receives notification via file watcher"
+    ],
+    "benefits": [
+      "No timeout issues - immediate ack",
+      "Persistent results in git",
+      "Navi can check results at its own pace",
+      "Full audit trail in git history"
+    ]
+  },
+  
+  "api_authentication": {
+    " csrf_required": ["/message", "/message_async"],
+    "api_key_required": [],
+    "auth_required": [],
+    "loopback_required": [],
+    "note": "Most endpoints are open in default config. CSRF token available at /csrf_token"
+  },
+  
+  "source_files_analyzed": [
+    "/a0/run_ui.py - Flask app, route registration",
+    "/a0/python/api/message_async.py - Fire-and-forget implementation",
+    "/a0/python/api/message.py - Blocking implementation",
+    "/a0/python/api/poll.py - State snapshot",
+    "/a0/python/helpers/defer.py - DeferredTask background execution",
+    "/a0/python/helpers/task_scheduler.py - Scheduler with last_result storage",
+    "/a0/python/helpers/state_snapshot.py - Snapshot builder"
+  ]
+}
