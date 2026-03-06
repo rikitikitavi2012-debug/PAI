@@ -108,6 +108,19 @@
 - Extensions: 20 Python hook types for lifecycle events (agent_init → error_format)
 - Architecture dump: `MEMORY/STATE/a0-architecture-dump.json` (full reference)
 
+## A0 Delegation Patterns (crystallized 2026-03-06) [CRYSTAL: 85%]
+
+**Pattern: Effective subordinate delegation to A0**
+- Always specify subordinate profile: "делегируй researcher/developer/hacker субагенту"
+- Include TELOS context (M#, G#, S#) with every task — A0 uses it for alignment
+- Specify output format: JSON path + structure + git push instructions
+- A0 can NOT access local WSL files — only VPS filesystem and git repo
+- Files in .gitignore are invisible to A0 — push or send content inline
+- Chain subordinates for complex tasks: researcher → developer (data → code)
+- Async pattern: /api_message + 30s timeout, check results via git fetch later
+- Research tasks take 3-5 min, code review 2-3 min, chains 5-8 min
+- Always end task with "git add -f, commit, push" — A0 forgets without explicit instruction
+
 ## Cross-Frame Connections
 
 *To be discovered through cross-frame synthesis.*

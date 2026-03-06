@@ -1,0 +1,52 @@
+{
+  "review_date": "2026-03-06T21:45:13Z",
+  "file_reviewed": "hooks/tests/AgentZero.test.ts",
+  "total_tests": 13,
+  "total_expects": 60,
+  "coverage_assessment": "Покрытие основных happy path сценариев хорошее (~70%), но критические gap: timeout test не реализован (пустая функция), отсутствуют тесты для невалидных аргументов команд, нет проверки retry логики, не протестированы edge cases для lifetime_hours (0, отрицательные, >24), отсутствуют тесты для scheduler run команды. Event emission протестирован хорошо.",
+  "missing_scenarios": [
+    "Timeout handling - тест объявлен но ПУСТОЙ (критично!)",
+    "Невалидные команды - что происходит при 'bun AgentZero.ts invalid-cmd'",
+    "Невалидный --context формат (спецсимволы, пустая строка)",
+    "Edge cases для lifetime_hours: 0, -1, 25, нечисловые значения",
+    "Scheduler run команда - нет теста для 'scheduler run <task-id>'",
+    "Большие payload (>1MB message)",
+    "Параллельные запросы к одному context_id",
+    "Malformed JSON ответ от сервера",
+    "Empty response body от сервера",
+    "HTTP 5xx ошибки от API",
+    "Rate limiting (429 response)"
+  ],
+  "improvement_suggestions": [
+    {
+      "title": "Реализовать timeout тест",
+      "description": "Критично: тест 'fails gracefully on timeout' пустой. Нужно либо реализовать, либо удалить и заменить на unit test apiCall функции с mock fetch.",
+      "priority": "high",
+      "code_snippet": "it('fails gracefully on timeout', async () => {\n  const slowServer = Bun.serve({\n    port: 0,\n    async fetch() {\n      await new Promise(r => setTimeout(r, 20000));\n      return new Response('OK', { status: 200 });\n    },\n  });\n  const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'health'], {\n    env: { ...process.env, HOME: tempDir, A0_BASE_URL: `http://localhost:${slowServer.port}` },\n  });\n  await proc.exited;\n  expect(proc.exitCode).toBe(1);\n  slowServer.stop();\n});"
+    },
+    {
+      "title": "Добавить тест невалидных команд",
+      "description": "Проверить что CLI возвращает ошибку для неизвестных команд с правильным exit code",
+      "priority": "high",
+      "code_snippet": "it('fails with error for invalid command', async () => {\n  const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'invalid-command'], {\n    env: { ...process.env, HOME: tempDir },\n  });\n  const stderr = await new Response(proc.stderr).text();\n  await proc.exited;\n  expect(proc.exitCode).toBe(1);\n  expect(stderr).toContain('Unknown command');\n});"
+    },
+    {
+      "title": "Добавить тесты для edge cases аргументов",
+      "description": "Проверить валидацию lifetime_hours, context_id с спецсимволами, пустые строки",
+      "priority": "medium",
+      "code_snippet": "describe('Argument validation', () => {\n  it('rejects invalid lifetime_hours values', async () => {\n    const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'message', 'test', '--lifetime', '-1']);\n    await proc.exited;\n    expect(proc.exitCode).toBe(1);\n  });\n});"
+    },
+    {
+      "title": "Добавить тест scheduler run команды",
+      "description": "Команда scheduler run полностью отсутствует в тестах",
+      "priority": "medium",
+      "code_snippet": "it('scheduler run command sends correct API call', async () => {\n  requestLogs = [];\n  const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'scheduler', 'run', 'task-123'], {\n    env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl },\n  });\n  await proc.exited;\n  expect(requestLogs[0].path).toBe('/scheduler_task_run');\n});"
+    },
+    {
+      "title": "Улучшить изоляцию тестов",
+      "description": "Использовать beforeEach для очистки requestLogs вместо ручного сброса в каждом тесте",
+      "priority": "low",
+      "code_snippet": "beforeEach(() => { requestLogs = []; });"
+    }
+  ]
+}
