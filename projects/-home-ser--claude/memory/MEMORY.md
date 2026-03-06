@@ -153,6 +153,8 @@
 - **Extensions**: 20 hook types (Python), lifecycle events from agent_init to error_format
 - **Scheduler API**: scheduler:create_scheduled_task, scheduler:run_task, scheduler:list_tasks — A0 can self-manage tasks
 - **Key insight for task delegation**: Use subordinate profiles! `call_subordinate` with profile=developer for code, researcher for analysis, hacker for security
+- **Chat streaming**: Web UI uses Socket.IO (Same-Origin only, NOT for external). TUI uses `/api_log_get` polling 3s. Log item types: user, response, agent, code_exe, tool, util. CRITICAL: response heading="A0: Responding" — show CONTENT not heading! Strip `icon://` from headings.
+- **Full API reference**: `MEMORY/RESEARCH/2026-03/a0-streaming-api.md` (15+ endpoints documented)
 
 ## Voice System (ElevenLabs Creator plan, 2026-03-03)
 - **API key**: ~/.config/PAI/.env → ELEVENLABS_API_KEY (Creator plan, 100K chars/month)
