@@ -1,0 +1,161 @@
+{
+  "dump_date": "2026-03-06T21:35:00Z",
+  "version": "v0.9.8.2",
+  
+  "system_prompts": {
+    "main_prompt": {
+      "path": "/a0/prompts/agent.system.main.md",
+      "size_bytes": 261,
+      "first_10_lines": [
+        "# Agent Zero System Manual",
+        "",
+        "{{ include \"agent.system.main.role.md\" }}",
+        "",
+        "{{ include \"agent.system.main.environment.md\" }}",
+        "",
+        "{{ include \"agent.system.main.communication.md\" }}",
+        "",
+        "{{ include \"agent.system.main.solving.md\" }}",
+        "",
+        "{{ include \"agent.system.main.tips.md\" }}"
+      ],
+      "key_instructions": "Загружает все компоненты через Jinja2 include: role, environment, communication, solving, tips. Это точка входа системного промпта."
+    },
+    "role": {
+      "path": "/a0/prompts/agent.system.main.role.md",
+      "size_bytes": 272,
+      "summary": "Определяет роль: agent zero autonomous json ai agent, superior is human user, focus on comprehensible output"
+    },
+    "environment": {
+      "path": "/a0/prompts/agent.system.main.environment.md",
+      "size_bytes": 169,
+      "summary": "Kali linux docker container, debian kali packages, python project in /a0 folder, root accessible via terminal"
+    },
+    "communication": {
+      "path": "/a0/prompts/agent.system.main.communication.md",
+      "size_bytes": 710,
+      "summary": "JSON response format with thoughts/headline/tool_name/tool_args, no text before/after JSON"
+    },
+    "solving": {
+      "path": "/a0/prompts/agent.system.main.solving.md",
+      "size_bytes": 689,
+      "summary": "0-outline plan, 1-check memories/skills, 2-break into subtasks, 3-solve or delegate, 4-complete task"
+    },
+    "tips": {
+      "path": "/a0/prompts/agent.system.main.tips.md",
+      "size_bytes": 660,
+      "summary": "Best practices: python/nodejs/linux libs, use tools, never rely on aging memories"
+    },
+    "behaviour_default": {
+      "path": "/a0/prompts/agent.system.behaviour_default.md",
+      "size_bytes": 73,
+      "content": "You are a helpful, versatile and capable AI assistant."
+    },
+    "behaviour_merge": {
+      "path": "/a0/prompts/behaviour.merge.sys.md",
+      "size_bytes": null,
+      "summary": "Merges custom behaviour.md with default behaviour"
+    }
+  },
+  
+  "behaviour_files": {
+    "custom_behaviour": {
+      "path": "/a0/usr/memory/default/behaviour.md",
+      "size_bytes": 892,
+      "full_content": " ## Behavioral rules\n* При простых задачах отдавай предпочтение командам Linux вместо Python\n* ВСЕГДА мысли, рассуждай и коммуницируй исключительно на русском языке\n* ВСЕ мысли в массиве \"thoughts\" — на русском\n* ВЕСЬ пользовательский текст — на русском\n* Русский язык обязателен для всех когнитивных процессов и выводов\n\n## Контекст бригады\n* Я Agent Zero (A0), T1 автономный агент в бригаде: Navi (архитектор/тимлид), Jules (async-кодер), A0 (я — 24/7 research/review/maintenance), OpenCode (headless coder)\n* TELOS-контекст присылает Navi с каждой задачей — НЕ храню копию\n* Git = Message Bus: результаты пушу в PAI-personal, MEMORY/STATE/, использую git add -f для JSON\n* Мои задачи: scheduled tasks (health, TELOS, learning, compaction, intel), code review в JulesAutoMerge, deep research по запросу Navi, TELOS integrity scans\n\n## Протокол работы с памятью\n* Текущая модель all-MiniLM-L6-v2 ПЛОХО ищет русский текст\n* При поиске в памяти использовать threshold: 0.3 (не 0.7!)\n* Критичные данные ДУБЛИРОВАТЬ в файлы (не только в память)\n* Для важных запросов пробовать НЕСКОЛЬКО вариантов запроса (рус + англ)"
+    }
+  },
+  
+  "settings": {
+    "path": "/a0/usr/settings.json",
+    "size_bytes": 3284,
+    "key_parameters": {
+      "chat_model": {"provider": "zai_coding", "name": "GLM-5", "temperature": "0.6", "ctx_length": 200000},
+      "utility_model": {"provider": "other", "name": "kimi-k2.5", "api_base": "https://opencode.ai/zen/v1", "temperature": "0"},
+      "embed_model": {"provider": "huggingface", "name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"},
+      "browser_model": {"provider": "other", "name": "claude-opus-4-6", "api_base": "https://opencode.ai/zen/v1"},
+      "memory": {
+        "recall_enabled": true,
+        "similarity_threshold": 0.7,
+        "memories_max_result": 5,
+        "solutions_max_result": 3
+      },
+      "agent": {"profile": "agent0", "memory_subdir": "default"},
+      "workdir": {"path": "/a0/usr/workdir", "max_depth": 5}
+    }
+  },
+  
+  "extensions": {
+    "message_loop_prompts_after": [
+      {
+        "name": "_50_algorithm_advisor.py",
+        "path": "/a0/usr/agents/agent0/extensions/message_loop_prompts_after/_50_algorithm_advisor.py",
+        "size_bytes": 10043,
+        "type": "message_loop_prompts_after",
+        "description": "TheAlgorithm Advisor Extension. Анализирует сложность user message и предлагает TheAlgorithm skill. Триггерится один раз за conversation. Интеграция с TELOS для goal alignment."
+      }
+    ],
+    "message_loop_prompts_before": [],
+    "system_prompt": []
+  },
+  
+  "subordinate_profiles": {
+    "source": "Dynamically loaded via /a0/prompts/agent.system.tool.call_sub.py",
+    "mechanism": "Calls subagents.get_available_agents_dict(project) to get available profiles",
+    "template_path": "/a0/prompts/agent.system.tool.call_sub.md",
+    "available_profiles": {
+      "hacker": {
+        "title": "Hacker",
+        "description": "Agent specialized in cyber security and penetration testing.",
+        "context": "Use this agent for cybersecurity tasks such as penetration testing, vulnerability analysis, and security auditing."
+      },
+      "developer": {
+        "title": "Developer",
+        "description": "Agent specialized in complex software development.",
+        "context": "Use this agent for software development tasks, including writing code, debugging, refactoring, and architectural design."
+      },
+      "agent0": {
+        "title": "Agent 0",
+        "description": "Main agent of the system communicating directly with the user.",
+        "context": ""
+      },
+      "default": {
+        "title": "Default",
+        "description": "Default prompt file templates. Should be inherited and overriden by specialized prompt profiles.",
+        "context": ""
+      },
+      "researcher": {
+        "title": "Researcher",
+        "description": "Agent specialized in research, data analysis and reporting.",
+        "context": "Use this agent for information gathering, data analysis, topic research, and generating comprehensive reports."
+      }
+    }
+  },
+  
+  "skills": {
+    "telos": {
+      "name": "telos",
+      "path": "/a0/usr/skills/telos/SKILL.md",
+      "size_bytes": 3208,
+      "description": "Personal life management system — TELOS. Life missions, goals, strategies, challenges alignment.",
+      "triggers": ["my goals", "my mission", "TELOS", "check priorities", "life direction", "what should I focus", "мои цели", "моя миссия", "телос", "приоритеты"],
+      "full_content": "---\nname: \"telos\"\ndescription: \"Personal life management system — TELOS. Life missions, goals, strategies, challenges alignment. Use when user asks about goals, priorities, purpose, life direction, TELOS, mission alignment, investments, business strategy.\"\nversion: \"1.0.0\"\nauthor: \"Ivan (PAI + Agent Zero)\"\ntags: [\"life\", \"goals\", \"missions\", \"strategies\", \"planning\", \"personal\", \"telos\", \"pai\"]\ntrigger_patterns:\n  - \"my goals\"\n  - \"my mission\"\n  - \"TELOS\"\n  - \"check priorities\"\n  - \"life direction\"\n  - \"what should I focus\"\n  - \"align with\"\n  - \"current goals\"\n  - \"strategies\"\n  - \"мои цели\"\n  - \"моя миссия\"\n  - \"телос\"\n  - \"приоритеты\"\n  - \"на чём сосредоточиться\"\n  - \"стратегии\"\nallowed_tools:\n  - memory_save\n  - memory_load\n  - response\n  - code_execution_tool\n---\n\n# TELOS — Personal Life Management System\n\nLife OS for mission-goal-strategy alignment. Based on Daniel Miessler's TELOS framework from PAI (Personal AI Infrastructure).\n\n## What is TELOS?\n\nTELOS is the user's personal life context — their missions, goals, strategies, and challenges.\nWhen this skill is loaded, the agent KNOWS the user deeply and can align all responses with their life direction.\n\n## Context Files\n\nLoad these files when TELOS is triggered:\n\n| File | Purpose | Prefix | Path |\n|------|---------|--------|------|\n| `MISSION.md` | Life missions | M# | `context/MISSION.md` |\n| `GOALS.md` | Active goals | G# | `context/GOALS.md` |\n| `STRATEGIES.md` | Strategies & capital allocation | S# | `context/STRATEGIES.md` |\n| `CHALLENGES.md` | Current challenges | C# | `context/CHALLENGES.md` |\n\n## When to Use\n\nActivate TELOS skill when user:\n- Asks about life goals or priorities\n- Wants to check alignment with mission\n- Needs strategic decision support\n- Questions \"what should I focus on\"\n- Mentions \"TELOS\", \"mission\", \"goals\", \"телос\", \"цели\", \"миссия\"\n- Discusses investments, business, or project decisions\n- Needs help choosing between options\n\n## Auto-Trigger\n\nExtension `_60_telos_context.py` automatically detects life-related queries and injects TELOS context into the system prompt. This makes the agent \"intuitively know\" the user's context without explicit skill loading.\n\n## Workflow\n\n### Query TELOS\n1. Load relevant context files\n2. Analyze user request against TELOS hierarchy\n3. Check alignment: Mission → Goal → Strategy → Challenge\n4. Provide recommendation with TELOS references (M0, G1, S2, C3)\n\n### Update TELOS\n1. Identify what to update (goal, strategy, mission)\n2. Create backup\n3. Edit the relevant context file\n4. User syncs back to local PAI if needed\n\n### Decision Framework\nWhen user faces a decision:\n1. Load TELOS context\n2. Map decision to relevant Mission (M#)\n3. Check Goal alignment (G#)\n4. Evaluate against active Strategies (S#)\n5. Consider current Challenges (C#)\n6. Recommend with explicit TELOS references\n\n## Sync with Local PAI (OpenCode)\n\nTELOS files are maintained in two places:\n- **Local (OpenCode PAI):** `~/.config/opencode/skills/CORE/USER/TELOS/`\n- **VPS (Agent Zero):** `/a0/usr/skills/telos/context/`\n\n## File Structure\n```\n/a0/usr/skills/telos/\n├── SKILL.md              # This file\n├── context/              # TELOS context files (synced from PAI)\n│   ├── MISSION.md\n│   ├── GOALS.md\n│   ├── STRATEGIES.md\n│   └── CHALLENGES.md\n├── extensions/\n│   └── _60_telos_context.py  # Auto-trigger extension\n├── scripts/\n│   ├── backup.sh         # Backup context files\n│   └── sync_check.sh     # Check sync status\n├── backups/              # Timestamped backups\n├── install.sh\n├── uninstall.sh\n└── .gitignore\n```"
+    },
+    "other_skills": [
+      {"name": "a0-deployer", "path": "/a0/usr/skills/a0-deployer/SKILL.md", "description": "Deploy, manage, orchestrate Agent Zero container instances on VPS"},
+      {"name": "chart-architect", "path": "/a0/usr/skills/chart-architect/SKILL.md", "description": "Create charts, graphs, diagrams and data visualizations"},
+      {"name": "doc-forge", "path": "/a0/usr/skills/doc-forge/SKILL.md", "description": "Document generation and formatting toolkit"},
+      {"name": "exa-synergy", "path": "/a0/usr/skills/exa-synergy/SKILL.md", "description": "Neural web research with Exa AI SDK"},
+      {"name": "ops-commander", "path": "/a0/usr/skills/ops-commander/SKILL.md", "description": "DevOps remote management tool for servers"},
+      {"name": "replicate-studio", "path": "/a0/usr/skills/replicate-studio/SKILL.md", "description": "AI generation with Replicate API"},
+      {"name": "the-algorithm", "path": "/a0/usr/skills/the-algorithm/SKILL.md", "description": "Systematic 7-phase problem-solving framework"}
+    ]
+  },
+  
+  "notes_for_navi": {
+    "behaviour_override": "Файл /a0/usr/memory/default/behaviour.md переопределяет default behavior. Изменения здесь влияют на ВСЕ аспекты поведения A0.",
+    "profiles_dynamic": "Subordinate profiles загружаются динамически из кода. Чтобы добавить новый профиль — нужно править Python код в /a0/python/helpers/subagents.py",
+    "telos_rewrite_needed": "telos/SKILL.md требует переписывания под новую архитектуру без локального хранения TELOS-контекста",
+    "extension_mechanism": "Extensions в message_loop_prompts_after/ выполняются ПОСЛЕ каждого сообщения. Можно добавлять .py файлы для модификации поведения"
+  }
+}
