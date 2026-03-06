@@ -84,12 +84,29 @@
 - Navi (architect) delegates to Jules (async coder) and A0 (24/7 researcher/DevOps)
 - All agents write structured JSON results to `MEMORY/STATE/` and git push
 - LoadContext auto-pulls at session start → Brigade Briefing shows action items
-- Key insight: `/message_async` (<1s ack) vs `/api_message` (22s block) — always use async for fire-and-forget
+- Key insight: `/message_async` requires CSRF (web session) — NOT usable with API key! Use `/api_message` with 30s timeout for fire-and-forget
 - Key insight: `.gitignore` blocks `MEMORY/STATE/*.json` — A0 must use `git add -f`
-- Scheduled tasks (A0) = autonomous maintenance loop: health, TELOS progress, learning mining, memory compaction, competitive intel
+- Scheduled tasks (A0) = autonomous maintenance loop: 8 tasks (health, TELOS, learning, compaction, intel, security, sync, snapshot)
 - Jules best for: tests, mechanical refactoring, lint fixes (93% success rate)
 - A0 best for: deep analysis, contradictions, scheduled maintenance, code review (24/7)
 - Result: 22 TELOS issues found, 5 scheduled tasks running, 3 PRs merged in one session
+
+## A0 Operational Knowledge (crystallized 2026-03-06) [CRYSTAL: 85%]
+
+**Pattern: Know your subordinate's architecture to delegate effectively**
+- A0 v0.9.8.2: 20 tools, 4 subordinate profiles, 8 skills, 8 scheduled tasks
+- LLM stack: GLM-5 (chat, 200K ctx), kimi-k2.5 (utility), claude-opus-4-6 (browser)
+- **Subordinate profiles** — use `call_subordinate` with profile for specialization:
+  - `developer`: coding, debugging, architecture
+  - `researcher`: data collection, reports, analysis
+  - `hacker`: pentesting, security audit, vulnerability scan
+  - `default`: general tasks
+- When delegating to A0: specify which subordinate profile to use for best results
+- **FAISS memory threshold: 0.3 for Russian** (default 0.7 misses Russian text!)
+- A0 can self-manage scheduler tasks via `scheduler:create_scheduled_task`
+- Context sync: Variant A (minimal) — TELOS lives only in Navi, A0 gets context per-task
+- Extensions: 20 Python hook types for lifecycle events (agent_init → error_format)
+- Architecture dump: `MEMORY/STATE/a0-architecture-dump.json` (full reference)
 
 ## Cross-Frame Connections
 

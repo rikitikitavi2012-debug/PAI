@@ -27,7 +27,7 @@
 2. **AI Brigade (члены — автономные агенты):**
    - **Navi** (Claude Code) — архитектор, тимлид, интерактивная разработка, ревью
    - **Jules** (Google) — async-кодер: тесты, баги, фиксы, dependency updates. API: JulesAPI.ts
-   - **Agent Zero** — ревьюер/исследователь, 24/7 на VPS Docker. API: AgentZero.ts
+   - **Agent Zero** — 24/7 VPS Docker (v0.9.8.2). API: AgentZero.ts. LLM: GLM-5 + kimi-k2.5 + opus (browser). 4 субагента: developer/researcher/hacker/default. 8 skills. FAISS memory (threshold 0.3 для русского!). 8 scheduled tasks
 3. **Инструменты (вызываются членами бригады, не думают сами):**
    - **Inference.ts** — unified API для 5 LLM: fast/standard/smart/gemini/glm5
    - **Gemini CLI** — inference provider для Navi (второе мнение, cross-check). 1000 req/day free
