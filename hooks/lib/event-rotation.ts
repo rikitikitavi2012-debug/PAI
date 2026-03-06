@@ -18,7 +18,7 @@
  *   // result = { archived: 5, kept: 10, archiveFile: '...' | null }
  */
 
-import { existsSync, readFileSync, writeFileSync, appendFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, appendFileSync, renameSync } from 'fs';
 import { join, dirname } from 'path';
 
 const RETENTION_DAYS = 7;
@@ -98,4 +98,64 @@ export function rotateEvents(eventsPath: string): { archived: number; kept: numb
     kept: fresh.length,
     archiveFile: lastArchiveFile,
   };
+}
+
+/**
+ * Rotate events.jsonl if it exceeds maxLines.
+ * Keeps the last 3000 lines and archives the rest to events-archive-YYYY-MM.jsonl.
+ *
+ * @param eventsPath - Absolute path to events.jsonl
+ * @param maxLines - Threshold for rotation (default 5000)
+ */
+export function rotateIfNeeded(eventsPath: string, maxLines: number = 5000): void {
+  if (!existsSync(eventsPath)) return;
+
+  const content = readFileSync(eventsPath, 'utf-8').trim();
+  if (!content) return;
+
+  const lines = content.split('\n');
+  if (lines.length <= maxLines) return;
+
+  const KEEP_LINES = 3000;
+  const keepStartIndex = Math.max(0, lines.length - KEEP_LINES);
+
+  const toArchive = lines.slice(0, keepStartIndex);
+  const toKeep = lines.slice(keepStartIndex);
+
+  const dir = dirname(eventsPath);
+  const archiveByMonth = new Map<string, string[]>();
+
+  for (const line of toArchive) {
+    if (!line.trim()) continue;
+
+    let month = 'unknown';
+    try {
+      const evt = JSON.parse(line);
+      const ts = new Date(evt.timestamp);
+      if (!isNaN(ts.getTime())) {
+        month = evt.timestamp.slice(0, 7); // YYYY-MM
+      }
+    } catch {
+      // If parsing fails, just use the current month for the archive file
+      const d = new Date();
+      month = d.toISOString().slice(0, 7);
+    }
+
+    if (!archiveByMonth.has(month)) {
+      archiveByMonth.set(month, []);
+    }
+    archiveByMonth.get(month)!.push(line);
+  }
+
+  // Write archive files (append, not overwrite)
+  for (const [month, events] of archiveByMonth) {
+    const archivePath = join(dir, `events-archive-${month}.jsonl`);
+    appendFileSync(archivePath, events.join('\n') + '\n', 'utf-8');
+  }
+
+  // Overwrite events.jsonl with only kept events atomically
+  const tempPath = join(dir, 'events.jsonl.tmp');
+  const keptContent = toKeep.length > 0 ? toKeep.join('\n') + '\n' : '';
+  writeFileSync(tempPath, keptContent, 'utf-8');
+  renameSync(tempPath, eventsPath);
 }
