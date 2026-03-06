@@ -1,7 +1,8 @@
 #!/bin/bash
-# A0 Chat Live — Agent Zero conversation viewer v5.0
+# A0 Chat Live — Agent Zero conversation viewer v6.0
 # Stream-based: stdout output, terminal-native scroll (like events-tail.sh)
 # No alternate screen — simple and robust. Scroll: Shift+PgUp/PgDn in Kitty
+# v6: fixed header duplication, overwriting status line, full content display
 
 A0_HOST="72.56.86.51:50002"
 A0_CONTEXT_FILE="$HOME/.claude/MEMORY/STATE/a0-active-context.json"
@@ -19,9 +20,11 @@ MSG_COUNT=0
 RESP_COUNT=0
 LAST_LATENCY=0
 INITIAL_LOAD=1
+CURRENT_PROGRESS=""
+HAS_STATUS=0
 
 # ── Colors (24-bit RGB) ──
-RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'
+RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'; ITL='\e[3m'
 CYN='\e[38;2;103;232;249m'; VIO='\e[38;2;167;139;250m'; GRN='\e[38;2;74;222;128m'
 RED='\e[38;2;251;113;133m'; YLW='\e[38;2;251;191;36m'; SEP='\e[38;2;71;85;105m'
 WHT='\e[38;2;203;213;225m'; SLT='\e[38;2;148;163;184m'; BLU='\e[38;2;96;165;250m'
@@ -41,8 +44,13 @@ A0_TOKEN=""
 # ── UI Library ──
 . "$HOME/.config/kitty/scripts/lib/ui.sh"
 set_tab_title "A0 Chat"
-TERM_COLS=$(tput cols 2>/dev/null || echo 90)
-BUBBLE_W=$((TERM_COLS - 6)); [ "$BUBBLE_W" -gt 100 ] && BUBBLE_W=100
+update_term_size() {
+  TERM_COLS=$(tput cols 2>/dev/null || echo 90)
+  [ "$TERM_COLS" -lt 40 ] && TERM_COLS=40
+  BUBBLE_W=$((TERM_COLS - 6)); [ "$BUBBLE_W" -gt 100 ] && BUBBLE_W=100
+}
+update_term_size
+trap 'update_term_size' WINCH
 
 # ── Helpers ──
 strip_icon() { local h="$1"; h="${h#icon://* }"; [[ "$h" == icon://* ]] && h="${h#icon://}" && h="${h#* }"; echo "$h"; }
@@ -64,6 +72,35 @@ voice_notify() {
 }
 
 get_context_id() { [ -f "$A0_CONTEXT_FILE" ] && jq -r '.context_id // empty' "$A0_CONTEXT_FILE" 2>/dev/null; }
+
+# ── Status line (overwrites itself via \r) ──
+clear_status() {
+  [ "$HAS_STATUS" -eq 1 ] && printf '\r\033[K'
+  HAS_STATUS=0
+}
+
+print_status() {
+  printf '\r\033[K'
+  # Connection health dot
+  if [ "$LAST_LATENCY" -eq 0 ]; then
+    printf '  %b○%b ' "$SEP" "$RST"
+  elif [ "$LAST_LATENCY" -lt 1000 ]; then
+    printf '  %b●%b ' "$GRN" "$RST"
+  elif [ "$LAST_LATENCY" -lt 3000 ]; then
+    printf '  %b●%b ' "$YLW" "$RST"
+  else
+    printf '  %b●%b ' "$RED" "$RST"
+  fi
+  # Latency + counts
+  printf '%b%sms%b  %b↑%s ↓%s%b' "$DIM" "$LAST_LATENCY" "$RST" "$SLT" "$MSG_COUNT" "$RESP_COUNT" "$RST"
+  # Progress/thinking in same line
+  if [ -n "$CURRENT_PROGRESS" ]; then
+    local f="${SPIN_FRAMES[$SPIN_IDX]}"
+    SPIN_IDX=$(( (SPIN_IDX+1) % ${#SPIN_FRAMES[@]} ))
+    printf '  %b%s%b %b%s%b' "$YLW" "$f" "$RST" "$ITL$SLT" "${CURRENT_PROGRESS:0:$((TERM_COLS-40))}" "$RST"
+  fi
+  HAS_STATUS=1
+}
 
 # ── Inline formatting: **bold** and `code` ──
 inline_fmt() {
@@ -160,76 +197,88 @@ format_item() {
   esac
 }
 
+# ── Gradient line helper (batched printf for efficiency) ──
+print_gradient_line() {
+  local sw=$((TERM_COLS-4)) th=$((sw/3)) rem=$((sw - (sw/3)*2))
+  local s1; s1=$(printf '─%.0s' $(seq 1 "$th"))
+  local s2; s2=$(printf '─%.0s' $(seq 1 "$th"))
+  local s3; s3=$(printf '─%.0s' $(seq 1 "$rem"))
+  printf '  %b%s%b%b%s%b%b%s%b\n' "$GH1" "$s1" "$RST" "$GH2" "$s2" "$RST" "$GH3" "$s3" "$RST"
+}
+
 # ── Fetch chat ──
-CURRENT_PROGRESS=""
 fetch_chat() {
   local ctx_id="$1" log_json lat_s lat_e
   lat_s=$(date +%s%N)
   log_json=$(curl -s --max-time 8 -H "X-API-KEY: $A0_TOKEN" -H "Content-Type: application/json" \
     -d "{\"context_id\": \"$ctx_id\", \"length\": 50}" "http://${A0_HOST}/api_log_get" 2>/dev/null)
   lat_e=$(date +%s%N); LAST_LATENCY=$(( (lat_e - lat_s) / 1000000 ))
-  [ -z "$log_json" ] && return 1
-  echo "$log_json" | jq -e '.error // empty' >/dev/null 2>&1 && return 1
+  [ -z "$log_json" ] && { CURRENT_PROGRESS=""; return 1; }
+  echo "$log_json" | jq -e '.error // empty' >/dev/null 2>&1 && { CURRENT_PROGRESS=""; return 1; }
+
+  # Progress tracking — stored for status line display (no new lines)
   local progress; progress=$(echo "$log_json" | jq -r '.log.progress // ""' 2>/dev/null)
   local pa; pa=$(echo "$log_json" | jq -r '.log.progress_active // false' 2>/dev/null)
   if [ "$pa" = "true" ] && [ -n "$progress" ]; then
-    local np; np=$(strip_agent_prefix "$(strip_icon "$progress")")
-    if [ "$np" != "$CURRENT_PROGRESS" ]; then
-      CURRENT_PROGRESS="$np"
-      local f="${SPIN_FRAMES[$SPIN_IDX]}"; SPIN_IDX=$(( (SPIN_IDX+1) % ${#SPIN_FRAMES[@]} ))
-      printf '  %b%s %s%b\n' "$YLW" "$f" "${CURRENT_PROGRESS:0:$((TERM_COLS-8))}" "$RST"
-    fi
-  else CURRENT_PROGRESS=""; fi
+    CURRENT_PROGRESS=$(strip_agent_prefix "$(strip_icon "$progress")")
+  else
+    CURRENT_PROGRESS=""
+  fi
+
+  # New items
   local new_items
   new_items=$(echo "$log_json" | jq -r --argjson last "$LAST_NO" '
     [.log.items[] | select(.no > $last)] | sort_by(.no) | .[] |
     [(.no|tostring),(.timestamp//0|tostring),(.type//"?"),
      ((.heading//"")|gsub("\n";" ")|.[:200]),
-     ((.content//""|tostring)|gsub("\n";"\\n")|.[:2000])] | join("\t")
+     ((.content//""|tostring)|.[:8000]|gsub("\n";"\\n")|gsub("\t";" "))] | join("\t")
   ' 2>/dev/null)
   local had_new=0
-  [ -n "$new_items" ] && while IFS=$'\t' read -r no ts type heading content; do
-    [ -z "$no" ] && continue; format_item "$no" "$ts" "$type" "$heading" "$content"; had_new=1
-  done <<< "$new_items"
+  [ -n "$new_items" ] && {
+    clear_status
+    while IFS=$'\t' read -r no ts type heading content; do
+      [ -z "$no" ] && continue; format_item "$no" "$ts" "$type" "$heading" "$content"; had_new=1
+    done <<< "$new_items"
+  }
   local mx; mx=$(echo "$log_json" | jq '[.log.items[].no] | max' 2>/dev/null || echo "$LAST_NO")
   [ "$mx" -gt "$LAST_NO" ] 2>/dev/null && LAST_NO=$mx
   INITIAL_LOAD=0; [ "$had_new" -eq 1 ]
 }
 
-# ── Print header ──
+# ── Print header (once per context — never repeated) ──
 print_header() {
   local ctx="$1"
-  printf '\n  %b◆%b %b%bA0 CHAT%b %b◆%b' "$GH1" "$RST" "$GH2" "$BLD" "$RST" "$GH1" "$RST"
-  [ -n "$ctx" ] && printf '  %b%s%b  %b%sms%b  %b↑%s ↓%s%b' \
-    "$SLT" "${ctx:0:12}" "$RST" "$DIM" "$LAST_LATENCY" "$RST" "$DIM" "$MSG_COUNT" "$RESP_COUNT" "$RST"
-  printf '\n  '
-  local sw=$((TERM_COLS-4)) th=$((sw/3))
-  for ((i=0;i<th;i++)); do printf '%b─%b' "$GH1" "$RST"; done
-  for ((i=0;i<th;i++)); do printf '%b─%b' "$GH2" "$RST"; done
-  for ((i=0;i<(sw-th*2);i++)); do printf '%b─%b' "$GH3" "$RST"; done
+  printf '\n'
+  print_gradient_line
+  # Title row
+  printf '  %b◆%b %b%bA0 CHAT%b %b◆%b' "$GH1" "$RST" "$GH2" "$BLD" "$RST" "$GH1" "$RST"
+  [ -n "$ctx" ] && printf '  %b%s%b' "$SLT" "${ctx:0:12}" "$RST"
+  printf '\n'
+  print_gradient_line
   printf '\n'
 }
 
 print_hints() {
   local vl="verbose"; [ "$VERBOSE" -eq 1 ] && vl="clean"
-  printf '  %b%bm%b%b=msg %b%bn%b%b=new %b%bv%b%b=%s %b%br%b%b=refresh %b%bh%b%b=health %b%bq%b%b=quit  %bScroll: Shift+PgUp/PgDn%b\n' \
+  printf '  %b%bm%b%b=msg %b%bn%b%b=new %b%bv%b%b=%s %b%br%b%b=refresh %b%bh%b%b=health %b%bq%b%b=quit  %bScroll: Shift+PgUp/PgDn%b\n\n' \
     "$GRN" "$BLD" "$RST" "$SEP" "$CYN" "$BLD" "$RST" "$SEP" \
     "$CYN" "$BLD" "$RST" "$SEP" "$vl" "$CYN" "$BLD" "$RST" "$SEP" \
     "$CYN" "$BLD" "$RST" "$SEP" "$RED" "$BLD" "$RST" "$SEP" "$DIM" "$RST"
 }
 
 show_idle() {
-  printf '\n  %b◆%b %b%bA0 CHAT%b %b◆%b\n  %bНет активного диалога%b\n\n' \
-    "$GH1" "$RST" "$GH2" "$BLD" "$RST" "$GH1" "$RST" "$SLT" "$RST"
+  print_header ""
+  printf '  %bНет активного диалога%b\n\n' "$SLT" "$RST"
   local h; h=$(curl -s --max-time 3 "http://${A0_HOST}/health" 2>/dev/null)
   [ -n "$h" ] && printf '  %b● Agent Zero онлайн%b\n\n' "$GRN" "$RST" || \
     printf '  %b○ Agent Zero оффлайн%b\n\n' "$RED" "$RST"
   print_hints
-  printf '\n  %bCLI: bun AgentZero.ts message \"текст\"%b\n\n' "$DIM" "$RST"
+  printf '  %bCLI: bun AgentZero.ts message \"текст\"%b\n\n' "$DIM" "$RST"
 }
 
 # ── Actions ──
 do_send_message() {
+  clear_status
   printf "  %b%bСообщение:%b " "$GRN" "$BLD" "$RST"; read -r msg
   if [ -n "$msg" ]; then
     printf "  %bОтправка...%b\n" "$DIM" "$RST"
@@ -255,6 +304,7 @@ do_send_message() {
 }
 
 do_new_chat() {
+  clear_status
   printf "  %b%bНовый чат:%b " "$CYN" "$BLD" "$RST"; read -r msg
   if [ -n "$msg" ]; then
     printf "  %bСоздание...%b\n" "$DIM" "$RST"
@@ -265,7 +315,7 @@ do_new_chat() {
       CTX_ID="$rc"; LAST_CTX=""; LAST_NO=-1; MSG_COUNT=0; RESP_COUNT=0
       printf '{"context_id":"%s","updated":"%s","last_message":"%s"}' \
         "$rc" "$(date -Iseconds)" "${msg:0:60}" > "$A0_CONTEXT_FILE"
-      printf '\n  %b%b◆ НОВЫЙ ДИАЛОГ ◆%b  %b%s%b\n\n' "$CYN" "$BLD" "$RST" "$SLT" "${rc:0:12}" "$RST"
+      print_header "$rc"
       local -a il=(); while IFS= read -r w; do il+=("$w"); done < <(word_wrap "$msg" "$((BUBBLE_W-6))")
       print_bubble "Ivan" "$GRN" "$BG_IVAN" "$(date +%H:%M:%S)" "${il[@]}"
       if [ -n "$rt" ]; then
@@ -282,6 +332,7 @@ do_new_chat() {
 }
 
 do_health() {
+  clear_status
   local lat_s lat_e lat_ms; lat_s=$(date +%s%N)
   local h; h=$(curl -s --max-time 5 "http://${A0_HOST}/health" 2>/dev/null)
   lat_e=$(date +%s%N); lat_ms=$(( (lat_e - lat_s) / 1000000 ))
@@ -292,23 +343,23 @@ do_health() {
 }
 
 # ── Cleanup ──
-trap 'printf "\n%b[A0 Chat closed]%b\n" "$DIM" "$RST"; exit 0' INT TERM
+trap 'clear_status; printf "\n%b[A0 Chat closed]%b\n" "$DIM" "$RST"; exit 0' INT TERM
 
 # ── Main ──
-LAST_CTX=""; IDLE_SHOWN=0; HINT_CTR=0
+LAST_CTX=""; IDLE_SHOWN=0
 
 while true; do
   CTX_ID=$(get_context_id)
   if [ -n "$CTX_ID" ]; then
     if [ "$CTX_ID" != "$LAST_CTX" ]; then
+      clear_status
       MSG_COUNT=0; RESP_COUNT=0; LAST_NO=-1; LAST_CTX="$CTX_ID"
-      IDLE_SHOWN=0; INITIAL_LOAD=1; HINT_CTR=0
+      IDLE_SHOWN=0; INITIAL_LOAD=1
       print_header "$CTX_ID"; fetch_chat "$CTX_ID"; print_hints
     else
       fetch_chat "$CTX_ID"
     fi
-    HINT_CTR=$((HINT_CTR+1))
-    [ "$HINT_CTR" -ge 10 ] && { HINT_CTR=0; print_header "$CTX_ID"; }
+    print_status "$CTX_ID"
   else
     [ "$IDLE_SHOWN" -eq 0 ] && { show_idle; IDLE_SHOWN=1; }
   fi
@@ -316,22 +367,22 @@ while true; do
   read -r -t "$POLL_INTERVAL" -n 1 -s key 2>/dev/null || key=""
   while read -r -t 0.01 -n 1 -s _ 2>/dev/null; do :; done
   case "$key" in
-    q|Q) printf '\n%b[A0 Chat closed]%b\n' "$DIM" "$RST"; break ;;
+    q|Q) clear_status; printf '\n%b[A0 Chat closed]%b\n' "$DIM" "$RST"; break ;;
     m|M) do_send_message ;;
     n|N) do_new_chat ;;
     h|H) do_health ;;
-    v|V) VERBOSE=$((1-VERBOSE)); LAST_NO=-1; LAST_CTX=""
+    v|V) clear_status; VERBOSE=$((1-VERBOSE)); LAST_NO=-1; LAST_CTX=""
          printf '\n  %b[%s mode]%b\n' "$CYN" "$([ "$VERBOSE" -eq 1 ] && echo verbose || echo clean)" "$RST" ;;
-    r|R) LAST_NO=-1; LAST_CTX=""; IDLE_SHOWN=0; MSG_COUNT=0; RESP_COUNT=0; INITIAL_LOAD=1
+    r|R) clear_status; LAST_NO=-1; LAST_CTX=""; IDLE_SHOWN=0; MSG_COUNT=0; RESP_COUNT=0; INITIAL_LOAD=1
          printf '\n  %b[refreshing...]%b\n' "$DIM" "$RST" ;;
-    c|C) printf "  %bContext ID:%b " "$CYN" "$RST"; read -r nc
+    c|C) clear_status; printf "  %bContext ID:%b " "$CYN" "$RST"; read -r nc
          [ -n "$nc" ] && { CTX_ID="$nc"; LAST_CTX=""; LAST_NO=-1; MSG_COUNT=0; RESP_COUNT=0
            printf '{"context_id":"%s","updated":"%s","last_message":"switch"}' \
              "$nc" "$(date -Iseconds)" > "$A0_CONTEXT_FILE"; } ;;
-    l|L) printf '  %b── лог ──%b\n' "$DIM" "$RST"
+    l|L) clear_status; printf '  %b── лог ──%b\n' "$DIM" "$RST"
          bun "$A0_CLI" log 2>&1 | head -8 | while IFS= read -r line; do
            printf '  %b%s%b\n' "$DIM" "${line:0:$((TERM_COLS-6))}" "$RST"; done ;;
-    t|T) printf '  %b── задачи ──%b\n' "$DIM" "$RST"
+    t|T) clear_status; printf '  %b── задачи ──%b\n' "$DIM" "$RST"
          printf '  %b●%b Daily Health  %b●%b Weekly Security  %b●%b Weekly TELOS\n' \
            "$GRN" "$RST" "$RED" "$RST" "$CYN" "$RST" ;;
   esac
