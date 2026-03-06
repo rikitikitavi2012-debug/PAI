@@ -121,6 +121,20 @@
 - Research tasks take 3-5 min, code review 2-3 min, chains 5-8 min
 - Always end task with "git add -f, commit, push" — A0 forgets without explicit instruction
 
+## A0 Chat Streaming (crystallized 2026-03-06) [CRYSTAL: 90%]
+
+**Pattern: TUI live chat with A0 via polling /api_log_get**
+- A0 uses Socket.IO for web UI (Same-Origin only — NOT usable externally)
+- External access: `/api_log_get` with X-API-KEY header — only option for TUI
+- Polling every 3s, incremental (track `items[].no`, fetch only new)
+- Log item types: user, response, agent, code_exe, tool, util
+- **Critical**: `response` type — show `.content` (actual answer), NOT `.heading` ("A0: Responding")
+- **Critical**: `heading` has `icon://` prefix — strip before display
+- **Critical**: `agent` heading duplicates "A0: " — strip agent prefix
+- Clean mode: show user + response + meaningful agent thoughts only
+- Verbose mode: all types including internal tool calls
+- Full API reference: `MEMORY/RESEARCH/2026-03/a0-streaming-api.md`
+
 ## Cross-Frame Connections
 
 *To be discovered through cross-frame synthesis.*
