@@ -129,7 +129,7 @@
 - **Auth**: A0_API_TOKEN in ~/.config/PAI/.env, used as X-API-KEY header
 - **LLM**: Z.AI GLM-5 (chat) + OpenCode Zen Kimi 2.5 (utility). Провайдер переключаемый (Anthropic, OpenRouter, OpenAI)
 - **CLI tool**: `bun PAI/Tools/AgentZero.ts` (message|async|log|terminate|health|scheduler)
-- **REST API**: `/api_message` (sync, blocks 5min), `/message_async` (fire-forget), `/api_log_get`, `/api_terminate_chat`
+- **REST API**: `/api_message` (sync, blocks 5min, API key auth), `/api_log_get`, `/api_terminate_chat`. NOTE: `/message_async` requires web session (CSRF) — NOT usable with API key! Async pattern: use `/api_message` with 30s timeout instead
 - **Scheduler**: CSRF-protected (web UI only), `/scheduler_tasks_list` needs web session
 - **Skills (9)**: a0-deployer, chart-architect, doc-forge, exa-synergy, ops-commander, replicate-studio, telos, the-algorithm, create-skill
 - **Tools (14)**: code_execution_tool, browser_agent, call_subordinate, search_engine, document_query, vision_load, memory_*, behaviour_adjustment, response, input, wait, notify_user, a2a_chat, scheduler:*

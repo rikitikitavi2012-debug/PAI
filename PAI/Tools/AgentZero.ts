@@ -164,42 +164,35 @@ async function sendMessage(message: string, contextId?: string): Promise<void> {
   }, null, 2));
 }
 
-// Send async message via /message_async (true fire-and-forget, returns in <1s)
-// Discovery: A0 has /message_async endpoint that immediately returns context_id
-// without waiting for task completion. Source: a0-comms-research.json
+// Send async message via /api_message with short timeout (fire-and-forget pattern)
+// NOTE: /message_async requires web session (CSRF), NOT API key — unusable for API.
+// Instead we use /api_message with 30s timeout — if A0 responds in time, great.
+// If timeout — task is still processing, we report "delivered".
 async function sendAsync(message: string, contextId?: string): Promise<void> {
-  const body: any = { text: message, context: contextId || 'new' };
+  const body: any = { message, lifetime_hours: 1 };
+  if (contextId) body.context_id = contextId;
 
   emitA0Event('async_sent', { context_id: contextId || 'new', preview: message.slice(0, 50) });
 
   try {
-    const result = await apiCall('/message_async', body, 10000);
-    const ctx = result.context || result.context_id;
-
-    if (ctx) {
-      saveActiveContext(ctx, message);
-    }
-
+    const result = await apiCall('/api_message', body, 30000);
+    if (result.context_id) saveActiveContext(result.context_id, message);
     console.log(JSON.stringify({
       status: 'delivered',
-      context_id: ctx || 'unknown',
-      message: result.message || 'Task accepted',
+      context_id: result.context_id || 'unknown',
+      response: result.response?.slice(0, 200) || 'Task accepted',
     }, null, 2));
-    emitA0Event('async_delivered', { context_id: ctx || 'unknown' });
+    emitA0Event('async_delivered', { context_id: result.context_id || 'unknown' });
   } catch (err: any) {
-    // Fallback to blocking /api_message with graceful timeout
-    console.error('⚠️ /message_async failed, falling back to /api_message...');
-    try {
-      const result = await apiCall('/api_message', { message, lifetime_hours: 1, ...(contextId ? { context_id: contextId } : {}) }, 30000);
-      if (result.context_id) saveActiveContext(result.context_id, message);
-      console.log(JSON.stringify(result, null, 2));
-    } catch (fallbackErr: any) {
-      if (fallbackErr.message?.includes('Timeout')) {
-        console.log(JSON.stringify({ status: 'delivered', note: 'A0 is processing (timeout on fallback)', context_id: contextId || 'new' }, null, 2));
-        emitA0Event('async_delivered', { context_id: contextId || 'new', timeout: true });
-      } else {
-        throw fallbackErr;
-      }
+    if (err.message?.includes('Timeout')) {
+      console.log(JSON.stringify({
+        status: 'delivered',
+        note: 'A0 is processing (timeout — task accepted, working in background)',
+        context_id: contextId || 'new',
+      }, null, 2));
+      emitA0Event('async_delivered', { context_id: contextId || 'new', timeout: true });
+    } else {
+      throw err;
     }
   }
 }
