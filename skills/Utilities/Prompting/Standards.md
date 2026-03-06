@@ -1157,7 +1157,7 @@ Reusable quality and completion checks.
 
 ## Template Location
 
-All templates live in `~/.claude/skills/Utilities/Prompting/Templates/`:
+All templates live in `${CLAUDE_SKILL_DIR}/Templates/`:
 
 ```
 skills/Utilities/Prompting/
@@ -1184,7 +1184,7 @@ skills/Utilities/Prompting/
 
 **CLI Usage:**
 ```bash
-bun ~/.claude/skills/Utilities/Prompting/Tools/RenderTemplate.ts \
+bun ${CLAUDE_SKILL_DIR}/Tools/RenderTemplate.ts \
   --template Primitives/Roster.hbs \
   --data Data/Agents.yaml \
   --output Compiled/AgentRoster.md
@@ -1192,7 +1192,7 @@ bun ~/.claude/skills/Utilities/Prompting/Tools/RenderTemplate.ts \
 
 **Programmatic Usage:**
 ```typescript
-import { renderTemplate } from '~/.claude/skills/Utilities/Prompting/Tools/RenderTemplate.ts';
+import { renderTemplate } from '${CLAUDE_SKILL_DIR}/Tools/RenderTemplate.ts';
 
 const output = renderTemplate('Primitives/Briefing.hbs', {
   agent: { id: 'EN-1', name: 'Skeptical Thinker', personality: '...' },

@@ -362,7 +362,7 @@ Cannot proceed - fix logical issues before rendering
 
 **MANDATORY: Apply PAI Theme**
 ```typescript
-import { PAI_THEME } from '~/.claude/skills/Remotion/theme'
+import { PAI_THEME } from '${CLAUDE_SKILL_DIR}/theme'
 
 // All components MUST use:
 // - PAI_THEME.colors for all colors
@@ -547,4 +547,4 @@ User: animate this content: "The three pillars of AI safety are..."
 This workflow inherits visual theming from Art preferences:
 - Load: `~/.claude/PAI/USER/SKILLCUSTOMIZATIONS/Art/PREFERENCES.md`
 - Apply: Charcoal aesthetic, purple accents, organic animations
-- Reference: `~/.claude/skills/Remotion/theme.ts`
+- Reference: `${CLAUDE_SKILL_DIR}/theme.ts`

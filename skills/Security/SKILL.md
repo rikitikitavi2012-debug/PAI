@@ -1,6 +1,8 @@
 ---
 name: Security
 description: Security assessment and intelligence — network reconnaissance, web app security testing, prompt injection testing, security news monitoring, and annual report analysis. USE WHEN recon, reconnaissance, port scan, subdomain, DNS, WHOIS, ASN, netblock, CIDR, mass scan, path discovery, endpoint discovery, corporate structure, bounty programs, IP recon, domain recon, passive recon, web assessment, OWASP, pentest, threat model, vulnerability analysis, ffuf, Playwright, Gemini analysis, prompt injection, jailbreak, LLM security, guardrail bypass, direct injection, indirect injection, multi-stage attack, security news, sec updates, breaches, tldrsec, security research, annual reports, threat landscape, security trends, vendor reports, fetch report, list sources.
+context: fork
+disable-model-invocation: true
 ---
 
 # Security

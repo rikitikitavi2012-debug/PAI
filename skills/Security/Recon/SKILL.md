@@ -497,7 +497,7 @@ Assistant: Activating OSINT skill...
 
 **Security Skills:**
 - `~/.claude/skills/Investigation/` - Entity and people reconnaissance (OSINT)
-- `~/.claude/skills/Security/WebAssessment/` - Web application testing
+- `${CLAUDE_SKILL_DIR}/WebAssessment/` - Web application testing
 
 **Tool Documentation:**
 - IPInfo API: https://ipinfo.io/developers

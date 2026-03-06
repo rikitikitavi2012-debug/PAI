@@ -261,7 +261,7 @@ If generating combined image is difficult:
 
 **Option A: Generate combined (if model supports):**
 ```bash
-bun run ~/.claude/skills/art/Tools/Generate.ts \
+bun run ${CLAUDE_SKILL_DIR}/Tools/Generate.ts \
   --model nano-banana-pro \
   --reference-image /path/to/screenshot.png \
   --prompt "[ANNOTATION PROMPT]" \

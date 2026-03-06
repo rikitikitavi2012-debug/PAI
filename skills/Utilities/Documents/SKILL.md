@@ -119,9 +119,9 @@ This skill organizes document processing across 4 document types plus specialize
 - "Document review", "track changes" → Redlining workflow
 
 **Supporting Resources:**
-- Scripts: `~/.claude/skills/Utilities/Documents/Docx/Scripts/`
-- OOXML tools: `~/.claude/skills/Utilities/Documents/Docx/ooxml/`
-- License: `~/.claude/skills/Utilities/Documents/Docx/LICENSE.txt`
+- Scripts: `${CLAUDE_SKILL_DIR}/Docx/Scripts/`
+- OOXML tools: `${CLAUDE_SKILL_DIR}/Docx/ooxml/`
+- License: `${CLAUDE_SKILL_DIR}/Docx/LICENSE.txt`
 
 **Key Capabilities:**
 - Create professional documents with docx-js
@@ -145,8 +145,8 @@ This skill organizes document processing across 4 document types plus specialize
 - "Extract tables from PDF" → Table extraction (pdfplumber + pandas)
 
 **Supporting Resources:**
-- Scripts: `~/.claude/skills/Utilities/Documents/Pdf/Scripts/`
-- License: `~/.claude/skills/Utilities/Documents/Pdf/LICENSE.txt`
+- Scripts: `${CLAUDE_SKILL_DIR}/Pdf/Scripts/`
+- License: `${CLAUDE_SKILL_DIR}/Pdf/LICENSE.txt`
 
 **Key Capabilities:**
 - Create PDFs with reportlab
@@ -171,9 +171,9 @@ This skill organizes document processing across 4 document types plus specialize
 - "Create thumbnail grid" → Thumbnail workflow
 
 **Supporting Resources:**
-- Scripts: `~/.claude/skills/Utilities/Documents/Pptx/Scripts/`
-- OOXML tools: `~/.claude/skills/Utilities/Documents/Pptx/ooxml/`
-- License: `~/.claude/skills/Utilities/Documents/Pptx/LICENSE.txt`
+- Scripts: `${CLAUDE_SKILL_DIR}/Pptx/Scripts/`
+- OOXML tools: `${CLAUDE_SKILL_DIR}/Pptx/ooxml/`
+- License: `${CLAUDE_SKILL_DIR}/Pptx/LICENSE.txt`
 
 **Key Capabilities:**
 - Create presentations with html2pptx (HTML → PPTX)
@@ -197,8 +197,8 @@ This skill organizes document processing across 4 document types plus specialize
 - "Recalculate formulas" → Recalculation workflow (recalc.py)
 
 **Supporting Resources:**
-- Recalc script: `~/.claude/skills/Utilities/Documents/Xlsx/recalc.py`
-- License: `~/.claude/skills/Utilities/Documents/Xlsx/LICENSE.txt`
+- Recalc script: `${CLAUDE_SKILL_DIR}/Xlsx/recalc.py`
+- License: `${CLAUDE_SKILL_DIR}/Xlsx/LICENSE.txt`
 
 **Key Capabilities:**
 - Create spreadsheets with formulas (openpyxl)
@@ -309,23 +309,23 @@ User: "Create a consulting report from the assessment data"
 ## 📚 Full Reference Documentation
 
 **Word Documents (DOCX):**
-- Main Guide: `~/.claude/skills/Utilities/Documents/Docx/SKILL.md`
-- Creation Reference: `~/.claude/skills/Utilities/Documents/Docx/docx-js.md`
-- Editing Reference: `~/.claude/skills/Utilities/Documents/Docx/ooxml.md`
+- Main Guide: `${CLAUDE_SKILL_DIR}/Docx/SKILL.md`
+- Creation Reference: `${CLAUDE_SKILL_DIR}/Docx/docx-js.md`
+- Editing Reference: `${CLAUDE_SKILL_DIR}/Docx/ooxml.md`
 
 **PDF Processing:**
-- Main Guide: `~/.claude/skills/Utilities/Documents/Pdf/SKILL.md`
-- Forms Guide: `~/.claude/skills/Utilities/Documents/Pdf/forms.md`
-- Advanced Reference: `~/.claude/skills/Utilities/Documents/Pdf/reference.md`
+- Main Guide: `${CLAUDE_SKILL_DIR}/Pdf/SKILL.md`
+- Forms Guide: `${CLAUDE_SKILL_DIR}/Pdf/forms.md`
+- Advanced Reference: `${CLAUDE_SKILL_DIR}/Pdf/reference.md`
 
 **PowerPoint Presentations (PPTX):**
-- Main Guide: `~/.claude/skills/Utilities/Documents/Pptx/SKILL.md`
-- Creation Reference: `~/.claude/skills/Utilities/Documents/Pptx/html2pptx.md`
-- Editing Reference: `~/.claude/skills/Utilities/Documents/Pptx/ooxml.md`
+- Main Guide: `${CLAUDE_SKILL_DIR}/Pptx/SKILL.md`
+- Creation Reference: `${CLAUDE_SKILL_DIR}/Pptx/html2pptx.md`
+- Editing Reference: `${CLAUDE_SKILL_DIR}/Pptx/ooxml.md`
 
 **Excel Spreadsheets (XLSX):**
-- Main Guide: `~/.claude/skills/Utilities/Documents/Xlsx/SKILL.md`
-- Recalc Script: `~/.claude/skills/Utilities/Documents/Xlsx/recalc.py`
+- Main Guide: `${CLAUDE_SKILL_DIR}/Xlsx/SKILL.md`
+- Recalc Script: `${CLAUDE_SKILL_DIR}/Xlsx/recalc.py`
 
 ---
 

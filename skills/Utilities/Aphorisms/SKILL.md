@@ -125,7 +125,7 @@ Aphorisms categorized by themes matching user content:
 
 ## Database Structure
 
-**Location:** `~/.claude/skills/aphorisms/Database/aphorisms.md`
+**Location:** `${CLAUDE_SKILL_DIR}/Database/aphorisms.md`
 
 **Current Collections:**
 1. **Initial Collection (Rahil Arora)** - 15 curated quotes covering core themes
@@ -346,7 +346,7 @@ All five thinkers align with TELOS themes of **wisdom, rationality, truth-seekin
 - "Search aphorisms about [theme]" → Theme-based search
 
 **Database Location:**
-`~/.claude/skills/aphorisms/Database/aphorisms.md`
+`${CLAUDE_SKILL_DIR}/Database/aphorisms.md`
 
 **Current Collection Size:**
 - 15 initial quotes (Rahil Arora collection)

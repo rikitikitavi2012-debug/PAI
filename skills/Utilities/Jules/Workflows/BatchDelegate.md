@@ -42,7 +42,7 @@ Found N tasks to delegate. Proceed? (y/n)
 For each task, run the create command:
 
 ```bash
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts create "TASK_PROMPT"
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts create "TASK_PROMPT"
 ```
 
 Run all creates sequentially (Jules API may rate-limit parallel requests). Add a 1-second delay between calls if creating more than 5 sessions.

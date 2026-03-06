@@ -9,7 +9,7 @@
  * Usage:
  *   generate --model nano-banana-pro --prompt "..." --size 16:9 --output /tmp/image.png
  *
- * @see ~/.claude/skills/art/README.md
+ * @see ${CLAUDE_SKILL_DIR}/README.md
  */
 
 import Replicate from "replicate";

@@ -1,6 +1,7 @@
 ---
 name: Thinking
 description: Multi-mode analytical and creative thinking — first principles decomposition, iterative depth analysis, creative brainstorming, multi-agent council debates, adversarial red teaming, world threat modeling, and scientific hypothesis testing. USE WHEN first principles, decompose, deconstruct, reconstruct, challenge assumptions, iterative depth, multi-angle, deep exploration, be creative, brainstorm, divergent ideas, tree of thoughts, maximum creativity, technical creativity, idea generation, domain specific, council, debate, perspectives, quick consensus, red team, critique, stress test, adversarial validation, parallel analysis, devil's advocate, threat model, world model, future analysis, test idea, test investment, update models, view models, time horizon, think about, figure out, experiment, iterate, science, hypothesis, define goal, design experiment, quick diagnosis, structured investigation, full cycle.
+context: fork
 ---
 
 # Thinking

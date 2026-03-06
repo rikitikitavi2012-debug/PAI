@@ -35,24 +35,24 @@ Discover and monitor public bug bounty programs from aggregated sources.
 
 ```bash
 # List all bounty programs
-bun ~/.claude/skills/Security/Recon/Tools/BountyPrograms.ts list
+bun ${CLAUDE_SKILL_DIR}/Recon/Tools/BountyPrograms.ts list
 
 # Show only paid bounty programs (not just swag)
-bun ~/.claude/skills/Security/Recon/Tools/BountyPrograms.ts list --bounty-only
+bun ${CLAUDE_SKILL_DIR}/Recon/Tools/BountyPrograms.ts list --bounty-only
 
 # Search for programs by keyword
-bun ~/.claude/skills/Security/Recon/Tools/BountyPrograms.ts search "crypto"
-bun ~/.claude/skills/Security/Recon/Tools/BountyPrograms.ts search "finance"
-bun ~/.claude/skills/Security/Recon/Tools/BountyPrograms.ts search "cloud"
+bun ${CLAUDE_SKILL_DIR}/Recon/Tools/BountyPrograms.ts search "crypto"
+bun ${CLAUDE_SKILL_DIR}/Recon/Tools/BountyPrograms.ts search "finance"
+bun ${CLAUDE_SKILL_DIR}/Recon/Tools/BountyPrograms.ts search "cloud"
 
 # Check if a domain has a bounty program
-bun ~/.claude/skills/Security/Recon/Tools/BountyPrograms.ts check example.com
+bun ${CLAUDE_SKILL_DIR}/Recon/Tools/BountyPrograms.ts check example.com
 
 # Update local cache from sources
-bun ~/.claude/skills/Security/Recon/Tools/BountyPrograms.ts update
+bun ${CLAUDE_SKILL_DIR}/Recon/Tools/BountyPrograms.ts update
 
 # Export as JSON
-bun ~/.claude/skills/Security/Recon/Tools/BountyPrograms.ts list --json > bounty-programs.json
+bun ${CLAUDE_SKILL_DIR}/Recon/Tools/BountyPrograms.ts list --json > bounty-programs.json
 ```
 
 ## Output
@@ -113,5 +113,5 @@ Format:
 
 ## Cache
 
-Local cache stored at: `~/.claude/skills/Security/Recon/Data/BountyPrograms.json`
+Local cache stored at: `${CLAUDE_SKILL_DIR}/Recon/Data/BountyPrograms.json`
 Cache expires after 24 hours and auto-refreshes on next use.

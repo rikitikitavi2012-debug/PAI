@@ -21,7 +21,7 @@
 
 3. **Use Theme Constants:**
    ```
-   ~/.claude/skills/Remotion/Tools/Theme.ts
+   ${CLAUDE_SKILL_DIR}/Tools/Theme.ts
    ```
 
 4. **Reference images** (when visual style reference needed):
@@ -32,7 +32,7 @@
 ## PAI Theme Quick Reference
 
 ```typescript
-import { PAI_THEME } from '~/.claude/skills/Remotion/Tools/Theme'
+import { PAI_THEME } from '${CLAUDE_SKILL_DIR}/Tools/Theme'
 
 // Colors
 PAI_THEME.colors.background    // #0f172a - Deep slate
@@ -59,7 +59,7 @@ PAI_THEME.spacing.element      // 30px between elements
 ## Using the Theme in Components
 
 ```typescript
-import { PAI_THEME, titleScreenStyle, fadeInterpolation } from '~/.claude/skills/Remotion/Tools/Theme'
+import { PAI_THEME, titleScreenStyle, fadeInterpolation } from '${CLAUDE_SKILL_DIR}/Tools/Theme'
 
 export const MyScene: React.FC = () => {
   const frame = useCurrentFrame()

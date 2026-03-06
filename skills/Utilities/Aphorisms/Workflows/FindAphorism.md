@@ -22,7 +22,7 @@ Running **FindAphorism** in **Aphorisms**...
 - Working on newsletter and needs opening/closing wisdom quote
 
 **Prerequisites:**
-- Aphorism database exists at `~/.claude/skills/aphorisms/Database/aphorisms.md`
+- Aphorism database exists at `${CLAUDE_SKILL_DIR}/Database/aphorisms.md`
 - Newsletter content or URL provided by user
 - Clear understanding of newsletter theme (if not provided, extract from content)
 
@@ -98,7 +98,7 @@ Use deep thinking for deep thematic analysis. Identify:
 
 **Load database:**
 ```bash
-Read ~/.claude/skills/aphorisms/Database/aphorisms.md
+Read ${CLAUDE_SKILL_DIR}/Database/aphorisms.md
 ```
 
 **Review relevant sections:**

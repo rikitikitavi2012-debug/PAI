@@ -26,7 +26,7 @@
 ## New Files Created
 
 ```
-~/.claude/skills/Agents/
+${CLAUDE_SKILL_DIR}/
 ├── ArchitectContext.md      ✅ NEW - Simple reference file
 ├── EngineerContext.md        ✅ NEW - Simple reference file
 ├── DesignerContext.md        ✅ NEW - Simple reference file
@@ -115,14 +115,14 @@ All commands work as expected:
 
 ```bash
 # List available agents
-bun run ~/.claude/skills/Agents/Tools/LoadAgentContext.ts
+bun run ${CLAUDE_SKILL_DIR}/Tools/LoadAgentContext.ts
 # Output: Architect, Artist, Engineer, Designer, QATester
 
 # View specific context
-bun run ~/.claude/skills/Agents/Tools/LoadAgentContext.ts Architect
+bun run ${CLAUDE_SKILL_DIR}/Tools/LoadAgentContext.ts Architect
 
 # Generate enriched prompt
-bun run ~/.claude/skills/Agents/Tools/LoadAgentContext.ts Engineer "Implement TDD workflow"
+bun run ${CLAUDE_SKILL_DIR}/Tools/LoadAgentContext.ts Engineer "Implement TDD workflow"
 ```
 
 ---

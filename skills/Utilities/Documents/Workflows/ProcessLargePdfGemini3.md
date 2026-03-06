@@ -656,8 +656,8 @@ cat raw.json | sed 's/```json//g' | sed 's/```//g' | jq '.' > clean.json
 
 ## Next Steps
 
-- For traditional PDF extraction (text-only), see `~/.claude/skills/documents/pdf/SKILL.md`
-- For PDF form filling, see `~/.claude/skills/documents/pdf/forms.md`
+- For traditional PDF extraction (text-only), see `${CLAUDE_SKILL_DIR}/pdf/SKILL.md`
+- For PDF form filling, see `${CLAUDE_SKILL_DIR}/pdf/forms.md`
 - For parser integration, see `~/.claude/skills/parser/SKILL.md`
 - For newsletter database schema, see `~/.claude/Context/databases/newsletter/schema.sql`
 

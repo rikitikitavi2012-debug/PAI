@@ -35,7 +35,7 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
 
 ## Core Paths
 
-- **Tool:** `~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts`
+- **Tool:** `${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts`
 - **API Key:** `~/.config/PAI/.env` (JULES_API_KEY)
 - **Default Repo:** `rikitikitavi2012-debug/PAI-personal` (private)
 - **Default Branch:** `master`
@@ -94,12 +94,12 @@ User: "batch jules: add tests for hooks A, B, C"
 ## Tool CLI Reference
 
 ```bash
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts sources              # List connected repos
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts sessions [filter]    # List sessions
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts create "prompt"      # Create task
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts status <id>          # Session details
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts approve <id>         # Approve plan
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts message <id> "msg"   # Send message
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts sources              # List connected repos
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts sessions [filter]    # List sessions
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts create "prompt"      # Create task
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts status <id>          # Session details
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts approve <id>         # Approve plan
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts message <id> "msg"   # Send message
 ```
 
 **Env overrides:**
