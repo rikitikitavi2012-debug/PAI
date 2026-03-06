@@ -164,6 +164,62 @@ export interface TaskCompletedEvent extends BaseEvent {
   task_subject?: string;
 }
 
+// ── Inference Events ──
+
+export interface InferenceOkEvent extends BaseEvent {
+  type: 'inference.ok';
+  data: {
+    level: string;
+    provider: string;
+    model: string;
+    latency_s: number;
+    source?: string;
+  };
+}
+
+export interface InferenceFailEvent extends BaseEvent {
+  type: 'inference.fail';
+  data: {
+    level: string;
+    provider: string;
+    model: string;
+    error: string;
+    latency_s: number;
+    source?: string;
+  };
+}
+
+export interface InferenceParseFailEvent extends BaseEvent {
+  type: 'inference.parse_fail';
+  data: {
+    level: string;
+    provider: string;
+    model: string;
+    error: string;
+    latency_s: number;
+    source?: string;
+  };
+}
+
+// ── Security Events ──
+
+export interface SecurityAlertEvent extends BaseEvent {
+  type: 'security.alert';
+  data: {
+    severity: string;
+    detail: string;
+  };
+}
+
+// ── A0 Events ──
+
+export interface A0ResponseEvent extends BaseEvent {
+  type: 'a0.response';
+  data: {
+    context_id?: string;
+  };
+}
+
 // ── Merge Events ──
 
 export interface MergeOkEvent extends BaseEvent {
@@ -241,6 +297,11 @@ export type PAIEvent =
   | AgentStartEvent
   | AgentStopEvent
   | TaskCompletedEvent
+  | InferenceOkEvent
+  | InferenceFailEvent
+  | InferenceParseFailEvent
+  | SecurityAlertEvent
+  | A0ResponseEvent
   | MergeOkEvent
   | MergeFailEvent
   | PrTestedEvent

@@ -91,6 +91,16 @@ exit 1
       writeFileSync(mockClaudePathLocal, `#!/bin/sh\necho "mocked claude response"\nexit 0\n`);
       chmodSync(mockClaudePathLocal, 0o755);
 
+      // Need an API key, otherwise it fails immediately
+      const mockConfigDir = join(emitDir, '.config', 'PAI');
+      mkdirSync(mockConfigDir, { recursive: true });
+      writeFileSync(join(mockConfigDir, '.env'), 'ANTHROPIC_API_KEY=mock_anthropic_key\n');
+
+      const originalFetch = global.fetch;
+      global.fetch = async () => new Response(JSON.stringify({
+        content: [{ text: 'mocked claude response' }]
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+
       const proc = Bun.spawn(['bun', 'PAI/Tools/Inference.ts', '--level', 'fast', 'system prompt', 'user test'], {
         stdout: 'pipe',
         stderr: 'pipe',
@@ -98,10 +108,15 @@ exit 1
           ...process.env,
           HOME: emitDir,
           PATH: `${mockBinDirLocal}:${process.env.PATH}`,
+          ANTHROPIC_API_KEY: 'mock_anthropic_key', // Also set it here directly
+          ANTHROPIC_MOCK_FETCH: '1',
+          PAI_DIR: emitDir,
         },
       });
 
       await proc.exited;
+
+      global.fetch = originalFetch;
 
       const eventsPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'events.jsonl');
       const events = require('fs').readFileSync(eventsPath, 'utf-8').trim().split('\n').map(JSON.parse);
@@ -305,6 +320,8 @@ exit 1
       content: [{ text: '{"status": "mocked claude json"}' }]
     }), { status: 200, headers: { 'content-type': 'application/json' } });
 
+    const originalApiKey = process.env.ANTHROPIC_API_KEY;
+    process.env.ANTHROPIC_API_KEY = 'test_anthropic_api_key';
     const result = await inference({
       systemPrompt: 'sys',
       userPrompt: 'JSON test',
@@ -312,6 +329,7 @@ exit 1
       expectJson: true,
       timeout: 5000,
     });
+    if (originalApiKey !== undefined) process.env.ANTHROPIC_API_KEY = originalApiKey; else delete process.env.ANTHROPIC_API_KEY;
 
     global.fetch = originalFetch;
     expect(result.success).toBe(true);
