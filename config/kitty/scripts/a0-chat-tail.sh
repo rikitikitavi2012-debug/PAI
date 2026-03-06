@@ -179,9 +179,9 @@ draw_status_bar() {
   printf '\033[%d;1H\033[K' "$TERM_LINES"
   local v_label="verbose"
   [ "$VERBOSE" -eq 1 ] && v_label="clean"
-  printf "  %br%b=refresh %bm%b=msg %bv%b=%s %bc%b=ctx %bh%b=health %bq%b=exit  %b%s%b" \
-    "$CYN" "$SEP" "$CYN" "$SEP" "$CYN" "$SEP" "$v_label" \
-    "$CYN" "$SEP" "$CYN" "$SEP" "$CYN" "$SEP" "$DIM" "$(date +%H:%M:%S)" "$RST"
+  printf "  %bm%b=msg %bn%b=new %bv%b=%s %br%b=refresh %bh%b=health  %b%s%b" \
+    "$GRN" "$SEP" "$CYN" "$SEP" "$CYN" "$SEP" "$v_label" \
+    "$CYN" "$SEP" "$CYN" "$SEP" "$DIM" "$(date +%H:%M:%S)" "$RST"
 }
 
 # ── Message buffer for scrolling ──
@@ -391,10 +391,12 @@ show_idle() {
   add_msg ""
   add_msg "$(printf '  %b%bA0 CHAT%b  %bno active context%b' "$CYN" "$BLD" "$RST" "$SLT" "$RST")"
   add_msg ""
-  add_msg "$(printf '  %bm%b  send message (new context)' "$CYN" "$RST")"
-  add_msg "$(printf '  %bc%b  enter context ID' "$CYN" "$RST")"
-  add_msg "$(printf '  %bh%b  A0 health check' "$CYN" "$RST")"
-  add_msg "$(printf '  %bl%b  show recent log' "$CYN" "$RST")"
+  add_msg "$(printf '  %bm%b  otpravit soobshchenie (v tekushchij chat)' "$GRN" "$RST")"
+  add_msg "$(printf '  %bn%b  novyj chat (sozdast novyj dialog)' "$CYN" "$RST")"
+  add_msg "$(printf '  %bv%b  clean/verbose (pokazat vnutrennie shagi)' "$CYN" "$RST")"
+  add_msg "$(printf '  %br%b  obnovit ekran' "$CYN" "$RST")"
+  add_msg "$(printf '  %bh%b  health check A0' "$CYN" "$RST")"
+  add_msg "$(printf '  %bc%b  vvesti context ID (pereklyuchit chat)' "$DIM" "$RST")"
   add_msg ""
   add_msg "$(printf '  %bCLI:%b' "$WHT" "$RST")"
   add_msg "$(printf '  %bbun AgentZero.ts message \"text\"%b' "$DIM" "$RST")"
@@ -464,16 +466,59 @@ do_log() {
 # ── Enter context ──
 do_context() {
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
-  printf "  %bContext ID:%b " "${CYN}" "${RST}"
+  printf "  %bContext ID (Enter=otmena):%b " "${CYN}" "${RST}"
   read -r new_ctx
   if [ -n "$new_ctx" ]; then
     CTX_ID="$new_ctx"
     LAST_CTX=""
     LAST_NO=-1
     MSG_BUFFER=()
+    printf '{"context_id":"%s","updated":"%s","last_message":"manual switch"}' \
+      "$new_ctx" "$(date -Iseconds)" > "$A0_CONTEXT_FILE"
     add_msg "$(printf '  %bContext: %s%b' "$GRN" "$new_ctx" "$RST")"
   fi
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
+}
+
+# ── New chat ──
+do_new_chat() {
+  printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
+  printf "  %bNew chat message (Enter=otmena):%b " "${GRN}" "${RST}"
+  read -r msg
+  if [ -n "$msg" ]; then
+    printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
+    printf "  %bCreating new chat...%b" "${DIM}" "${RST}"
+    # Send WITHOUT --context → A0 creates new chat
+    local result
+    result=$(bun "$A0_CLI" message "$msg" 2>&1)
+    local resp_text resp_ctx
+    resp_text=$(echo "$result" | jq -r '.response // empty' 2>/dev/null)
+    resp_ctx=$(echo "$result" | jq -r '.context_id // empty' 2>/dev/null)
+    if [ -n "$resp_ctx" ]; then
+      CTX_ID="$resp_ctx"
+      LAST_CTX=""
+      LAST_NO=-1
+      MSG_BUFFER=()
+      printf '{"context_id":"%s","updated":"%s","last_message":"%s"}' \
+        "$resp_ctx" "$(date -Iseconds)" "${msg:0:60}" > "$A0_CONTEXT_FILE"
+      add_msg ""
+      add_msg "$(printf '  %b%b--- NEW CHAT %s ---%b' "$GRN" "$BLD" "${resp_ctx:0:12}" "$RST")"
+      add_msg ""
+      add_msg "$(printf '  %b%s%b  %b%bIvan >>%b %b%b%s%b' "$SLT" "$(date +%H:%M:%S)" "$RST" "$GRN" "$BLD" "$RST" "$WHT" "$BLD" "${msg:0:$((TERM_COLS - 22))}" "$RST")"
+      if [ -n "$resp_text" ]; then
+        add_msg ""
+        add_msg "$(printf '  %b%s%b  %b%bA0 >>%b' "$SLT" "$(date +%H:%M:%S)" "$RST" "$CYN" "$BLD" "$RST")"
+        add_msg "$(printf '           %b%s%b' "$WHT" "${resp_text:0:$((TERM_COLS - 14))}" "$RST")"
+      fi
+      redraw_chat
+    else
+      add_msg "$(printf '  %bError: %s%b' "$RED" "${result:0:80}" "$RST")"
+      redraw_chat
+    fi
+    printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
+  else
+    printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
+  fi
 }
 
 # ── Main ──
@@ -542,6 +587,7 @@ while true; do
       draw_header "$CTX_ID" "refreshing..."
       ;;
     m|M) do_send_message ;;
+    n|N) do_new_chat ;;
     v|V)
       VERBOSE=$(( 1 - VERBOSE ))
       # Reload all messages with new filter
