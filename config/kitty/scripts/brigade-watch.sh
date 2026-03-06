@@ -132,7 +132,7 @@ poll() {
   # --- OpenCode ---
   local oc_version oc_str
   if command -v opencode >/dev/null 2>&1; then
-    oc_version=$(opencode --version 2>/dev/null | head -1 | grep -oP 'v?[\d.]+' | head -1)
+    oc_version=$(timeout 3 opencode --version 2>/dev/null | head -1 | grep -oP 'v?[\d.]+' | head -1)
     [ -z "$oc_version" ] && oc_version="ok"
     oc_str=$(printf '  %bOpenCode%b  %b✅%b %b%s%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$oc_version" "$RST")
   else
@@ -147,7 +147,7 @@ poll() {
 
   local gem_version gem_str
   if command -v gemini >/dev/null 2>&1; then
-    gem_version=$(gemini --version 2>/dev/null | head -1 | grep -oP 'v?[\d.]+' | head -1)
+    gem_version=$(timeout 3 gemini --version 2>/dev/null | head -1 | grep -oP 'v?[\d.]+' | head -1)
     [ -z "$gem_version" ] && gem_version="ok"
     gem_str=$(printf '  %bGemini%b    %b✅%b %b%s%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$gem_version" "$RST")
   else
