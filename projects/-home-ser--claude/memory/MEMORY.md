@@ -7,34 +7,15 @@
 - Prefers automation over manual instructions
 - Values proactive bug detection and fixing
 
-## Miessler Philosophy — EMBEDDED in nervous system (2026-03-03)
-- Full reference: `MEMORY/RESEARCH/2026-03/miessler-philosophy.md` (22 principles, 25+ quotes, 23 sources)
-- Key principles in TELOS/WISDOM.md (11 quotes) and MODELS.md (MO12: Vertical Stack)
-- **ВШИТО в CLAUDE.md (строки 67-77):** 5 операционных принципов (Philosophy секция, загружается каждую сессию):
-  1. Scaffolding > Model — улучшай систему, не гонись за моделями
-  2. Goal → Code → CLI → Prompt → Agent — иерархия детерминизма
-  3. Job vs Gym — не автоматизируй где ценно усилие
-  4. Clarity > Complexity — ясность промптов > сложность кода
-  5. Anti-fragile Scaffolding — контекст вместо хардкода
-- **ВШИТО в AISTEERINGRULES.md (строки 150-215):** те же 5 как детальные правила (Statement/Bad/Correct)
-- **ВШИТО (2026-03-03, Phase 2):** 4 дополнительных правила из TELOS (результат Council Debate):
-  1. MO11: Ясность > дипломатия (CLAUDE.md #6, AISTEERINGRULES строки 215-224)
-  2. C3+W5: Один фокус + анти-перфекционизм (CLAUDE.md #7, AISTEERINGRULES строки 228-237)
-  3. C1: Время — дефицит, сезонность 6/1 (CLAUDE.md #8, AISTEERINGRULES строки 241-250)
-  4. Алгоритмический рост, Miessler #12 (CLAUDE.md #9, AISTEERINGRULES строки 254-263)
-- **Council Debate insight:** "Нервная система = таблица прерываний, не система убеждений. Вшивай только то что меняет решение в первые 5 минут." Убеждения (B0-B5), стратегии (S0-S7), конкретные цели (G0-G12) — на полках TELOS, НЕ вшивать.
-- **Future (Marcus):** ContextualRules.hook.ts — динамическая инжекция правил per session (сезон, проект, время суток)
-
-## Miessler Hook Refactoring (Jules task 2026-03-03)
-- **Jules session:** sessions/14113504585497934111 — Extract hardcoded vocabularies from hooks into YAML configs
-- **A0 architecture review (context Gf7GAGQi):** Multiple YAML files by domain + shared yamlConfig.ts loader (copy SecurityValidator pattern). RelationshipMemory → LLM primary + regex fallback
-- **Z.AI consensus:** YAML (comments support), multiple files, eager-load at startup, fail-fast
-- **7 противоречий найдены аудитом:** AutoWorkCreation (хардкод фаз), AlgorithmTracker (PHASE_MAP), RatingCapture (word lists), WisdomSync (DOMAIN_KEYWORDS), PostCompactRecovery (строка с фазами), AutoWorkCreation (два effort-словаря), RelationshipMemory (regex vs LLM)
-- **Check Jules status:** `bun skills/Utilities/Jules/Tools/JulesAPI.ts status sessions/14113504585497934111`
+## Miessler Philosophy — EMBEDDED (2026-03-03)
+- 9 principles in CLAUDE.md Philosophy section (loaded every session)
+- Full reference: `MEMORY/RESEARCH/2026-03/miessler-philosophy.md`
+- Council Debate insight: "Нервная система = таблица прерываний. Вшивай только то что меняет решение в первые 5 минут."
+- YAML refactoring: Jules PR #16 merged (vocabularies extracted)
 
 ## Architecture (v4.0.3)
 - 3-layer mode classification: ModeClassifier hook (regex) -> Complexity Gate (LLM) -> Algorithm file
-- Hooks: 30 files (.hook.ts), all defensive/fail-open, ALL must have chmod +x. EventLogger.hook.ts handles SubagentStart/SubagentStop/TaskCompleted via routing table
+- Hooks: 30 files (.hook.ts), all defensive/fail-open, ALL must have chmod +x. EventLogger.hook.ts handles SubagentStart/SubagentStop/TaskCompleted/InstructionsLoaded/TeammateIdle via routing table
 - Memory: MEMORY/ (LEARNING, WISDOM, RELATIONSHIP, WORK, STATE, SECURITY)
 - TELOS: PAI/USER/TELOS/ — 23 файла (MISSION, GOALS, CHALLENGES, STRATEGIES, BELIEFS, MODELS, NARRATIVES, PROJECTS, IDEAS, PREDICTIONS, STATUS, WISDOM, FRAMES, BOOKS, MOVIES, LEARNED, TRAUMAS, WRONG, PROBLEMS, README, updates). TELOS.md — только index/шаблон, данные в отдельных файлах!
 - Context: loadAtStartup (3 files) + CONTEXT_ROUTING.md (on-demand)
@@ -42,25 +23,14 @@
 - Security: patterns.yaml in PAI/USER/PAISECURITYSYSTEM/ (REQUIRED for SecurityValidator)
 - Events: events.jsonl append-only log (270+ events, 12 types). Consumer: `bun PAI/Tools/EventStats.ts` (types/daily/sources/recent/overview). PRDSync has change detection — only emits on real structural changes (phase/progress/task/effort/criteria)
 - Inference: 5 providers via `bun PAI/Tools/Inference.ts --level <fast|standard|smart|gemini|glm5>` (3 companies: Anthropic, Google, Zhipu AI)
-- Tests: hooks/tests/ with harness.ts, 171 tests across 34 suites (84 original + 52 from Jules batch 1-3 + 17 tool tests + 8 PR#6 + 10 EventRotation)
+- Tests: hooks/tests/ with harness.ts, 230 tests across 40 suites
+- **v2.1.70 settings**: `includeGitInstructions: false` (saves ~2K tokens), InstructionsLoaded/TeammateIdle hooks in EventLogger
+- **TeammateIdle**: responds `{"continue": false}` to stop idle teammates automatically
+- **Claude Code v2.1.70 features used**: HTTP hook type, InstructionsLoaded event, TeammateIdle event, agent_type in SubagentStop, `${CLAUDE_SKILL_DIR}` variable
 - JulesAutoMerge: `bun PAI/Tools/JulesAutoMerge.ts check|merge|status` — auto-tests in worktree, merges passing PRs
 
-## Known Issues (resolved)
-- ~~Wisdom pipeline disconnected~~ → WisdomSync.hook.ts created, ratings → WISDOM + FRAMES
-- ~~RelationshipMemory wrong event~~ → moved from SessionEnd to Stop
-- ~~TrendingAnalysis.ts missing~~ → restored from v3 backup to tools/
-- ~~.env symlink missing~~ → restored ~/.claude/.env → ~/.config/PAI/.env
-- ~~WISDOM/FRAMES/ missing~~ → 5 frames bootstrapped from JSON
-- ~~WisdomSync permission denied~~ → chmod +x (2026-03-02)
-- ~~PreCompact permission denied~~ → chmod +x (2026-03-02)
-- ~~SecurityValidator fail-open~~ → created patterns.yaml (2026-03-02)
-- ~~RatingCapture 52% false-positive 5s~~ → prompt fix + data cleanup, 192→92 entries (2026-03-02)
-- ~~settings.json in readOnly~~ → moved to confirmWrite in patterns.yaml (2026-03-02)
-- ~~PRDSync 40% event noise~~ → change detection added, only syncs on structural changes (2026-03-02, 037c79d)
-- ~~CRIT-01: SecurityValidator triple fail-open~~ → hardcoded fallback blocks, timeout 500ms (2026-03-03, b8d9551)
-- ~~CRIT-02: WorktreeRemove path traversal~~ → resolve() + trailing slash (2026-03-03, b8d9551)
-- ~~HIGH-01: LoadContext 20s blocking~~ → timeout 20s→5s, ghQuery 15s→4s (2026-03-03, 8d95338)
-- ~~HIGH-03: Silent catch blocks~~ → Jules PR #11 добавил error logging (2026-03-03)
+## Known Issues (resolved — archive, all fixed pre-2026-03-06)
+- All 15 historical issues resolved. Details in git history (commits b8d9551, 8d95338, 037c79d, d376658)
 
 ## Development Patterns (CRITICAL)
 - **TUI/Kitty Visual Verification Pattern (CRITICAL, 9/10 rated)**:
@@ -75,7 +45,7 @@
 - **Kitty symlinks**: скрипты в `~/.claude/config/kitty/` должны быть слинкованы в `~/.config/kitty/`. Новые файлы (lib/*.sh) НЕ линкуются автоматически — создавать `ln -sf` руками
 - **Always chmod +x** new .hook.ts files — shell executes them directly via shebang
 - **Always create patterns.yaml** when setting up SecurityValidator — без него система декоративна
-- **Always run `bun test hooks/tests/`** after hook changes — 171 tests across 34 suites verify nervous system
+- **Always run `bun test hooks/tests/`** after hook changes — 230 tests across 40 suites verify nervous system
 - **getPaiDir()** from lib/paths.ts — canonical way to get PAI base dir. 11 hooks migrated (2026-03-02). Only harness.ts and notifications.ts still use direct env access
 - **WorktreeCreate/Remove — FUNCTIONAL hooks** (не notification!). WorktreeCreate ЗАМЕНЯЕТ встроенный git worktree add. ОБЯЗАН: создать worktree + вывести путь на stdout. Пустой stdout = agent spawn failure. Починено 2026-03-02 (d376658)
 - **Pure event-only hooks → EventLogger**: Хуки которые ТОЛЬКО логируют в events.jsonl должны быть handlers в EventLogger.hook.ts, а не отдельные файлы. Routing table pattern: HANDLERS[hook_event_name] → handler function
@@ -114,6 +84,7 @@
 - **PR #864**: fix/PAIUpgrade — hardcoded skill path after v3→v4 migration (OPEN)
 - **PR #882**: fix(hooks) — UTF-16 surrogate pair splitting in RatingCapture (OPEN)
 - **PR #883**: docs — fix dead references in CONTEXT_ROUTING.md (OPEN)
+- **PR #918**: feat(hooks) — unified event system with typed events and routing table (OPEN)
 - **JulesAutoMerge --admin**: Required for PAI-personal repo — нужно добавить флаг в pipeline
 - **Jules Coding Plan task** (sessions/16877413060062799985): MEDIUM fixes MED-03/05/10 — IN_PROGRESS
 
@@ -172,6 +143,7 @@
 - **JulesAutoMerge A0 review**: Встроен — после тестов A0 ревьюит diff (16.9с, 4 issues found in test). HIGH severity блокирует merge. Если A0 unreachable — proceed (fail-open)
 - **Best for**: Deep research, code execution, browser tasks, document generation, DevOps, scheduled maintenance, code review
 - **NOT for**: Real-time interactive work (22s latency), settings changes (CSRF), sensitive PAI config
+- **Context sync (2026-03-06)**: Old TELOS/ULC/master_plan cleaned. New compact context saved in A0 memory (brigade-context-2026-03-06). A0 does NOT store TELOS copy — Navi sends context with each task. Variant A (minimal) architecture.
 
 ## Voice System (ElevenLabs Creator plan, 2026-03-03)
 - **API key**: ~/.config/PAI/.env → ELEVENLABS_API_KEY (Creator plan, 100K chars/month)
@@ -203,19 +175,27 @@
 - **Алиасы с прокси**: `pai` (Claude), `gemi` (Gemini), `oc` (OpenCode) — все через NL VPS
 - **Ivan хочет**: Каждый инструмент на своём месте, Navi управляет автономно
 
-## Стратегические направления (следующие сессии)
-1. ~~Z.AI pipeline~~ ✅ review в JulesAutoMerge + ZaiVision CLI
-2. ~~JulesAutoMerge merge~~ ✅ --squash→--merge для OAuth token (5a2d2cb)
-3. **events.jsonl rotation** — Jules sessions/9845240183732572243 (10 тестов готовы)
-4. ~~fetch timeout~~ ✅ Jules PR #19 merged
-5. **Upstream PR follow-up** — 7 PR, пинг maintainer 5-6 марта
-6. **LOW findings (8 шт)** — батчить
-7. **A0 scheduled tasks** — weekly security scan, daily health check
-8. **ContextualRules.hook.ts** — Фаза B, динамическая инжекция правил
+## A0 Results Pipeline (2026-03-06)
+- **Git = Message Bus**: A0 пушит результаты в PAI-personal → Navi pullит при старте сессии
+- **LoadContext auto-pull**: `git fetch private` + `checkout MEMORY/STATE/` при каждом SessionStart
+- **Brigade Briefing**: читает 5 типов отчётов A0 (telos-integrity, telos-progress, learning-patterns, memory-compaction, memory-audit)
+- **AgentZero.ts poll**: `bun PAI/Tools/AgentZero.ts poll` — ручная проверка результатов
+- **Async fix**: timeout 15→30с + graceful "delivered" при timeout (не crash)
+- **5 scheduled задач** готовы (шаблоны в `MEMORY/STATE/a0-scheduled-tasks-templates.json`), нужно добавить через A0 web UI
+- **A0 comms research**: отправлена задача A0 на исследование API со своей стороны → `MEMORY/STATE/a0-comms-research.json`
 
-## Session Patterns
-- Rating trend: UP (last 7d avg 6.6/10, last 10: 7.4/10, today: 9/10)
-- Common frustration: English responses when Russian expected
-- Common success: parallel agent delegation for audits, council debates for strategy
-- Ivan wants: активное использование Z.AI, Gemini, Coding Plan — все инструменты бригады
-- **Key insight (2026-03-03):** Совет оптимизирует эффективность, Ivan хочет синергетический рост. Всегда проверять: "это защитное правило или генеративное?" Нужны ОБА типа.
+## Jules Stats (2026-03-02 → 2026-03-06)
+- 30 задач, 28 completed (93%), 17 PR merged (59%), 9 PR closed (31%)
+- +2521/-566 строк, 65 новых тестов (170→235)
+- **Best for**: тесты, mechanical refactoring, shellcheck, documentation updates
+- **Not for**: architecture, complex context, runtime understanding
+- Подробный анализ: see session 2026-03-06
+
+## Стратегические направления
+1. ~~events.jsonl rotation~~ ✅ Jules PR #27 merged
+2. **A0 scheduled tasks** — 5 шаблонов готовы, добавить через web UI
+3. **A0 comms research** — ждём ответ, потом решаем по async endpoint
+4. **Upstream PR follow-up** — 7 PR open
+5. **LOW findings** — Jules task IN_PROGRESS (sessions/12941660201152098257)
+6. **ContextualRules.hook.ts** — Фаза B, динамическая инжекция правил
+7. **MEMORY.md compaction** — 225 строк, truncated, нужна чистка
