@@ -1,6 +1,7 @@
 ---
 name: USMetrics
 description: 68 US economic indicators from FRED, EIA, Treasury, BLS, Census APIs with trend analysis and cross-metric correlation. Updates Substrate dataset, produces economic overviews. USE WHEN GDP, inflation, unemployment, economic metrics, gas prices, how is the economy, update data, refresh data, get current state, economic overview, FRED, fetch FRED series, generate analysis, update substrate metrics, US metrics, economic trends.
+disable-model-invocation: true
 ---
 
 ## Customization
@@ -68,7 +69,7 @@ Running the **WorkflowName** workflow in the **USMetrics** skill to ACTION...
 
 **Execution:**
 ```bash
-bun ~/.claude/skills/USMetrics/Tools/UpdateSubstrateMetrics.ts
+bun ${CLAUDE_SKILL_DIR}/Tools/UpdateSubstrateMetrics.ts
 ```
 
 **Outputs:**

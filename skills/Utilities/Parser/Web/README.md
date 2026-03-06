@@ -24,7 +24,7 @@ A web interface for the parser skill that allows you to input URLs, track parsin
 ### Start the Server
 
 ```bash
-cd ~/.claude/skills/parser/web
+cd ${CLAUDE_SKILL_DIR}/web
 python3 -m http.server 3000
 ```
 

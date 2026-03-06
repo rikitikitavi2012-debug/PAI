@@ -19,19 +19,19 @@ From user's request, determine the filter:
 ### 2. List Sessions
 
 ```bash
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts sessions [FILTER]
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts sessions [FILTER]
 ```
 
 Examples:
 ```bash
 # All sessions
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts sessions
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts sessions
 
 # Only in-progress
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts sessions IN_PROGRESS
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts sessions IN_PROGRESS
 
 # Only completed
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts sessions COMPLETED
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts sessions COMPLETED
 ```
 
 ### 3. Get Details (Optional)
@@ -39,7 +39,7 @@ bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts sessions COMPLETED
 If the user asks about a specific session:
 
 ```bash
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts status SESSION_ID
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts status SESSION_ID
 ```
 
 This returns full JSON with:

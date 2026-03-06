@@ -73,7 +73,7 @@ PAI uses a **hybrid agent system** that combines:
 **Trigger words:** "custom agents", "custom", "specialized agents with different expertise"
 
 **What happens:**
-1. Run `bun run ~/.claude/skills/Agents/Tools/ComposeAgent.ts` for EACH agent
+1. Run `bun run ${CLAUDE_SKILL_DIR}/Tools/ComposeAgent.ts` for EACH agent
 2. Use DIFFERENT trait combinations to get unique voices AND colors
 3. Each agent gets a personality-matched ElevenLabs voice and unique color
 4. Launch with `subagent_type: "general-purpose"` - NEVER use static types
@@ -147,9 +147,9 @@ Task(prompt="You are Dr. Nova...", subagent_type="general-purpose")
 - **Approach**: thorough, rapid, systematic, exploratory, comparative, synthesizing, adversarial, consultative
 
 **Internal Infrastructure** (for {DAIDENTITY.NAME}'s use):
-- Trait definitions: `~/.claude/skills/Agents/Data/Traits.yaml`
-- Agent template: `~/.claude/skills/Agents/Templates/DynamicAgent.hbs`
-- Composition tool: `~/.claude/skills/Agents/Tools/ComposeAgent.ts`
+- Trait definitions: `${CLAUDE_SKILL_DIR}/Data/Traits.yaml`
+- Agent template: `${CLAUDE_SKILL_DIR}/Templates/DynamicAgent.hbs`
+- Composition tool: `${CLAUDE_SKILL_DIR}/Tools/ComposeAgent.ts`
 
 ---
 

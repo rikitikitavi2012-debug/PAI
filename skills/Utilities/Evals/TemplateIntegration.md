@@ -20,8 +20,8 @@ Use the JUDGE template for custom evaluation:
 ```bash
 bun run ~/.claude/Templates/Tools/RenderTemplate.ts \
   -t Evals/Judge.hbs \
-  -d ~/.claude/skills/Utilities/Evals/UseCases/<name>/judge-config.yaml \
-  -o ~/.claude/skills/Utilities/Evals/UseCases/<name>/judge-prompt.md
+  -d ${CLAUDE_SKILL_DIR}/UseCases/<name>/judge-config.yaml \
+  -o ${CLAUDE_SKILL_DIR}/UseCases/<name>/judge-prompt.md
 ```
 
 ### Judge Config Example
@@ -57,8 +57,8 @@ Use the RUBRIC template for scoring criteria:
 ```bash
 bun run ~/.claude/Templates/Tools/RenderTemplate.ts \
   -t Evals/Rubric.hbs \
-  -d ~/.claude/skills/Utilities/Evals/UseCases/<name>/rubric.yaml \
-  -o ~/.claude/skills/Utilities/Evals/UseCases/<name>/rubric.md
+  -d ${CLAUDE_SKILL_DIR}/UseCases/<name>/rubric.yaml \
+  -o ${CLAUDE_SKILL_DIR}/UseCases/<name>/rubric.md
 ```
 
 ---

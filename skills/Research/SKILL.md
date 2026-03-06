@@ -1,6 +1,7 @@
 ---
 name: Research
 description: Comprehensive research and content extraction — quick/standard/extensive/deep modes with multi-agent parallel research, content retrieval, AI trends analysis, and 242+ Fabric patterns. USE WHEN research, do research, quick research, extensive research, deep investigation, find information, investigate, extract alpha, analyze content, retrieve content, use fabric, AI trends, Claude research, enhance content, extract knowledge, interview research, web scraping, YouTube extraction, standard research.
+context: fork
 ---
 
 ## ⚠️ MANDATORY TRIGGER

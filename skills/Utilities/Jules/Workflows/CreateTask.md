@@ -29,13 +29,13 @@ grep "JULES_API_KEY" ~/.config/PAI/.env > /dev/null 2>&1 || echo "ERROR: JULES_A
 Run the Jules API tool:
 
 ```bash
-bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts create "TASK_PROMPT_HERE"
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts create "TASK_PROMPT_HERE"
 ```
 
 **Override repo/branch if needed:**
 ```bash
 JULES_REPO="sources/github/OWNER/REPO" JULES_BRANCH="branch-name" \
-  bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts create "TASK_PROMPT_HERE"
+  bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts create "TASK_PROMPT_HERE"
 ```
 
 ### 4. Report Result

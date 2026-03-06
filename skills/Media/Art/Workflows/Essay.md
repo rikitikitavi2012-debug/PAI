@@ -143,7 +143,7 @@ Or use the slash command:
 **Read the aesthetic file and select the appropriate emotional vocabulary.**
 
 ```bash
-Read ~/.claude/skills/Media/Art/SKILL.md
+Read ${CLAUDE_SKILL_DIR}/SKILL.md
 ```
 
 **Match the contVent to one of these emotional registers:**
@@ -432,7 +432,7 @@ Before generating, verify:
 
 ```bash
 # ALWAYS output to Downloads first for user to review in Preview
-bun run ~/.claude/skills/art/Tools/Generate.ts \
+bun run ${CLAUDE_SKILL_DIR}/Tools/Generate.ts \
   --model nano-banana-pro \
   --prompt "[YOUR PROMPT]" \
   --size 2K \
@@ -450,7 +450,7 @@ cp ~/Downloads/[name]-thumb.png ${PROJECTS_DIR}/YourWebsite/cms/public/images/
 Based on user's request and the mapping tables above, construct the CLI command:
 
 ```bash
-bun run ~/.claude/skills/art/Tools/Generate.ts \
+bun run ${CLAUDE_SKILL_DIR}/Tools/Generate.ts \
   --model [SELECTED_MODEL from table] \
   --prompt "[PROMPT from Step 5]" \
   --size [SELECTED_SIZE] \
@@ -471,7 +471,7 @@ The `--thumbnail` flag generates TWO versions:
 
 ```bash
 # Example: Generates both header.png AND header-thumb.png
-bun run ~/.claude/skills/art/Tools/Generate.ts \
+bun run ${CLAUDE_SKILL_DIR}/Tools/Generate.ts \
   --model nano-banana-pro \
   --prompt "[YOUR PROMPT]" \
   --size 2K \

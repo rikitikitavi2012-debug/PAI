@@ -596,7 +596,7 @@ Optional: Sign small in bottom right corner in charcoal (#2D2D2D).
 **Construct command based on intent:**
 
 ```bash
-bun run ~/.claude/skills/art/Tools/Generate.ts \
+bun run ${CLAUDE_SKILL_DIR}/Tools/Generate.ts \
   --model [SELECTED_MODEL] \
   --prompt "[YOUR COMPREHENSIVE PROMPT]" \
   --size [SELECTED_SIZE] \
