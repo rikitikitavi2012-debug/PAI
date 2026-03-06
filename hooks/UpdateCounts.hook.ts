@@ -15,7 +15,19 @@ import { handleUpdateCounts } from './handlers/UpdateCounts';
 
 async function main() {
   try {
-    await handleUpdateCounts();
+    const raw = await Bun.stdin.text();
+    let sessionCostUsd: number | undefined;
+    if (raw) {
+      try {
+        const input = JSON.parse(raw);
+        if (input.cost && typeof input.cost.session_cost_usd === 'number') {
+          sessionCostUsd = input.cost.session_cost_usd;
+        }
+      } catch (err) {
+        // Ignored
+      }
+    }
+    await handleUpdateCounts(sessionCostUsd);
   } catch (err) {
     console.error('[UpdateCounts] Error:', err);
   }

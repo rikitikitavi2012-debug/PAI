@@ -277,21 +277,29 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: modelId,
-        max_tokens: 4096,
-        system: options.systemPrompt,
-        messages: [{ role: 'user', content: options.userPrompt }],
-      }),
-      signal: controller.signal,
-    });
+    let response: Response;
+    if (process.env.ANTHROPIC_MOCK_FETCH === '1') {
+      const mockText = options.expectJson ? '{"status": "mocked claude json"}' : 'mocked claude response';
+      response = new Response(JSON.stringify({
+        content: [{ text: mockText }]
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+    } else {
+      response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: modelId,
+          max_tokens: 4096,
+          system: options.systemPrompt,
+          messages: [{ role: 'user', content: options.userPrompt }]
+        }),
+        signal: controller.signal
+      });
+    }
 
     clearTimeout(timeoutId);
     const latencyMs = Date.now() - startTime;

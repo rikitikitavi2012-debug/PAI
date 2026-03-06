@@ -245,7 +245,7 @@ async function refreshUsageCache(paiDir: string): Promise<void> {
 /**
  * Handler called by UpdateCounts.hook.ts
  */
-export async function handleUpdateCounts(): Promise<void> {
+export async function handleUpdateCounts(sessionCostUsd?: number): Promise<void> {
   const paiDir = getPaiDir();
   const settingsPath = getSettingsPath();
 
@@ -261,6 +261,11 @@ export async function handleUpdateCounts(): Promise<void> {
 
     // Update counts section
     settings.counts = counts;
+
+    if (sessionCostUsd !== undefined) {
+      settings.cost = settings.cost || {};
+      settings.cost.session_cost_usd = sessionCostUsd;
+    }
 
     // Extract and write Algorithm version from CLAUDE.md
     try {
