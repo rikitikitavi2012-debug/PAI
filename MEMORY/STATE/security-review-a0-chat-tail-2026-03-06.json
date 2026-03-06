@@ -1,0 +1,71 @@
+{
+  "file": "config/kitty/scripts/a0-chat-tail.sh",
+  "review_date": "2026-03-06T23:41:00Z",
+  "severity": "MEDIUM",
+  "reviewer": "A0",
+  "issues": {
+    "high": [
+      {
+        "id": 1,
+        "type": "security",
+        "description": "Token exposed via environment - A0_TOKEN visible in process list when curl executes",
+        "lines": "39-43",
+        "recommendation": "Use .netrc or pass token via file descriptor"
+      }
+    ],
+    "medium": [
+      {
+        "id": 2,
+        "type": "security",
+        "description": "Unquoted variables ($CTX_ID, $msg) - word splitting risk",
+        "lines": "multiple"
+      },
+      {
+        "id": 3,
+        "type": "security",
+        "description": "jq injection potential - variables in jq without sanitization",
+        "lines": "189-199"
+      },
+      {
+        "id": 4,
+        "type": "quality",
+        "description": "read -r without validation - user input not validated before use",
+        "lines": "139, 212, 227"
+      }
+    ],
+    "low": [
+      {
+        "id": 5,
+        "type": "quality",
+        "description": "Missing strict mode - add set -euo pipefail",
+        "lines": "start"
+      },
+      {
+        "id": 6,
+        "type": "quality",
+        "description": "No file existence check for $A0_CLI",
+        "lines": "47"
+      },
+      {
+        "id": 7,
+        "type": "quality",
+        "description": "Sourcing external ui.sh without existence check",
+        "lines": "51"
+      },
+      {
+        "id": 8,
+        "type": "config",
+        "description": "Hardcoded A0_HOST - better to use config file",
+        "lines": "11"
+      }
+    ]
+  },
+  "positives": [
+    "API token not hardcoded - loaded from .env",
+    "Uses read -r (raw mode) for input",
+    "curl --max-time 10 - timeout protection",
+    "Proper jq error handling via 2>/dev/null",
+    "NO_PROXY for VPN bypass - good practice"
+  ],
+  "verdict": "Usable with recommended improvements"
+}
