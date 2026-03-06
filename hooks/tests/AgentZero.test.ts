@@ -48,8 +48,12 @@ describe('AgentZero CLI Tool', () => {
         if (url.pathname === '/api_message') {
           return Response.json({ context_id: 'ctx-1', response: 'mock response' });
         }
-        // message_async is replaced by api_message in updated tool
-        // so no explicit message_async route needed, mock /api_message instead handles it
+        if (url.pathname === '/message_async') {
+          return Response.json({ message: 'Message received.', context: 'ctx-async-1' });
+        }
+        if (url.pathname === '/poll') {
+          return Response.json({ contexts: [], tasks: [], log_progress: 0 });
+        }
         if (url.pathname === '/api_log_get') {
           return Response.json({ log: ['msg1', 'msg2'] });
         }
@@ -244,7 +248,7 @@ describe('AgentZero CLI Tool', () => {
 
       const contextPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'a0-active-context.json');
       const contextState = JSON.parse(require('fs').readFileSync(contextPath, 'utf-8'));
-      expect(contextState.context_id).toBe('ctx-1');
+      expect(contextState.context_id).toBe('ctx-async-1');
       expect(contextState.last_message).toBe('Long job task');
 
       cleanupTempDir(emitDir);
@@ -336,12 +340,13 @@ describe('AgentZero CLI Tool', () => {
 
     expect(proc.exitCode).toBe(0);
     const result = JSON.parse(stdout);
-    expect(result.context_id).toBe('ctx-1');
+    expect(result.context_id).toBe('ctx-async-1');
+    expect(result.status).toBe('delivered');
 
     expect(requestLogs.length).toBe(1);
-    expect(requestLogs[0].path).toBe('/api_message');
-    expect(requestLogs[0].body.message).toBe('Long job');
-    expect(requestLogs[0].body.lifetime_hours).toBe(1);
+    expect(requestLogs[0].path).toBe('/message_async');
+    expect(requestLogs[0].body.text).toBe('Long job');
+    expect(requestLogs[0].body.context).toBe('new');
   });
 
   it('log command parses arguments and sends correct API call', async () => {

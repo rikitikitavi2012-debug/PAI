@@ -164,37 +164,55 @@ async function sendMessage(message: string, contextId?: string): Promise<void> {
   }, null, 2));
 }
 
-// Send async message (fire-and-forget via /api_message)
-// Strategy: try with 30s timeout first. If it times out, that's OK —
-// A0 received the message and is processing. We just didn't get the context_id back.
+// Send async message via /message_async (true fire-and-forget, returns in <1s)
+// Discovery: A0 has /message_async endpoint that immediately returns context_id
+// without waiting for task completion. Source: a0-comms-research.json
 async function sendAsync(message: string, contextId?: string): Promise<void> {
-  const body: any = { message, lifetime_hours: 1 };
-  if (contextId) body.context_id = contextId;
+  const body: any = { text: message, context: contextId || 'new' };
 
   emitA0Event('async_sent', { context_id: contextId || 'new', preview: message.slice(0, 50) });
 
   try {
-    const result = await apiCall('/api_message', body, 30000);
+    const result = await apiCall('/message_async', body, 10000);
+    const ctx = result.context || result.context_id;
 
-    // Track context if returned
-    if (result.context_id) {
-      saveActiveContext(result.context_id, message);
+    if (ctx) {
+      saveActiveContext(ctx, message);
     }
 
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify({
+      status: 'delivered',
+      context_id: ctx || 'unknown',
+      message: result.message || 'Task accepted',
+    }, null, 2));
+    emitA0Event('async_delivered', { context_id: ctx || 'unknown' });
   } catch (err: any) {
-    if (err.message?.includes('Timeout')) {
-      // A0 received the message but is still processing — this is expected for async
-      console.log(JSON.stringify({
-        status: 'delivered',
-        note: 'A0 is processing (response timeout is normal for async tasks)',
-        context_id: contextId || 'new',
-      }, null, 2));
-      emitA0Event('async_delivered', { context_id: contextId || 'new', timeout: true });
-    } else {
-      throw err;
+    // Fallback to blocking /api_message with graceful timeout
+    console.error('⚠️ /message_async failed, falling back to /api_message...');
+    try {
+      const result = await apiCall('/api_message', { message, lifetime_hours: 1, ...(contextId ? { context_id: contextId } : {}) }, 30000);
+      if (result.context_id) saveActiveContext(result.context_id, message);
+      console.log(JSON.stringify(result, null, 2));
+    } catch (fallbackErr: any) {
+      if (fallbackErr.message?.includes('Timeout')) {
+        console.log(JSON.stringify({ status: 'delivered', note: 'A0 is processing (timeout on fallback)', context_id: contextId || 'new' }, null, 2));
+        emitA0Event('async_delivered', { context_id: contextId || 'new', timeout: true });
+      } else {
+        throw fallbackErr;
+      }
     }
   }
+}
+
+// Poll A0 for task/context status (snapshot: logs, progress, notifications)
+async function pollStatus(contextId?: string): Promise<void> {
+  const body: any = {};
+  if (contextId) body.context = contextId;
+  body.log_from = 0;
+  body.notifications_from = 0;
+
+  const result = await apiCall('/poll', body, 10000);
+  console.log(JSON.stringify(result, null, 2));
 }
 
 // Get conversation log
@@ -299,11 +317,12 @@ async function main() {
     console.error(`Usage:
   bun AgentZero.ts message "Your task"           — sync (blocks up to 5min)
   bun AgentZero.ts message "Text" --context ID   — continue conversation
-  bun AgentZero.ts async "Long task"             — fire-and-forget
+  bun AgentZero.ts async "Long task"             — fire-and-forget (<1s ack)
+  bun AgentZero.ts status [context_id]           — poll A0 for task progress
   bun AgentZero.ts log <context_id>              — conversation log
   bun AgentZero.ts terminate <context_id>        — end conversation
   bun AgentZero.ts health                        — server check
-  bun AgentZero.ts poll                          — pull & show A0 results
+  bun AgentZero.ts poll                          — pull git & show A0 results
   bun AgentZero.ts scheduler list                — list tasks
   bun AgentZero.ts scheduler results             — last run results for all tasks
   bun AgentZero.ts scheduler run "task"          — run ad-hoc task`);
@@ -330,6 +349,12 @@ async function main() {
       const ctxIdx = args.indexOf('--context');
       const contextId = ctxIdx >= 0 ? args[ctxIdx + 1] : undefined;
       await sendAsync(message, contextId);
+      break;
+    }
+
+    case 'status': {
+      const contextId = args[1];
+      await pollStatus(contextId);
       break;
     }
 
