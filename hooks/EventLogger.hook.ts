@@ -4,12 +4,14 @@
  *
  * PURPOSE:
  * Single hook that handles multiple Claude Code events that only need
- * logging to events.jsonl. Replaces 3 separate pure-logger hooks:
- * - SubagentStart → agent.start
- * - SubagentStop  → agent.stop
- * - TaskCompleted → task.completed
+ * logging to events.jsonl. Replaces separate pure-logger hooks:
+ * - SubagentStart    → agent.start
+ * - SubagentStop     → agent.stop
+ * - TaskCompleted    → task.completed
+ * - InstructionsLoaded → instructions.loaded (v2.1.69+)
+ * - TeammateIdle     → teammate.idle (v2.1.69+, responds with continue:false for long-idle)
  *
- * TRIGGERS: SubagentStart, SubagentStop, TaskCompleted
+ * TRIGGERS: SubagentStart, SubagentStop, TaskCompleted, InstructionsLoaded, TeammateIdle
  *
  * ROUTING: Uses hook_event_name from stdin JSON to determine event type.
  * Falls back to custom.unknown for unrecognized events.
@@ -57,6 +59,7 @@ function handleSubagentStop(input: Record<string, unknown>): void {
     type: 'agent.stop',
     source: 'EventLogger',
     agent_id: input.agent_id as string | undefined,
+    agent_type: input.agent_type as string | undefined,
     transcript_path: (input.agent_transcript_path || input.transcript_path) as string | undefined,
     last_message_preview: preview || undefined,
   });
@@ -71,12 +74,42 @@ function handleTaskCompleted(input: Record<string, unknown>): void {
   });
 }
 
+function handleInstructionsLoaded(input: Record<string, unknown>): void {
+  const files = Array.isArray(input.files) ? input.files.map(String) : [];
+  appendEvent({
+    type: 'instructions.loaded',
+    source: 'EventLogger',
+    files: files.length > 0 ? files : undefined,
+    count: files.length || undefined,
+  });
+}
+
+function handleTeammateIdle(input: Record<string, unknown>): void {
+  appendEvent({
+    type: 'teammate.idle',
+    source: 'EventLogger',
+    agent_id: input.agent_id as string | undefined,
+    idle_reason: input.idle_reason as string | undefined,
+  });
+}
+
 // ── Routing table ──
 
 const HANDLERS: Record<string, (input: Record<string, unknown>) => void> = {
   SubagentStart: handleSubagentStart,
   SubagentStop: handleSubagentStop,
   TaskCompleted: handleTaskCompleted,
+  InstructionsLoaded: handleInstructionsLoaded,
+  TeammateIdle: handleTeammateIdle,
+};
+
+// ── Response generators (hooks that need to output JSON to stdout) ──
+
+const RESPONDERS: Record<string, (input: Record<string, unknown>) => object | null> = {
+  TeammateIdle: () => {
+    // Stop idle teammates — they consume resources without progress
+    return { continue: false, stopReason: 'PAI: teammate idle timeout' };
+  },
 };
 
 // ── Main ──
@@ -99,6 +132,15 @@ async function main() {
         source: 'EventLogger',
         hook_event_name: eventName,
       } as any);
+    }
+
+    // Some events expect a JSON response on stdout
+    const responder = RESPONDERS[eventName];
+    if (responder) {
+      const response = responder(input);
+      if (response) {
+        process.stdout.write(JSON.stringify(response));
+      }
     }
 
     process.exit(0);

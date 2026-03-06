@@ -155,6 +155,63 @@ describe('EventLogger', () => {
     expect((evt?.last_message_preview as string).length).toBe(200);
   });
 
+  test('InstructionsLoaded handler logs file paths', async () => {
+    const result = await runHook(hook, {
+      hook_event_name: 'InstructionsLoaded',
+      files: ['CLAUDE.md', '.claude/rules/security.md'],
+    }, { PAI_DIR: tempDir });
+    expect(result.exitCode).toBe(0);
+    const evt = lastEvent();
+    expect(evt?.type).toBe('instructions.loaded');
+    expect(evt?.source).toBe('EventLogger');
+    expect(evt?.files).toEqual(['CLAUDE.md', '.claude/rules/security.md']);
+    expect(evt?.count).toBe(2);
+  });
+
+  test('InstructionsLoaded with no files logs without files field', async () => {
+    const result = await runHook(hook, {
+      hook_event_name: 'InstructionsLoaded',
+    }, { PAI_DIR: tempDir });
+    expect(result.exitCode).toBe(0);
+    const evt = lastEvent();
+    expect(evt?.type).toBe('instructions.loaded');
+    expect(evt?.files).toBeUndefined();
+  });
+
+  test('TeammateIdle handler logs event and responds with continue:false', async () => {
+    const result = await runHook(hook, {
+      hook_event_name: 'TeammateIdle',
+      agent_id: 'teammate-stuck-001',
+      idle_reason: 'waiting_for_input',
+    }, { PAI_DIR: tempDir });
+    expect(result.exitCode).toBe(0);
+
+    // Check event logged
+    const evt = lastEvent();
+    expect(evt?.type).toBe('teammate.idle');
+    expect(evt?.agent_id).toBe('teammate-stuck-001');
+    expect(evt?.idle_reason).toBe('waiting_for_input');
+
+    // Check stdout has continue:false response
+    const stdout = result.stdout.trim();
+    const response = JSON.parse(stdout);
+    expect(response.continue).toBe(false);
+    expect(response.stopReason).toContain('idle timeout');
+  });
+
+  test('SubagentStop includes agent_type field', async () => {
+    const result = await runHook(hook, {
+      hook_event_name: 'SubagentStop',
+      agent_id: 'test-agent-typed',
+      agent_type: 'Engineer',
+      last_assistant_message: 'Done with changes',
+    }, { PAI_DIR: tempDir });
+    expect(result.exitCode).toBe(0);
+    const evt = lastEvent();
+    expect(evt?.type).toBe('agent.stop');
+    expect(evt?.agent_type).toBe('Engineer');
+  });
+
   test('executes under 500ms', async () => {
     const result = await runHook(hook, {
       hook_event_name: 'SubagentStart',

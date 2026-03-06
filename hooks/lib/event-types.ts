@@ -151,6 +151,7 @@ export interface AgentStartEvent extends BaseEvent {
 export interface AgentStopEvent extends BaseEvent {
   type: 'agent.stop';
   agent_id?: string;
+  agent_type?: string;
   transcript_path?: string;
   duration_ms?: number;
   last_message_preview?: string;
@@ -268,6 +269,22 @@ export interface AutoMergeCycleEvent extends BaseEvent {
   failed?: number;
 }
 
+// ── Instructions Events ──
+
+export interface InstructionsLoadedEvent extends BaseEvent {
+  type: 'instructions.loaded';
+  files?: string[];
+  count?: number;
+}
+
+// ── Teammate Events ──
+
+export interface TeammateIdleEvent extends BaseEvent {
+  type: 'teammate.idle';
+  agent_id?: string;
+  idle_reason?: string;
+}
+
 // ── Custom Events ──
 
 export interface CustomEvent extends BaseEvent {
@@ -307,6 +324,8 @@ export type PAIEvent =
   | PrTestedEvent
   | A0HealthCheckEvent
   | AutoMergeCycleEvent
+  | InstructionsLoadedEvent
+  | TeammateIdleEvent
   | CustomEvent;
 
 // ── Input type for appendEvent (without auto-injected fields) ──

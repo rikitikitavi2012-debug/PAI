@@ -62,6 +62,7 @@
     ],
     "defaultMode": "default"
   },
+  "includeGitInstructions": false,
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [],
   "hooks": {
@@ -344,6 +345,26 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/WorktreeRemove.hook.ts"
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
           }
         ]
       }
@@ -850,7 +871,10 @@
       "Context compaction at phase boundaries prevents context rot — the #1 cause of late-phase failures.",
       "ISC Count Gate is mandatory. Cannot exit OBSERVE with fewer ISC than the effort tier floor.",
       "Use PAI Tools (bun PAI/Tools/*.ts) and CLI tools. Don't improvise Bash chains.",
-      "26 hooks run across the session lifecycle — security, tracking, learning, naming."
+      "30 hooks run across the session lifecycle — security, tracking, learning, naming.",
+      "InstructionsLoaded hook verifies CLAUDE.md files loaded correctly at startup.",
+      "TeammateIdle hook auto-stops idle teammates to prevent resource waste.",
+      "includeGitInstructions: false saves ~2K tokens by skipping built-in git system prompt."
     ]
   },
   "plansDirectory": "Plans/",
@@ -998,12 +1022,12 @@
     "workflows": 164,
     "hooks": 30,
     "signals": 62,
-    "files": 110,
-    "work": 118,
-    "sessions": 944,
-    "research": 12,
-    "ratings": 128,
-    "updatedAt": "2026-03-05T15:39:35.221Z"
+    "files": 111,
+    "work": 124,
+    "sessions": 1006,
+    "research": 14,
+    "ratings": 145,
+    "updatedAt": "2026-03-06T12:34:12.880Z"
   },
   "mcpServers": {
     "supabase": {
