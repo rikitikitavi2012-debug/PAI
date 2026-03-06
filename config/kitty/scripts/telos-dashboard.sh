@@ -208,9 +208,25 @@ poll() {
     [ -n "$focus_str" ] && focus_str+="  "
     focus_str+="• $focus_item"
   done < <(jq -r '.status.weeklyFocus[]? // empty' "$STATE_FILE" 2>/dev/null)
-  if [ -n "$focus_str" ]; then
-    printf "  %b%b📋 ФОКУС:%b %b%s%b\n" "$CYN" "$BLD" "$RST" "$WHT" "${focus_str:0:80}" "$RST"
+  # Phase detection
+  local phase_id phase_name phase_detail phase_color
+  local today_day today_month
+  today_day=$(date +%-d)
+  today_month=$(date +%-m)
+  if [ "$today_month" -eq 3 ] && [ "$today_day" -lt 10 ]; then
+    phase_id="A"; phase_name="Заточка"; phase_detail="PAI, Бригада, Тесты"; phase_color="$YLW"
+  elif [ "$today_month" -ge 4 ]; then
+    phase_id="S"; phase_name="Сезон"; phase_detail="P1 TF, P3 Прораб (вечера)"; phase_color="$ORG"
+  else
+    phase_id="B"; phase_name="Продукт"; phase_detail="P1 TF сайт, P3 Прораб"; phase_color="$CYN"
   fi
+  printf "  %b%b⚡ ФАЗА %s%b %b%s%b  %b%s%b" \
+    "$phase_color" "$BLD" "$phase_id" "$RST" "$WHT" "$phase_name" "$RST" "$SLT" "$phase_detail" "$RST"
+
+  if [ -n "$focus_str" ]; then
+    printf "  %b│%b %b📋%b %b%s%b" "$SEP" "$RST" "$CYN" "$RST" "$WHT" "${focus_str:0:50}" "$RST"
+  fi
+  printf "\n"
 
   printf '%b%s%b\n' "$SEP" "$(hline "$PAI_UI_WIDTH")" "$RST"
 

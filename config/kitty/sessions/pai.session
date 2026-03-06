@@ -11,13 +11,15 @@
 new_tab  🎯 TELOS
 layout splits
 cd ~
-launch --title "TELOS Dashboard" bash -c 'exec ~/.config/kitty/scripts/telos-dashboard.sh'
+launch --title "TELOS Dashboard" bash -c 'while true; do ~/.config/kitty/scripts/telos-dashboard.sh; echo "TELOS crashed, restarting in 3s..."; sleep 3; done'
 
-# ── Tab 2: Command Center — здоровье системы (LIVE) ──
+# ── Tab 2: Command Center + Strategic Dashboard (2-pane vsplit) ──
+# Layout: command-center (left) | strategic-dashboard (right)
 new_tab  ⬢ Center
-layout splits
+layout tall
 cd ~
-launch --title "Command Center" bash -c 'exec ~/.config/kitty/scripts/command-center.sh'
+launch --title "Command Center" bash -c 'while true; do ~/.config/kitty/scripts/command-center.sh; echo "CC crashed, restarting in 3s..."; sleep 3; done'
+launch --location=vsplit --title "Strategic" bash -c 'while true; do ~/.config/kitty/scripts/strategic-dashboard.sh; echo "Strategic crashed, restarting in 3s..."; sleep 3; done'
 
 # ══════════════════════════════════════════════════════════
 # 🔵 ДОМЕН: ОПЕРАЦИИ (cyan) — кто работает, где и как (табы 3-5)
@@ -28,16 +30,16 @@ launch --title "Command Center" bash -c 'exec ~/.config/kitty/scripts/command-ce
 new_tab  🤖 Brigade
 layout tall
 cd ~
-launch --title "Brigade Watch" bash -c 'exec ~/.config/kitty/scripts/brigade-watch.sh'
-launch --location=vsplit --title "A0 Chat" bash -c 'exec ~/.config/kitty/scripts/a0-chat-tail.sh'
+launch --title "Brigade Watch" bash -c 'while true; do ~/.config/kitty/scripts/brigade-watch.sh; echo "Crashed, restarting in 3s..."; sleep 3; done'
+launch --location=vsplit --title "A0 Chat" bash -c 'while true; do ~/.config/kitty/scripts/a0-chat-tail.sh; echo "Crashed, restarting in 3s..."; sleep 3; done'
 
 # ── Tab 4: Telemetry — нервная система (2-pane: events live | metrics) ──
 # Layout: events-tail (left) | telemetry-dashboard (right)
 new_tab  📡 Telemetry
 layout tall
 cd ~
-launch --title "Events Live" bash -c 'exec ~/.config/kitty/scripts/events-tail.sh'
-launch --location=vsplit --title "Telemetry" bash -c 'exec ~/.config/kitty/scripts/telemetry-dashboard.sh'
+launch --title "Events Live" bash -c 'while true; do ~/.config/kitty/scripts/events-tail.sh; echo "Crashed, restarting in 3s..."; sleep 3; done'
+launch --location=vsplit --title "Telemetry" bash -c 'while true; do ~/.config/kitty/scripts/telemetry-dashboard.sh; echo "Crashed, restarting in 3s..."; sleep 3; done'
 
 # ── Tab 5: Infra — серверы + мониторинг (4-pane grid) ──
 # Grid: agentzero (TL) | xray-vps (TR) / htop (BL) | docker (BR)

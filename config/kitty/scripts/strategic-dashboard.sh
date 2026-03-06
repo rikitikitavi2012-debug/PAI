@@ -22,7 +22,8 @@ M_ALGO_SLUG="" M_ALGO_PHASE="" M_ALGO_PROG="" M_ALGO_TOTAL=""
 M_RATE_TODAY="--" M_RATE_WEEK="--" M_RATE_MONTH="--"
 M_RATE_HIGH=0 M_RATE_LOW=0 M_RATE_TREND="=" M_RATE_COUNT=0
 M_LEARN_SIGNALS=0 M_LEARN_FAILURES=0
-M_TELOS_ACTIVE=0 M_TELOS_TOP="" M_TELOS_PROGRESS=""
+M_TELOS_ACTIVE=0 M_TELOS_GOALS_DATA="" M_TELOS_PROJECTS_DATA=""
+M_PHASE="" M_PHASE_NAME="" M_PHASE_DETAIL=""
 M_COST_FIXED=0 M_COST_API="0.00" M_COST_TOTAL="0.00"
 M_API_COST="0.00" M_COST_SUBS="" M_ELEVEN_USAGE="" M_ZAI_USAGE="" M_OR_BALANCE="" M_TW_BALANCE=""
 M_ANTHROPIC_BALANCE="" M_ANTHROPIC_SPENT="" M_ANTHROPIC_TODAY="" M_ANTHROPIC_DATE=""
@@ -102,14 +103,46 @@ compute_navi_growth() {
 }
 
 compute_telos() {
-  local goals_file="$HOME/.claude/PAI/USER/TELOS/GOALS.md"
-  [ ! -f "$goals_file" ] && return
-  M_TELOS_ACTIVE=$(grep -c '^### G[0-9]' "$goals_file" 2>/dev/null || echo 0)
-  M_TELOS_TOP=$(grep -A1 '^### G[0-9]' "$goals_file" 2>/dev/null | grep -B1 'Высокий' | head -1 | sed 's/^### G[0-9]*: //' | head -c 40)
-  local done total
-  done=$(awk '/^### G0:/,/^### G[1-9]/' "$goals_file" 2>/dev/null | grep -c '\[x\]' || echo 0)
-  total=$(awk '/^### G0:/,/^### G[1-9]/' "$goals_file" 2>/dev/null | grep -c '\[.\]' || echo 0)
-  [ "$total" -gt 0 ] && M_TELOS_PROGRESS="${done}/${total}" || M_TELOS_PROGRESS="--"
+  local state="$HOME/.claude/MEMORY/STATE/telos-state.json"
+  [ ! -f "$state" ] && return
+
+  # Phase detection: Phase A (до 10 марта) / Phase B (10+ марта)
+  local today_day
+  today_day=$(date +%-d)
+  local today_month
+  today_month=$(date +%-m)
+  if [ "$today_month" -eq 3 ] && [ "$today_day" -lt 10 ]; then
+    M_PHASE="A"
+    M_PHASE_NAME="Заточка"
+    M_PHASE_DETAIL="PAI Workspace, Бригада, Тесты"
+  elif [ "$today_month" -ge 4 ]; then
+    M_PHASE="S"
+    M_PHASE_NAME="Сезон 6/1"
+    M_PHASE_DETAIL="P1 TF сайт, P3 Прораб (вечера)"
+  else
+    M_PHASE="B"
+    M_PHASE_NAME="Продукт"
+    M_PHASE_DETAIL="P1 TF сайт, P3 Прораб"
+  fi
+
+  # Active goals count
+  M_TELOS_ACTIVE=$(jq '[.goals[] | select(.status | test("Актив|непрерывн"))] | length' "$state" 2>/dev/null || echo 0)
+
+  # Top active goals with progress (sorted by progress desc, max 4)
+  M_TELOS_GOALS_DATA=$(jq -r '
+    [.goals[] | select(.status | test("Актив|непрерывн"))] |
+    sort_by(-.progress) |
+    .[:4][] |
+    [.id, (.progress // 0 | tostring)] | @tsv
+  ' "$state" 2>/dev/null)
+
+  # Focus projects (active with progress, max 3)
+  M_TELOS_PROJECTS_DATA=$(jq -r '
+    [.projects[] | select(.status | test("Актив|разработк|подготовк"))] |
+    sort_by(-.progress) |
+    .[:3][] |
+    [.id, (.progress // 0 | tostring), (.checked // 0 | tostring), (.total // 0 | tostring)] | @tsv
+  ' "$state" 2>/dev/null)
 }
 
 compute_cost() {
@@ -429,21 +462,64 @@ build_panel() {
     "$CYN" "$M_LEARN_SIGNALS" "$RST" "$RED" "$M_LEARN_FAILURES" "$RST")")
   METRIC_LINES+=("")
 
-  # ── TELOS ──
-  METRIC_LINES+=("$(printf '%b%bTELOS%b  %b%s active goals%b' "$BLU" "$BLD" "$RST" "$SLT" "$M_TELOS_ACTIVE" "$RST")")
-  if [ -n "$M_TELOS_TOP" ]; then
-    local telos_pct=0
-    local telos_done="${M_TELOS_PROGRESS%%/*}"
-    local telos_total="${M_TELOS_PROGRESS##*/}"
-    if [ "$telos_total" != "--" ] && [ "$telos_total" -gt 0 ] 2>/dev/null; then
-      telos_pct=$(( telos_done * 100 / telos_total ))
-    fi
-    local tbar
-    tbar=$(progress_bar "$telos_pct" 12)
-    METRIC_LINES+=("$(printf '  %b►%b %b%s%b' "$YLW" "$RST" "$WHT" "$M_TELOS_TOP" "$RST")")
-    METRIC_LINES+=("$(printf '    %s  %b%s%b' "$tbar" "$SLT" "$M_TELOS_PROGRESS" "$RST")")
-  else
-    METRIC_LINES+=("$(printf '  %b(no active goals)%b' "$DIM" "$RST")")
+  # ── Phase + TELOS ──
+  local phase_color="$CYN"
+  [ "$M_PHASE" = "A" ] && phase_color="$YLW"
+  [ "$M_PHASE" = "S" ] && phase_color="$ORG"
+
+  METRIC_LINES+=("$(printf '%b%bФАЗА %s%b  %b%s%b  %b%s%b' \
+    "$phase_color" "$BLD" "$M_PHASE" "$RST" "$WHT" "$M_PHASE_NAME" "$RST" \
+    "$SLT" "$M_PHASE_DETAIL" "$RST")")
+
+  METRIC_LINES+=("$(printf '%b%bTELOS%b  %b%s активных целей%b' "$BLU" "$BLD" "$RST" "$SLT" "$M_TELOS_ACTIVE" "$RST")")
+
+  # Top active goals with progress bars
+  if [ -n "$M_TELOS_GOALS_DATA" ]; then
+    while IFS=$'\t' read -r g_id g_prog; do
+      [ -z "$g_id" ] && continue
+      local g_name g_bar g_color g_vw g_pad
+      case "$g_id" in
+        G0)  g_name="Прораб PWA" ;;
+        G1)  g_name="Timber Frame" ;;
+        G10) g_name="Аудит" ;;
+        G11) g_name="Community" ;;
+        G13) g_name="Kitty WS" ;;
+        *)   g_name="$g_id" ;;
+      esac
+      g_color="$SLT"
+      [ "$g_prog" -gt 0 ]  && g_color="$YLW"
+      [ "$g_prog" -ge 40 ] && g_color="$GRN"
+      g_bar=$(progress_bar "$g_prog" 8)
+      g_vw=$(printf '%s' "$g_name" | wc -L)
+      g_pad=$(( 12 - g_vw ))
+      [ "$g_pad" -lt 0 ] && g_pad=0
+      METRIC_LINES+=("$(printf '  %b%-3s%b %s%*s %b%s%b %b%3d%%%b' \
+        "$CYN" "$g_id" "$RST" "$g_name" "$g_pad" "" "$g_color" "$g_bar" "$RST" "$g_color" "$g_prog" "$RST")")
+    done <<< "$M_TELOS_GOALS_DATA"
+  fi
+
+  # Focus projects
+  if [ -n "$M_TELOS_PROJECTS_DATA" ]; then
+    METRIC_LINES+=("$(printf '  %b%bПроекты:%b' "$SLT" "$BLD" "$RST")")
+    while IFS=$'\t' read -r p_id p_prog p_done p_total; do
+      [ -z "$p_id" ] && continue
+      local p_name p_color p_bar p_vw p_pad
+      case "$p_id" in
+        P0) p_name="PAI+TELOS" ;;
+        P1) p_name="TF сайт" ;;
+        P3) p_name="Прораб" ;;
+        *)  p_name="$p_id" ;;
+      esac
+      p_color="$SLT"
+      [ "$p_prog" -gt 0 ]  && p_color="$YLW"
+      [ "$p_prog" -ge 50 ] && p_color="$GRN"
+      p_bar=$(progress_bar "$p_prog" 8)
+      p_vw=$(printf '%s' "$p_name" | wc -L)
+      p_pad=$(( 10 - p_vw ))
+      [ "$p_pad" -lt 0 ] && p_pad=0
+      METRIC_LINES+=("$(printf '  %b%-2s%b %s%*s %b%s%b %b%s/%s%b' \
+        "$BLU" "$p_id" "$RST" "$p_name" "$p_pad" "" "$p_color" "$p_bar" "$RST" "$SLT" "$p_done" "$p_total" "$RST")")
+    done <<< "$M_TELOS_PROJECTS_DATA"
   fi
   METRIC_LINES+=("")
 
