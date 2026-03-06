@@ -2,8 +2,8 @@
 task: PAI v2.1.70 system improvements + community contributions
 slug: 20260306-154603_pai-v2170-improvements
 effort: extended
-phase: observe
-progress: 14/16
+phase: complete
+progress: 16/16
 mode: algorithm
 started: 2026-03-06T15:46:03+03:00
 updated: 2026-03-06T15:46:03+03:00
@@ -35,7 +35,7 @@ Claude Code v2.1.59-2.1.70 brought significant features useful for PAI: `include
 - [x] ISC-13: Community PR opportunities identified — 5 ranked by value
 - [x] ISC-14: MEMORY.md updated with v2.1.70 settings and test counts
 - [x] ISC-15: spinnerTips updated — 3 new tips about v2.1.70 features
-- [ ] ISC-16: All changes committed to git
+- [x] ISC-16: All changes committed — 012e1eb (5 files, 208 insertions)
 
 ## Decisions
 
@@ -52,3 +52,12 @@ Claude Code v2.1.59-2.1.70 brought significant features useful for PAI: `include
 - `${CLAUDE_SKILL_DIR}` variable available for SKILL.md references
 
 ## Verification
+
+- settings.json has `includeGitInstructions: false` (grep confirmed)
+- EventLogger has 5 handlers: SubagentStart, SubagentStop, TaskCompleted, InstructionsLoaded, TeammateIdle
+- TeammateIdle outputs `{"continue": false, "stopReason": "PAI: teammate idle timeout"}`
+- SubagentStop now logs agent_type (parity with Start)
+- 13 EventLogger tests pass (5 new: InstructionsLoaded x2, TeammateIdle, SubagentStop agent_type, perf)
+- 230 total suite tests pass, 0 failures
+- Commit 012e1eb: 5 files, 208 insertions
+- Community: 5 PR opportunities documented, top 3: Event System, Test Harness, getPaiDir()
