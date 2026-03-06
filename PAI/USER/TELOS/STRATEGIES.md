@@ -23,7 +23,7 @@
 **Адресует:** C1 (нехватка времени), G0, G2, G10
 **Принцип:** Делегируй AI то, что другие делают вручную. PAI + Agent Zero + Venice AI = мультипликатор продуктивности.
 **Реализация:**
-1. PAI v4.0.3: 30 хуков, 171 тест, 11 скиллов, security system — всё активно
+1. PAI v4.0.3: 30 хуков, 235 тестов, 11 скиллов, security system — всё активно
 2. **AI Brigade (члены — автономные агенты):**
    - **Navi** (Claude Code) — архитектор, тимлид, интерактивная разработка, ревью
    - **Jules** (Google) — async-кодер: тесты, баги, фиксы, dependency updates. API: JulesAPI.ts
@@ -37,7 +37,7 @@
    - **MCP серверы** — расширения Claude Code (filesystem, fetch)
 4. Venice AI (через A0T стейкинг) — приватные LLM без цензуры
 5. Каждую повторяющуюся задачу автоматизировать через агента или инструмент
-6. Test harness для хуков — сеть безопасности при изменениях (171 тест / 34 сюиты)
+6. Test harness для хуков — сеть безопасности при изменениях (235 тестов / 40 сюит)
 7. Feedback loop: RatingCapture → WisdomSync → FRAMES — автоматическое обучение
 8. Hook performance optimization: SecurityValidator 282→26ms (JSON cache), UpdateTabTitle 10s→<500ms. Суммарно −33с/сессию
 
@@ -154,7 +154,7 @@
 
 | Стратегия | Применена | Результат | Нужна корректировка |
 |-----------|----------|-----------|---------------------|
-| S1 | 2025-2026 | PAI v4.0.3: 30 хуков, 171 тест, AI Brigade (Navi+Jules+A0 как члены, Gemini/GLM-5/JulesAutoMerge как инструменты). JulesAutoMerge pipeline с A0 code review. 8 upstream PRs. | Нет |
+| S1 | 2025-2026 | PAI v4.0.3: 30 хуков, 235 тестов, AI Brigade (Navi+Jules+A0). 30 задач Jules (93% completion), 17 PR merged. A0: 5 scheduled tasks, code review pipeline. 8 upstream PRs. Git-as-Message-Bus для async координации. | Нет |
 | S3 | 2025-2026 | VPS NL работает, Agent Zero развёрнут | Добавить Venice AI |
 | S2 | 2024-2026 | Накоплено 3.5 млн ₽ | Нет, продолжать |
 | S7 | 2026-03 | 6 PRs, contributor acknowledgment в v4.0.3 | Нет, продолжать |
