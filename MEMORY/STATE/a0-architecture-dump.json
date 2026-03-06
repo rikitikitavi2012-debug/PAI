@@ -1,0 +1,394 @@
+{
+  "dump_date": "2026-03-06T21:17:00Z",
+  "version": "v0.9.8.2",
+  "file_structure": {
+    "description": "Ключевые директории /a0/",
+    "tree": "\n/a0/\n├── python/          # Ядро Agent Zero\n│   ├── tools/       # Инструменты\n│   ├── api/         # REST API endpoints\n│   └── extensions/  # Расширения (hooks)\n├── data/            # Runtime data (server_registry.json)\n├── lib/             # Библиотеки\n├── prompts/         # System prompts\n├── resources/       # Статические ресурсы\n├── tmp/             # Временные файлы\n├── usr/             # ПОЛЬЗОВАТЕЛЬСКИЕ ДАННЫЕ\n│   ├── memory/      # FAISS memory storage\n│   ├── skills/      # 8 пользовательских skills\n│   ├── knowledge/   # Knowledge base\n│   ├── scheduler/   # tasks.json\n│   ├── chats/       # История чатов\n│   ├── projects/    # Проекты\n│   ├── workdir/     # Рабочая директория\n│   ├── settings.json\n│   ├── secrets.env\n│   └── .env\n└── agent.py         # Entry point\n"
+  },
+  "tools": [
+    {
+      "name": "code_execution_tool",
+      "description": "Выполнение terminal/python/nodejs кода",
+      "parameters": "runtime(terminal|python|nodejs|output), code, session, reset",
+      "limitations": "Таймаут на выполнение",
+      "best_for": "Команды Linux, вычисления, скрипты"
+    },
+    {
+      "name": "call_subordinate",
+      "description": "Делегирование подзадач подчинённым агентам",
+      "parameters": "message, reset(true|false), profile",
+      "limitations": "Подчинённые не могут делегировать дальше",
+      "best_for": "Специализированные задачи (coding, research, hacking)"
+    },
+    {
+      "name": "browser_agent",
+      "description": "Управление Playwright браузером",
+      "parameters": "message, reset(true|false)",
+      "limitations": "Работает в отдельном процессе",
+      "best_for": "Веб-автоматизация, логин, скрапинг"
+    },
+    {
+      "name": "memory_save",
+      "description": "Сохранение в долгосрочную память (FAISS)",
+      "parameters": "text",
+      "limitations": "Все данные хранятся в /a0/usr/memory/default/",
+      "best_for": "Важные инсайты, решения, контекст"
+    },
+    {
+      "name": "memory_load",
+      "description": "Поиск по памяти",
+      "parameters": "query, threshold(0-1), limit, filter",
+      "limitations": "threshold: 0.3 для русского текста (не 0.7!)",
+      "best_for": "Вспомнить прошлые решения, контекст"
+    },
+    {
+      "name": "memory_delete",
+      "description": "Удаление записей по ID",
+      "parameters": "ids (comma-separated)",
+      "limitations": "ID из memory_load/save",
+      "best_for": "Очистка устаревших данных"
+    },
+    {
+      "name": "memory_forget",
+      "description": "Удаление по запросу",
+      "parameters": "query, threshold, filter",
+      "limitations": "threshold: 0.75 по умолчанию",
+      "best_for": "Массовое удаление"
+    },
+    {
+      "name": "document_query",
+      "description": "Чтение и анализ документов",
+      "parameters": "document (url/path), queries",
+      "limitations": "PDF, Office, HTML, Text",
+      "best_for": "Извлечение информации из файлов"
+    },
+    {
+      "name": "search_engine",
+      "description": "Веб-поиск",
+      "parameters": "query",
+      "limitations": "Зависит от доступности API",
+      "best_for": "Поиск информации в интернете"
+    },
+    {
+      "name": "vision_load",
+      "description": "Загрузка изображений для анализа",
+      "parameters": "paths (list of image paths)",
+      "limitations": "Только битмапы",
+      "best_for": "Анализ скриншотов, диаграмм"
+    },
+    {
+      "name": "a2a_chat",
+      "description": "Чат с другими A2A-агентами",
+      "parameters": "agent_url, message, attachments, reset",
+      "limitations": "Требует FastA2A v0.2+ у удалённого агента",
+      "best_for": "Коммуникация с другими агентами"
+    },
+    {
+      "name": "scheduler:list_tasks",
+      "description": "Список scheduler задач",
+      "parameters": "state, type, next_run_within, next_run_after",
+      "limitations": "",
+      "best_for": "Проверка расписания"
+    },
+    {
+      "name": "scheduler:run_task",
+      "description": "Ручной запуск задачи",
+      "parameters": "uuid, context",
+      "limitations": "Только idle задачи",
+      "best_for": "Триггер adhoc задач"
+    },
+    {
+      "name": "scheduler:create_scheduled_task",
+      "description": "Создание cron-задачи",
+      "parameters": "name, system_prompt, prompt, schedule, dedicated_context",
+      "limitations": "",
+      "best_for": "Периодические задачи"
+    },
+    {
+      "name": "scheduler:create_adhoc_task",
+      "description": "Создание ручной задачи",
+      "parameters": "name, system_prompt, prompt, dedicated_context",
+      "limitations": "",
+      "best_for": "Задачи по запросу"
+    },
+    {
+      "name": "skills_tool:load",
+      "description": "Загрузка skill инструкций",
+      "parameters": "skill_name",
+      "limitations": "",
+      "best_for": "Получение процедур skill"
+    },
+    {
+      "name": "behaviour_adjustment",
+      "description": "Изменение поведения агента",
+      "parameters": "adjustments",
+      "limitations": "",
+      "best_for": "Настройка поведения"
+    },
+    {
+      "name": "notify_user",
+      "description": "Уведомление пользователя",
+      "parameters": "message, title, detail, type",
+      "limitations": "",
+      "best_for": "Важные события"
+    },
+    {
+      "name": "response",
+      "description": "Финальный ответ пользователю",
+      "parameters": "text (markdown)",
+      "limitations": "Завершает обработку",
+      "best_for": "Возврат результата"
+    },
+    {
+      "name": "wait",
+      "description": "Пауза выполнения",
+      "parameters": "seconds/minutes/hours/days или until (ISO timestamp)",
+      "limitations": "",
+      "best_for": "Ожидание завершения процессов"
+    },
+    {
+      "name": "input",
+      "description": "Ввод в terminal программу",
+      "parameters": "keyboard, session",
+      "limitations": "Не для browser",
+      "best_for": "Диалоги, пароли"
+    }
+  ],
+  "subordinate_profiles": [
+    {
+      "name": "developer",
+      "system_prompt_summary": "Специализирован на software development: написание кода, debugging, refactoring, архитектура",
+      "tools_available": "Все инструменты",
+      "best_for": "Coding задачи, разработка, отладка"
+    },
+    {
+      "name": "researcher",
+      "system_prompt_summary": "Специализирован на research, data analysis, reporting",
+      "tools_available": "Все инструменты",
+      "best_for": "Исследования, анализ данных, генерация отчётов"
+    },
+    {
+      "name": "hacker",
+      "system_prompt_summary": "Специализирован на cybersecurity, penetration testing, security auditing",
+      "tools_available": "Все инструменты",
+      "best_for": "Security задачи, пентесты, аудит безопасности"
+    },
+    {
+      "name": "default",
+      "system_prompt_summary": "Базовый профиль без специализации",
+      "tools_available": "Все инструменты",
+      "best_for": "Общие задачи"
+    }
+  ],
+  "skills": [
+    {
+      "name": "a0-deployer",
+      "path": "/a0/usr/skills/a0-deployer/SKILL.md",
+      "description": "Deploy, manage, orchestrate Agent Zero container instances on VPS",
+      "triggers": "Деплой новых A0 инстансов, управление контейнерами"
+    },
+    {
+      "name": "chart-architect",
+      "path": "/a0/usr/skills/chart-architect/SKILL.md",
+      "description": "Create charts, graphs, diagrams and data visualizations",
+      "triggers": "Визуализация данных, графики"
+    },
+    {
+      "name": "doc-forge",
+      "path": "/a0/usr/skills/doc-forge/SKILL.md",
+      "description": "Document generation: PDF, DOCX, PPTX from templates or markdown",
+      "triggers": "Создание документов, конвертация форматов"
+    },
+    {
+      "name": "exa-synergy",
+      "path": "/a0/usr/skills/exa-synergy/SKILL.md",
+      "description": "Neural web research with Exa AI SDK",
+      "triggers": "Веб-поиск, research, сбор данных"
+    },
+    {
+      "name": "ops-commander",
+      "path": "/a0/usr/skills/ops-commander/SKILL.md",
+      "description": "DevOps remote management: SSH, monitoring, Docker",
+      "triggers": "Управление серверами, деплой"
+    },
+    {
+      "name": "replicate-studio",
+      "path": "/a0/usr/skills/replicate-studio/SKILL.md",
+      "description": "AI generation with Replicate API: images, music, upscale, transcription",
+      "triggers": "Генерация контента AI"
+    },
+    {
+      "name": "telos",
+      "path": "/a0/usr/skills/telos/SKILL.md",
+      "description": "Personal life management system — TELOS. Missions, goals, strategies",
+      "triggers": "Вопросы о целях, приоритетах, TELOS"
+    },
+    {
+      "name": "the-algorithm",
+      "path": "/a0/usr/skills/the-algorithm/SKILL.md",
+      "description": "7-phase problem-solving: OBSERVE-THINK-PLAN-BUILD-EXECUTE-VERIFY-LEARN",
+      "triggers": "Системное решение задач"
+    }
+  ],
+  "memory_system": {
+    "type": "FAISS",
+    "storage_path": "/a0/usr/memory/default/",
+    "files": [
+      "index.faiss",
+      "index.pkl",
+      "embedding.json",
+      "behaviour.md",
+      "knowledge_import.json"
+    ],
+    "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "search_method": "Cosine similarity via FAISS index",
+    "important": "threshold: 0.3 для русского текста (не 0.7!)",
+    "recent_tags": [
+      "telos-cleanup-2026-03-06",
+      "brigade-context-2026-03-06"
+    ]
+  },
+  "scheduler": {
+    "active_tasks": [
+      {
+        "name": "Weekly Security Scan — PAI-personal",
+        "schedule": "0 0 * * 0",
+        "type": "scheduled",
+        "state": "idle",
+        "description": "Scan GitHub commits for secrets"
+      },
+      {
+        "name": "Daily Health Check — PAI-personal",
+        "schedule": "0 6 * * *",
+        "type": "scheduled",
+        "state": "idle",
+        "description": "Daily system health monitoring"
+      },
+      {
+        "name": "Weekly TELOS Integrity Scan",
+        "schedule": "0 3 * * 1",
+        "type": "scheduled",
+        "state": "idle",
+        "description": "TELOS consistency check"
+      },
+      {
+        "name": "Daily PAI Sync",
+        "schedule": "0 7 * * *",
+        "type": "scheduled",
+        "state": "idle",
+        "description": "Sync PAI-personal repo state"
+      },
+      {
+        "name": "Weekly Learning Mining",
+        "schedule": "0 4 * * 1",
+        "type": "scheduled",
+        "state": "idle",
+        "description": "Extract learning patterns"
+      },
+      {
+        "name": "Monthly MEMORY Compaction",
+        "schedule": "0 2 1 * *",
+        "type": "scheduled",
+        "state": "idle",
+        "description": "Memory optimization"
+      },
+      {
+        "name": "Weekly Competitive Intelligence",
+        "schedule": "0 5 * * 0",
+        "type": "scheduled",
+        "state": "idle",
+        "description": "Track competitor updates"
+      },
+      {
+        "name": "Monthly PAI Snapshot",
+        "schedule": "0 0 1 * *",
+        "type": "scheduled",
+        "state": "idle",
+        "description": "Full system snapshot"
+      }
+    ],
+    "storage": "/a0/usr/scheduler/tasks.json",
+    "api_endpoints": "/scheduler/tasks (GET), /scheduler/task/{uuid} (GET), /scheduler/task/{uuid}/run (POST)",
+    "limitations": "CSRF может требоваться для некоторых endpoints через web UI"
+  },
+  "llm_config": {
+    "chat_model": "zai_coding/GLM-5",
+    "chat_model_ctx_length": 200000,
+    "chat_model_vision": true,
+    "chat_model_temperature": 0.6,
+    "utility_model": "kimi-k2.5 via opencode.ai/zen/v1",
+    "utility_model_ctx_length": 100000,
+    "utility_model_temperature": 0,
+    "browser_model": "claude-opus-4-6 via opencode.ai/zen/v1",
+    "embed_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 (huggingface local)",
+    "providers": "LiteLLM-compatible, custom endpoints",
+    "api_keys_configured": [
+      "EXA_API_KEY",
+      "REPLICATE_API_TOKEN",
+      "GITHUB_PERSONAL_TOKEN"
+    ]
+  },
+  "extensions": {
+    "path": "/a0/python/extensions/",
+    "types": [
+      "message_loop_prompts_before",
+      "message_loop_prompts_after",
+      "message_loop_start",
+      "message_loop_end",
+      "process_chain_end",
+      "reasoning_stream",
+      "reasoning_stream_end",
+      "response_stream",
+      "response_stream_chunk",
+      "response_stream_end",
+      "system_prompt",
+      "tool_execute_before",
+      "tool_execute_after",
+      "user_message_ui",
+      "hist_add_before",
+      "hist_add_tool_result",
+      "monologue_start",
+      "monologue_end",
+      "before_main_llm_call",
+      "agent_init",
+      "banners",
+      "error_format"
+    ],
+    "note": "Extensions — это Python файлы в папках с именами типа hook. Выполняются в соответствующие моменты lifecycle."
+  },
+  "docker": {
+    "container_hostname": "86757d95f0a5",
+    "container_name": "agent-zero-new",
+    "port": "50002",
+    "volumes": "/a0 — code + data, docker socket mounted",
+    "resource_limits": "Unknown",
+    "network": "Host accessible on 72.56.86.51:50002"
+  },
+  "api_auth": {
+    "api_key_works_for": "Большинство /api/* endpoints если настроен X-API-KEY",
+    "csrf_required_for": "Web UI операции, некоторые POST endpoints",
+    "no_auth": [
+      "/health",
+      "/metrics",
+      "/a2a/* (A2A protocol)"
+    ],
+    "note": "API key настраивается в settings.json или secrets.env"
+  },
+  "limitations": [
+    "FAISS embedding model плохо ищет русский текст — использовать threshold: 0.3",
+    "Критичные данные дублировать в файлы, не только в memory",
+    "Для важных запросов пробовать несколько вариантов (рус + англ)",
+    "Memoryrecall использует threshold 0.7 по умолчанию — можно пропустить русские записи",
+    "Scheduler задачи требуют dedicated_context=true для независимого выполнения",
+    "CSRF токен нужен для web UI операций — API работает напрямую"
+  ],
+  "recommendations_for_navi": [
+    "Отправлять TELOS-контекст С КАЖДОЙ задачей — A0 не хранит копию",
+    "Использовать API endpoint http://72.56.86.51:50002 для коммуникации",
+    "Для код-ревью: отправлять commit SHA и репозиторий",
+    "Для research: давать чёткие критерии что искать и куда сохранить результат",
+    "Результаты сохраняются в git PAI-personal MEMORY/STATE/ — оттуда читать",
+    "Для срочных задач: scheduler:run_task с uuid задачи",
+    "Git = Message Bus: пушить изменения в PAI-personal для синхронизации"
+  ]
+}

@@ -143,7 +143,16 @@
 - **JulesAutoMerge A0 review**: Встроен — после тестов A0 ревьюит diff (16.9с, 4 issues found in test). HIGH severity блокирует merge. Если A0 unreachable — proceed (fail-open)
 - **Best for**: Deep research, code execution, browser tasks, document generation, DevOps, scheduled maintenance, code review
 - **NOT for**: Real-time interactive work (22s latency), settings changes (CSRF), sensitive PAI config
-- **Context sync (2026-03-06)**: Old TELOS/ULC/master_plan cleaned. New compact context saved in A0 memory (brigade-context-2026-03-06). A0 does NOT store TELOS copy — Navi sends context with each task. Variant A (minimal) architecture.
+- **Context sync (2026-03-06)**: Old TELOS/ULC/master_plan cleaned. Variant A: TELOS only in Navi, A0 gets context per-task
+- **Architecture dump**: MEMORY/STATE/a0-architecture-dump.json (394 lines, commit 03705c0)
+- **A0 version**: v0.9.8.2. LLM: GLM-5 (chat), kimi-k2.5 (utility), claude-opus-4-6 (browser)
+- **Memory**: FAISS + paraphrase-multilingual-MiniLM-L12-v2. CRITICAL: threshold 0.3 for Russian (not 0.7!)
+- **Subordinates**: developer (coding), researcher (analysis), hacker (security), default (general) — all have all tools
+- **8 skills**: a0-deployer, chart-architect, doc-forge, exa-synergy, ops-commander, replicate-studio, telos, the-algorithm
+- **8 scheduled tasks**: Security Scan (Sun), Health Check (daily), TELOS Integrity (Mon), PAI Sync (daily), Learning Mining (Mon), Memory Compaction (1st), Competitive Intel (Sun), PAI Snapshot (1st)
+- **Extensions**: 20 hook types (Python), lifecycle events from agent_init to error_format
+- **Scheduler API**: scheduler:create_scheduled_task, scheduler:run_task, scheduler:list_tasks — A0 can self-manage tasks
+- **Key insight for task delegation**: Use subordinate profiles! `call_subordinate` with profile=developer for code, researcher for analysis, hacker for security
 
 ## Voice System (ElevenLabs Creator plan, 2026-03-03)
 - **API key**: ~/.config/PAI/.env → ELEVENLABS_API_KEY (Creator plan, 100K chars/month)
