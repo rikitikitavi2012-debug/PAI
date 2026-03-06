@@ -50,6 +50,11 @@ describe('AgentZero CLI Tool', () => {
           return new Response('OK', { status: 200 });
         }
         if (url.pathname === '/api_message') {
+          if (body?.message === 'test async delay') {
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+          } else if (body?.message === 'test async timeout') {
+            await new Promise((resolve) => setTimeout(resolve, 30000));
+          }
           return Response.json({ context_id: 'ctx-1', response: 'mock response' });
         }
         if (url.pathname === '/message_async') {
@@ -340,6 +345,87 @@ describe('AgentZero CLI Tool', () => {
     expect(requestLogs[0].body.lifetime_hours).toBe(1);
   });
 
+  it('async command handles ASYNC DELIVERY with delayed response', async () => {
+    requestLogs = [];
+    const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'async', 'test async delay'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+      env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl, A0_API_TOKEN: '' },
+    });
+
+    const stdout = await new Response(proc.stdout).text();
+    await proc.exited;
+
+    expect(proc.exitCode).toBe(0);
+    const result = JSON.parse(stdout);
+    expect(result.context_id).toBe('ctx-1');
+
+    expect(requestLogs.length).toBe(1);
+    expect(requestLogs[0].path).toBe('/api_message');
+    expect(requestLogs[0].body.message).toBe('test async delay');
+    expect(requestLogs[0].body.lifetime_hours).toBe(1);
+  }, 10000); // increase test timeout due to 3s delay
+
+  it('async command handles ASYNC TIMEOUT gracefully without crashing', async () => {
+    requestLogs = [];
+    const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'async', 'test async timeout'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+      env: { ...process.env, HOME: tempDir, A0_BASE_URL: mockServerUrl, A0_API_TOKEN: '', A0_TIMEOUT: '1000' },
+    });
+
+    const stdout = await new Response(proc.stdout).text();
+    await proc.exited;
+
+    expect(proc.exitCode).toBe(0);
+    const result = JSON.parse(stdout);
+    expect(result.status).toBe('delivered');
+    expect(result.note).toContain('processing');
+    expect(result.context_id).toBe('new');
+
+    expect(requestLogs.length).toBe(1);
+    expect(requestLogs[0].path).toBe('/api_message');
+  }, 5000);
+
+  it('message command CONTEXT PERSISTENCE writes and uses context_id correctly', async () => {
+    requestLogs = [];
+    const emitDir = createTempDir('a0-context-persistence-');
+    mkdirSync(join(emitDir, '.config', 'PAI'), { recursive: true });
+    writeFileSync(join(emitDir, '.config', 'PAI', '.env'), 'A0_API_TOKEN=mock_token_123\n');
+
+    // First request without context
+    const proc1 = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'message', 'initial test msg'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+      env: { ...process.env, HOME: emitDir, A0_BASE_URL: mockServerUrl },
+    });
+
+    await proc1.exited;
+    expect(proc1.exitCode).toBe(0);
+
+    // Verify context file
+    const contextPath = join(emitDir, '.claude', 'MEMORY', 'STATE', 'a0-active-context.json');
+    const contextState = JSON.parse(require('fs').readFileSync(contextPath, 'utf-8'));
+    expect(contextState.context_id).toBe('ctx-1'); // Returned by mock server
+    expect(contextState.last_message).toBe('initial test msg');
+
+    // Second request with context
+    const proc2 = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'message', 'follow up msg', '--context', contextState.context_id], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+      env: { ...process.env, HOME: emitDir, A0_BASE_URL: mockServerUrl },
+    });
+
+    await proc2.exited;
+    expect(proc2.exitCode).toBe(0);
+
+    expect(requestLogs.length).toBe(2);
+    expect(requestLogs[0].body.context_id).toBeUndefined(); // First request has no context
+    expect(requestLogs[1].body.context_id).toBe('ctx-1'); // Second request uses context from file
+
+    cleanupTempDir(emitDir);
+  });
+
   it('log command parses arguments and sends correct API call', async () => {
     const proc = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'log', 'ctx-99', '50'], {
       stdout: 'pipe',
@@ -410,5 +496,57 @@ describe('AgentZero CLI Tool', () => {
     expect(requestLogs.length).toBe(1);
     expect(requestLogs[0].path).toBe('/scheduler_task_run');
     expect(requestLogs[0].body).toEqual({ task: 'task-123' });
+  });
+
+  it('poll command gracefully handles missing state files without crashing', async () => {
+    const pollDir = createTempDir('a0-poll-test-');
+
+    const paiDir = join(pollDir, '.claude');
+    mkdirSync(paiDir, { recursive: true });
+
+    const mockGitDir = join(pollDir, 'bin');
+    mkdirSync(mockGitDir, { recursive: true });
+    writeFileSync(join(mockGitDir, 'git'), '#!/bin/bash\nexit 0\n');
+    require('fs').chmodSync(join(mockGitDir, 'git'), 0o755);
+
+    const env = { ...process.env, HOME: pollDir, PATH: `${mockGitDir}:${process.env.PATH}` };
+
+    const proc2a = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'poll'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+      env,
+    });
+
+    const stdout2a = await new Response(proc2a.stdout).text();
+    await proc2a.exited;
+
+    expect(proc2a.exitCode).toBe(0);
+    expect(stdout2a).toContain('A0 Results:');
+    expect(stdout2a).not.toContain('Health Check:');
+
+    // Now write a fake state file and test again
+    const stateDir = join(pollDir, '.claude', 'MEMORY', 'STATE');
+    mkdirSync(stateDir, { recursive: true });
+    writeFileSync(join(stateDir, 'health-report.json'), JSON.stringify({
+      timestamp: new Date().toISOString(),
+      overall: 'healthy',
+      alerts: [],
+    }));
+
+    const proc2b = Bun.spawn(['bun', 'PAI/Tools/AgentZero.ts', 'poll'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+      env,
+    });
+
+    const stdout2b = await new Response(proc2b.stdout).text();
+    await proc2b.exited;
+
+    expect(proc2b.exitCode).toBe(0);
+    expect(stdout2b).toContain('A0 Results:');
+    expect(stdout2b).toContain('Health Check:');
+    expect(stdout2b).toContain('Status: healthy');
+
+    cleanupTempDir(pollDir);
   });
 });

@@ -175,7 +175,8 @@ async function sendAsync(message: string, contextId?: string): Promise<void> {
   emitA0Event('async_sent', { context_id: contextId || 'new', preview: message.slice(0, 50) });
 
   try {
-    const result = await apiCall('/api_message', body, 30000);
+    const timeout = process.env.A0_TIMEOUT ? parseInt(process.env.A0_TIMEOUT, 10) : 30000;
+    const result = await apiCall('/api_message', body, timeout);
     if (result.context_id) saveActiveContext(result.context_id, message);
     console.log(JSON.stringify({
       status: 'delivered',

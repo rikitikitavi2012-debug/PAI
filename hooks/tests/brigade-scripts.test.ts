@@ -78,9 +78,9 @@ describe('Brigade Dashboard Scripts', () => {
       expect(output).toBe('text');
     });
 
-    it("to_local_time with empty string should output '??:??:??'", async () => {
+    it("to_local_time with empty string should output '??:??'", async () => {
       const output = await executeFunction('to_local_time ""');
-      expect(output).toBe('??:??:??');
+      expect(output).toBe('??:??');
     });
   });
 });
