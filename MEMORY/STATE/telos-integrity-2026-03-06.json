@@ -1,0 +1,261 @@
+{
+  "scan_date": "2026-03-06T17:35:00Z",
+  "files_scanned": 22,
+  "analysis": {
+    "1_goal_belief_contradictions": [
+      {
+        "type": "resource_constraint",
+        "goal": "B0 (совмещение найма + projects)",
+        "conflict": "C0 (график 6/1 оставляет мало времени)",
+        "severity": "high",
+        "description": "Убеждение B0 что совмещение работает, но C0 показывает что времени критически мало",
+        "evidence": "Межсезонье = 4 месяца (декабрь-март), ~350 часов. Этого недостаточно для 4 параллельных проектов (P0-P3).",
+        "recommendation": "Пересмотреть B0: добавить условие 'совмещение работает ПРИ строгом фокусе на одном проекте'"
+      },
+      {
+        "type": "principle_violation",
+        "goal": "P0, P1, P2, P3 (4 активных проекта)",
+        "conflict": "W5 (Один проект за раз — энергия не распыляется)",
+        "severity": "critical",
+        "description": "Принцип W5 прямо нарушается наличием 4 активных проектов",
+        "evidence": "RedTeam подтвердил (3/8 агентов): один человек не потянет три трека. У тебя — 4 проекта.",
+        "recommendation": "CRITICAL: Выбрать ОДИН приоритетный проект. Остальные перевести в hold."
+      },
+      {
+        "type": "strategic_conflict",
+        "goal": "I1 (Партнёрство с фирмой через AI-проекты)",
+        "conflict": "C1 (Конфликт интересов — работа в фирме vs свой бизнес)",
+        "severity": "medium",
+        "description": "Идея I1 пытается решить C1 через партнёрство, но W6 предупреждает: сначала закрепи IP",
+        "evidence": "RedTeam анализ: 4/8 агентов атаковали конфликт интересов в I1.",
+        "recommendation": "I1 допустима ТОЛЬКО после юридического закрепления IP (W6)"
+      }
+    ],
+    "2_orphan_strategies": [
+      {
+        "strategy": "S5",
+        "description": "Сначала для себя, потом для рынка",
+        "issue": "Нет связанных целей",
+        "recommendation": "Удалить S5 если не используется, или добавить маппинг к целям"
+      },
+      {
+        "strategy": "S7",
+        "description": "Community Contribution — PAI upstream",
+        "issue": "Нет связанных целей",
+        "recommendation": "Удалить S7 если не используется, или добавить маппинг к целям"
+      }
+    ],
+    "3_orphan_goals": [
+      {
+        "goal": "G4",
+        "description": "Свой Developer Avatar (Navi/Jules)",
+        "issue": "Нет связанной стратегии",
+        "recommendation": "Добавить стратегию для G4 или пересмотреть необходимость цели"
+      },
+      {
+        "goal": "G5",
+        "description": "Продажа квартиры (3.5 млн ₽ → инвестиции)",
+        "issue": "Нет связанной стратегии",
+        "recommendation": "Добавить стратегию для G5 или пересмотреть необходимость цели"
+      },
+      {
+        "goal": "G8",
+        "description": "Internet Income (2026 goal: $1000/month)",
+        "issue": "Нет связанной стратегии",
+        "recommendation": "Добавить стратегию для G8 или пересмотреть необходимость цели"
+      }
+    ],
+    "4_belief_evidence_conflicts": [
+      {
+        "type": "missing_evidence",
+        "belief": "Все убеждения (B0-B5)",
+        "conflict": "WRONG.md пустой — нет документированных случаев когда убеждения были ошибочны",
+        "severity": "medium",
+        "description": "Без record of wrongness невозможно калибровать уверенность в убеждениях",
+        "recommendation": "Заполнить WRONG.md минимум 3 примерами ошибочных убеждений из прошлого"
+      },
+      {
+        "type": "missing_context",
+        "belief": "W1-W9 (мудрость из опыта)",
+        "conflict": "TRAUMAS.md пустой — нет документированных травм которые легли в основу мудрости",
+        "severity": "low",
+        "description": "Мудрость W1-W9 описана как 'выведенная из опыта', но сам опыт не документирован",
+        "recommendation": "Заполнить TRAUMAS.md или добавить источники в WISDOM.md"
+      }
+    ],
+    "5_stale_predictions": [
+      {
+        "prediction": "P0",
+        "description": "G0 (PWA) завершён",
+        "target_date": "2026-02-15",
+        "days_overdue": 19,
+        "recommendation": "Обновить статус P0: выполнено, провалено или перенесено?"
+      },
+      {
+        "prediction": "P1",
+        "description": "P1 (сайт TF) MVP",
+        "target_date": "2026-03-01",
+        "days_overdue": 5,
+        "recommendation": "Обновить статус P1: выполнено, провалено или перенесено?"
+      }
+    ],
+    "6_model_inconsistencies": [
+      {
+        "model": "MO5 (Blue Ocean)",
+        "inconsistency": "FR5 (Blue Ocean) помечен как 'под вопросом' в FRAMES.md",
+        "severity": "medium",
+        "description": "RedTeam: 'Нет конкурентов' может означать 'нет рынка'. Модель требует валидации.",
+        "recommendation": "Провести валидацию ниши МАФ перед полной разработкой (уже отмечено в S6)"
+      },
+      {
+        "model": "MO4 (Ступенчатый рост)",
+        "inconsistency": "Дублирует W2 (Не уходи пока доход > зарплаты) и FR7 (Фрейм ступенчатости)",
+        "severity": "low",
+        "description": "Одна концепция выражена в трёх местах: модель (MO4), мудрость (W2), фрейм (FR7)",
+        "recommendation": "Консолидировать: MO4 = ментальная модель, W2 = принцип, FR7 = инструмент решений"
+      },
+      {
+        "model": "MO9 (AI Agent Orchestra)",
+        "inconsistency": "G4 (Developer Avatar) существует как цель, но не связана с MO9",
+        "severity": "low",
+        "description": "MO9 описывает оркестр агентов, G4 — конкретный avatar. Возможно это одна концепция.",
+        "recommendation": "Уточнить связь: G4 это часть MO9 или отдельная цель?"
+      }
+    ],
+    "7_duplicate_wisdom": [
+      {
+        "type": "wisdom_learned_overlap",
+        "source1": "WISDOM.md",
+        "source2": "LEARNED.md",
+        "wisdom": "W1",
+        "duplicate_content": "MVP лучше идеала",
+        "matched_in": "MVP запускай до готовности",
+        "recommendation": "Оставить в WISDOM как принцип, в LEARNED убрать или ссылаться на WISDOM"
+      },
+      {
+        "type": "wisdom_learned_overlap",
+        "source1": "WISDOM.md",
+        "source2": "LEARNED.md",
+        "wisdom": "W6",
+        "duplicate_content": "Не показывай козыри",
+        "matched_in": "Не показывай козыри до переговоров",
+        "recommendation": "Оставить в WISDOM как принцип, в LEARNED убрать или ссылаться на WISDOM"
+      },
+      {
+        "type": "wisdom_learned_overlap",
+        "source1": "WISDOM.md",
+        "source2": "LEARNED.md",
+        "wisdom": "W7",
+        "duplicate_content": "Экспертизу нельзя купить",
+        "matched_in": "Экспертизу нельзя купить",
+        "recommendation": "Оставить в WISDOM как принцип, в LEARNED убрать или ссылаться на WISDOM"
+      },
+      {
+        "type": "wisdom_learned_overlap",
+        "source1": "WISDOM.md",
+        "source2": "LEARNED.md",
+        "wisdom": "W3",
+        "duplicate_content": "Учись руками",
+        "matched_in": "Практика > теория (из BELIEFS B2)",
+        "recommendation": "Оставить в WISDOM как принцип, в LEARNED убрать или ссылаться на WISDOM"
+      },
+      {
+        "type": "frame_wisdom_overlap",
+        "source1": "FRAMES.md",
+        "source2": "WISDOM.md",
+        "frame": "FR7",
+        "wisdom": "W2",
+        "issue": "FR7 и W2 выражают одну концепцию",
+        "recommendation": "Консолидировать: FRAMES = инструменты принятия решений, WISDOM = принципы"
+      },
+      {
+        "type": "frame_wisdom_overlap",
+        "source1": "FRAMES.md",
+        "source2": "WISDOM.md",
+        "frame": "FR1",
+        "wisdom": "W3",
+        "issue": "FR1 и W3 выражают одну концепцию",
+        "recommendation": "Консолидировать: FRAMES = инструменты принятия решений, WISDOM = принципы"
+      },
+      {
+        "type": "frame_wisdom_overlap",
+        "source1": "FRAMES.md",
+        "source2": "WISDOM.md",
+        "frame": "FR8",
+        "wisdom": "W8",
+        "issue": "FR8 и W8 выражают одну концепцию",
+        "recommendation": "Консолидировать: FRAMES = инструменты принятия решений, WISDOM = принципы"
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "priority": "critical",
+      "category": "focus",
+      "issue": "Нарушение принципа W5 (Один проект за раз)",
+      "action": "Выбрать ОДИН приоритетный проект из P0-P3. Остальные перевести в 'hold'."
+    },
+    {
+      "priority": "high",
+      "category": "time_management",
+      "issue": "C0 (Время 6/1) конфликтует с амбициозными целями",
+      "action": "Пересмотреть timeline целей с учётом реального доступного времени (~350 часов за зиму)."
+    },
+    {
+      "priority": "high",
+      "category": "predictions",
+      "issue": "2 предсказания просрочены (P0, P1)",
+      "action": "Обновить статус P0 и P1 в PREDICTIONS.md: выполнено/провалено/перенесено."
+    },
+    {
+      "priority": "medium",
+      "category": "orphan_items",
+      "issue": "2 стратегии (S5, S7) и 3 цели (G4, G5, G8) без связей",
+      "action": "Создать маппинг или удалить неиспользуемые элементы."
+    },
+    {
+      "priority": "medium",
+      "category": "evidence",
+      "issue": "WRONG.md и TRAUMAS.md пустые",
+      "action": "Заполнить минимум 3 примерами для калибровки уверенности."
+    },
+    {
+      "priority": "low",
+      "category": "deduplication",
+      "issue": "Дублирование между WISDOM, LEARNED, FRAMES",
+      "action": "Консолидировать: WISDOM = принципы, LEARNED = уроки, FRAMES = фреймы решений."
+    },
+    {
+      "priority": "low",
+      "category": "templates",
+      "issue": "BOOKS.md и MOVIES.md пустые шаблоны",
+      "action": "Заполнить или удалить если не используются."
+    }
+  ],
+  "statistics": {
+    "total_items": {
+      "missions": 4,
+      "goals": 10,
+      "challenges": 5,
+      "strategies": 8,
+      "beliefs": 6,
+      "projects": 5,
+      "predictions": 11,
+      "ideas": 6,
+      "wisdom_principles": 9,
+      "frames": 10,
+      "models": 15,
+      "problems": 4
+    },
+    "issues_found": {
+      "goal_belief_contradictions": 3,
+      "orphan_strategies": 2,
+      "orphan_goals": 3,
+      "belief_evidence_conflicts": 2,
+      "stale_predictions": 2,
+      "model_inconsistencies": 3,
+      "duplicate_wisdom": 7
+    },
+    "total_issues": 22
+  }
+}
