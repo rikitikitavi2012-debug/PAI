@@ -1,6 +1,6 @@
 #!/bin/bash
-# A0 Chat Live — Agent Zero conversation viewer v3.1
-# Chat bubbles, animated spinner, voice notifications, markdown-lite
+# A0 Chat Live — Agent Zero conversation viewer v3.2
+# Chat bubbles, scroll, voice notifications, markdown-lite
 # Context ID read from state file (written by AgentZero.ts)
 
 A0_HOST="72.56.86.51:50002"
@@ -20,6 +20,8 @@ VERBOSE=0
 MSG_COUNT=0
 RESP_COUNT=0
 LAST_LATENCY=0
+SCROLL_OFFSET=0   # 0 = bottom (auto-follow), >0 = scrolled up N lines
+AUTO_SCROLL=1      # 1 = auto-follow new messages
 
 # ── Colors (24-bit RGB) ──
 RST='\e[0m'
@@ -46,7 +48,6 @@ GH3='\e[38;2;167;139;250m'
 # Backgrounds for bubbles
 BG_IVAN='\e[48;2;22;40;28m'   # dark green tint
 BG_A0='\e[48;2;20;30;45m'     # dark blue tint
-BG_SYS='\e[48;2;35;25;40m'    # dark purple tint for system
 BG_RST='\e[49m'
 
 # ── Box drawing chars ──
@@ -54,11 +55,9 @@ TL='╭' TR='╮' BL='╰' BR='╯' HZ='─' VT='│'
 # Double-line for A0 response emphasis
 DTL='╔' DTR='╗' DBL='╚' DBR='╝' DHZ='═' DVT='║'
 
-# ── Spinner frames (dual mode) ──
+# ── Spinner frames ──
 SPIN_FRAMES=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
-DOTS_FRAMES=('·  ' '·· ' '···' ' ··' '  ·' '   ')
 SPIN_IDX=0
-DOTS_IDX=0
 
 # ── Load API token ──
 A0_TOKEN=""
@@ -105,61 +104,15 @@ strip_agent_prefix() {
   echo "$t"
 }
 
-# ── Markdown-lite rendering ──
-# Converts **bold**, ## headers, `code` to ANSI
-md_render() {
-  local text="$1" color="$2"
-  # ## Headers → colored + bold
-  if [[ "$text" =~ ^##[[:space:]] ]]; then
-    text="${text#\#\# }"
-    printf '%b%b%s%b' "$EMR" "$BLD" "$text" "$RST"
-    return
-  fi
-  # ### Sub-headers
-  if [[ "$text" =~ ^###[[:space:]] ]]; then
-    text="${text#\#\#\# }"
-    printf '%b%b%s%b' "$VIO" "$BLD" "$text" "$RST"
-    return
-  fi
-  # - List items → bullet
-  if [[ "$text" =~ ^[[:space:]]*-[[:space:]] ]]; then
-    local indent="${text%%[-]*}"
-    text="${text#*- }"
-    printf '%s%b●%b %s' "$indent" "$EMR" "$RST" "$text"
-    return
-  fi
-  # Inline: **bold** → BLD, `code` → colored
-  local result=""
-  local remaining="$text"
-  while [ -n "$remaining" ]; do
-    case "$remaining" in
-      '**'*)
-        remaining="${remaining#\*\*}"
-        local bold_end="${remaining%%\*\**}"
-        if [ "$bold_end" != "$remaining" ]; then
-          result+="${BLD}${bold_end}${RST}${color}"
-          remaining="${remaining#*\*\*}"
-        else
-          result+="**"
-        fi
-        ;;
-      '`'*)
-        remaining="${remaining#\`}"
-        local code_end="${remaining%%\`*}"
-        if [ "$code_end" != "$remaining" ]; then
-          result+="${ORG}${code_end}${RST}${color}"
-          remaining="${remaining#*\`}"
-        else
-          result+="\`"
-        fi
-        ;;
-      *)
-        result+="${remaining:0:1}"
-        remaining="${remaining:1}"
-        ;;
-    esac
-  done
-  printf '%s' "$result"
+# ── Strip ANSI escape sequences from content ──
+# A0 API returns literal \e[...m in text — remove them
+strip_ansi() {
+  local text="$1"
+  # Remove literal \e[...m sequences (escaped as text)
+  text=$(echo "$text" | sed -E 's/\\e\[[0-9;]*m//g')
+  # Remove actual ANSI escapes too (if any raw ones slip through)
+  text=$(echo "$text" | sed -E 's/\x1b\[[0-9;]*m//g')
+  echo "$text"
 }
 
 # ── Format timestamp ──
@@ -198,34 +151,117 @@ add_msg() {
   MSG_BUFFER+=("$1")
   if [ ${#MSG_BUFFER[@]} -gt 500 ]; then
     MSG_BUFFER=("${MSG_BUFFER[@]:100}")
+    # Adjust scroll offset after trim
+    [ "$SCROLL_OFFSET" -gt 0 ] && SCROLL_OFFSET=$((SCROLL_OFFSET - 100))
+    [ "$SCROLL_OFFSET" -lt 0 ] && SCROLL_OFFSET=0
   fi
 }
 
 # ── Word-wrap text into lines ──
 word_wrap() {
   local text="$1" width="$2"
-  local -a result=()
   while [ ${#text} -gt 0 ]; do
     if [ ${#text} -le "$width" ]; then
-      result+=("$text")
+      echo "$text"
       break
     fi
     local chunk="${text:0:$width}"
     local last_sp="${chunk% *}"
     if [ "$last_sp" != "$chunk" ] && [ ${#last_sp} -gt $((width / 3)) ]; then
-      result+=("$last_sp")
+      echo "$last_sp"
       text="${text:${#last_sp}}"
       text="${text# }"
     else
-      result+=("$chunk")
+      echo "$chunk"
       text="${text:$width}"
     fi
   done
-  printf '%s\n' "${result[@]}"
+}
+
+# ── Inline formatting: **bold** and `code` ──
+inline_fmt() {
+  local remaining="$1"
+  local result=""
+  while [ -n "$remaining" ]; do
+    case "$remaining" in
+      '**'*)
+        remaining="${remaining#\*\*}"
+        local bold_end="${remaining%%\*\**}"
+        if [ "$bold_end" != "$remaining" ]; then
+          result+=$(printf '%b%s%b' "$BLD$WHT" "$bold_end" "$RST$WHT")
+          remaining="${remaining#"$bold_end"}"
+          remaining="${remaining#\*\*}"
+        else
+          result+="**"
+        fi
+        ;;
+      '`'*)
+        remaining="${remaining#\`}"
+        local code_end="${remaining%%\`*}"
+        if [ "$code_end" != "$remaining" ]; then
+          result+=$(printf '%b%s%b' "$ORG" "$code_end" "$RST$WHT")
+          remaining="${remaining#"$code_end"}"
+          remaining="${remaining#\`}"
+        else
+          result+="\`"
+        fi
+        ;;
+      *)
+        result+="${remaining:0:1}"
+        remaining="${remaining:1}"
+        ;;
+    esac
+  done
+  printf '%s' "$result"
+}
+
+# ── Render markdown-lite for display ──
+# Converts ## headers, **bold**, `code`, - bullets to ANSI
+md_line() {
+  local text="$1"
+  # ## Headers → colored + bold
+  if [[ "$text" =~ ^##[[:space:]] ]]; then
+    text="${text#\#\# }"
+    printf '%b%b%s%b' "$EMR" "$BLD" "$text" "$RST"
+    return
+  fi
+  if [[ "$text" =~ ^###[[:space:]] ]]; then
+    text="${text#\#\#\# }"
+    printf '%b%b%s%b' "$VIO" "$BLD" "$text" "$RST"
+    return
+  fi
+  # - List items → bullet
+  if [[ "$text" =~ ^[[:space:]]*[-*][[:space:]] ]]; then
+    local indent="${text%%[-*]*}"
+    text="${text#*[-*] }"
+    local formatted
+    formatted=$(inline_fmt "$text")
+    printf '%s%b●%b %s' "$indent" "$EMR" "$RST" "$formatted"
+    return
+  fi
+  # Numbered lists: 1. 2. 3. — render number then inline format the rest
+  if [[ "$text" =~ ^[[:space:]]*[0-9]+\.[[:space:]] ]]; then
+    local num="${text%%.*}"
+    num="${num#"${num%%[0-9]*}"}"  # strip leading space
+    text="${text#*[0-9]. }"
+    local formatted
+    formatted=$(inline_fmt "$text")
+    printf '%b%s.%b %s' "$CYN" "$num" "$RST" "$formatted"
+    return
+  fi
+  # --- horizontal rule
+  if [[ "$text" =~ ^---+$ ]]; then
+    local rule_w=$((BUBBLE_W - 8))
+    local rule
+    rule=$(printf '%*s' "$rule_w" '' | tr ' ' '─')
+    printf '%b%s%b' "$SEP" "$rule" "$RST"
+    return
+  fi
+  # Fallback: inline formatting only
+  inline_fmt "$text"
 }
 
 # ── Draw a chat bubble ──
-# Usage: draw_bubble "sender" "color" "bg" "timestamp" "line1" "line2" ...
 draw_bubble() {
   local sender="$1" color="$2" bg="$3" ts="$4"
   shift 4
@@ -251,11 +287,11 @@ draw_bubble() {
     "$color" "$tl" "$hz" "$RST" "$color" "$BLD" "$sender" "$RST" \
     "$color" "$fill" "$RST" "$DIM" "$ts" "$RST")"
 
-  # Content lines with md rendering
+  # Content lines with markdown rendering
   for line in "${lines[@]}"; do
     local truncated="${line:0:$inner}"
     local rendered
-    rendered=$(md_render "$truncated" "$WHT")
+    rendered=$(md_line "$truncated")
     add_msg "$(printf '  %b%s%b %b%s%b' "$color" "$vt" "$RST" "$bg$WHT" "$rendered" "$BG_RST$RST")"
   done
 
@@ -272,7 +308,7 @@ draw_header() {
   local mode_label="clean"
   [ "$VERBOSE" -eq 1 ] && mode_label="verbose"
 
-  # Gradient header: ◆ A0 CHAT ◆
+  # Gradient header
   printf '  %b◆%b %b%bA0%b %b%bCHAT%b %b◆%b' \
     "$GH1" "$RST" "$GH2" "$BLD" "$RST" "$GH3" "$BLD" "$RST" "$GH1" "$RST"
 
@@ -295,9 +331,12 @@ draw_header() {
       printf '  %b%sms%b' "$lat_color" "$LAST_LATENCY" "$RST"
     fi
 
-    # Stats badge
+    # Stats + scroll indicator
     if [ "$MSG_COUNT" -gt 0 ] || [ "$RESP_COUNT" -gt 0 ]; then
       printf '  %b↑%s ↓%s%b' "$DIM" "$MSG_COUNT" "$RESP_COUNT" "$RST"
+    fi
+    if [ "$SCROLL_OFFSET" -gt 0 ]; then
+      printf '  %b▲ scroll -%s%b' "$YLW" "$SCROLL_OFFSET" "$RST"
     fi
   else
     printf '  %bno context%b' "$SLT" "$RST"
@@ -321,44 +360,72 @@ draw_status_bar() {
   # Progress line
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 1))"
   if [ -n "$progress" ]; then
-    # Animated spinner + dots
     local frame="${SPIN_FRAMES[$SPIN_IDX]}"
-    local dots="${DOTS_FRAMES[$DOTS_IDX]}"
     SPIN_IDX=$(( (SPIN_IDX + 1) % ${#SPIN_FRAMES[@]} ))
-    DOTS_IDX=$(( (DOTS_IDX + 1) % ${#DOTS_FRAMES[@]} ))
-    printf '  %b%s%b %b%s%b %b%s%b' \
+    printf '  %b%s%b %b%s%b' \
       "$VIO" "$frame" "$RST" \
-      "$YLW" "${progress:0:$((TERM_COLS - 16))}" "$RST" \
-      "$DIM" "$dots" "$RST"
+      "$YLW" "${progress:0:$((TERM_COLS - 10))}" "$RST"
   fi
   # Key hints
   printf '\033[%d;1H\033[K' "$TERM_LINES"
   local v_label="verbose"
   [ "$VERBOSE" -eq 1 ] && v_label="clean"
-  printf '  %b%bm%b%b=msg %b%bn%b%b=new %b%bv%b%b=%s %b%br%b%b=refresh %b%bh%b%b=health  %b%s%b' \
+  local scroll_hint=""
+  [ ${#MSG_BUFFER[@]} -gt "$CHAT_LINES" ] && scroll_hint=" %b↑↓%b=scroll"
+  printf '  %b%bm%b%b=msg %b%bn%b%b=new %b%bv%b%b=%s %b%br%b%b=refresh %b%bh%b%b=health' \
     "$GRN" "$BLD" "$RST" "$SEP" \
     "$CYN" "$BLD" "$RST" "$SEP" \
     "$CYN" "$BLD" "$RST" "$SEP" "$v_label" \
     "$CYN" "$BLD" "$RST" "$SEP" \
-    "$CYN" "$BLD" "$RST" "$SEP" \
-    "$DIM" "$(date +%H:%M:%S)" "$RST"
+    "$CYN" "$BLD" "$RST" "$SEP"
+  [ -n "$scroll_hint" ] && printf "$scroll_hint" "$CYN" "$SEP"
+  printf '  %b%s%b' "$DIM" "$(date +%H:%M:%S)" "$RST"
 }
 
-# ── Redraw chat from buffer ──
+# ── Redraw chat from buffer (with scroll offset) ──
 redraw_chat() {
   local start_line=3
   local max_msgs=$CHAT_LINES
   local total=${#MSG_BUFFER[@]}
-  local from=0
-  [ "$total" -gt "$max_msgs" ] && from=$((total - max_msgs))
+
+  # Calculate visible window
+  local end=$((total - SCROLL_OFFSET))
+  [ "$end" -lt 0 ] && end=0
+  local from=$((end - max_msgs))
+  [ "$from" -lt 0 ] && from=0
 
   for ((i=0; i<max_msgs; i++)); do
     local idx=$((from + i))
     printf '\033[%d;1H\033[K' "$((start_line + i))"
-    if [ "$idx" -ge 0 ] && [ "$idx" -lt "$total" ]; then
+    if [ "$idx" -ge 0 ] && [ "$idx" -lt "$end" ]; then
       printf '%s' "${MSG_BUFFER[$idx]}"
     fi
   done
+}
+
+# ── Scroll functions ──
+scroll_up() {
+  local max_scroll=$(( ${#MSG_BUFFER[@]} - CHAT_LINES ))
+  [ "$max_scroll" -lt 0 ] && max_scroll=0
+  SCROLL_OFFSET=$((SCROLL_OFFSET + ${1:-3}))
+  [ "$SCROLL_OFFSET" -gt "$max_scroll" ] && SCROLL_OFFSET=$max_scroll
+  AUTO_SCROLL=0
+  redraw_chat
+}
+
+scroll_down() {
+  SCROLL_OFFSET=$((SCROLL_OFFSET - ${1:-3}))
+  if [ "$SCROLL_OFFSET" -le 0 ]; then
+    SCROLL_OFFSET=0
+    AUTO_SCROLL=1
+  fi
+  redraw_chat
+}
+
+scroll_bottom() {
+  SCROLL_OFFSET=0
+  AUTO_SCROLL=1
+  redraw_chat
 }
 
 # ── Format and add a log item ──
@@ -369,6 +436,10 @@ format_item() {
 
   heading=$(strip_icon "$heading")
   heading=$(strip_agent_prefix "$heading")
+
+  # Strip ANSI escape codes from API content
+  content=$(strip_ansi "$content")
+  heading=$(strip_ansi "$heading")
 
   local max_text=$((BUBBLE_W - 6))
   [ "$max_text" -lt 20 ] && max_text=20
@@ -433,14 +504,16 @@ format_item() {
 
     tool)
       if [ "$VERBOSE" -eq 1 ]; then
-        local tool_info="${heading:0:$((TERM_COLS - 12))}"
+        local tool_info
+        tool_info=$(strip_ansi "${heading:0:$((TERM_COLS - 12))}")
         add_msg "$(printf '  %b%s%b %b🔧 %s%b' "$SLT" "$local_ts" "$RST" "$PNK" "$tool_info" "$RST")"
       fi
       ;;
 
     util)
       if [ "$VERBOSE" -eq 1 ]; then
-        local util_info="${heading:0:$((TERM_COLS - 12))}"
+        local util_info
+        util_info=$(strip_ansi "${heading:0:$((TERM_COLS - 12))}")
         add_msg "$(printf '  %b%s%b %b💾 %s%b' "$SLT" "$local_ts" "$RST" "$DIM" "$util_info" "$RST")"
       fi
       ;;
@@ -448,7 +521,7 @@ format_item() {
     *)
       if [ "$VERBOSE" -eq 1 ]; then
         local other="${heading:-$content}"
-        other="${other:0:$((TERM_COLS - 12))}"
+        other=$(strip_ansi "${other:0:$((TERM_COLS - 12))}")
         add_msg "$(printf '  %b%s%b %b[%s] %s%b' "$SLT" "$local_ts" "$RST" "$DIM" "$type" "$other" "$RST")"
       fi
       ;;
@@ -491,7 +564,7 @@ fetch_chat() {
     CURRENT_PROGRESS=""
   fi
 
-  # Parse new items — fetch FULL content (no .[:500] truncation)
+  # Parse new items — fetch FULL content (2000 char limit)
   local new_items
   new_items=$(echo "$log_json" | jq -r --argjson last "$LAST_NO" '
     [.log.items[] | select(.no > $last)] |
@@ -543,10 +616,11 @@ show_idle() {
   fi
   add_msg ""
 
-  local -a keys=("m" "n" "v" "r" "h" "c" "t" "l")
+  local -a keys=("m" "n" "↑↓" "v" "r" "h" "c" "t" "l")
   local -a descs=(
     "отправить сообщение"
     "новый диалог"
+    "скролл вверх/вниз"
     "clean/verbose"
     "обновить экран"
     "проверка здоровья"
@@ -555,7 +629,7 @@ show_idle() {
     "последний лог"
   )
   for i in "${!keys[@]}"; do
-    add_msg "$(printf '  %b%b%s%b  %b%s%b' "$CYN" "$BLD" "${keys[$i]}" "$RST" "$SLT" "${descs[$i]}" "$RST")"
+    add_msg "$(printf '  %b%b%-3s%b %b%s%b' "$CYN" "$BLD" "${keys[$i]}" "$RST" "$SLT" "${descs[$i]}" "$RST")"
   done
   add_msg ""
   add_msg "$(printf '  %bCLI: bun AgentZero.ts message \"текст\"%b' "$DIM" "$RST")"
@@ -585,7 +659,7 @@ do_send_message() {
         "$resp_ctx" "$(date -Iseconds)" "${msg:0:60}" > "$A0_CONTEXT_FILE"
     fi
     if [ -n "$resp_text" ]; then
-      # Full content bubbles
+      resp_text=$(strip_ansi "$resp_text")
       local -a ivan_lines=()
       while IFS= read -r wline; do
         ivan_lines+=("$wline")
@@ -593,11 +667,15 @@ do_send_message() {
       draw_bubble "Ivan" "$GRN" "$BG_IVAN" "$(date +%H:%M:%S)" "${ivan_lines[@]}"
 
       local -a a0_lines=()
-      while IFS= read -r wline; do
-        a0_lines+=("$wline")
-      done < <(word_wrap "$resp_text" "$((BUBBLE_W - 6))")
+      while IFS= read -r paragraph; do
+        [ -z "$paragraph" ] && a0_lines+=("") && continue
+        while IFS= read -r wline; do
+          a0_lines+=("$wline")
+        done < <(word_wrap "$paragraph" "$((BUBBLE_W - 6))")
+      done <<< "$resp_text"
       draw_bubble "A0" "$CYN" "$BG_A0" "$(date +%H:%M:%S)" "${a0_lines[@]}"
       voice_notify "Агент Зеро: ${resp_text:0:60}"
+      scroll_bottom
       redraw_chat
     fi
     printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
@@ -626,6 +704,8 @@ do_new_chat() {
       MSG_BUFFER=()
       MSG_COUNT=0
       RESP_COUNT=0
+      SCROLL_OFFSET=0
+      AUTO_SCROLL=1
       printf '{"context_id":"%s","updated":"%s","last_message":"%s"}' \
         "$resp_ctx" "$(date -Iseconds)" "${msg:0:60}" > "$A0_CONTEXT_FILE"
       add_msg ""
@@ -639,10 +719,14 @@ do_new_chat() {
       draw_bubble "Ivan" "$GRN" "$BG_IVAN" "$(date +%H:%M:%S)" "${ivan_lines[@]}"
 
       if [ -n "$resp_text" ]; then
+        resp_text=$(strip_ansi "$resp_text")
         local -a a0_lines=()
-        while IFS= read -r wline; do
-          a0_lines+=("$wline")
-        done < <(word_wrap "$resp_text" "$((BUBBLE_W - 6))")
+        while IFS= read -r paragraph; do
+          [ -z "$paragraph" ] && a0_lines+=("") && continue
+          while IFS= read -r wline; do
+            a0_lines+=("$wline")
+          done < <(word_wrap "$paragraph" "$((BUBBLE_W - 6))")
+        done <<< "$resp_text"
         draw_bubble "A0" "$CYN" "$BG_A0" "$(date +%H:%M:%S)" "${a0_lines[@]}"
         voice_notify "Агент Зеро: ${resp_text:0:60}"
       fi
@@ -662,7 +746,7 @@ do_health() {
   lat_end=$(date +%s%N)
   lat_ms=$(( (lat_end - lat_start) / 1000000 ))
   if [ -n "$h_json" ]; then
-    add_msg "$(printf '  %b%b● A0 ONLINE%b  %b%sms  %blatency%b' "$GRN" "$BLD" "$RST" "$EMR" "$lat_ms" "$DIM" "$RST")"
+    add_msg "$(printf '  %b%b● A0 ONLINE%b  %b%sms latency%b' "$GRN" "$BLD" "$RST" "$EMR" "$lat_ms" "$RST")"
     voice_notify "Агент Зеро онлайн, задержка ${lat_ms} миллисекунд"
   else
     add_msg "$(printf '  %b%b○ A0 UNREACHABLE%b' "$RED" "$BLD" "$RST")"
@@ -694,11 +778,46 @@ do_context() {
     MSG_BUFFER=()
     MSG_COUNT=0
     RESP_COUNT=0
+    SCROLL_OFFSET=0
+    AUTO_SCROLL=1
     printf '{"context_id":"%s","updated":"%s","last_message":"manual switch"}' \
       "$new_ctx" "$(date -Iseconds)" > "$A0_CONTEXT_FILE"
     add_msg "$(printf '  %b%b  ◆ Контекст: %s%b' "$GRN" "$BLD" "$new_ctx" "$RST")"
   fi
   printf '\033[%d;1H\033[K' "$((TERM_LINES - 2))"
+}
+
+# ── Read key with escape sequence handling ──
+# Returns: single char for normal keys, special strings for arrows/etc.
+read_key() {
+  local key=""
+  IFS= read -r -t "$POLL_INTERVAL" -n 1 -s key 2>/dev/null
+  if [ -z "$key" ]; then
+    echo "TIMEOUT"
+    return
+  fi
+  # Check for escape sequence
+  if [ "$key" = $'\e' ]; then
+    local seq=""
+    IFS= read -r -t 0.05 -n 1 -s seq 2>/dev/null
+    if [ "$seq" = "[" ]; then
+      local code=""
+      IFS= read -r -t 0.05 -n 1 -s code 2>/dev/null
+      case "$code" in
+        A) echo "UP"; return ;;
+        B) echo "DOWN"; return ;;
+        C) echo "RIGHT"; return ;;
+        D) echo "LEFT"; return ;;
+        5) IFS= read -r -t 0.05 -n 1 -s _ 2>/dev/null; echo "PGUP"; return ;;
+        6) IFS= read -r -t 0.05 -n 1 -s _ 2>/dev/null; echo "PGDN"; return ;;
+        H) echo "HOME"; return ;;
+        F) echo "END"; return ;;
+      esac
+    fi
+    echo "ESC"
+    return
+  fi
+  echo "$key"
 }
 
 # ── Main ──
@@ -724,6 +843,8 @@ while true; do
       LAST_NO=-1
       LAST_CTX="$CTX_ID"
       IDLE_SHOWN=0
+      SCROLL_OFFSET=0
+      AUTO_SCROLL=1
       draw_header "$CTX_ID" "connecting..."
 
       fetch_chat "$CTX_ID"
@@ -734,9 +855,10 @@ while true; do
       fetch_chat "$CTX_ID"
       rc=$?
       if [ "$rc" -eq 0 ]; then
+        # New messages arrived — auto-scroll to bottom if following
+        [ "$AUTO_SCROLL" -eq 1 ] && SCROLL_OFFSET=0
         redraw_chat
       fi
-      # Show thinking state when progress is active
       hdr_status="live"
       [ -n "$CURRENT_PROGRESS" ] && hdr_status="thinking"
       draw_header "$CTX_ID" "$hdr_status"
@@ -754,9 +876,16 @@ while true; do
 
   printf '\033[%d;1H' "$((TERM_LINES - 2))"
 
-  read -r -t "$POLL_INTERVAL" -n 1 key 2>/dev/null
+  key=$(read_key)
   case "$key" in
+    TIMEOUT) ;;
     q|Q) break ;;
+    UP)    scroll_up 3 ;;
+    DOWN)  scroll_down 3 ;;
+    PGUP)  scroll_up "$CHAT_LINES" ;;
+    PGDN)  scroll_down "$CHAT_LINES" ;;
+    HOME)  scroll_up 9999 ;;
+    END)   scroll_bottom ;;
     r|R)
       LAST_NO=-1
       LAST_CTX=""
@@ -764,6 +893,8 @@ while true; do
       MSG_COUNT=0
       RESP_COUNT=0
       IDLE_SHOWN=0
+      SCROLL_OFFSET=0
+      AUTO_SCROLL=1
       printf '\033[2J'
       draw_header "$CTX_ID" "refreshing..."
       ;;
@@ -773,6 +904,8 @@ while true; do
       VERBOSE=$(( 1 - VERBOSE ))
       LAST_NO=-1
       MSG_BUFFER=()
+      SCROLL_OFFSET=0
+      AUTO_SCROLL=1
       printf '\033[2J'
       draw_header "$CTX_ID" "reloading..."
       ;;
@@ -789,5 +922,7 @@ while true; do
       redraw_chat
       draw_status_bar ""
       ;;
+    ESC) ;;  # ignore lone escape
+    *) ;;    # ignore unknown keys
   esac
 done
