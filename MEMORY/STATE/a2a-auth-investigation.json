@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-03-07T14:12:00Z",
+  "task": "A2A 401 Unauthorized Investigation",
+  "status": "RESOLVED",
+  "root_cause": {
+    "summary": "AUTH_PASSWORD is set as Docker container env var but NOT in /a0/usr/.env file. create_auth_token() uses os.getenv() to read it, so token is always non-empty at runtime despite settings.json showing empty string.",
+    "details": [
+      "settings.json stores mcp_server_token as '' (empty)",
+      "get_settings() line 426 ALWAYS overrides with create_auth_token() result",
+      "create_auth_token() = SHA256(runtime_id:username:password) → base64url → first 16 chars",
+      "AUTH_PASSWORD only exists as Docker env var, not in .env file",
+      "dotenv.get_dotenv_value() calls os.getenv() — reads env vars, not .env file"
+    ]
+  },
+  "auth_components": {
+    "runtime_id": "from A0_PERSISTENT_RUNTIME_ID in /a0/usr/.env",
+    "username": "from AUTH_LOGIN env var",
+    "password": "from AUTH_PASSWORD Docker env var (NOT in .env file!)"
+  },
+  "working_auth_methods": [
+    "Path token: /a2a/t-{token}/endpoint",
+    "Bearer header: Authorization: Bearer {token}",
+    "X-API-KEY header",
+    "api_key query param"
+  ],
+  "stderr_check": "/proc/1/fd/2 is empty — no A2A errors in stderr",
+  "verification": "Both path token and Bearer header return HTTP 200 with valid agent card JSON",
+  "flywheel": {
+    "DO": "Investigated A2A 401 auth failure",
+    "LEARN": "Docker env vars can diverge from .env file. Always check both with 'env' command AND cat .env. os.getenv() reads process environment, not .env files.",
+    "FIX": "Saved corrected auth token computation to memory. Key insight: settings.json is misleading for mcp_server_token — always computed at runtime."
+  }
+}
