@@ -2,7 +2,7 @@
 task: A0 comms polish — parsing, MCP, extensions, containers
 slug: 20260307-160000_a0-comms-polish
 effort: extended
-phase: verify
+phase: complete
 progress: 18/18
 mode: algorithm
 started: 2026-03-07T16:00:00

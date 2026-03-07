@@ -29,9 +29,6 @@
 - **Claude Code v2.1.70 features used**: HTTP hook type, InstructionsLoaded event, TeammateIdle event, agent_type in SubagentStop, `${CLAUDE_SKILL_DIR}` variable
 - JulesAutoMerge: `bun PAI/Tools/JulesAutoMerge.ts check|merge|status` — auto-tests in worktree, merges passing PRs
 
-## Known Issues (resolved — archive, all fixed pre-2026-03-06)
-- All 15 historical issues resolved. Details in git history (commits b8d9551, 8d95338, 037c79d, d376658)
-
 ## Development Patterns (CRITICAL)
 - **TUI/Kitty Visual Verification Pattern (CRITICAL, 9/10 rated)**:
   1. Сделать изменение в скрипте
@@ -89,16 +86,13 @@
 - **Jules Coding Plan task** (sessions/16877413060062799985): MEDIUM fixes MED-03/05/10 — IN_PROGRESS
 
 ## Lessons Learned (CRITICAL)
-- **Директория ≠ один файл**: перед выводом о состоянии директории — ВСЕГДА `ls` сначала. TELOS.md — шаблон, данные в 22 файлах рядом
-- **Негативные выводы агентов перепроверять**: "X пустой/отсутствует/не работает" — проверить лично перед передачей Ivan
-- **Миграции фиксировать в памяти**: v3→v4 миграция TELOS (commit 74bb626) не была записана → новая сессия не знала
-- **Agent Zero research = 10min timeout**: Research tasks with browser+search take 2-5min. Default 5min timeout too short. Increased to 10min (600000ms)
-- **JulesAutoMerge outputs[] bug**: Jules API returns PR in outputs[1] (not [0]). outputs[0]=changeSet, outputs[1]=pullRequest. Always search all outputs.
-- **Jules creates PRs as user**: Author is user account (rikitikitavi2012-debug), NOT app/jules-google. Don't filter by author.
-- **gh pr merge --admin**: Required for PAI-personal repo (personal access token lacks merge permissions without --admin)
-- **A0 Integration plan**: MEMORY/RESEARCH/2026-03/agent-zero-integration-plan.md — 5 coding integrations ranked by ROI
-- **jq pipeline context bug**: В jq -s, `[.[] | select(X)] | length as $var |` меняет pipeline context. `length as $total` ДОЛЖЕН быть в начале pipeline, ДО любых select-цепочек. Все промежуточные — оборачивать в `(...) as $var`
-- **git index.lock**: Параллельные Claude Code сессии/агенты создают stale locks. Автоочистка в .bashrc (функция git() с fuser проверкой)
+- **Негативные выводы агентов перепроверять**: "X пустой/отсутствует/не работает" — проверить лично
+- **A0 self-inspection > external probing**: Ask A0 to check its own filesystem — faster and more reliable than agents or SSH
+- **Agent delegation for A0 tasks = overhead**: A0 is single-threaded bottleneck, direct queries beat parallel agents
+- **JulesAutoMerge outputs[] bug**: outputs[0]=changeSet, outputs[1]=pullRequest. Always search all outputs
+- **gh pr merge --admin**: Required for PAI-personal repo
+- **jq pipeline context**: `length as $total` ДОЛЖЕН быть в начале pipeline, ДО select-цепочек
+- **git index.lock**: Параллельные агенты создают stale locks. Автоочистка в .bashrc
 
 ## Gemini CLI (Google's Claude Code analog)
 - **Installed**: v0.31.0, path: ~/.npm-global/bin/gemini
@@ -152,8 +146,11 @@
 - **8 skills**: a0-deployer, chart-architect, doc-forge, exa-synergy, ops-commander, replicate-studio, telos, the-algorithm
 - **8 scheduled tasks**: Security Scan (Sun), Health Check (daily), TELOS Integrity (Mon), PAI Sync (daily), Learning Mining (Mon), Memory Compaction (1st), Competitive Intel (Sun), PAI Snapshot (1st)
 - **Extensions**: 20 hook types (Python), lifecycle events from agent_init to error_format. Custom: `_80_learn_enforcer.py` (MO13 Flywheel reminder every 10 msgs), `_81_wisdom_injector.py` (random 2 of W1-W9/FR wisdom per loop). CRITICAL: Extension API uses `loop_data.extras_temporary[key]`, NOT `self.agent.history.messages` (doesn't exist!). History structure: `history.topics[-1].messages` (list of messages in current topic)
-- **A0 output quirk**: При больших выводах A0 возвращает `§§include(/a0/usr/chats/.../messages/N.txt)` вместо inline контента. AgentZero.ts и парсеры должны это учитывать
-- **Container 1 escape hatch**: Container 1 (port 50001) имеет SSH доступ к docker host (172.18.0.1, user: agentzero). Через него можно: docker exec/restart/logs на container 2. Единственный способ управления при зависании container 2
+- **A0 output quirk**: §§include() pattern now parsed by AgentZero.ts — replaced with `[A0: large output saved to file on container]` marker (commit bcce29d)
+- **Container 1 escape hatch**: Port 50001, v0.9.7-10, SSH to docker host (172.18.0.1, user: agentzero). Quick-ref: `MEMORY/STATE/a0-container-escape-hatch.md`
+- **Volume mount**: `/a0` = persistent ext4 volume (`/dev/sda1`), NOT ephemeral. Extensions/skills/memory survive container restarts
+- **API retry**: apiCall() retries once on 429/5xx with 2s backoff, also ECONNREFUSED (commit bcce29d)
+- **MCP SSE**: Works (returns session_id), but NOT available as Claude Code deferred tools — lazy-connected. Use `/api_message` as primary channel
 - **Scheduler API**: scheduler:create_scheduled_task, scheduler:run_task, scheduler:list_tasks — A0 can self-manage tasks
 - **Key insight for task delegation**: Use subordinate profiles! `call_subordinate` with profile=developer for code, researcher for analysis, hacker for security
 - **Chat streaming**: Web UI uses Socket.IO (Same-Origin only, NOT for external). TUI uses `/api_log_get` polling 3s. Log item types: user, response, agent, code_exe, tool, util. CRITICAL: response heading="A0: Responding" — show CONTENT not heading! Strip `icon://` from headings.
@@ -190,26 +187,15 @@
 - **Ivan хочет**: Каждый инструмент на своём месте, Navi управляет автономно
 
 ## A0 Results Pipeline (2026-03-06)
-- **Git = Message Bus**: A0 пушит результаты в PAI-personal → Navi pullит при старте сессии
-- **LoadContext auto-pull**: `git fetch private` + `checkout MEMORY/STATE/` при каждом SessionStart
-- **Brigade Briefing**: читает 5 типов отчётов A0 (telos-integrity, telos-progress, learning-patterns, memory-compaction, memory-audit)
-- **AgentZero.ts poll**: `bun PAI/Tools/AgentZero.ts poll` — ручная проверка результатов
-- **Async fix**: timeout 15→30с + graceful "delivered" при timeout (не crash)
-- **5 scheduled задач** готовы (шаблоны в `MEMORY/STATE/a0-scheduled-tasks-templates.json`), нужно добавить через A0 web UI
-- **A0 comms audit complete (2026-03-07)**: 2 working channels (API Message + MCP SSE), A2A broken (fasta2a bug). Recommended: `/api_message` with X-API-KEY for all Navi→A0 communication
+- **Git = Message Bus**: A0 → PAI-personal → Navi pulls at session start (LoadContext hook)
+- **AgentZero.ts poll**: manual check. Async: 30s timeout, graceful "delivered"
+- **Comms (2026-03-07)**: PRIMARY = `/api_message` + X-API-KEY. SECONDARY = MCP SSE. A2A broken (fasta2a bug)
 
 ## Jules Stats (2026-03-02 → 2026-03-06)
-- 30 задач, 28 completed (93%), 17 PR merged (59%), 9 PR closed (31%)
-- +2521/-566 строк, 65 новых тестов (170→235)
-- **Best for**: тесты, mechanical refactoring, shellcheck, documentation updates
-- **Not for**: architecture, complex context, runtime understanding
-- Подробный анализ: see session 2026-03-06
+- 30 задач, 93% completed, 17 PR merged, +2521/-566 строк, 65 новых тестов
+- Best for: тесты, mechanical refactoring. Not for: architecture, complex context
 
 ## Стратегические направления
-1. ~~events.jsonl rotation~~ ✅ Jules PR #27 merged
-2. **A0 scheduled tasks** — 5 шаблонов готовы, добавить через web UI
-3. ~~A0 comms research~~ ✅ Audit complete: API Message + MCP work, A2A = fasta2a bug
-4. **Upstream PR follow-up** — 7 PR open
-5. **LOW findings** — Jules task IN_PROGRESS (sessions/12941660201152098257)
-6. **ContextualRules.hook.ts** — Фаза B, динамическая инжекция правил
-7. **MEMORY.md compaction** — 225 строк, truncated, нужна чистка
+1. **A0 scheduled tasks** — 5 шаблонов готовы, добавить через web UI
+2. **Upstream PR follow-up** — 7 PR open
+3. **ContextualRules.hook.ts** — Фаза B, динамическая инжекция правил
