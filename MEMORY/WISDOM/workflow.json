@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-03-05T15:39:35.251Z",
+  "updated": "2026-03-07T11:45:44.893Z",
   "observations": [
     {
       "type": "principle",
@@ -283,6 +283,20 @@
       "observation": "Strong approval — concise satisfaction with completed work",
       "timestamp": "2026-03-05T18:34:14+03:00",
       "session_id": "7b125423-4ce6-41a4-8429-bedacc5055c7",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated with duplicate header and display issues in chat",
+      "timestamp": "2026-03-07T00:43:48+03:00",
+      "session_id": "52cbcd82-cd2b-4f6f-b19b-9de2c0c682e0",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — A0 broke after restart, needs diagnosis",
+      "timestamp": "2026-03-07T12:58:47+03:00",
+      "session_id": "748ae53c-2eee-40d6-95c3-ee73e091175e",
       "confirmed": 1
     }
   ]

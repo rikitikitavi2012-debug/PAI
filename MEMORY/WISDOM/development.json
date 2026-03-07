@@ -1,6 +1,6 @@
 {
   "domain": "development",
-  "updated": "2026-03-01T14:59:48.567Z",
+  "updated": "2026-03-06T21:16:44.161Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -133,6 +133,13 @@
       "observation": "Impressed with clean build, zero errors, all deliverables complete",
       "timestamp": "2026-02-22T01:09:57+03:00",
       "session_id": "5933d13a-1583-476f-8729-151b7d4a3048",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mixed feedback — appreciates progress but frustrated with bugs",
+      "timestamp": "2026-03-06T23:49:40+03:00",
+      "session_id": "d445edb3-ba2f-4025-be16-82404698b328",
       "confirmed": 1
     }
   ]

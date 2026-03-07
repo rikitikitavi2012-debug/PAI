@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** communication
 - **Confidence:** 50%
-- **Observation Count:** 4
-- **Last Crystallized:** 2026-03-01
+- **Observation Count:** 5
+- **Last Crystallized:** 2026-03-07
 - **Source:** Converted from communication.json
 
 ---
@@ -46,3 +46,5 @@
 ## Evolution Log
 - 2026-03-01: Frame created from communication.json (4 observations)
 
+
+- 2026-03-07: [anti-pattern] Mild frustration — A0 provided inaccurate information

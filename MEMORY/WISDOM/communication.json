@@ -1,6 +1,6 @@
 {
   "domain": "communication",
-  "updated": "2026-03-01T14:59:48.564Z",
+  "updated": "2026-03-07T09:28:25.982Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -41,6 +41,13 @@
       "observation": "Mild frustration with incomplete audio output delivery",
       "timestamp": "2026-02-25T23:21:05+03:00",
       "session_id": "ebe98a04-fdcb-45c9-b55a-a058af402bb6",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration — A0 provided inaccurate information",
+      "timestamp": "2026-03-07T10:44:28+03:00",
+      "session_id": "748ae53c-2eee-40d6-95c3-ee73e091175e",
       "confirmed": 1
     }
   ]

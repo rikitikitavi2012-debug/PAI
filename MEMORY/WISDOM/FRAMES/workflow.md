@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 28
-- **Last Crystallized:** 2026-03-06
+- **Observation Count:** 30
+- **Last Crystallized:** 2026-03-07
 - **Source:** Converted from workflow.json
 
 ---
@@ -152,3 +152,5 @@
 - 2026-03-05: [principle] Strong approval — concise satisfaction with completed work
 - 2026-03-06: [principle] High trust, ambitious vision, wants excellence
 - 2026-03-06: [principle] Praised UI/UX concept and Navi's improvement on TUI tasks
+- 2026-03-06: [anti-pattern] Frustrated with duplicate header and display issues in chat
+- 2026-03-07: [anti-pattern] Frustrated — A0 broke after restart, needs diagnosis

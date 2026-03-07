@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** development
 - **Confidence:** 75%
-- **Observation Count:** 17
-- **Last Crystallized:** 2026-03-01
+- **Observation Count:** 18
+- **Last Crystallized:** 2026-03-06
 - **Source:** Converted from development.json
 
 ---
@@ -79,3 +79,5 @@
 ## Evolution Log
 - 2026-03-01: Frame created from development.json (17 observations)
 
+
+- 2026-03-06: [anti-pattern] Mixed feedback — appreciates progress but frustrated with bugs

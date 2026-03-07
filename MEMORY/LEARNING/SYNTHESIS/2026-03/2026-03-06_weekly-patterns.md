@@ -2,23 +2,23 @@
 
 **Period:** Weekly
 **Generated:** 2026-03-06
-**Total Ratings:** 67
-**Average Rating:** 7.9/10
+**Total Ratings:** 69
+**Average Rating:** 7.8/10
 
 ---
 
 ## Top Issues
 
-1. Tool/System Failures (3 occurrences, avg rating 3.0)
+1. Tool/System Failures (4 occurrences, avg rating 3.3)
 2. Repetitive Issues (3 occurrences, avg rating 3.0)
 
 ## Frustration Patterns
 
 ### Tool/System Failures
 
-- **Occurrences:** 3
-- **Avg Rating:** 3.0
-- **Confidence:** 82%
+- **Occurrences:** 4
+- **Avg Rating:** 3.3
+- **Confidence:** 80%
 - **Examples:**
   - "Frustrated with repeated index.lock failures"
   - "Frustration over repeated failed attempts on same issue"
