@@ -12,6 +12,7 @@
 
 import { join } from 'path';
 import { homedir } from 'os';
+import { readFileSync, writeFileSync, existsSync, appendFileSync } from 'fs';
 
 // Inline getPaiDir to avoid cross-directory import resolution issues
 function getPaiDir(): string {
@@ -152,171 +153,6 @@ async function checkZai(): Promise<CheckResult> {
   }
 }
 
-// --- Recovery infrastructure ---
-
-interface RecoveryState {
-  lastRecovery: string;
-  recoveryCount: number;
-  lastError: string;
-}
-
-const RECOVERY_STATE_PATH = join(getPaiDir(), 'MEMORY/STATE/a0-recovery.json');
-const RECOVERY_COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
-
-async function loadRecoveryState(): Promise<RecoveryState> {
-  try {
-    return await Bun.file(RECOVERY_STATE_PATH).json();
-  } catch {
-    return { lastRecovery: '', recoveryCount: 0, lastError: '' };
-  }
-}
-
-async function saveRecoveryState(state: RecoveryState): Promise<void> {
-  await Bun.write(RECOVERY_STATE_PATH, JSON.stringify(state, null, 2));
-}
-
-function appendEvent(type: string, action: string, detail?: string): void {
-  const eventsPath = join(getPaiDir(), 'MEMORY/STATE/events.jsonl');
-  try {
-    const { appendFileSync } = require('fs');
-    const event = {
-      type,
-      source: 'HealthMonitor',
-      action,
-      detail,
-      timestamp: new Date().toISOString(),
-      session_id: process.env.CLAUDE_SESSION_ID || 'cron',
-    };
-    appendFileSync(eventsPath, JSON.stringify(event) + '\n', 'utf-8');
-  } catch { /* observability, not critical */ }
-}
-
-async function voiceNotify(message: string): Promise<void> {
-  try {
-    await fetch('http://localhost:8888/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message,
-        voice_id: 'TUQNWEvVPBLzMBSVDPUA',
-        title: 'A0 Recovery',
-      }),
-    });
-  } catch { /* voice server might be down */ }
-}
-
-async function quickA0HealthCheck(): Promise<boolean> {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10_000);
-    const res = await fetch('http://72.56.86.51:50002/api_log_get', {
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-    return res.status === 200;
-  } catch {
-    return false;
-  }
-}
-
-async function loadA0Token(): Promise<string> {
-  const envPath = join(homedir(), '.config', 'PAI', '.env');
-  try {
-    const env = await Bun.file(envPath).text();
-    const m = env.match(/^A0_API_TOKEN=(.+)$/m);
-    return m ? m[1].trim() : '';
-  } catch {
-    return '';
-  }
-}
-
-async function recover(): Promise<void> {
-  console.log('[recover] Checking A0 health...');
-
-  // 1. Check if A0 is actually down
-  const isUp = await quickA0HealthCheck();
-  if (isUp) {
-    console.log('[recover] A0 is responding. No recovery needed.');
-    appendEvent('a0.recovery', 'skipped', 'A0 is healthy');
-    return;
-  }
-
-  console.log('[recover] A0 is DOWN. Checking cooldown...');
-
-  // 2. Check cooldown
-  const state = await loadRecoveryState();
-  if (state.lastRecovery) {
-    const elapsed = Date.now() - new Date(state.lastRecovery).getTime();
-    if (elapsed < RECOVERY_COOLDOWN_MS) {
-      const remainMin = Math.ceil((RECOVERY_COOLDOWN_MS - elapsed) / 60_000);
-      console.log(`[recover] Cooldown active. ${remainMin} min remaining. Skipping.`);
-      appendEvent('a0.recovery', 'cooldown', `${remainMin} min remaining`);
-      return;
-    }
-  }
-
-  // 3. Attempt recovery via Container 1
-  console.log('[recover] Attempting recovery via Container 1...');
-  appendEvent('a0.recovery', 'attempt', 'Restarting container 2 via container 1');
-  await voiceNotify('Внимание. A0 не отвечает, запускаю перезагрузку контейнера.');
-
-  const token = await loadA0Token();
-  if (!token) {
-    const err = 'No A0_API_TOKEN found';
-    console.error(`[recover] ${err}`);
-    appendEvent('a0.recovery', 'failed', err);
-    await voiceNotify('Не удалось восстановить A0. Требуется ручное вмешательство.');
-    await saveRecoveryState({ ...state, lastRecovery: new Date().toISOString(), recoveryCount: state.recoveryCount + 1, lastError: err });
-    return;
-  }
-
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 60_000);
-    const res = await fetch('http://72.56.86.51:50001/api_message', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-KEY': token },
-      body: JSON.stringify({ message: 'Run: ssh agentzero@172.18.0.1 docker restart agent-zero-2' }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-
-    if (!res.ok) {
-      const err = `Container 1 returned HTTP ${res.status}`;
-      console.error(`[recover] ${err}`);
-      appendEvent('a0.recovery', 'failed', err);
-      await voiceNotify('Не удалось восстановить A0. Требуется ручное вмешательство.');
-      await saveRecoveryState({ ...state, lastRecovery: new Date().toISOString(), recoveryCount: state.recoveryCount + 1, lastError: err });
-      return;
-    }
-
-    console.log('[recover] Restart command sent. Waiting 30s for Container 2 to come back...');
-  } catch (err: any) {
-    const msg = err.name === 'AbortError' ? 'Container 1 timeout (60s)' : err.message;
-    console.error(`[recover] ${msg}`);
-    appendEvent('a0.recovery', 'failed', msg);
-    await voiceNotify('Не удалось восстановить A0. Требуется ручное вмешательство.');
-    await saveRecoveryState({ ...state, lastRecovery: new Date().toISOString(), recoveryCount: state.recoveryCount + 1, lastError: msg });
-    return;
-  }
-
-  // 4. Wait and re-check
-  await new Promise(resolve => setTimeout(resolve, 30_000));
-
-  const isBackUp = await quickA0HealthCheck();
-  if (isBackUp) {
-    console.log('[recover] A0 recovered successfully!');
-    appendEvent('a0.recovery', 'success', 'Container 2 restarted and responding');
-    await voiceNotify('A0 восстановлен успешно.');
-    await saveRecoveryState({ lastRecovery: new Date().toISOString(), recoveryCount: state.recoveryCount + 1, lastError: '' });
-  } else {
-    console.error('[recover] A0 still not responding after restart.');
-    appendEvent('a0.recovery', 'failed', 'Container 2 not responding after 30s wait');
-    await voiceNotify('Не удалось восстановить A0. Требуется ручное вмешательство.');
-    await saveRecoveryState({ ...state, lastRecovery: new Date().toISOString(), recoveryCount: state.recoveryCount + 1, lastError: 'Still down after restart' });
-  }
-}
-
 async function main() {
   const checks = await Promise.all([
     checkA0(),
@@ -376,9 +212,158 @@ async function main() {
   }
 }
 
-const command = process.argv[2];
-if (command === 'recover') {
-  recover();
+// ── A0 Auto-Recovery ──
+
+interface RecoveryState {
+  lastRecovery: string;
+  recoveryCount: number;
+  lastError?: string;
+}
+
+const RECOVERY_COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
+const RECOVERY_STATE_PATH = join(getPaiDir(), 'MEMORY', 'STATE', 'a0-recovery.json');
+
+function loadRecoveryState(): RecoveryState {
+  try {
+    if (existsSync(RECOVERY_STATE_PATH)) return JSON.parse(readFileSync(RECOVERY_STATE_PATH, 'utf-8'));
+  } catch {}
+  return { lastRecovery: '', recoveryCount: 0 };
+}
+
+function saveRecoveryState(state: RecoveryState): void {
+  writeFileSync(RECOVERY_STATE_PATH, JSON.stringify(state, null, 2), 'utf-8');
+}
+
+function logRecoveryEvent(action: string, detail?: string): void {
+  try {
+    const eventsPath = join(getPaiDir(), 'MEMORY', 'STATE', 'events.jsonl');
+    appendFileSync(eventsPath, JSON.stringify({
+      type: 'a0.recovery', source: 'HealthMonitor', action, detail,
+      timestamp: new Date().toISOString(),
+    }) + '\n', 'utf-8');
+  } catch {}
+}
+
+async function voiceNotify(message: string, voiceId = 'TUQNWEvVPBLzMBSVDPUA'): Promise<void> {
+  try {
+    await fetch('http://localhost:8888/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, voice_id: voiceId, voice_enabled: true }),
+    });
+  } catch {}
+}
+
+async function recoverA0(): Promise<void> {
+  // Load A0 config
+  const envPath = join(process.env.HOME || homedir(), '.config', 'PAI', '.env');
+  let apiToken = '';
+  try {
+    const env = readFileSync(envPath, 'utf-8');
+    const match = env.match(/^A0_API_TOKEN=(.+)$/m);
+    if (match) apiToken = match[1].trim();
+  } catch {}
+  if (!apiToken) { console.error('A0_API_TOKEN not found'); return; }
+
+  // Check A0 health first
+  console.log('Checking A0 health...');
+  let a0Up = false;
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 10000);
+    const r = await fetch('http://72.56.86.51:50002/api_log_get', {
+      signal: ctrl.signal, headers: { 'X-API-KEY': apiToken },
+    });
+    clearTimeout(t);
+    a0Up = r.ok;
+  } catch { a0Up = false; }
+
+  if (a0Up) {
+    console.log('A0 is online — no recovery needed.');
+    return;
+  }
+
+  console.log('A0 is DOWN — checking recovery cooldown...');
+
+  // Cooldown check
+  const state = loadRecoveryState();
+  if (state.lastRecovery) {
+    const elapsed = Date.now() - new Date(state.lastRecovery).getTime();
+    if (elapsed < RECOVERY_COOLDOWN_MS) {
+      const remaining = Math.ceil((RECOVERY_COOLDOWN_MS - elapsed) / 60000);
+      console.log(`Recovery cooldown active (${remaining}min remaining). Skipping.`);
+      logRecoveryEvent('cooldown', `${remaining}min remaining`);
+      return;
+    }
+  }
+
+  // Attempt recovery via Container 1
+  console.log('Attempting recovery via Container 1 (port 50001)...');
+  await voiceNotify('Внимание. A0 не отвечает, запускаю перезагрузку контейнера.');
+  logRecoveryEvent('attempt');
+
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 60000);
+    const response = await fetch('http://72.56.86.51:50001/api_message', {
+      method: 'POST',
+      headers: { 'X-API-KEY': apiToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: "Execute this Linux command and report the output: ssh agentzero@172.18.0.1 'docker restart agent-zero-2'" }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+
+    if (!response.ok) {
+      throw new Error(`Container 1 responded ${response.status}`);
+    }
+    console.log('Restart command sent. Waiting 30s for Container 2 to come back...');
+  } catch (err: any) {
+    console.error(`Recovery failed: ${err.message}`);
+    state.lastRecovery = new Date().toISOString();
+    state.lastError = err.message;
+    saveRecoveryState(state);
+    logRecoveryEvent('failed', err.message);
+    await voiceNotify('Не удалось восстановить A0. Требуется ручное вмешательство.');
+    return;
+  }
+
+  // Wait for restart
+  await new Promise(r => setTimeout(r, 30000));
+
+  // Re-check
+  let recovered = false;
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 10000);
+    const r = await fetch('http://72.56.86.51:50002/api_log_get', {
+      signal: ctrl.signal, headers: { 'X-API-KEY': apiToken },
+    });
+    clearTimeout(t);
+    recovered = r.ok;
+  } catch { recovered = false; }
+
+  state.lastRecovery = new Date().toISOString();
+  state.recoveryCount++;
+
+  if (recovered) {
+    console.log('A0 recovered successfully!');
+    state.lastError = undefined;
+    saveRecoveryState(state);
+    logRecoveryEvent('success');
+    await voiceNotify('A0 восстановлен успешно.');
+  } else {
+    console.log('A0 still down after restart attempt.');
+    state.lastError = 'Still down after restart';
+    saveRecoveryState(state);
+    logRecoveryEvent('failed', 'Still down after restart');
+    await voiceNotify('Не удалось восстановить A0. Требуется ручное вмешательство.');
+  }
+}
+
+// ── CLI ──
+const cmd = process.argv[2];
+if (cmd === 'recover') {
+  recoverA0();
 } else {
   main();
 }

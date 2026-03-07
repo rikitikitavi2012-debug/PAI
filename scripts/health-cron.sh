@@ -34,4 +34,10 @@ print(', '.join(c['service'] for c in r.get('checks',[]) if c['status']=='down')
     -H "Content-Type: application/json" \
     -d "{\"message\": \"Health check: $FAILURES down\", \"voice_id\": \"TUQNWEvVPBLzMBSVDPUA\", \"voice_enabled\": true}" \
     >/dev/null 2>&1 || true
+
+  # Auto-recover A0 if it's down
+  if echo "$FAILURES" | grep -qi "agent"; then
+    echo "[$TIMESTAMP] A0 down — attempting auto-recovery" >> "$LOG_FILE"
+    timeout 120 bun "$HOME/.claude/PAI/Tools/HealthMonitor.ts" recover >> "$LOG_FILE" 2>&1 || true
+  fi
 fi

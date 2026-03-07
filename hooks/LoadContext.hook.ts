@@ -609,29 +609,61 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
         } catch { /* non-fatal */ }
       }
 
-      // Open PRs count (only if we have automerge state — skip in test environments)
+      // Jules active tasks count
+      try {
+        const julesResult = spawnSync('bun', [join(process.env.HOME || '/home/ser', '.claude', 'skills', 'Utilities', 'Jules', 'Tools', 'JulesAPI.ts'), 'sessions'], {
+          encoding: 'utf-8', timeout: 10000, env: { ...process.env },
+        });
+        if (julesResult.stdout?.trim()) {
+          const sessions = JSON.parse(julesResult.stdout);
+          const active = (Array.isArray(sessions) ? sessions : []).filter(
+            (s: any) => s.state !== 'COMPLETED' && s.state !== 'FAILED'
+          ).length;
+          if (active > 0) {
+            briefingParts.push(`  🤖 Jules: ${active} active task(s)`);
+          }
+        }
+      } catch { /* non-fatal */ }
+
+      // Open PRs count across all repos
       if (existsSync(jamPath)) {
         try {
-          const prResult = spawnSync('gh', ['pr', 'list', '--repo', 'rikitikitavi2012-debug/PAI-personal', '--state', 'open', '--json', 'number'], {
-            encoding: 'utf-8', timeout: 5000,
-          });
-          if (prResult.stdout?.trim()) {
-            const prs = JSON.parse(prResult.stdout);
-            if (prs.length > 0) {
-              briefingParts.push(`  📋 ${prs.length} open PR(s) awaiting merge`);
-            }
+          const repos = ['PAI-personal', 'PAI', 'agent-zero-custom'];
+          const prCounts: string[] = [];
+          for (const repo of repos) {
+            try {
+              const prResult = spawnSync('gh', ['pr', 'list', '--repo', `rikitikitavi2012-debug/${repo}`, '--state', 'open', '--json', 'number'], {
+                encoding: 'utf-8', timeout: 5000,
+              });
+              if (prResult.stdout?.trim()) {
+                const prs = JSON.parse(prResult.stdout);
+                if (prs.length > 0) {
+                  prCounts.push(`${prs.length} ${repo}`);
+                }
+              }
+            } catch { /* non-fatal — skip this repo */ }
+          }
+          if (prCounts.length > 0) {
+            briefingParts.push(`  📋 PRs: ${prCounts.join(', ')}`);
           }
         } catch { /* non-fatal */ }
       }
 
-      // A0 scheduled tasks status (from health report)
+      // A0 health with last heartbeat and scheduled task count
       if (existsSync(healthPath)) {
         try {
           const health = JSON.parse(readFileSync(healthPath, 'utf-8'));
           const a0Check = (health.checks || []).find((c: any) => c.service === 'AgentZero');
           if (a0Check) {
-            const status = a0Check.status === 'up' ? '🧠 A0 online' : '⚠️ A0 offline';
-            briefingParts.push(`  ${status} (3 tasks: ULC daily, TELOS adhoc, SecScan weekly)`);
+            const age = Date.now() - new Date(health.timestamp).getTime();
+            const ageH = Math.floor(age / 3600000);
+            const ageStr = ageH < 1 ? '<1h ago' : `${ageH}h ago`;
+            const taskCount = health.scheduledTasks?.length || a0Check.details?.scheduledTasks || 8;
+            if (a0Check.status === 'up') {
+              briefingParts.push(`  🧠 A0: online (last check ${ageStr}) | ${taskCount} scheduled tasks`);
+            } else {
+              briefingParts.push(`  ⚠️ A0: OFFLINE (last check ${ageStr}) — check container 2`);
+            }
           }
         } catch { /* non-fatal */ }
       }
