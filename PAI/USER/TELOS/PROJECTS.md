@@ -45,6 +45,7 @@
 - **PAI инфраструктура** — хуки, скиллы, агенты, воркфлоу
 - **Community contribution** — PRs, issues, code review в upstream PAI
 - **AI Brigade (7 членов, T1/T2/T3)** — T1: Navi (архитектор) + Jules (async-кодер) + A0 (24/7 VPS) + OpenCode (headless coder). T2: Gemini CLI (interactive). T3: GLM-5 + zai-cli (tools)
+  - **A0 development loop:** Jules пишет тесты/фиксы в `agent-zero-custom` → PR → Navi review → deploy на VPS. A0 растёт вместе с бригадой
 - **JulesAutoMerge** — автоматизация merge Jules PRs с A0 code review
 - **Miessler Philosophy** — 9 операционных принципов вшиты в нервную систему (CLAUDE.md + AISTEERINGRULES.md)
 **Результаты (февраль-март 2026):**
@@ -77,6 +78,13 @@
 - [x] OpenCode CLI — T1 автономный агент, headless mode, Kimi 2.5 + Z.AI models
 - [ ] TELOS panel в Kitty — goals, status прямо в терминале
 - [ ] A0 расширение scheduled tasks (health check, security scan, community watcher)
+- [ ] **A0 как участник бригады — непрерывное улучшение через Jules:**
+  - Repo: `agent-zero-custom` (приватный, GitHub)
+  - Scope: extensions (_80-_89), skills (8), prompts, behaviour.md — NOT core
+  - Jules: тесты → баги → улучшения → PR → Navi review → deploy на VPS
+  - Стратегия numbering: _80-_89 наши slots, _10-_75 upstream
+  - Deploy: GitHub = source of truth → sync script → container
+  - Цель: A0 покрыт тестами, стабилен, развивается параллельно с PAI
 - [ ] Углубить контекст в заполненных TELOS файлах
 **Связано с:** M1, M3, B1, B2, MO9, S7
 
