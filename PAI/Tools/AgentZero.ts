@@ -60,6 +60,13 @@ function saveActiveContext(contextId: string, lastMessage: string): void {
   } catch { /* best effort */ }
 }
 
+/** Parse §§include(/path) references in A0 responses — replace with marker */
+function parseA0Response(text: string): string {
+  if (!text || typeof text !== 'string') return text;
+  // Pattern: §§include(/a0/usr/chats/.../messages/N.txt) or similar paths
+  return text.replace(/§§include\([^)]+\)/g, '[A0: large output saved to file on container]');
+}
+
 interface A0Config {
   baseUrl: string;
   apiToken: string;
@@ -88,41 +95,58 @@ function loadConfig(): A0Config {
   };
 }
 
-async function apiCall(path: string, body?: object, timeout = 600000): Promise<any> {
+async function apiCall(path: string, body?: object, timeout = 600000, retries = 1): Promise<any> {
   const config = loadConfig();
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-  try {
-    const response = await fetch(`${config.baseUrl}${path}`, {
-      method: 'POST',
-      headers: {
-        'X-API-KEY': config.apiToken,
-        'Content-Type': 'application/json',
-      },
-      body: body ? JSON.stringify(body) : undefined,
-      signal: controller.signal,
-    });
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    clearTimeout(timeoutId);
+    try {
+      const response = await fetch(`${config.baseUrl}${path}`, {
+        method: 'POST',
+        headers: {
+          'X-API-KEY': config.apiToken,
+          'Content-Type': 'application/json',
+        },
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      });
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`HTTP ${response.status}: ${text}`);
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const text = await response.text();
+        const status = response.status;
+        // Retry on 429 (rate limit) or 5xx (server error), if retries remain
+        if (attempt < retries && (status === 429 || status >= 500)) {
+          const delay = (attempt + 1) * 2000;
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+        throw new Error(`HTTP ${status}: ${text}`);
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        return await response.json();
+      }
+      return await response.text();
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        throw new Error(`Timeout after ${timeout}ms`);
+      }
+      // Retry on network errors if retries remain
+      if (attempt < retries && err.code === 'ECONNREFUSED') {
+        const delay = (attempt + 1) * 2000;
+        await new Promise(r => setTimeout(r, delay));
+        continue;
+      }
+      throw err;
     }
-
-    const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      return await response.json();
-    }
-    return await response.text();
-  } catch (err: any) {
-    clearTimeout(timeoutId);
-    if (err.name === 'AbortError') {
-      throw new Error(`Timeout after ${timeout}ms`);
-    }
-    throw err;
   }
+  throw new Error('Unreachable');
 }
 
 async function healthCheck(): Promise<void> {
@@ -157,9 +181,10 @@ async function sendMessage(message: string, contextId?: string): Promise<void> {
     });
   }
 
+  const parsedResponse = parseA0Response(result.response);
   console.log(JSON.stringify({
     context_id: result.context_id,
-    response: result.response,
+    response: parsedResponse,
     latency_s: latency,
   }, null, 2));
 }
@@ -181,7 +206,7 @@ async function sendAsync(message: string, contextId?: string): Promise<void> {
     console.log(JSON.stringify({
       status: 'delivered',
       context_id: result.context_id || 'unknown',
-      response: result.response?.slice(0, 200) || 'Task accepted',
+      response: parseA0Response(result.response)?.slice(0, 200) || 'Task accepted',
     }, null, 2));
     emitA0Event('async_delivered', { context_id: result.context_id || 'unknown' });
   } catch (err: any) {
