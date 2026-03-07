@@ -135,7 +135,7 @@
 - **Tools (14)**: code_execution_tool, browser_agent, call_subordinate, search_engine, document_query, vision_load, memory_*, behaviour_adjustment, response, input, wait, notify_user, a2a_chat, scheduler:*
 - **Scheduled tasks**: ULC Context Summary (daily 06:00 MSK), TELOS Update (adhoc)
 - **MCP**: SSE endpoint configured in settings.json, WORKING after Ivan enabled in A0 UI (tools: send_message, finish_chat)
-- **A2A**: Agent card works (/.well-known/agent.json), task submission returns 500
+- **A2A**: Agent card works at `/a2a/t-TOKEN/.well-known/agent.json`, POST returns 500 (fasta2a v0.5.0 bug — ValidationError unhandled in _agent_run_endpoint). NOT fixable without upstream patch. Low priority — API Message + MCP cover all needs
 - **Fork repos**: agent-zero-custom (private), agent-zero-skills (public, 5 skills)
 - **Containers**: 1=backup old version, 2=primary brain (50002), 3=planned construction orchestrator
 - **Cost model**: Оплата по API вызовам (НЕ подписка). Можно поставить Coding Plan API key для экономии. Контролировать расходы!
@@ -144,13 +144,16 @@
 - **Best for**: Deep research, code execution, browser tasks, document generation, DevOps, scheduled maintenance, code review
 - **NOT for**: Real-time interactive work (22s latency), settings changes (CSRF), sensitive PAI config
 - **Context sync (2026-03-06)**: Old TELOS/ULC/master_plan cleaned. Variant A: TELOS only in Navi, A0 gets context per-task
+- **Scaffolding embedded (2026-03-07)**: Miessler 9 principles in system prompt, ISC+Flywheel+Steering Rules in behaviour.md, ISC+Flywheel in the-algorithm skill, 10 failure patterns in FAISS memory, 2 custom extensions (learn_enforcer, wisdom_injector). Container 1 (50001) = escape hatch for managing container 2
 - **Architecture dump**: MEMORY/STATE/a0-architecture-dump.json (394 lines, commit 03705c0)
 - **A0 version**: v0.9.8.2. LLM: GLM-5 (chat), kimi-k2.5 (utility), claude-opus-4-6 (browser)
 - **Memory**: FAISS + paraphrase-multilingual-MiniLM-L12-v2. CRITICAL: threshold 0.3 for Russian (not 0.7!)
 - **Subordinates**: developer (coding), researcher (analysis), hacker (security), default (general) — all have all tools
 - **8 skills**: a0-deployer, chart-architect, doc-forge, exa-synergy, ops-commander, replicate-studio, telos, the-algorithm
 - **8 scheduled tasks**: Security Scan (Sun), Health Check (daily), TELOS Integrity (Mon), PAI Sync (daily), Learning Mining (Mon), Memory Compaction (1st), Competitive Intel (Sun), PAI Snapshot (1st)
-- **Extensions**: 20 hook types (Python), lifecycle events from agent_init to error_format
+- **Extensions**: 20 hook types (Python), lifecycle events from agent_init to error_format. Custom: `_80_learn_enforcer.py` (MO13 Flywheel reminder every 10 msgs), `_81_wisdom_injector.py` (random 2 of W1-W9/FR wisdom per loop). CRITICAL: Extension API uses `loop_data.extras_temporary[key]`, NOT `self.agent.history.messages` (doesn't exist!). History structure: `history.topics[-1].messages` (list of messages in current topic)
+- **A0 output quirk**: При больших выводах A0 возвращает `§§include(/a0/usr/chats/.../messages/N.txt)` вместо inline контента. AgentZero.ts и парсеры должны это учитывать
+- **Container 1 escape hatch**: Container 1 (port 50001) имеет SSH доступ к docker host (172.18.0.1, user: agentzero). Через него можно: docker exec/restart/logs на container 2. Единственный способ управления при зависании container 2
 - **Scheduler API**: scheduler:create_scheduled_task, scheduler:run_task, scheduler:list_tasks — A0 can self-manage tasks
 - **Key insight for task delegation**: Use subordinate profiles! `call_subordinate` with profile=developer for code, researcher for analysis, hacker for security
 - **Chat streaming**: Web UI uses Socket.IO (Same-Origin only, NOT for external). TUI uses `/api_log_get` polling 3s. Log item types: user, response, agent, code_exe, tool, util. CRITICAL: response heading="A0: Responding" — show CONTENT not heading! Strip `icon://` from headings.
@@ -193,7 +196,7 @@
 - **AgentZero.ts poll**: `bun PAI/Tools/AgentZero.ts poll` — ручная проверка результатов
 - **Async fix**: timeout 15→30с + graceful "delivered" при timeout (не crash)
 - **5 scheduled задач** готовы (шаблоны в `MEMORY/STATE/a0-scheduled-tasks-templates.json`), нужно добавить через A0 web UI
-- **A0 comms research**: отправлена задача A0 на исследование API со своей стороны → `MEMORY/STATE/a0-comms-research.json`
+- **A0 comms audit complete (2026-03-07)**: 2 working channels (API Message + MCP SSE), A2A broken (fasta2a bug). Recommended: `/api_message` with X-API-KEY for all Navi→A0 communication
 
 ## Jules Stats (2026-03-02 → 2026-03-06)
 - 30 задач, 28 completed (93%), 17 PR merged (59%), 9 PR closed (31%)
@@ -205,7 +208,7 @@
 ## Стратегические направления
 1. ~~events.jsonl rotation~~ ✅ Jules PR #27 merged
 2. **A0 scheduled tasks** — 5 шаблонов готовы, добавить через web UI
-3. **A0 comms research** — ждём ответ, потом решаем по async endpoint
+3. ~~A0 comms research~~ ✅ Audit complete: API Message + MCP work, A2A = fasta2a bug
 4. **Upstream PR follow-up** — 7 PR open
 5. **LOW findings** — Jules task IN_PROGRESS (sessions/12941660201152098257)
 6. **ContextualRules.hook.ts** — Фаза B, динамическая инжекция правил
