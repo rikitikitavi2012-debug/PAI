@@ -97,13 +97,8 @@
 - **git index.lock**: Параллельные агенты создают stale locks. Автоочистка в .bashrc
 - **Jules on ANY repo**: `JULES_REPO=sources/github/USER/REPO JULES_BRANCH=main bun JulesAPI.ts create "prompt"` — works for agent-zero-custom too
 
-## Gemini CLI (Google's Claude Code analog)
-- **Installed**: v0.31.0, path: ~/.npm-global/bin/gemini
-- **Auth**: GOOGLE_API_KEY + GEMINI_API_KEY from ~/.config/PAI/.env, loaded in .bashrc
-- **Limits**: Free 1000 req/day (Flash), Pro = 5x limits + Pro model (Ivan has Pro sub)
-- **Jules extension**: gemini-cli-jules v0.1.0 installed, MCP server for Jules integration
-- **Config**: ~/.gemini/ (settings, extensions, projects)
-- **Use cases**: Alternative coding agent, Jules integration via CLI, parallel with Claude Code
+## Gemini CLI
+- **Installed**: v0.31.0, `gemi` alias. Pro sub, 5x limits. Config: ~/.gemini/
 
 ## Z.AI / GLM-5 (Zhipu AI — 智谱AI)
 - **Company**: Zhipu AI, Beijing. IPO Jan 2026 (HK: 02513), $6.8B valuation. Chinese jurisdiction = NO geo-blocks for Russia
@@ -197,11 +192,11 @@
 - **AgentZero.ts poll**: manual check. Async: 30s timeout, graceful "delivered"
 - **Comms (2026-03-07)**: PRIMARY = `/api_message` + X-API-KEY. SECONDARY = MCP SSE. A2A broken (fasta2a bug)
 
-## Jules Stats (2026-03-02 → 2026-03-06)
-- 30 задач, 93% completed, 17 PR merged, +2521/-566 строк, 65 новых тестов
-- Best for: тесты, mechanical refactoring. Not for: architecture, complex context
-
-## Стратегические направления
-1. **A0 scheduled tasks** — 5 шаблонов готовы, добавить через web UI
-2. **Upstream PR follow-up** — 7 PR open
-3. **ContextualRules.hook.ts** — Фаза B, динамическая инжекция правил
+## Brigade Pipeline Improvements (2026-03-08)
+- **JulesAutoMerge 3 repos**: PAI-personal (adminMerge), PAI (review-only), agent-zero-custom (auto)
+- **Python test detection**: conftest.py/requirements*.txt → pytest venv at `.venv-pytest/`
+- **adminMerge flag**: `--admin` only for repos with branch protection (PAI-personal). Free repos = no --admin
+- **Enhanced dashboard**: Jules active tasks, PRs across 3 repos, A0 heartbeat time
+- **A0 auto-recovery**: `bun HealthMonitor.ts recover` — Container 1 → SSH → docker restart container 2. 30min cooldown, events.jsonl logging, voice notifications
+- **Z.AI false positives**: Z.AI sometimes reports HIGH on valid code (truncated test files). Manual override needed
+- **Jules on a0 repo**: 6 tasks created (extensions tests, tools tests, telegram bot tests, security audit, CI). Mock ALL deps via sys.modules — Jules часто забывает
