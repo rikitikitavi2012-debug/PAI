@@ -1,0 +1,63 @@
+{
+  "audit_date": "2026-03-07T12:32:00Z",
+  "container": "agent-zero-new (86757d95f0a5)",
+  "version": "v0.9.8.2",
+  "port_internal": 80,
+  "port_external": 50002,
+  "channels": {
+    "a2a_server": {
+      "status": "DISABLED",
+      "setting": "a2a_server_enabled=False",
+      "agent_card": "404",
+      "fix": "Enable in settings: a2a_server_enabled=True"
+    },
+    "a2a_client": {
+      "status": "BROKEN",
+      "error": "webcolors module not installed → ImportError",
+      "fix": "pip install webcolors"
+    },
+    "http_api_with_key": {
+      "status": "BLOCKED",
+      "reason": "mcp_server_token is EMPTY in /a0/usr/settings.json",
+      "endpoints_affected": [
+        "/api_message",
+        "/api_files_get",
+        "/api_log_get",
+        "/api_reset_chat",
+        "/api_terminate_chat",
+        "/scheduler_task_create",
+        "/scheduler_task_delete",
+        "/scheduler_task_run",
+        "/scheduler_tasks_list",
+        "/scheduler_task_update"
+      ],
+      "auth_flow": "X-API-KEY header → compared to mcp_server_token",
+      "fix": "Generate and set mcp_server_token in settings"
+    },
+    "http_health": {
+      "status": "OK",
+      "endpoint": "/health",
+      "auth": "none",
+      "response": "200 with version info"
+    },
+    "webui_session": {
+      "status": "OK",
+      "auth": "login session + CSRF token",
+      "note": "Not suitable for programmatic Navi access"
+    },
+    "mcp_server": {
+      "status": "ENABLED_BUT_NO_TOKEN",
+      "setting": "mcp_server_enabled=True, mcp_server_token=EMPTY"
+    },
+    "scheduler_internal": {
+      "status": "OK",
+      "note": "Works internally, API endpoints blocked by empty token"
+    }
+  },
+  "root_cause": "mcp_server_token is EMPTY → all X-API-KEY endpoints return 401",
+  "critical_fixes": [
+    "1. Generate mcp_server_token → unlocks 10 API endpoints",
+    "2. pip install webcolors → unlocks A2A client",
+    "3. Enable a2a_server → allows Navi to call A0 via A2A protocol"
+  ]
+}
