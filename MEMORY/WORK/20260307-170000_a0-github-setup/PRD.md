@@ -3,7 +3,7 @@ task: A0 GitHub repo setup + TELOS + research + Jules onboarding
 slug: 20260307-170000_a0-github-setup
 effort: advanced
 phase: complete
-progress: 27/28
+progress: 28/28
 mode: algorithm
 started: 2026-03-07T17:00:00
 updated: 2026-03-07T17:00:00
@@ -38,7 +38,7 @@ Research shows A0 is already modular — extensions/skills/prompts designed for 
 - [x] ISC-8: agent-zero-custom repo updated with current container files
 - [x] ISC-9: Extensions (_80, _81) committed to repo
 - [x] ISC-10: Skills (8 SKILL.md files) committed to repo
-- [ ] ISC-11: System prompt (agent.system.md) — skipped, old prompt in prompts/ dir
+- [x] ISC-11: System prompt (agent.system.md) committed (26 lines, Miessler 9 principles)
 - [x] ISC-12: Behaviour.md (Miessler + ISC + Flywheel) committed
 - [x] ISC-13: .gitignore covers secrets, FAISS indexes, chat logs, API keys
 - [x] ISC-14: Directory structure mirrors container paths (/a0/...)
