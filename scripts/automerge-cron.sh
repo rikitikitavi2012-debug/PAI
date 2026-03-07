@@ -2,7 +2,7 @@
 # JulesAutoMerge — cron wrapper
 # Checks Jules PRs, runs tests, merges passing ones
 #
-# Install: crontab -e → 0 */6 * * * ~/.claude/scripts/automerge-cron.sh
+# Install: crontab -e → 0 3,9,15,21 * * * ~/.claude/scripts/automerge-cron.sh
 # Manual:  bash ~/.claude/scripts/automerge-cron.sh
 
 set -euo pipefail

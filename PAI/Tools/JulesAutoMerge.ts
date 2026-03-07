@@ -242,7 +242,7 @@ async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<{
       || existsSync(join(worktreePath, 'requirements-custom.txt'))
       || existsSync(join(worktreePath, 'setup.py'));
     const testCmd = isPython
-      ? ['/tmp/pytest-env/bin/python', '-m', 'pytest', 'tests/', '-v', '--tb=short']
+      ? [join(PAI_DIR, '.venv-pytest', 'bin', 'python'), '-m', 'pytest', 'tests/', '-v', '--tb=short']
       : ['bun', 'test', 'hooks/tests/'];
     const test = run(testCmd, { cwd: worktreePath, timeout: TEST_TIMEOUT });
     const durationMs = Date.now() - start;
