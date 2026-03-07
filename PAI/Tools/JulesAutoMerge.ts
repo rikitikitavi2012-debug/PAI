@@ -53,6 +53,7 @@ interface RepoConfig {
   source: string;
   branch: string;
   autoMerge: boolean; // false = check+review only, true = full pipeline
+  adminMerge?: boolean; // true = use --admin flag (for repos with branch protection)
 }
 
 const REPOS: Record<string, RepoConfig> = {
@@ -63,6 +64,7 @@ const REPOS: Record<string, RepoConfig> = {
     source: 'sources/github/rikitikitavi2012-debug/PAI-personal',
     branch: 'master',
     autoMerge: true,
+    adminMerge: true,
   },
   origin: {
     key: 'origin',
@@ -71,6 +73,14 @@ const REPOS: Record<string, RepoConfig> = {
     source: 'sources/github/rikitikitavi2012-debug/PAI',
     branch: 'main',
     autoMerge: false, // origin PRs need manual review before upstream submission
+  },
+  a0custom: {
+    key: 'a0custom',
+    remote: 'a0custom',
+    repo: 'rikitikitavi2012-debug/agent-zero-custom',
+    source: 'sources/github/rikitikitavi2012-debug/agent-zero-custom',
+    branch: 'main',
+    autoMerge: true,
   },
 };
 
@@ -227,7 +237,14 @@ async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<{
 
   try {
     const start = Date.now();
-    const test = run(['bun', 'test', 'hooks/tests/'], { cwd: worktreePath, timeout: TEST_TIMEOUT });
+    // Detect project type: Python (conftest.py/requirements*.txt) vs TypeScript (bun)
+    const isPython = existsSync(join(worktreePath, 'tests', 'conftest.py'))
+      || existsSync(join(worktreePath, 'requirements-custom.txt'))
+      || existsSync(join(worktreePath, 'setup.py'));
+    const testCmd = isPython
+      ? ['/tmp/pytest-env/bin/python', '-m', 'pytest', 'tests/', '-v', '--tb=short']
+      : ['bun', 'test', 'hooks/tests/'];
+    const test = run(testCmd, { cwd: worktreePath, timeout: TEST_TIMEOUT });
     const durationMs = Date.now() - start;
     const output = test.stdout || test.stderr;
     return { passed: test.ok, output: output.slice(-500), durationMs };
@@ -446,11 +463,11 @@ export async function processPR(
     return record;
   }
 
-  // Merge via REST API (GraphQL --admin fails with OAuth tokens)
-  const merge = run(['gh', 'api', '--method', 'PUT',
-    `repos/${repo.repo}/pulls/${pr.number}/merge`,
-    '-f', 'merge_method=merge',
-    '-f', `commit_title=Merge PR #${pr.number}: ${pr.title}`]);
+  // Merge via gh pr merge (--admin only for repos with branch protection)
+  const mergeArgs = ['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo,
+    '--squash', '--subject', `Merge PR #${pr.number}: ${pr.title}`];
+  if (repo.adminMerge) mergeArgs.splice(5, 0, '--admin');
+  const merge = run(mergeArgs);
   if (!merge.ok) {
     record.result = 'failed_merge';
     record.testOutput = merge.stderr;
