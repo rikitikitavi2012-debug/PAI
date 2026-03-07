@@ -268,7 +268,7 @@ async function a0ReviewDiff(repo: RepoConfig, prNumber: number, diffText?: strin
   if (!diffText) {
     const diff = await runAsync(['gh', 'pr', 'diff', String(prNumber), '--repo', repo.repo]);
     if (!diff.ok) return { ok: true, severity: 'ERROR', summary: 'Could not fetch diff, skipping review' };
-    diffText = diff.stdout.slice(0, 4000);
+    diffText = diff.stdout.slice(0, 8000);
   }
   if (!diffText.trim()) return { ok: true, severity: 'LOW', summary: 'Empty diff' };
 
@@ -277,7 +277,7 @@ async function a0ReviewDiff(repo: RepoConfig, prNumber: number, diffText?: strin
   if (!health.ok) return { ok: true, severity: 'ERROR', summary: 'A0 unreachable, skipping review' };
 
   // Send diff to A0 for review
-  const prompt = `Review this git diff for security vulnerabilities, command injection, path traversal, and code quality issues. Be concise. Reply with ONLY a JSON object: {"severity":"LOW"|"MEDIUM"|"HIGH","issues":[{"type":"security|quality|performance","description":"..."}]}\n\nDiff:\n${diffText}`;
+  const prompt = `Review this git diff for security vulnerabilities, command injection, path traversal, and code quality issues. Be concise. NOTE: The diff may be truncated for length — do NOT report truncation as an issue. Reply with ONLY a JSON object: {"severity":"LOW"|"MEDIUM"|"HIGH","issues":[{"type":"security|quality|performance","description":"..."}]}\n\nDiff:\n${diffText}`;
 
   const result = await runAsync(['bun', A0_TOOL, 'message', prompt], { timeout: A0_REVIEW_TIMEOUT });
   if (!result.ok) return { ok: true, severity: 'ERROR', summary: 'A0 review failed, skipping' };
@@ -307,13 +307,13 @@ async function zaiReviewDiff(repo: RepoConfig, prNumber: number, diffText?: stri
   if (!diffText) {
     const diff = await runAsync(['gh', 'pr', 'diff', String(prNumber), '--repo', repo.repo]);
     if (!diff.ok) return { ok: true, severity: 'ERROR', summary: 'Could not fetch diff, skipping Z.AI review' };
-    diffText = diff.stdout.slice(0, 4000);
+    diffText = diff.stdout.slice(0, 8000);
   }
   if (!diffText.trim()) return { ok: true, severity: 'LOW', summary: 'Empty diff' };
 
   // Direct API call via inference() — no subprocess, truly async
   const systemPrompt = 'You are a code reviewer focused on code quality, patterns, and bugs. Reply ONLY with valid JSON.';
-  const userPrompt = `Review this git diff for code quality issues, anti-patterns, potential bugs, and performance problems. Reply with ONLY a JSON object: {"severity":"LOW"|"MEDIUM"|"HIGH","issues":[{"type":"quality|bug|performance|pattern","description":"..."}]}\n\nDiff:\n${diffText}`;
+  const userPrompt = `Review this git diff for code quality issues, anti-patterns, potential bugs, and performance problems. NOTE: The diff may be truncated for length — do NOT report truncation as an issue. Reply with ONLY a JSON object: {"severity":"LOW"|"MEDIUM"|"HIGH","issues":[{"type":"quality|bug|performance|pattern","description":"..."}]}\n\nDiff:\n${diffText}`;
 
   try {
     const result = await inference({
@@ -416,7 +416,7 @@ export async function processPR(
 
   // Fetch diff once, share between reviewers
   const diffResult = await runAsync(['gh', 'pr', 'diff', String(pr.number), '--repo', repo.repo]);
-  const diffText = diffResult.ok ? diffResult.stdout.slice(0, 4000) : '';
+  const diffText = diffResult.ok ? diffResult.stdout.slice(0, 8000) : '';
 
   // A0 + Z.AI Code Reviews — PARALLEL (Promise.all)
   console.log(`  ${D}Reviewing PR #${pr.number} (A0 + Z.AI parallel)...${X}`);
@@ -465,7 +465,7 @@ export async function processPR(
 
   // Merge via gh pr merge (--admin only for repos with branch protection)
   const mergeArgs = ['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo,
-    '--squash', '--subject', `Merge PR #${pr.number}: ${pr.title}`];
+    '--squash', '--subject', `Merge PR #${pr.number}: ${pr.title}`, '--body', ''];
   if (repo.adminMerge) mergeArgs.splice(5, 0, '--admin');
   const merge = run(mergeArgs);
   if (!merge.ok) {
