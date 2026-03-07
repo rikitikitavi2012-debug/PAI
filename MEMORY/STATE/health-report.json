@@ -1,41 +1,14 @@
 {
-  "timestamp": "2026-03-05T10:08:31.487Z",
-  "checks": [
-    {
-      "service": "AgentZero",
-      "status": "up",
-      "latencyMs": 13890,
-      "detail": "Response: OK",
-      "timestamp": "2026-03-05T10:08:31.486Z"
-    },
-    {
-      "service": "Z.AI",
-      "status": "up",
-      "latencyMs": 8788,
-      "detail": "GLM-5: Got it. Let me know if you nee",
-      "timestamp": "2026-03-05T10:08:26.384Z"
-    },
-    {
-      "service": "VoiceServer",
-      "status": "up",
-      "latencyMs": 8787,
-      "detail": "HTTP 200",
-      "timestamp": "2026-03-05T10:08:26.384Z"
-    },
-    {
-      "service": "GitHubCLI",
-      "status": "up",
-      "latencyMs": 1571,
-      "detail": "github.com",
-      "timestamp": "2026-03-05T10:08:19.169Z"
-    },
-    {
-      "service": "GeminiCLI",
-      "status": "up",
-      "latencyMs": 7215,
-      "detail": "0.32.1",
-      "timestamp": "2026-03-05T10:08:26.384Z"
-    }
-  ],
-  "allHealthy": true
+  "timestamp": "2026-03-07T01:03:39Z",
+  "checks": {
+    "voice_server": {"status": "DOWN", "latency_ms": 0},
+    "github_auth": {"status": "OK", "user": "rikitikitavi2012-debug"},
+    "hooks_count": {"count": 30, "baseline": 30, "alert": false},
+    "events_size": {"lines": 10, "alert": false},
+    "disk_usage": {"percent": 54, "alert": false},
+    "open_prs": {"count": 3, "stale": [], "note": "PR API returned 403 - token lacks PR read permissions"},
+    "tests": {"passed": 0, "failed": 0, "alert": false, "note": "Bun not available, no package.json test script configured"}
+  },
+  "overall": "WARNING",
+  "alerts": ["VoiceServer DOWN - http://host.docker.internal:8888/health not responding"]
 }
