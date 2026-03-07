@@ -1,0 +1,34 @@
+{
+  "task": "Part 3: Learn Enforcer Extension + Bonus",
+  "completed": "2026-03-07T12:13:00Z",
+  "status": "done",
+  "deliverables": {
+    "learn_enforcer": {
+      "path": "/a0/python/extensions/message_loop_prompts_after/_70_learn_enforcer.py",
+      "hook": "message_loop_prompts_after",
+      "description": "Nudges agent to complete Flywheel LEARN step after task completion. Scans last 8 messages for completion markers, checks for LEARN markers, injects reminder if missing.",
+      "syntax_check": "pass",
+      "import_check": "pass"
+    },
+    "wisdom_injector": {
+      "path": "/a0/python/extensions/message_loop_prompts_after/_75_wisdom_injector.py",
+      "hook": "message_loop_prompts_after",
+      "description": "BONUS: Contextually injects Ivan's Wisdom (W1-W9, FR2/FR6/FR7) when conversation topics match known decision patterns. Reinforces principal's decision-making framework.",
+      "syntax_check": "pass",
+      "import_check": "pass",
+      "rules_covered": ["W1", "W3", "W5", "W7", "FR2", "FR6", "FR7"]
+    }
+  },
+  "flywheel": {
+    "learned": [
+      "A0 extensions are organized as directories by hook type with numbered Python files",
+      "Extension class inherits from Extension, async execute() with kwargs",
+      "loop_data.extras_temporary injects text into next LLM prompt",
+      "self.agent.set_data/get_data for per-conversation state",
+      "self.agent.number == 0 for main agent only",
+      "py_compile for syntax check, venv-a0 python for import check",
+      "usr/extensions/ exists for user extensions but is empty by default"
+    ],
+    "fix": "Used heredoc pattern for file creation as per critical lesson in memory"
+  }
+}
