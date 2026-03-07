@@ -1,8 +1,11 @@
-Done. 2 commits: `bcce29d` (code) + `87d4927` (docs).
-
-🗣️ Navi: A0 comms polish завершён — 18/18 ISC. Parser, retry, extensions проверены, escape hatch задокументирован.
-
-**Попутные находки:**
-1. A0 сейчас использует `claude-opus-4-6` для browser (раньше в памяти был другой LLM) — подтвердил в self-report
-2. Container 1 на старой версии v0.9.7-10 (container 2 = v0.9.8.2) — можно обновить позже
-3. MCP SSE tools не работают как deferred tools — архитектурное ограничение Claude Code, не баг A0
+════ PAI | NATIVE MODE ═══════════════════════
+🗒️ TASK: Telemetry fix verified, layout restored
+🔄 ITERATION on: Float comparison fix + window placement in correct tab
+🔧 CHANGE:
+- Window 42 (telemetry dashboard) перемещён из Infra → Telemetry таб
+- Фикс `M_ERR_RATE_5M="${M_ERR_RATE_5M%%.*}"` работает — ноль ошибок
+✅ VERIFY:
+- `get-text --match id:42` — чистый вывод, все секции рендерятся
+- Нет `integer expression expected` в выводе
+- Все 7 секций на месте: AGENTS, GOLDEN SIGNALS, API PROVIDERS, RECENT, SYSTEM
+🗣️ Navi: Телеметрия починена и на месте. Готов к коммиту сессии.

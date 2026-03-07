@@ -89,10 +89,13 @@
 - **Негативные выводы агентов перепроверять**: "X пустой/отсутствует/не работает" — проверить лично
 - **A0 self-inspection > external probing**: Ask A0 to check its own filesystem — faster and more reliable than agents or SSH
 - **Agent delegation for A0 tasks = overhead**: A0 is single-threaded bottleneck, direct queries beat parallel agents
+- **Extracting large files from A0 via API**: Files >50 lines trigger §§include. Workarounds: `head -N` chunks, base64, or ask A0 to git push files. Best: A0 pushes to PAI-personal repo
+- **AGENTS.md critical for Jules onboarding**: Without architecture docs, Jules guesses patterns wrong. Extension API (`extras_temporary`, not `history.messages`) is non-obvious trap
 - **JulesAutoMerge outputs[] bug**: outputs[0]=changeSet, outputs[1]=pullRequest. Always search all outputs
 - **gh pr merge --admin**: Required for PAI-personal repo
 - **jq pipeline context**: `length as $total` ДОЛЖЕН быть в начале pipeline, ДО select-цепочек
 - **git index.lock**: Параллельные агенты создают stale locks. Автоочистка в .bashrc
+- **Jules on ANY repo**: `JULES_REPO=sources/github/USER/REPO JULES_BRANCH=main bun JulesAPI.ts create "prompt"` — works for agent-zero-custom too
 
 ## Gemini CLI (Google's Claude Code analog)
 - **Installed**: v0.31.0, path: ~/.npm-global/bin/gemini
@@ -130,7 +133,10 @@
 - **Scheduled tasks**: ULC Context Summary (daily 06:00 MSK), TELOS Update (adhoc)
 - **MCP**: SSE endpoint configured in settings.json, WORKING after Ivan enabled in A0 UI (tools: send_message, finish_chat)
 - **A2A**: Agent card works at `/a2a/t-TOKEN/.well-known/agent.json`, POST returns 500 (fasta2a v0.5.0 bug — ValidationError unhandled in _agent_run_endpoint). NOT fixable without upstream patch. Low priority — API Message + MCP cover all needs
-- **Fork repos**: agent-zero-custom (private), agent-zero-skills (public, 5 skills)
+- **Fork repos**: agent-zero-custom (private, **source of truth for A0 customizations**), agent-zero-skills (public, 5 skills)
+- **agent-zero-custom repo (2026-03-07)**: extensions, skills, prompts, behaviour.md, tests, AGENTS.md, sync-to-container.sh. Jules task: sessions/6833095862033329097 (extension tests). Deploy: `./sync-to-container.sh`
+- **Extension numbering**: _80-_89 = наш range. Upstream: _10-_75 + _90+. Безопасно от конфликтов
+- **Architecture research**: `MEMORY/RESEARCH/2026-03/a0-architecture-for-customization.md` — 20+ hook types, plugin-based, `/a0/usr/` = safe zone
 - **Containers**: 1=backup old version, 2=primary brain (50002), 3=planned construction orchestrator
 - **Cost model**: Оплата по API вызовам (НЕ подписка). Можно поставить Coding Plan API key для экономии. Контролировать расходы!
 - **GitHub token**: У A0 есть свой GitHub token — может читать PR diffs, repo structure напрямую
@@ -150,7 +156,7 @@
 - **Container 1 escape hatch**: Port 50001, v0.9.7-10, SSH to docker host (172.18.0.1, user: agentzero). Quick-ref: `MEMORY/STATE/a0-container-escape-hatch.md`
 - **Volume mount**: `/a0` = persistent ext4 volume (`/dev/sda1`), NOT ephemeral. Extensions/skills/memory survive container restarts
 - **API retry**: apiCall() retries once on 429/5xx with 2s backoff, also ECONNREFUSED (commit bcce29d)
-- **MCP SSE**: Works (returns session_id), but NOT available as Claude Code deferred tools — lazy-connected. Use `/api_message` as primary channel
+- **MCP SSE**: Works e2e (send_message, finish_chat via JSON-RPC). Session persistence via `chat_id`. NOT available as Claude Code deferred tools. SSE data has trailing `\r`, response events sometimes duplicate. Use `/api_message` as primary channel
 - **Scheduler API**: scheduler:create_scheduled_task, scheduler:run_task, scheduler:list_tasks — A0 can self-manage tasks
 - **Key insight for task delegation**: Use subordinate profiles! `call_subordinate` with profile=developer for code, researcher for analysis, hacker for security
 - **Chat streaming**: Web UI uses Socket.IO (Same-Origin only, NOT for external). TUI uses `/api_log_get` polling 3s. Log item types: user, response, agent, code_exe, tool, util. CRITICAL: response heading="A0: Responding" — show CONTENT not heading! Strip `icon://` from headings.
