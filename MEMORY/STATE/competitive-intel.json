@@ -1,0 +1,219 @@
+{
+  "timestamp": "2026-03-08T05:02:00Z",
+  "week": "2026-10",
+  "competitors": [
+    {
+      "name": "Claude Code",
+      "updates": [
+        "Voice Mode добавлен (март 2026)",
+        "Claude Opus 4.6 с улучшенными coding skills и 1M контекстом",
+        "/loop команда для рекурсивных промптов",
+        "Ultrathink вернулся с новой системой управления thinking effort",
+        "Cron scheduling для задач",
+        "Push-to-talk keybinding для голоса"
+      ],
+      "threat_level": "high",
+      "pai_advantages": [
+        "PAI имеет TELOS интеграцию (цели, убеждения, стратегии)",
+        "PAI voice система с кастомной личностью",
+        "PAI hook система для глубокой кастомизации",
+        "PAI platform independent (не привязан к одному IDE)"
+      ],
+      "pai_gaps": [
+        "Claude Code имеет более глубокую IDE интеграцию",
+        "Больший бюджет и команда разработки",
+        "1M контекстное окно в Opus 4.6"
+      ],
+      "sources": [
+        "https://techcrunch.com/2026/03/03/claude-code-rolls-out-a-voice-mode-capability/",
+        "https://www.anthropic.com/news/claude-opus-4-6",
+        "https://releasebot.io/updates/anthropic/claude-code"
+      ]
+    },
+    {
+      "name": "Cursor AI",
+      "updates": [
+        "JetBrains ACP интеграция (март 2026)",
+        "Background Agents для автономной работы",
+        "Automations Platform для автоматического запуска агентов",
+        "BugBot для автоматического исправления багов",
+        "Mission Control Interface"
+      ],
+      "threat_level": "high",
+      "pai_advantages": [
+        "PAI не требует IDE-лок (platform independence)",
+        "TELOS-driven решения vs чисто code-focused",
+        "Бригадная модель агентов (Navi, Jules, A0, OpenCode)"
+      ],
+      "pai_gaps": [
+        "Cursor доминирует в IDE интеграции",
+        "Background agents более зрелые",
+        "JetBrains экосистема недоступна для PAI"
+      ],
+      "sources": [
+        "https://techcrunch.com/2026/03/05/cursor-is-rolling-out-a-new-system-for-agentic-coding/",
+        "https://blog.jetbrains.com/ai/2026/03/cursor-joined-the-acp-registry-and-is-now-live-in-your-jetbrains-ide/",
+        "https://cursor.com/changelog"
+      ]
+    },
+    {
+      "name": "Windsurf/Cascade (Codeium)",
+      "updates": [
+        "Приобретён Cognition AI за ~$250M",
+        "Auto-Continue настройка для Cascade",
+        "MCP Streamable HTTP transport интеграция",
+        "Глобальные .codeiumignore правила",
+        "Claude 3.7 Sonnet с Thinking поддержкой"
+      ],
+      "threat_level": "medium",
+      "pai_advantages": [
+        "PAI не привязан к конкретному IDE",
+        "TELOS система уникальна",
+        "Hook система позволяет глубокую кастомизацию"
+      ],
+      "pai_gaps": [
+        "Devin/Cognition AI ресурсы теперь за Windsurf",
+        "Cascade planning agent более продвинутый",
+        "Более развитая enterprise интеграция"
+      ],
+      "sources": [
+        "https://windsurf.com/changelog",
+        "https://www.taskade.com/blog/windsurf-review"
+      ]
+    },
+    {
+      "name": "GitHub Copilot Workspace",
+      "updates": [
+        "GPT-5.4 интеграция (март 2026)",
+        "Multi-repo context awareness (до 10 репо)",
+        "Agentic coding capabilities",
+        "Copilot CLI улучшения"
+      ],
+      "threat_level": "high",
+      "pai_advantages": [
+        "PAI не зависит от Microsoft/GitHub экосистемы",
+        "Более гибкая модель памяти и обучения",
+        "TELOS-driven поведение"
+      ],
+      "pai_gaps": [
+        "GitHub интеграция непревзойдённая",
+        "GPT-5.4 только у них",
+        "Огромная база пользователей"
+      ],
+      "sources": [
+        "https://skillsllm.com/news/ai-news-2026-03-05",
+        "https://windowsforum.com/threads/gpt-5-4-in-github-copilot-agentic-coding-rollout-and-governance.404159/"
+      ]
+    },
+    {
+      "name": "Aider",
+      "updates": [
+        "Voice-to-code функционал",
+        "Co-authored-by attribution по умолчанию",
+        "--add-gitignore-files флаг",
+        "Поддержка новых моделей (DeepSeek R1, o3-mini)",
+        "70-80% кода пишется самим Aider"
+      ],
+      "threat_level": "low",
+      "pai_advantages": [
+        "PAI имеет GUI и voice интерфейс",
+        "Более развитая система памяти",
+        "Hook система для автоматизации"
+      ],
+      "pai_gaps": [
+        "Aider более легковесный и быстрый",
+        "Отличная CLI-ориентированность",
+        "Саморазвивающийся код"
+      ],
+      "sources": [
+        "https://aider.chat/HISTORY.html",
+        "https://github.com/Aider-AI/aider/releases"
+      ]
+    },
+    {
+      "name": "Cline/Roo Code",
+      "updates": [
+        "5M+ пользователей",
+        "Roo Code fork с custom modes и multi-agent personas",
+        "MCP интеграция в Cline",
+        "Stanford AI API Gateway документация"
+      ],
+      "threat_level": "medium",
+      "pai_advantages": [
+        "PAI имеет более структурированную память",
+        "TELOS интеграция уникальна",
+        "Voice система с личностью"
+      ],
+      "pai_gaps": [
+        "Огромная база пользователей",
+        "Интеграция в VS Code marketplace",
+        "Более активное open-source комьюнити"
+      ],
+      "sources": [
+        "https://cline.bot",
+        "https://www.morphllm.com/comparisons/roo-code-vs-cline"
+      ]
+    },
+    {
+      "name": "OpenAI Operator",
+      "updates": [
+        "Интегрирован в ChatGPT как 'agent mode'",
+        "Standalone Operator сайт sunset",
+        "Codex Security для enterprise",
+        "Terminal network access"
+      ],
+      "threat_level": "medium",
+      "pai_advantages": [
+        "PAI не требует $200/мес подписки",
+        "Более прозрачная работа",
+        "TELOS-driven решения"
+      ],
+      "pai_gaps": [
+        "OpenAI экосистема огромна",
+        "Лучшие модели первыми",
+        "Глубокая интеграция с ChatGPT"
+      ],
+      "sources": [
+        "https://openai.com/index/introducing-operator/",
+        "https://openai.com/index/introducing-chatgpt-agent/"
+      ]
+    },
+    {
+      "name": "Replit Agent",
+      "updates": [
+        "Agent 3 с 200-минутной автономностью",
+        "Self-healing browser testing",
+        "Mobile app builder",
+        "Linear интеграция (Open in Replit)",
+        "$3B valuation"
+      ],
+      "threat_level": "medium",
+      "pai_advantages": [
+        "PAI работает локально (privacy)",
+        "TELOS для персонализации",
+        "Platform independence"
+      ],
+      "pai_gaps": [
+        "Replit имеет cloud deployment из коробки",
+        "Mobile app building уникально",
+        "Огромная база пользователей"
+      ],
+      "sources": [
+        "https://docs.replit.com/updates/2026/02/27/changelog",
+        "https://leaveit2ai.com/ai-tools/code-development/replit-agent-v3"
+      ]
+    }
+  ],
+  "summary": {
+    "biggest_threat": "Claude Code + Cursor AI (комбинация Voice Mode, JetBrains ACP, Background Agents)",
+    "biggest_opportunity": "TELOS-дифференциация: ни один конкурент не имеет встроенной системы целей/убеждений/стратегий. PAI может позиционироваться как 'AI с характером и целями' в отличие от 'просто coding assistant'",
+    "recommended_actions": [
+      "Развивать voice систему как конкурентное преимущество (личность, контекст)",
+      "Создать сравнительную страницу PAI vs Claude Code vs Cursor",
+      "Исследовать возможность ACP интеграции для JetBrains",
+      "Усилить маркетинг TELOS как уникальной фичи",
+      "Добавить background agents для автономных задач",
+      "Рассмотреть multi-repo awareness как фичу"
+    ]
+  }
+}
