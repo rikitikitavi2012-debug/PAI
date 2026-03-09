@@ -68,6 +68,22 @@ function loadAndRemoveTabId(agentId: string): string | null {
 
 // ── Handlers ──
 
+function cleanupStaleTabs(): void {
+  // Remove stale tab ID files older than 10 minutes
+  try {
+    const { readdirSync, statSync, unlinkSync } = require('fs');
+    const files = readdirSync(TMP_DIR).filter((f: string) => f.startsWith('pai-agent-tab-'));
+    const now = Date.now();
+    for (const f of files) {
+      const fp = join(TMP_DIR, f);
+      try {
+        const age = now - statSync(fp).mtimeMs;
+        if (age > 10 * 60 * 1000) unlinkSync(fp); // >10min = stale
+      } catch {}
+    }
+  } catch {}
+}
+
 function handleSubagentStart(input: Record<string, unknown>): void {
   const agentId = String(input.agent_id || '');
   const agentType = String(input.agent_type || 'agent');
@@ -75,6 +91,9 @@ function handleSubagentStart(input: Record<string, unknown>): void {
   const shortId = agentId.slice(0, 8);
 
   if (!agentId) return;
+
+  // Cleanup stale tab files from previous sessions
+  cleanupStaleTabs();
 
   // Check script exists
   if (!existsSync(AGENT_LIVE_SCRIPT)) return;

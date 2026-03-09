@@ -86,6 +86,36 @@ elif .type == "assistant" then
 else empty end
 '
 
+# ── Watchdog: auto-close tab when agent stops writing (30s idle) ──
+IDLE_TIMEOUT=30
+TAB_ID_FILE="/tmp/pai-agent-tab-${AGENT_ID}"
+(
+  sleep 10  # grace period for agent startup
+  while true; do
+    sleep 5
+    [ ! -f "$TRANSCRIPT" ] && break
+    local_mtime=$(stat -c %Y "$TRANSCRIPT" 2>/dev/null || echo 0)
+    now=$(date +%s)
+    idle=$((now - local_mtime))
+    if [ "$idle" -gt "$IDLE_TIMEOUT" ]; then
+      # Agent stopped writing — show completion and exit
+      printf '\n  %b%b✅ Agent finished (idle %ds)%b\n' "$GRN" "$BLD" "$idle" "$RST"
+      sleep 3
+      # Clean up tab ID file
+      rm -f "$TAB_ID_FILE" 2>/dev/null
+      # Close own tab
+      if [ -n "$KITTY_WINDOW_ID" ]; then
+        SOCK=$(ls /tmp/kitty-${USER:-ser}-* 2>/dev/null | head -1)
+        [ -n "$SOCK" ] && kitty @ --to "unix:$SOCK" close-window --match id:"$KITTY_WINDOW_ID" 2>/dev/null
+      fi
+      kill $$ 2>/dev/null
+      exit 0
+    fi
+  done
+) &
+WATCHDOG_PID=$!
+trap 'kill $WATCHDOG_PID 2>/dev/null; rm -f "$TAB_ID_FILE" 2>/dev/null' EXIT INT TERM
+
 # ── Waiting indicator ──
 printf '  %b⏳ Streaming live...%b\n\n' "$DIM" "$RST"
 
