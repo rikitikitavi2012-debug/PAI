@@ -135,7 +135,7 @@ async function checkZai(): Promise<CheckResult> {
     const res = await fetch('https://api.z.ai/api/coding/paas/v4/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: 'glm-5', messages: [{ role: 'user', content: 'respond: OK' }], max_tokens: 8000 }),
+      body: JSON.stringify({ model: 'glm-5', messages: [{ role: 'user', content: 'respond: OK' }], max_tokens: 100 }),
       signal: controller.signal,
     });
     clearTimeout(timeout);
