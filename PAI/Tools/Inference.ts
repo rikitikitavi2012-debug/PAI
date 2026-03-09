@@ -319,7 +319,8 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
     }
 
     if (options.expectJson) {
-      const jsonMatch = output.match(/\{[\s\S]*\}/);
+      // Try array first (e.g. DocCrossRef returns [...]), then object {...}
+      const jsonMatch = output.match(/\[[\s\S]*\]/) || output.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         try {
           const parsed = JSON.parse(jsonMatch[0]);
