@@ -12,7 +12,7 @@ This file documents single-purpose CLI utilities that have been consolidated fro
 
 **Location:** `~/.claude/PAI/Tools/Inference.ts`
 
-Single inference tool with three run levels for different speed/capability trade-offs.
+Single inference tool with five run levels for different speed/capability trade-offs.
 
 **Usage:**
 ```bash
@@ -38,6 +38,8 @@ bun ~/.claude/PAI/Tools/Inference.ts --level standard --timeout 60000 "Prompt" "
 | **fast** | Haiku | 15s | Quick tasks, simple generation, basic classification |
 | **standard** | Sonnet | 30s | Balanced reasoning, typical analysis, decisions |
 | **smart** | Opus | 90s | Deep reasoning, strategic decisions, complex analysis |
+| **gemini** | Gemini Pro | 30s | Second opinion, cross-check |
+| **glm5** | GLM-5 | 30s | Bulk inference, reserve |
 
 **Programmatic Usage:**
 ```typescript
@@ -46,7 +48,7 @@ import { inference } from '../PAI/Tools/Inference';
 const result = await inference({
   systemPrompt: 'Analyze this',
   userPrompt: 'Content to analyze',
-  level: 'standard',  // 'fast' | 'standard' | 'smart'
+  level: 'standard',  // 'fast' | 'standard' | 'smart' | 'gemini' | 'glm5'
   expectJson: true,   // optional: parse JSON response
   timeout: 30000,     // optional: custom timeout
 });
