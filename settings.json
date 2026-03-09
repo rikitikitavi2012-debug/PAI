@@ -375,6 +375,10 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/AgentTab.hook.ts"
           }
         ]
       }
@@ -385,6 +389,10 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/AgentTab.hook.ts"
           }
         ]
       }
@@ -1021,13 +1029,13 @@
     "skills": 11,
     "workflows": 164,
     "hooks": 30,
-    "signals": 73,
+    "signals": 77,
     "files": 111,
-    "work": 139,
-    "sessions": 1194,
+    "work": 140,
+    "sessions": 1205,
     "research": 17,
-    "ratings": 157,
-    "updatedAt": "2026-03-07T22:09:48.460Z"
+    "ratings": 159,
+    "updatedAt": "2026-03-09T11:41:07.360Z"
   },
   "mcpServers": {
     "supabase": {

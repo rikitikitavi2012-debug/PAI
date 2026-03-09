@@ -20,3 +20,6 @@ $KC -m index:3 active_bg=#155e75 inactive_bg=#083344 active_fg=#22d3ee inactive_
 # ── 🟢 Работа (emerald) — tabs 5-6 ──
 $KC -m index:4 active_bg=#065f46 inactive_bg=#022c22 active_fg=#34d399 inactive_fg=#10b981
 $KC -m index:5 active_bg=#065f46 inactive_bg=#022c22 active_fg=#34d399 inactive_fg=#10b981
+
+# ── 🟣 Агенты (purple) — dynamic agent tabs (matched by title prefix 🚀) ──
+# Applied dynamically by AgentTab.hook.ts via kitty @ set-tab-color
