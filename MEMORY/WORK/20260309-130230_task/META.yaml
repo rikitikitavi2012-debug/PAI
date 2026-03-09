@@ -1,0 +1,11 @@
+id: "20260309-130230_task"
+title: "Привет, что там с круд задачими в линунк или как н"
+session_id: "0eb1e4e4-28af-49df-b261-8885083cc735"
+created_at: "2026-03-09T13:02:30+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

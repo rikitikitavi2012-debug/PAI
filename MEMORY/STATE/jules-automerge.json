@@ -1,5 +1,5 @@
 {
-  "lastCheck": "2026-03-05T18:00:02.001Z",
+  "lastCheck": "2026-03-07T21:45:16.836Z",
   "processedSessions": [
     {
       "sessionId": "sessions/8584917624898497977",
@@ -270,11 +270,118 @@
       "processedAt": "2026-03-05T12:18:11.706Z",
       "repo": "rikitikitavi2012-debug/PAI-personal",
       "testOutput": "bun test v1.3.9 (cf6cdbbb)"
+    },
+    {
+      "sessionId": "sessions/2137293102668987660",
+      "prNumber": 2,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/2",
+      "result": "failed_merge",
+      "processedAt": "2026-03-07T21:17:32.400Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "gh: Resource not accessible by personal access token (HTTP 403)"
+    },
+    {
+      "sessionId": "sessions/9148657084986512500",
+      "prNumber": 3,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/3",
+      "result": "failed_tests",
+      "processedAt": "2026-03-07T21:18:29.408Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "testOutput": "lth_monitor.py:17: in <module>\n    from telegram_bot.config import (\ntelegram_bot/config.py:3: in <module>\n    from dotenv import load_dotenv\nE   ModuleNotFoundError: No module named 'dotenv'\n=========================== short test summary info ============================\nERROR tests/test_api_client.py\nERROR tests/test_health_monitor.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n============================== 2 errors in 0.12s ==============================="
+    },
+    {
+      "sessionId": "sessions/15273129427270553123",
+      "prNumber": 4,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/4",
+      "result": "failed_merge",
+      "processedAt": "2026-03-07T21:18:31.742Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "gh: Resource not accessible by personal access token (HTTP 403)"
+    },
+    {
+      "sessionId": "sessions/2137293102668987660",
+      "prNumber": 2,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/2",
+      "result": "failed_merge",
+      "processedAt": "2026-03-07T21:20:59.633Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/9148657084986512500",
+      "prNumber": 3,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/3",
+      "result": "failed_tests",
+      "processedAt": "2026-03-07T21:21:57.797Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "testOutput": "lth_monitor.py:17: in <module>\n    from telegram_bot.config import (\ntelegram_bot/config.py:3: in <module>\n    from dotenv import load_dotenv\nE   ModuleNotFoundError: No module named 'dotenv'\n=========================== short test summary info ============================\nERROR tests/test_api_client.py\nERROR tests/test_health_monitor.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n============================== 2 errors in 0.13s ==============================="
+    },
+    {
+      "sessionId": "sessions/15273129427270553123",
+      "prNumber": 4,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/4",
+      "result": "failed_merge",
+      "processedAt": "2026-03-07T21:22:00.026Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/9148657084986512500",
+      "prNumber": 3,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/3",
+      "result": "failed_tests",
+      "processedAt": "2026-03-07T21:25:19.665Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "testOutput": "lth_monitor.py:17: in <module>\n    from telegram_bot.config import (\ntelegram_bot/config.py:3: in <module>\n    from dotenv import load_dotenv\nE   ModuleNotFoundError: No module named 'dotenv'\n=========================== short test summary info ============================\nERROR tests/test_api_client.py\nERROR tests/test_health_monitor.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n============================== 2 errors in 0.12s ==============================="
+    },
+    {
+      "sessionId": "sessions/15273129427270553123",
+      "prNumber": 4,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/4",
+      "result": "failed_review",
+      "processedAt": "2026-03-07T21:25:21.619Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "zaiReviewSeverity": "HIGH",
+      "testOutput": "Z.AI: 5 issue(s): Test file is truncated/incomplete. The test_mode_parameter function is cut off mid-line at 'mock_client.search_and_conte', making this test file syntactically invalid and unable to run.; Heavy sys.mod"
+    },
+    {
+      "sessionId": "sessions/8012653048696619521",
+      "prNumber": 7,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/7",
+      "result": "failed_review",
+      "processedAt": "2026-03-07T21:46:35.728Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "zaiReviewSeverity": "HIGH",
+      "testOutput": "Z.AI: 5 issue(s): The test file is truncated/incomplete. The last line '# Need to patch the actual module where dotenv is u' is cut off mid-sentence, indicating the file is incomplete and will cause syntax errors.; Hea"
+    },
+    {
+      "sessionId": "sessions/13324539578476372229",
+      "prNumber": 6,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/6",
+      "result": "failed_review",
+      "processedAt": "2026-03-07T21:47:21.199Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "zaiReviewSeverity": "HIGH",
+      "testOutput": "Z.AI: 5 issue(s): The diff appears to be truncated/incomplete - line 203 cuts off mid-statement at 'with patch.object(architect, '_run_su'. This file will not run as-is.; Module-level sys.modules manipulation is an ant"
+    },
+    {
+      "sessionId": "sessions/4162464042946901140",
+      "prNumber": 5,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/agent-zero-custom/pull/5",
+      "result": "failed_merge",
+      "processedAt": "2026-03-07T21:47:46.642Z",
+      "repo": "rikitikitavi2012-debug/agent-zero-custom",
+      "zaiReviewSeverity": "ERROR",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
     }
   ],
   "stats": {
     "totalMerged": 16,
-    "totalFailed": 5,
+    "totalFailed": 16,
     "totalSkipped": 9
   }
 }
