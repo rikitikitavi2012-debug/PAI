@@ -611,7 +611,7 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
 
       // Jules active tasks count
       try {
-        const julesResult = spawnSync('bun', [join(process.env.HOME || '/home/ser', '.claude', 'skills', 'Utilities', 'Jules', 'Tools', 'JulesAPI.ts'), 'sessions'], {
+        const julesResult = spawnSync('bun', [join(getPaiDir(), 'skills', 'Utilities', 'Jules', 'Tools', 'JulesAPI.ts'), 'sessions'], {
           encoding: 'utf-8', timeout: 10000, env: { ...process.env },
         });
         if (julesResult.stdout?.trim()) {
