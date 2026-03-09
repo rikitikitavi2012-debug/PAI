@@ -61,3 +61,4 @@ plugins/marketplaces/
 MEMORY/AUDIT/
 MEMORY/SECURITY/
 MEMORY/RELATIONSHIP/
+.venv-pytest/
