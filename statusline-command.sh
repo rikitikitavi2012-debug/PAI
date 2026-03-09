@@ -338,7 +338,7 @@ COUNTSEOF
         fi
 
         if [ -n "$token" ]; then
-            usage_json=$(curl -s --max-time 3 \
+            usage_json=$(curl -s --max-time 8 \
                 -H "Authorization: Bearer $token" \
                 -H "Content-Type: application/json" \
                 -H "anthropic-beta: oauth-2025-04-20" \
