@@ -49,10 +49,10 @@ if .type == "user" then
     else "" end) as $text |
   ((.message.content // []) |
     if type == "array" then
-      [.[] | select(.type == "tool_result") | .content[:100]] | join(" ")
+      [.[] | select(.type == "tool_result") | .content[:2000]] | join(" ")
     else "" end) as $result |
-  if ($text | length) > 0 then "USER\t" + ($text[:200] | gsub("\n"; " "))
-  elif ($result | length) > 0 then "RESULT\t" + ($result[:200] | gsub("\n"; " "))
+  if ($text | length) > 0 then "USER\t" + ($text[:2000] | gsub("\n"; " "))
+  elif ($result | length) > 0 then "RESULT\t" + ($result[:2000] | gsub("\n"; " "))
   else empty end
 
 elif .type == "assistant" then
@@ -79,7 +79,7 @@ elif .type == "assistant" then
     end
   elif .type == "text" then
     if (.text | length) > 0 then
-      "TEXT\t" + (.text[:300] | gsub("\n"; " ↵ "))
+      "TEXT\t" + (.text[:2000] | gsub("\n"; " ↵ "))
     else empty end
   else empty end
 
@@ -89,21 +89,45 @@ else empty end
 # ── Waiting indicator ──
 printf '  %b⏳ Streaming live...%b\n\n' "$DIM" "$RST"
 
+# ── Terminal width for wrapping ──
+TERM_W=$(tput cols 2>/dev/null || echo 100)
+CONTENT_W=$((TERM_W - 16))  # 2 indent + 8 timestamp + 2 icon + 4 spacing
+[ "$CONTENT_W" -lt 40 ] && CONTENT_W=40
+
+# Print with word wrap: icon line + continuation lines indented
+print_wrapped() {
+  local color="$1" icon="$2" ts="$3" text="$4"
+  local prefix_w=15  # "  HH:MM:SS X " width
+  local first=1
+  while [ ${#text} -gt 0 ]; do
+    if [ "$first" -eq 1 ]; then
+      local chunk="${text:0:$CONTENT_W}"
+      printf '  %b%s%b %b%s %s%b\n' "$DIM" "$ts" "$RST" "$color" "$icon" "$chunk" "$RST"
+      text="${text:$CONTENT_W}"
+      first=0
+    else
+      local chunk="${text:0:$CONTENT_W}"
+      printf '  %b%*s%b %b  %s%b\n' "$DIM" 8 "" "$RST" "$color" "$chunk" "$RST"
+      text="${text:$CONTENT_W}"
+    fi
+  done
+}
+
 # ── Stream with coloring ──
 tail -n +1 -f "$TRANSCRIPT" | jq -r --unbuffered "$JQ_FILTER" 2>/dev/null | while IFS=$'\t' read -r kind content; do
   ts=$(date +%H:%M:%S)
   case "$kind" in
-    USER)   printf '  %b%s%b %b▶ %s%b\n' "$DIM" "$ts" "$RST" "$GRN" "${content:0:85}" "$RST" ;;
-    RESULT) printf '  %b%s%b %b◀ %s%b\n' "$DIM" "$ts" "$RST" "$SLT" "${content:0:85}" "$RST" ;;
-    BASH)   printf '  %b%s%b %b⚡ %s%b\n' "$DIM" "$ts" "$RST" "$ORG" "${content:0:85}" "$RST" ;;
-    READ)   printf '  %b%s%b %b📖 %s%b\n' "$DIM" "$ts" "$RST" "$BLU" "${content:0:85}" "$RST" ;;
-    GREP)   printf '  %b%s%b %b🔍 %s%b\n' "$DIM" "$ts" "$RST" "$VIO" "${content:0:85}" "$RST" ;;
-    EDIT)   printf '  %b%s%b %b✏️  %s%b\n' "$DIM" "$ts" "$RST" "$YLW" "${content:0:85}" "$RST" ;;
-    WRITE)  printf '  %b%s%b %b📝 %s%b\n' "$DIM" "$ts" "$RST" "$YLW" "${content:0:85}" "$RST" ;;
-    GLOB)   printf '  %b%s%b %b🔎 %s%b\n' "$DIM" "$ts" "$RST" "$VIO" "${content:0:85}" "$RST" ;;
-    SKILL)  printf '  %b%s%b %b⚙️  %s%b\n' "$DIM" "$ts" "$RST" "$CYN" "${content:0:85}" "$RST" ;;
-    AGENT)  printf '  %b%s%b %b🚀 %s%b\n' "$DIM" "$ts" "$RST" "$VIO" "${content:0:85}" "$RST" ;;
-    TOOL)   printf '  %b%s%b %b🔧 %s%b\n' "$DIM" "$ts" "$RST" "$DIM" "${content:0:85}" "$RST" ;;
-    TEXT)   printf '  %b%s%b %b│ %s%b\n'   "$DIM" "$ts" "$RST" "$WHT" "${content:0:85}" "$RST" ;;
+    USER)   print_wrapped "$GRN" "▶" "$ts" "$content" ;;
+    RESULT) print_wrapped "$SLT" "◀" "$ts" "$content" ;;
+    BASH)   print_wrapped "$ORG" "⚡" "$ts" "$content" ;;
+    READ)   print_wrapped "$BLU" "📖" "$ts" "$content" ;;
+    GREP)   print_wrapped "$VIO" "🔍" "$ts" "$content" ;;
+    EDIT)   print_wrapped "$YLW" "✏️ " "$ts" "$content" ;;
+    WRITE)  print_wrapped "$YLW" "📝" "$ts" "$content" ;;
+    GLOB)   print_wrapped "$VIO" "🔎" "$ts" "$content" ;;
+    SKILL)  print_wrapped "$CYN" "⚙️ " "$ts" "$content" ;;
+    AGENT)  print_wrapped "$VIO" "🚀" "$ts" "$content" ;;
+    TOOL)   print_wrapped "$DIM" "🔧" "$ts" "$content" ;;
+    TEXT)   print_wrapped "$WHT" "│" "$ts" "$content" ;;
   esac
 done
