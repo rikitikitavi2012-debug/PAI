@@ -40,7 +40,7 @@ LOCATION_CACHE_TTL=3600  # 1 hour (IP rarely changes)
 WEATHER_CACHE_TTL=900    # 15 minutes
 GIT_CACHE_TTL=5          # 5 seconds (fast refresh, but avoids repeated scans)
 COUNTS_CACHE_TTL=30      # 30 seconds (file counts rarely change mid-session)
-USAGE_CACHE_TTL=60       # 60 seconds (API recommends ≤1 poll/minute)
+USAGE_CACHE_TTL=300      # 5 minutes — prevents rate limiting from Anthropic API
 
 # Additional cache files for expensive operations
 GIT_CACHE="$PAI_DIR/MEMORY/STATE/git-status-cache.sh"
@@ -353,6 +353,9 @@ COUNTSEOF
                     fi
                 fi
                 echo "$usage_json" | jq '.' > "$USAGE_CACHE" 2>/dev/null
+            else
+                # API error (rate limit, timeout, etc.) — touch cache to prevent retry storm
+                [ -f "$USAGE_CACHE" ] && touch "$USAGE_CACHE"
             fi
         fi
     fi

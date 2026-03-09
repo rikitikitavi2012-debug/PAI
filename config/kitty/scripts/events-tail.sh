@@ -38,6 +38,6 @@ fi
 
 # Show last 20 events, then follow — single jq process
 # TZ_OFFSET_H passed as jq arg for UTC→local conversion
-tail -n 20 -f "$EVENTS" | jq --unbuffered -r -R \
+tail -n 20 -F "$EVENTS" 2>/dev/null | jq --unbuffered -r -R \
   --argjson tz "$TZ_OFFSET_H" --arg filt "$FILTER" \
   "$JQ_EVENT_FORMAT" 2>/dev/null
