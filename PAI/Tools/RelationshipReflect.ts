@@ -414,7 +414,8 @@ function sendNotification(message: string): void {
   try {
     const topic = process.env.NTFY_TOPIC;
     if (topic) {
-      spawnSync('curl', ['-s', '-d', message, `ntfy.sh/${topic}`], {
+      const sanitized = message.replace(/[^\w\s.,!?:;()\-—→↑↓=+%#@\u0400-\u04FF]/g, '');
+      spawnSync('curl', ['-s', '-d', sanitized, `ntfy.sh/${encodeURIComponent(topic)}`], {
         stdio: 'ignore',
         timeout: 3000
       });
