@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-03-08T04:01:02Z",
+  "timestamp": "2026-03-09T04:01:26Z",
   "checks": {
-    "voice_server": {"status": "DOWN", "latency_ms": 0},
+    "voice_server": {"status": "DOWN", "latency_ms": null},
     "github_auth": {"status": "OK", "user": "rikitikitavi2012-debug"},
     "hooks_count": {"count": 30, "baseline": 30, "alert": false},
     "events_size": {"lines": 10, "alert": false},
     "disk_usage": {"percent": 67, "alert": false},
-    "open_prs": {"count": 3, "stale": [], "note": "PR API returned 403 - token lacks PR read permissions"},
-    "tests": {"passed": 0, "failed": 0, "alert": false, "note": "Bun not available"}
+    "open_prs": {"count": 3, "stale": [], "error": "403 - Resource not accessible by personal access token"},
+    "tests": {"passed": null, "failed": null, "alert": false, "note": "Bun not installed"}
   },
   "overall": "WARNING",
   "alerts": ["VoiceServer DOWN - http://host.docker.internal:8888/health not responding"]
