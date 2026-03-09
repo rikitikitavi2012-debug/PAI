@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-03-09T14:03:00+03:00",
+  "action": "replace_scheduled_task",
+  "deleted": {
+    "name": "Weekly Competitive Intelligence",
+    "uuid": "cdSwoJBF"
+  },
+  "created": {
+    "name": "Weekly Upstream Monitor",
+    "uuid": "vN0bta7k",
+    "schedule": "0 5 * * 0 (Sunday 05:00 UTC)",
+    "monitors": {
+      "repo": "danielmiessler/Personal_AI_Infrastructure",
+      "our_prs": [840, 859, 860, 861, 864, 882, 883, 910, 911, 918]
+    },
+    "output": "MEMORY/STATE/upstream-monitor.json"
+  }
+}
