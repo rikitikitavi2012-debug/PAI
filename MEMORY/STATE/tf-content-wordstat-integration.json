@@ -1,0 +1,35 @@
+{
+  "task": "tf-content-wordstat-integration",
+  "status": "completed",
+  "date": "2026-03-10T01:35:00Z",
+  "changes": {
+    "new_file": {
+      "path": "/a0/usr/skills/tf-content/Workflows/WordstatResearch.md",
+      "description": "Workflow для сбора частотностей ключевых слов из Яндекс.Вордстат API"
+    },
+    "updated_files": [
+      {
+        "path": "/a0/usr/skills/tf-content/Workflows/WriteArticle.md",
+        "changes": "Добавлен обязательный Step 0: WordstatResearch перед написанием статьи"
+      },
+      {
+        "path": "/a0/usr/skills/tf-content/SKILL.md",
+        "changes": "Добавлена строка в routing table для WordstatResearch, добавлен Gate 5: Data-Driven Keywords, версия обновлена до 1.1.0"
+      }
+    ]
+  },
+  "api_integration": {
+    "endpoint": "https://api.direct.yandex.com/v4/json/",
+    "secret_key": "YANDEX_WORDSTAT_TOKEN",
+    "default_geo_id": 2,
+    "methods": ["CreateNewWordstatReport", "GetWordstatReport", "DeleteWordstatReport"]
+  },
+  "workflow": {
+    "step_0": "WordstatResearch → Keyword Brief с реальными частотностями",
+    "step_1": "Загрузка контекста (TFExpertise + TFBrandVoice + Keyword Brief)",
+    "step_2": "Планирование структуры",
+    "step_3": "Написание статьи",
+    "step_4": "Quality Gates проверка",
+    "step_5": "Финальный пакет с keywords_data в frontmatter"
+  }
+}
