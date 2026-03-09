@@ -119,6 +119,69 @@
 
 ---
 
+### I5: PAI TUI Dashboard на Rust/Go (межсезонье 2026-27)
+**Категория:** Инфраструктура / PAI
+**Статус:** Идея (межсезонье, декабрь 2026)
+**Описание:** Единое TUI-приложение (ratatui/Rust или bubbletea/Go) заменяющее все информационные Kitty табы (TELOS, Brigade, Telemetry, A0 Chat, Events). Mouse support, resize, внутренняя навигация, shared state. Как btop/k9s/lazygit но для PAI Workspace.
+**Почему отложено:**
+- Текущие bash-скрипты работают (14 скриптов, ui.sh библиотека)
+- Agent Live Tabs только что добавлены — нужно стабилизировать
+- 2-3 недели работы, сезон 6/1 не позволяет
+- YAGNI: bash MVP достаточен для текущих задач
+**Условия для реализации:**
+1. Bash-скрипты начинают ломаться или дублировать слишком много кода
+2. Межсезонье (декабрь-март) — полная свобода
+3. Конкретный use case который bash НЕ может (mouse interaction, complex layouts)
+**Связано с:** I3 (AI Agent Orchestra), S1 (AI-автоматизация)
+
+---
+
+### I6: Mobile Dashboard — мониторинг PAI с телефона
+**Категория:** Инфраструктура / PAI
+**Статус:** Идея (сезон 2026 — killer feature для стройки)
+**Описание:** Лёгкий веб-сервер на Bun (localhost:PORT), доступный через Tailscale/VPN с телефона. Показывает: активные агенты, последние events, A0 статус, usage. Можно отправить команду A0. QR-код для быстрого подключения.
+**Почему важно:** Сезон 6/1 — Ivan на объекте, ноутбук не всегда доступен. Проверить что агенты делают с телефона = свобода. Аналог: Claude Code Monitor (onikan27).
+**Следующий шаг:** MVP: Bun HTTP server + статичный HTML + events.jsonl polling
+**Связано с:** I3 (AI Agent Orchestra), S1 (AI-автоматизация)
+
+---
+
+### I7: Agent Thinking Tab — видеть что агент думает
+**Категория:** Инфраструктура / PAI
+**Статус:** Идея
+**Описание:** Парсинг thinking/reasoning блоков из agent transcript (claude-esp подход). Сейчас Live Tabs показывают инструменты (Read, Bash, Grep) — но не показывают WHY. Thinking Tab = "мысли агента" в реальном времени.
+**Следующий шаг:** Добавить фильтр thinking блоков в agent-live.sh jq filter
+**Связано с:** I3, Agent Live Tabs
+
+---
+
+### I8: Usage Analytics — предсказание лимитов и расходов
+**Категория:** Инфраструктура / PAI
+**Статус:** Идея
+**Описание:** ML-предсказание session limits и burn rate из events.jsonl (inference.ok events). Визуализация в Kitty табе: текущий расход, прогноз до лимита, стоимость за сессию/день/неделю. Аналог: Claude Code Usage Monitor (Maciek-roboblog).
+**Следующий шаг:** Агрегировать inference.ok events, посчитать burn rate, sparkline в statusline
+**Связано с:** I3, Telemetry tab
+
+---
+
+### I9: Smart Command Approval — AST-парсер для bash
+**Категория:** Безопасность / PAI
+**Статус:** Идея
+**Описание:** Dippy-подход: AST-парсер bash команд в PreToolUse hook. Авто-одобряет read-only (ls, cat, grep, wc, head), блокирует деструктивные (rm -rf, dd). Убирает permission fatigue при работе. 34 CLI handlers, рекурсивный descent парсер.
+**Следующий шаг:** Изучить Dippy исходники, портировать логику в TypeScript hook
+**Связано с:** SecurityValidator hook, PAI Security
+
+---
+
+### I10: MCP Socket Pooling — экономия памяти
+**Категория:** Инфраструктура / PAI
+**Статус:** Идея (низкий приоритет)
+**Описание:** Agent Deck паттерн: вместо отдельного MCP connection на каждого агента — один shared Unix socket. Мультиплексер раздаёт запросы. Экономия 85-90% памяти при 3+ агентах с MCP.
+**Следующий шаг:** Исследовать когда станет актуально (при текущих 1-2 MCP серверах — не критично)
+**Связано с:** I3, MCP серверы (A0, Z.AI)
+
+---
+
 ## Связь Идея → Цель
 
 | Идея | Цели | Миссии | Статус |
@@ -128,6 +191,12 @@
 | I2 (МАФ + благоустройство) | G1 | M0, M1 | Активная подготовка (P1 = демо для фирмы) |
 | I3 (AI Agent Orchestra) | G0, G1, G2, G10, G11 | M0, M1, M3 | Активна (базовая интеграция завершена) |
 | I4 (Pi Agent RPC-кодер) | S1, I3 | M0, M3 | Идея (межсезонье 2026) |
+| I5 (PAI TUI Dashboard) | I3, S1 | M0 | Идея (межсезонье 2026-27) |
+| I6 (Mobile Dashboard) | I3, S1 | M0 | Идея (killer для сезона) |
+| I7 (Agent Thinking Tab) | I3 | M0 | Идея |
+| I8 (Usage Analytics) | I3 | M0 | Идея |
+| I9 (Smart Command Approval) | Security | M0 | Идея |
+| I10 (MCP Socket Pooling) | I3 | M0 | Идея (низкий приоритет) |
 
 ---
 
