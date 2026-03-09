@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-03-09T03:01:00Z",
+  "week": "2026-10",
+  "goals": [
+    {"id": "G0", "name": "Цифровой Прораб PWA", "progress_pct": 54, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "7/13 items done: scaffolding + 3 modules + GAS backend ready"},
+    {"id": "G1", "name": "Timber Frame бизнес", "progress_pct": 50, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "4/8 items: strategy, competitive intel, photo base ready, site pending"},
+    {"id": "G2", "name": "Construction Orchestrator SaaS", "progress_pct": 5, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "Concept only, depends on P3 validation"},
+    {"id": "G3", "name": "Финансовая независимость МАФ", "progress_pct": 5, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "Long-term goal, Q3 2027 target"},
+    {"id": "G4", "name": "Каркасное Шале (инвест-проект)", "progress_pct": 0, "prev_pct": null, "delta": null, "status": "frozen", "weeks_stalled": 0, "note": "Frozen — priority shifted to Bylym land (G7)"},
+    {"id": "G5", "name": "Продажа квартиры Тырныауз", "progress_pct": 5, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "Planning stage, 0/5 checklist items"},
+    {"id": "G6", "name": "Покупка A0T + Venice AI", "progress_pct": 10, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "Ready to action, 0/5 checklist items"},
+    {"id": "G7", "name": "Покупка земли в Былыме", "progress_pct": 5, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "Planning, deep research done, 0/5 checklist"},
+    {"id": "G8", "name": "Портфель акций полупроводников", "progress_pct": 10, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "Ready to action, allocation plan defined"},
+    {"id": "G9", "name": "Интернет-инфраструктура для дома", "progress_pct": 5, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "Planning, config defined, depends on G7"},
+    {"id": "G10", "name": "Аудит 11 скиллов PAI v4", "progress_pct": 0, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "0/11 skills audited, high priority for Phase A"},
+    {"id": "G11", "name": "PAI community участие", "progress_pct": 64, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "9/14 items: 8 PRs (2 merged), acknowledgment in v4.0.3"},
+    {"id": "G12", "name": "RU Metrics скилл", "progress_pct": 3, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "Idea stage, APIs identified"},
+    {"id": "G13", "name": "PAI Workspace v2 (Kitty)", "progress_pct": 64, "prev_pct": null, "delta": null, "status": "active", "weeks_stalled": 0, "note": "7/11 items: 2 tabs, Strategic Dashboard, cost tracking live"}
+  ],
+  "summary": {
+    "total_goals": 14,
+    "active": 13,
+    "frozen": 1,
+    "stalled": 0,
+    "completed": 0,
+    "avg_progress": 20,
+    "top_3": ["G13", "G11", "G0"],
+    "needs_attention": ["G10", "G5", "G7"]
+  },
+  "analysis": {
+    "first_run": true,
+    "baseline_established": true,
+    "notes": "Initial TELOS progress snapshot. Top performers: G13 (64%), G11 (64%), G0 (54%). Attention needed: G10 (0% - audit not started), G5/G7 (5% - planning stuck). G4 frozen by design."
+  }
+}
