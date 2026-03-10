@@ -96,11 +96,11 @@ render_goals_list() {
     local s_short
     case "$g_id" in
       G0)  s_short="Цифр.Прораб" ;; G1)  s_short="Timber Frame" ;;
-      G2)  s_short="Orchestrator" ;; G3)  s_short="Фин.незав." ;;
+      G2)  s_short="Orchestrator" ;; G3)  s_short="Фін.независ." ;;
       G4)  s_short="Шале" ;;         G5)  s_short="Квартира" ;;
-      G6)  s_short="A0T" ;;          G7)  s_short="Земля" ;;
-      G8)  s_short="Акции" ;;        G9)  s_short="Инфра" ;;
-      G10) s_short="Аудит" ;;        G11) s_short="PAI comm" ;;
+      G6)  s_short="A0T" ;;          G7)  s_short="Земля Былым" ;;
+      G8)  s_short="Акции" ;;        G9)  s_short="Инфра интернет" ;;
+      G10) s_short="Аудит скиллов" ;; G11) s_short="PAI community" ;;
       G12) s_short="RU Metrics" ;;   G13) s_short="PAI Workspace" ;;
       *)   s_short="$g_id" ;;
     esac
@@ -164,21 +164,6 @@ render_goal_detail() {
   if [ -n "$g_blockers" ] && [ "$g_blockers" != "null" ]; then
     printf "  %bБлокеры:%b %b%s%b\n" "$RED" "$RST" "$RED" "$g_blockers" "$RST"
   fi
-
-  # Linked projects
-  printf "\n  %bСвязанные проекты:%b\n" "$SLT" "$RST"
-  while IFS=$'\t' read -r p_id p_name p_progress p_checked p_total; do
-    local p_bar
-    p_bar=$(progress_bar "$p_progress" 10)
-    local p_short="${p_name:0:25}"
-    local p_vw
-    p_vw=$(printf '%s' "$p_short" | wc -L)
-    local p_pad=$(( 25 - p_vw ))
-    [ "$p_pad" -lt 0 ] && p_pad=0
-    printf "  %b%-3s%b %s%*s %b%s%b %d%%\n" \
-      "$CYN" "$p_id" "$RST" "$p_short" "$p_pad" "" \
-      "$GRN" "$p_bar" "$RST" "$p_progress"
-  done < <(jq -r '.projects[] | [.id, .name, (.progress // 0 | tostring), (.checked // 0 | tostring), (.total // 0 | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
 
   # Linked strategies
   printf "\n  %bСтратегии:%b\n" "$SLT" "$RST"
@@ -431,10 +416,14 @@ render_wins_list() {
 render_blockers_list() {
   nav_header "БЛОКЕРЫ" "$RED"
   local idx=0
-  while IFS= read -r blocker; do
-    printf "  %b!%b %b%s%b\n" "$RED" "$RST" "$WHT" "${blocker:0:40}" "$RST"
+  while IFS=$'\t' read -r b_text b_urgency b_next; do
+    local urg_c="$SLT"
+    [ "$b_urgency" = "Высокая" ] && urg_c="$RED"
+    [ "$b_urgency" = "Средняя" ] && urg_c="$YLW"
+    local b_short="${b_text:0:36}"
+    printf "  %b!%b %b%s%b  %b%s%b\n" "$urg_c" "$RST" "$WHT" "$b_short" "$RST" "$SLT" "$b_urgency" "$RST"
     idx=$((idx + 1))
-  done < <(jq -r '.status.blockers[]?' "$STATE_FILE" 2>/dev/null)
+  done < <(jq -r '.status.blockers[]? | [.blocker, .urgency, .next] | @tsv' "$STATE_FILE" 2>/dev/null)
   [ "$idx" -eq 0 ] && printf "  %bНет блокеров%b\n" "$GRN" "$RST"
   nav_footer
 }
@@ -523,10 +512,16 @@ while true; do
     q|Q) exit 0 ;;
     [0-9])
       if [ -z "$SELECTED" ] && [ "$MODE" != "help" ] && [ "$MODE" != "wisdom" ] && [ "$MODE" != "wins" ] && [ "$MODE" != "blockers" ] && [ "$MODE" != "strategies" ]; then
+        # Try reading second digit for indices 10+ (200ms timeout)
+        local full_idx="$key"
+        read -rsn1 -t0.2 key2
+        if [[ "$key2" =~ [0-9] ]]; then
+          full_idx="${key}${key2}"
+        fi
         local item_id
-        item_id=$(get_id_by_index "$MODE" "$key")
+        item_id=$(get_id_by_index "$MODE" "$full_idx")
         if [ -n "$item_id" ]; then
-          SELECTED="$key"
+          SELECTED="$full_idx"
           DETAIL_ID="$item_id"
           render
         fi

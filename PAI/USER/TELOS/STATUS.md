@@ -51,7 +51,7 @@
 
 ### Проекты
 **Статус:** 🟢 Зелёный
-**Текущее:** PAI v4.0.3 hardened — 27 хуков, 61 тест, security system, feedback loop. Community: 6 PRs в upstream, contributor acknowledgment. Сайт TF — рабочая директория создана. PAI Dashboard — 5 страниц.
+**Текущее:** PAI v4.0.3 hardened — 31 хук, 42 тест-сюита, security system, feedback loop. Community: 8 PRs в upstream, contributor acknowledgment. Timber Frame сайт — MVP LIVE (timber-frame-spb.ru). Kitty Workspace — TELOS tab + Center + Brigade + Telemetry.
 **Активный проект:** P0 (PAI v4.0.3 — hardening + community), P1 (Сайт Timber Frame)
 **Активная цель:** G10 (аудит скиллов v4), G11 (community), G1 (Timber Frame)
 
