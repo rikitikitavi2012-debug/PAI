@@ -26,17 +26,19 @@ grep "JULES_API_KEY" ~/.config/PAI/.env > /dev/null 2>&1 || echo "ERROR: JULES_A
 
 ### 3. Create Session
 
-Run the Jules API tool:
+Run the Jules API tool. It auto-detects the repo from git remote in cwd:
 
 ```bash
 bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts create "TASK_PROMPT_HERE"
 ```
 
-**Override repo/branch if needed:**
+**Override repo explicitly (short or full form):**
 ```bash
-JULES_REPO="sources/github/OWNER/REPO" JULES_BRANCH="branch-name" \
-  bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts create "TASK_PROMPT_HERE"
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts create --repo rikitikitavi2012-debug/timber-frame-site "TASK_PROMPT_HERE"
+bun ${CLAUDE_SKILL_DIR}/Tools/JulesAPI.ts create --repo owner/repo --branch dev "TASK_PROMPT_HERE"
 ```
+
+**Resolution order:** `--repo` flag > `JULES_REPO` env > git remote auto-detect > PAI-personal default
 
 ### 4. Report Result
 
@@ -57,9 +59,11 @@ When constructing the task prompt for Jules:
 
 ## Intent-to-Flag Mapping
 
-| User Says | Env/Flag | Effect |
+| User Says | Flag/Env | Effect |
 |-----------|----------|--------|
 | "on PAI-personal" | (default) | Uses default PAI-personal repo |
-| "on repo X" | `JULES_REPO=sources/github/owner/X` | Targets different repo |
-| "on branch X" | `JULES_BRANCH=X` | Starts from different branch |
+| "on timber-frame-site" | `--repo rikitikitavi2012-debug/timber-frame-site` | Targets TF site repo |
+| "on repo X" | `--repo owner/X` | Targets any repo (short form OK) |
+| "on branch X" | `--branch X` | Starts from different branch |
+| (run from project dir) | (auto-detect) | Reads git remote, resolves repo automatically |
 | "don't auto-PR" | Modify automationMode in tool | Manual PR mode |

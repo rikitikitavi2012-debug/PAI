@@ -5,7 +5,8 @@
  * Usage:
  *   bun JulesAPI.ts sources              List connected repos
  *   bun JulesAPI.ts sessions [filter]    List all sessions (IN_PROGRESS|COMPLETED)
- *   bun JulesAPI.ts create "prompt"      Create new task on PAI-personal
+ *   bun JulesAPI.ts create "prompt"      Create new task (auto-detects repo from git)
+ *   bun JulesAPI.ts create --repo owner/repo "prompt"  Target specific repo
  *   bun JulesAPI.ts status <id>          Check session status
  *   bun JulesAPI.ts approve <id>         Approve session plan
  *   bun JulesAPI.ts message <id> "msg"   Send message to session
@@ -25,6 +26,51 @@ const ENV_PATH = join(process.env.HOME!, '.config', 'PAI', '.env');
 const BASE_URL = 'https://jules.googleapis.com/v1alpha';
 const DEFAULT_SOURCE = 'sources/github/rikitikitavi2012-debug/PAI-personal';
 const DEFAULT_BRANCH = 'master';
+
+/** Map of known repos to their Jules source paths and default branches */
+const REPO_REGISTRY: Record<string, { source: string; branch: string }> = {
+  'PAI-personal': { source: 'sources/github/rikitikitavi2012-debug/PAI-personal', branch: 'master' },
+  'timber-frame-site': { source: 'sources/github/rikitikitavi2012-debug/timber-frame-site', branch: 'main' },
+};
+
+/**
+ * Auto-detect repo from git remote in cwd.
+ * Returns { source, branch } or null if detection fails.
+ */
+function detectRepoFromGit(): { source: string; branch: string } | null {
+  try {
+    const { execSync } = require('child_process');
+    const remote = execSync('git remote get-url origin 2>/dev/null', { encoding: 'utf-8' }).trim();
+    // Parse github.com/owner/repo or github.com:owner/repo
+    const match = remote.match(/github\.com[:/]([^/]+)\/([^/.]+)/);
+    if (!match) return null;
+    const [, owner, repo] = match;
+    // Check registry first
+    if (REPO_REGISTRY[repo]) return REPO_REGISTRY[repo];
+    // Fallback: construct source path, guess branch
+    const branch = execSync('git symbolic-ref --short HEAD 2>/dev/null', { encoding: 'utf-8' }).trim() || 'main';
+    return { source: `sources/github/${owner}/${repo}`, branch };
+  } catch {
+    return null;
+  }
+}
+
+/** Parse --flag=value or --flag value from args array, removing consumed args */
+function extractFlag(args: string[], flag: string): string | undefined {
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === flag && i + 1 < args.length) {
+      const val = args[i + 1];
+      args.splice(i, 2);
+      return val;
+    }
+    if (args[i].startsWith(`${flag}=`)) {
+      const val = args[i].slice(flag.length + 1);
+      args.splice(i, 1);
+      return val;
+    }
+  }
+  return undefined;
+}
 
 // ANSI colors
 const RED = '\x1b[31m';
@@ -88,7 +134,8 @@ function showHelp(): void {
 ${BOLD}Usage:${RESET}
   bun JulesAPI.ts ${CYAN}sources${RESET}              List connected repos
   bun JulesAPI.ts ${CYAN}sessions${RESET} [filter]    List sessions (IN_PROGRESS|COMPLETED)
-  bun JulesAPI.ts ${CYAN}create${RESET} "prompt"      Create task on PAI-personal
+  bun JulesAPI.ts ${CYAN}create${RESET} "prompt"      Create task (auto-detects repo from git)
+  bun JulesAPI.ts ${CYAN}create${RESET} ${DIM}--repo owner/repo${RESET} "prompt"  Target specific repo
   bun JulesAPI.ts ${CYAN}status${RESET} <id>          Check session details
   bun JulesAPI.ts ${CYAN}approve${RESET} <id>         Approve session plan
   bun JulesAPI.ts ${CYAN}message${RESET} <id> "msg"   Send message to session
@@ -97,8 +144,11 @@ ${BOLD}Env vars:${RESET}
   JULES_REPO     Override default repo (default: PAI-personal)
   JULES_BRANCH   Override default branch (default: master)
 
+${BOLD}Repo resolution:${RESET} --repo flag > JULES_REPO env > git remote auto-detect > PAI-personal default
+
 ${BOLD}Examples:${RESET}
   bun JulesAPI.ts create "Add unit tests for the auth module"
+  bun JulesAPI.ts create --repo rikitikitavi2012-debug/timber-frame-site "Fix blog styling"
   bun JulesAPI.ts sessions IN_PROGRESS
   bun JulesAPI.ts status sessions/abc123
   bun JulesAPI.ts approve sessions/abc123
@@ -159,14 +209,40 @@ switch (cmd) {
   }
 
   case 'create': {
-    const prompt = args.join(' ');
+    // Parse --repo and --branch flags before joining remaining args as prompt
+    const createArgs = [...args];
+    const flagRepo = extractFlag(createArgs, '--repo');
+    const flagBranch = extractFlag(createArgs, '--branch');
+    const prompt = createArgs.join(' ');
     if (!prompt) {
-      console.error(`${RED}Usage:${RESET} create "task description"`);
+      console.error(`${RED}Usage:${RESET} create [--repo owner/repo] [--branch name] "task description"`);
       process.exit(1);
     }
 
-    const repo = process.env.JULES_REPO || DEFAULT_SOURCE;
-    const branch = process.env.JULES_BRANCH || DEFAULT_BRANCH;
+    // Resolution order: --repo flag > JULES_REPO env > git auto-detect > hardcoded default
+    let repo: string;
+    let branch: string;
+
+    if (flagRepo) {
+      // Accept short form "owner/repo" or full "sources/github/owner/repo"
+      repo = flagRepo.startsWith('sources/') ? flagRepo : `sources/github/${flagRepo}`;
+      // Check registry for branch default
+      const repoName = flagRepo.split('/').pop()!;
+      branch = flagBranch || process.env.JULES_BRANCH || REPO_REGISTRY[repoName]?.branch || DEFAULT_BRANCH;
+    } else if (process.env.JULES_REPO) {
+      repo = process.env.JULES_REPO;
+      branch = flagBranch || process.env.JULES_BRANCH || DEFAULT_BRANCH;
+    } else {
+      const detected = detectRepoFromGit();
+      if (detected) {
+        repo = detected.source;
+        branch = flagBranch || process.env.JULES_BRANCH || detected.branch;
+        console.log(`${DIM}Auto-detected repo from git: ${repo}${RESET}`);
+      } else {
+        repo = DEFAULT_SOURCE;
+        branch = flagBranch || process.env.JULES_BRANCH || DEFAULT_BRANCH;
+      }
+    }
 
     console.log(`${DIM}Creating session on ${repo} (${branch})...${RESET}`);
 
