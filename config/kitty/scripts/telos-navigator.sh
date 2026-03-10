@@ -383,6 +383,54 @@ render_strategies_list() {
   nav_footer
 }
 
+render_strategy_detail() {
+  local sid="$1"
+  nav_header "СТРАТЕГИЯ: $sid" "$YLW"
+
+  local s_data
+  s_data=$(jq -r --arg id "$sid" '.strategies[] | select(.id == $id) | [
+    .name, (.effectiveness // "unknown"), (.status // ""),
+    ((.addresses // []) | join(","))
+  ] | @tsv' "$STATE_FILE" 2>/dev/null)
+
+  if [ -z "$s_data" ]; then
+    printf "  %bНе найдено%b\n" "$RED" "$RST"
+    nav_footer; return
+  fi
+
+  local s_name s_eff s_status s_addresses
+  IFS=$'\t' read -r s_name s_eff s_status s_addresses <<< "$s_data"
+
+  local eff_c="$SLT"
+  [ "$s_eff" = "working" ] && eff_c="$GRN"
+  [ "$s_eff" = "partial" ] && eff_c="$YLW"
+
+  printf "  %b%s%b\n" "$WHT" "$s_name" "$RST"
+  printf "  %bЭффективность:%b %b%s%b\n" "$SLT" "$RST" "$eff_c" "$s_eff" "$RST"
+  [ -n "$s_status" ] && printf "  %bСтатус:%b %s\n" "$SLT" "$RST" "$s_status"
+
+  if [ -n "$s_addresses" ]; then
+    printf "\n  %bАдресует:%b\n" "$SLT" "$RST"
+    IFS=',' read -ra addr_ids <<< "$s_addresses"
+    for aid in "${addr_ids[@]}"; do
+      if [[ "$aid" =~ ^C ]]; then
+        local c_name
+        c_name=$(jq -r --arg id "$aid" '.challenges[] | select(.id == $id) | .name // ""' "$STATE_FILE" 2>/dev/null)
+        printf "  %b%-3s%b %s\n" "$RED" "$aid" "$RST" "${c_name:0:34}"
+      elif [[ "$aid" =~ ^G ]]; then
+        local g_name
+        g_name=$(jq -r --arg id "$aid" '.goals[] | select(.id == $id) | .name // ""' "$STATE_FILE" 2>/dev/null)
+        printf "  %b%-3s%b %s\n" "$CYN" "$aid" "$RST" "${g_name:0:34}"
+      elif [[ "$aid" =~ ^M ]]; then
+        local m_name
+        m_name=$(jq -r --arg id "$aid" '.missions[] | select(.id == $id) | .name // ""' "$STATE_FILE" 2>/dev/null)
+        printf "  %b%-3s%b %s\n" "$VIO" "$aid" "$RST" "${m_name:0:34}"
+      fi
+    done
+  fi
+  nav_footer
+}
+
 # ── VIEW: Wisdom ──
 render_wisdom_list() {
   nav_header "МУДРОСТЬ" "$VIO"
@@ -454,6 +502,7 @@ render() {
       projects)   render_project_detail "$DETAIL_ID" ;;
       missions)   render_mission_detail "$DETAIL_ID" ;;
       challenges) render_challenge_detail "$DETAIL_ID" ;;
+      strategies) render_strategy_detail "$DETAIL_ID" ;;
       *)          SELECTED=""; render ;;
     esac
     return
@@ -511,14 +560,14 @@ while true; do
     r|R) render ;;
     q|Q) exit 0 ;;
     [0-9])
-      if [ -z "$SELECTED" ] && [ "$MODE" != "help" ] && [ "$MODE" != "wisdom" ] && [ "$MODE" != "wins" ] && [ "$MODE" != "blockers" ] && [ "$MODE" != "strategies" ]; then
+      if [ -z "$SELECTED" ] && [ "$MODE" != "help" ] && [ "$MODE" != "wisdom" ] && [ "$MODE" != "wins" ] && [ "$MODE" != "blockers" ]; then
         # Try reading second digit for indices 10+ (200ms timeout)
-        local full_idx="$key"
+        full_idx="$key"
         read -rsn1 -t0.2 key2
         if [[ "$key2" =~ [0-9] ]]; then
           full_idx="${key}${key2}"
         fi
-        local item_id
+        item_id=""
         item_id=$(get_id_by_index "$MODE" "$full_idx")
         if [ -n "$item_id" ]; then
           SELECTED="$full_idx"
