@@ -54,15 +54,25 @@ pprint() {
 # ── VIEW: Help ──
 render_help() {
   nav_header "ПОМОЩЬ" "$VIO"
+  # Dynamic counts from state file
+  local n_goals n_projects n_missions n_challenges n_strategies n_wisdom n_wins n_blockers
+  n_goals=$(jq '.goals | length' "$STATE_FILE" 2>/dev/null || echo "?")
+  n_projects=$(jq '.projects | length' "$STATE_FILE" 2>/dev/null || echo "?")
+  n_missions=$(jq '.missions | length' "$STATE_FILE" 2>/dev/null || echo "?")
+  n_challenges=$(jq '.challenges | length' "$STATE_FILE" 2>/dev/null || echo "?")
+  n_strategies=$(jq '.strategies | length' "$STATE_FILE" 2>/dev/null || echo "?")
+  n_wisdom=$(jq '.learning.wisdomQuotes | length' "$STATE_FILE" 2>/dev/null || echo "?")
+  n_wins=$(jq '.status.recentWins | length' "$STATE_FILE" 2>/dev/null || echo "?")
+  n_blockers=$(jq '.status.blockers | length' "$STATE_FILE" 2>/dev/null || echo "?")
   printf "  %bКлавиши навигации:%b\n\n" "$WHT" "$RST"
-  printf "  %bg%b  Цели (14)          %bGoals%b\n"       "$CYN" "$RST" "$DIM" "$RST"
-  printf "  %bp%b  Проекты (5)         %bProjects%b\n"    "$CYN" "$RST" "$DIM" "$RST"
-  printf "  %bm%b  Миссии (4)          %bMissions%b\n"    "$CYN" "$RST" "$DIM" "$RST"
-  printf "  %bc%b  Вызовы (5)          %bChallenges%b\n"  "$CYN" "$RST" "$DIM" "$RST"
-  printf "  %bs%b  Стратегии (8)       %bStrategies%b\n"  "$CYN" "$RST" "$DIM" "$RST"
-  printf "  %bw%b  Мудрость (25)       %bWisdom%b\n"      "$CYN" "$RST" "$DIM" "$RST"
-  printf "  %bv%b  Победы (15)         %bWins%b\n"        "$CYN" "$RST" "$DIM" "$RST"
-  printf "  %bb%b  Блокеры (3)         %bBlockers%b\n"    "$CYN" "$RST" "$DIM" "$RST"
+  printf "  %bg%b  Цели (%s)%b           %bGoals%b\n"       "$CYN" "$RST" "$n_goals" "$RST" "$DIM" "$RST"
+  printf "  %bp%b  Проекты (%s)%b         %bProjects%b\n"    "$CYN" "$RST" "$n_projects" "$RST" "$DIM" "$RST"
+  printf "  %bm%b  Миссии (%s)%b          %bMissions%b\n"    "$CYN" "$RST" "$n_missions" "$RST" "$DIM" "$RST"
+  printf "  %bc%b  Вызовы (%s)%b          %bChallenges%b\n"  "$CYN" "$RST" "$n_challenges" "$RST" "$DIM" "$RST"
+  printf "  %bs%b  Стратегии (%s)%b       %bStrategies%b\n"  "$CYN" "$RST" "$n_strategies" "$RST" "$DIM" "$RST"
+  printf "  %bw%b  Мудрость (%s)%b        %bWisdom%b\n"      "$CYN" "$RST" "$n_wisdom" "$RST" "$DIM" "$RST"
+  printf "  %bv%b  Победы (%s)%b          %bWins%b\n"        "$CYN" "$RST" "$n_wins" "$RST" "$DIM" "$RST"
+  printf "  %bb%b  Блокеры (%s)%b         %bBlockers%b\n"    "$CYN" "$RST" "$n_blockers" "$RST" "$DIM" "$RST"
   printf "\n  %bВ списке:%b\n" "$WHT" "$RST"
   printf "  %b0-9%b Открыть деталь\n"    "$YLW" "$RST"
   printf "  %bEsc%b Назад к списку\n"    "$YLW" "$RST"
@@ -91,7 +101,7 @@ render_goals_list() {
       G6)  s_short="A0T" ;;          G7)  s_short="Земля" ;;
       G8)  s_short="Акции" ;;        G9)  s_short="Инфра" ;;
       G10) s_short="Аудит" ;;        G11) s_short="PAI comm" ;;
-      G12) s_short="RU Metrics" ;;   G13) s_short="Хим.чист." ;;
+      G12) s_short="RU Metrics" ;;   G13) s_short="PAI Workspace" ;;
       *)   s_short="$g_id" ;;
     esac
 

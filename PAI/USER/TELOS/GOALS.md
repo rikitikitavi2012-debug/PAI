@@ -169,6 +169,7 @@
 | G10 | M1, M3 | S7 | Активна |
 | G11 | M1, M3 | S7 | Активна (непрерывная) |
 | G12 | M1, M0 | S0 | Идея |
+| G13 | M1, M3 | S7 | Активна |
 
 ---
 
@@ -262,26 +263,6 @@
 - [ ] Jules → security/performance scan upstream codebase
 - [ ] Gemini CLI + Jules extension → дополнительный канал работы
 
-### G13: PAI Workspace v2 (Kitty)
-**Статус:** Активна (Высокий приоритет — Фаза A)
-**Поддерживает:** M1 (Инновации), M3 (Техно-суверенитет)
-**Срок:** Март 2026 (неделя 3-10 марта)
-**Описание:** Развить Kitty Workspace из 7-tab v1 в полноценную панель управления PAI. Заменяет PAI Dashboard (Next.js web) — terminal-native, zero overhead, детерминизм. TELOS panel для просмотра целей/статуса прямо в терминале. Project switcher для переключения контекста P0/P1/P3. Brigade monitoring в реальном времени.
-**Обоснование:** Kitty — это где Ivan работает. Web dashboard = лишний таб, лишний deploy, лишнее обслуживание. Принцип #2 (Code > Prompts): bash скрипты надёжнее web UI.
-**Прогресс:**
-- [x] Kitty Workspace v1 — 7 табов (Command Center, TELOS, Code, Brigade, Logs, Research, Comms)
-- [x] Brigade Dashboard — AUTOMERGE, A0 info, Events tail с цветами
-- [x] Workspace v2 — 2 таба: Center (Command+Strategic vsplit), Telemetry (Events+Operational tall)
-- [x] Strategic Dashboard — Algorithm, Navi Growth, TELOS, Cost, Active Work, Failures, Brigade
-- [x] Financial tracker — live cost tracking: ElevenLabs, Z.AI, OpenRouter, Timeweb
-- [x] Brigade status — T1/T2/T3 классификация, 7 членов в оперативном дашборде
-- [ ] TELOS panel — goals, status, projects прямо в терминале
-- [ ] Project switcher — быстрое переключение контекста между P0/P1/P3
-- [ ] Hotkeys — быстрый доступ к частым действиям
-**Связано с:** P0, принцип #2 (Code > Prompts)
-
----
-
 ### G12: RU Metrics — экономические данные России
 **Статус:** Идея
 **Поддерживает:** M1 (Инновации), M0 (Независимость)
@@ -299,6 +280,24 @@
 - [ ] Реализовать Tools/ для каждого API
 - [ ] Интеграция с Substrate dataset
 - [ ] PR в upstream (если universal enough)
+
+### G13: PAI Workspace v2 (Kitty)
+**Статус:** Активна (Высокий приоритет — Фаза A)
+**Поддерживает:** M1 (Инновации), M3 (Техно-суверенитет)
+**Срок:** Март 2026 (неделя 3-10 марта)
+**Описание:** Развить Kitty Workspace из 7-tab v1 в полноценную панель управления PAI. Заменяет PAI Dashboard (Next.js web) — terminal-native, zero overhead, детерминизм. TELOS panel для просмотра целей/статуса прямо в терминале. Project switcher для переключения контекста P0/P1/P3. Brigade monitoring в реальном времени.
+**Обоснование:** Kitty — это где Ivan работает. Web dashboard = лишний таб, лишний deploy, лишнее обслуживание. Принцип #2 (Code > Prompts): bash скрипты надёжнее web UI.
+**Прогресс:**
+- [x] Kitty Workspace v1 — 7 табов (Command Center, TELOS, Code, Brigade, Logs, Research, Comms)
+- [x] Brigade Dashboard — AUTOMERGE, A0 info, Events tail с цветами
+- [x] Workspace v2 — 2 таба: Center (Command+Strategic vsplit), Telemetry (Events+Operational tall)
+- [x] Strategic Dashboard — Algorithm, Navi Growth, TELOS, Cost, Active Work, Failures, Brigade
+- [x] Financial tracker — live cost tracking: ElevenLabs, Z.AI, OpenRouter, Timeweb
+- [x] Brigade status — T1/T2/T3 классификация, 7 членов в оперативном дашборде
+- [ ] TELOS panel — goals, status, projects прямо в терминале
+- [ ] Project switcher — быстрое переключение контекста между P0/P1/P3
+- [ ] Hotkeys — быстрый доступ к частым действиям
+**Связано с:** P0, принцип #2 (Code > Prompts)
 
 ---
 

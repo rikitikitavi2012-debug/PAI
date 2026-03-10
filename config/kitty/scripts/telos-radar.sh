@@ -34,7 +34,7 @@ short_goal() {
     G10) echo "Аудит скиллов" ;;
     G11) echo "PAI community" ;;
     G12) echo "RU Metrics" ;;
-    G13) echo "Хим.чист." ;;
+    G13) echo "PAI Workspace" ;;
     *)   echo "$1" ;;
   esac
 }
@@ -167,10 +167,29 @@ poll() {
 
   printf '%b%s%b\n' "$SEP" "$(hline 46)" "$RST"
 
-  # ── GOALS ──
-  printf "  %b%bЦЕЛИ%b\n" "$GRN" "$BLD" "$RST"
+  # ── GOALS (active/progress first, inactive collapsed) ──
+  local total_goals=0 shown_goals=0 hidden_goals=0
+  local hidden_ids=""
+  printf "  %b%bЦЕЛИ%b" "$GRN" "$BLD" "$RST"
+  total_goals=$(jq '.goals | length' "$STATE_FILE" 2>/dev/null || echo 0)
+  printf " %b(%s)%b\n" "$SLT" "$total_goals" "$RST"
 
   while IFS=$'\t' read -r g_id g_status g_progress; do
+    # Show: active, has progress, or "К действию". Hide: frozen/idea/planning with 0%
+    local dominated=false
+    if [ "$g_progress" -eq 0 ]; then
+      case "$g_status" in
+        *"Заморожено"*|*"Идея"*) dominated=true ;;
+        *"Планирование"*) dominated=true ;;
+      esac
+    fi
+
+    if $dominated; then
+      hidden_goals=$((hidden_goals + 1))
+      hidden_ids+=" $g_id"
+      continue
+    fi
+
     local emoji sname bar pcolor
     emoji=$(goal_emoji "$g_status")
     sname=$(short_goal "$g_id")
@@ -187,7 +206,12 @@ poll() {
     printf "  %b%s%b %b%-3s%b %s%*s %b%s%b %b%3d%%%b\n" \
       "$SLT" "$emoji" "$RST" "$CYN" "$g_id" "$RST" "$sname" "$sname_pad" "" \
       "$pcolor" "$bar" "$RST" "$pcolor" "$g_progress" "$RST"
+    shown_goals=$((shown_goals + 1))
   done < <(jq -r '.goals[] | [.id, .status, (.progress // 0 | tostring)] | @tsv' "$STATE_FILE" 2>/dev/null)
+
+  if [ "$hidden_goals" -gt 0 ]; then
+    printf "  %b  +%s ещё:%b%s\n" "$DIM" "$hidden_goals" "$RST" "$hidden_ids"
+  fi
 
   # ── CHALLENGES ──
   printf "\n  %b%bВЫЗОВЫ%b\n" "$RED" "$BLD" "$RST"

@@ -36,7 +36,7 @@ short_goal() {
     G10) echo "Аудит скиллов" ;;
     G11) echo "PAI community" ;;
     G12) echo "RU Metrics" ;;
-    G13) echo "Хим. чист." ;;
+    G13) echo "PAI Workspace" ;;
     *)   echo "$gid" ;;
   esac
 }
