@@ -96,7 +96,7 @@ render_goals_list() {
     local s_short
     case "$g_id" in
       G0)  s_short="Цифр.Прораб" ;; G1)  s_short="Timber Frame" ;;
-      G2)  s_short="Orchestrator" ;; G3)  s_short="Фін.независ." ;;
+      G2)  s_short="Orchestrator" ;; G3)  s_short="Фин.независ." ;;
       G4)  s_short="Шале" ;;         G5)  s_short="Квартира" ;;
       G6)  s_short="A0T" ;;          G7)  s_short="Земля Былым" ;;
       G8)  s_short="Акции" ;;        G9)  s_short="Инфра интернет" ;;
