@@ -379,11 +379,9 @@ function parseProjects(content: string): Project[] {
     const statusMatch = block.match(/\*\*Статус:\*\*\s*(.+)/);
     const status = statusMatch ? statusMatch[1].trim() : "Неизвестно";
 
-    // Count checkboxes in "Следующие шаги" section
-    const stepsSection = block.match(/\*\*Следующие шаги:\*\*[\s\S]*?(?=\n\*\*|$)/);
-    const checkContent = stepsSection ? stepsSection[0] : block;
-    const checked = (checkContent.match(/- \[x\]/gi) || []).length;
-    const unchecked = (checkContent.match(/- \[ \]/g) || []).length;
+    // Count ALL checkboxes in project block (not just "Следующие шаги")
+    const checked = (block.match(/- \[x\]/gi) || []).length;
+    const unchecked = (block.match(/- \[ \]/g) || []).length;
     const total = checked + unchecked;
     const progress = total > 0 ? Math.round((checked / total) * 100) : 0;
 
