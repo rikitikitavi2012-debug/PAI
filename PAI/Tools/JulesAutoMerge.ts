@@ -224,16 +224,55 @@ export function ghPrList(repo: string): Array<{ number: number; title: string; h
 
 // ── Test Runner (worktree isolation) ──
 
-async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<{ passed: boolean; output: string; durationMs: number }> {
+interface TestRunResult {
+  passed: boolean;
+  output: string;
+  durationMs: number;
+  failCount: number;
+  passCount: number;
+}
+
+/** Parse test output to count pass/fail. Works for both bun test and pytest. */
+export function parseTestCounts(output: string): { pass: number; fail: number } {
+  // Bun test format: " 243 pass\n 9 fail"
+  const bunPass = output.match(/(\d+)\s+pass/);
+  const bunFail = output.match(/(\d+)\s+fail/);
+  if (bunPass || bunFail) {
+    return { pass: parseInt(bunPass?.[1] || '0'), fail: parseInt(bunFail?.[1] || '0') };
+  }
+  // Pytest format: "5 passed, 2 failed" or "5 passed"
+  const pytestPass = output.match(/(\d+)\s+passed/);
+  const pytestFail = output.match(/(\d+)\s+failed/);
+  if (pytestPass || pytestFail) {
+    return { pass: parseInt(pytestPass?.[1] || '0'), fail: parseInt(pytestFail?.[1] || '0') };
+  }
+  return { pass: 0, fail: 0 };
+}
+
+// Baseline cache: repo key → failCount. Computed once per batch run.
+const baselineCache = new Map<string, number>();
+
+/** Get baseline fail count for a repo's base branch. Cached per batch run. */
+async function getBaselineFailCount(repo: RepoConfig): Promise<number> {
+  if (baselineCache.has(repo.key)) return baselineCache.get(repo.key)!;
+
+  console.log(`  ${D}Computing baseline fails for ${repo.branch}...${X}`);
+  const result = await runTestsOnBranch(repo, repo.branch);
+  baselineCache.set(repo.key, result.failCount);
+  console.log(`  ${D}Baseline: ${result.passCount} pass, ${result.failCount} fail${X}`);
+  return result.failCount;
+}
+
+async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<TestRunResult> {
   const worktreePath = `/tmp/jules-automerge-${Date.now()}`;
 
   // Fetch remote branch
   const fetch = run(['git', 'fetch', repo.remote, branchName]);
-  if (!fetch.ok) return { passed: false, output: `Fetch failed: ${fetch.stderr}`, durationMs: 0 };
+  if (!fetch.ok) return { passed: false, output: `Fetch failed: ${fetch.stderr}`, durationMs: 0, failCount: 999, passCount: 0 };
 
   // Create worktree
   const wt = run(['git', 'worktree', 'add', worktreePath, `${repo.remote}/${branchName}`]);
-  if (!wt.ok) return { passed: false, output: `Worktree failed: ${wt.stderr}`, durationMs: 0 };
+  if (!wt.ok) return { passed: false, output: `Worktree failed: ${wt.stderr}`, durationMs: 0, failCount: 999, passCount: 0 };
 
   try {
     const start = Date.now();
@@ -247,7 +286,14 @@ async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<{
     const test = run(testCmd, { cwd: worktreePath, timeout: TEST_TIMEOUT });
     const durationMs = Date.now() - start;
     const output = test.stdout || test.stderr;
-    return { passed: test.ok, output: output.slice(-500), durationMs };
+    const counts = parseTestCounts(output);
+    return {
+      passed: test.ok,
+      output: output.slice(-500),
+      durationMs,
+      failCount: counts.fail,
+      passCount: counts.pass,
+    };
   } finally {
     // Always cleanup
     run(['git', 'worktree', 'remove', worktreePath, '--force']);
@@ -382,26 +428,35 @@ export async function processPR(
     return record;
   }
 
-  // Run tests
+  // Run tests with baseline comparison
   console.log(`  ${D}Testing PR #${pr.number}...${X}`);
+  const baselineFailCount = await getBaselineFailCount(repo);
   const test = await runTestsOnBranch(repo, pr.headRefName);
-  console.log(`  ${D}Tests: ${test.passed ? 'PASS' : 'FAIL'} (${(test.durationMs / 1000).toFixed(1)}s)${X}`);
+  const delta = test.failCount - baselineFailCount;
+  const deltaStr = delta > 0 ? `+${delta}` : `${delta}`;
+  console.log(`  ${D}Tests: ${test.passCount} pass, ${test.failCount} fail (baseline: ${baselineFailCount}, delta: ${deltaStr}) (${(test.durationMs / 1000).toFixed(1)}s)${X}`);
+
+  // PR passes if it doesn't introduce NEW failures (delta <= 0)
+  const testsPassed = delta <= 0;
 
   // Emit pr.tested event
   appendEvent({
     type: 'pr.tested',
     source: 'JulesAutoMerge',
     pr_number: pr.number,
-    result: test.passed ? 'pass' : 'fail',
+    result: testsPassed ? 'pass' : 'fail',
     branch: pr.headRefName,
     duration_ms: test.durationMs,
     repo: repo.repo,
+    baseline_fails: baselineFailCount,
+    pr_fails: test.failCount,
+    delta,
   });
 
-  if (!test.passed) {
+  if (!testsPassed) {
     record.result = 'failed_tests';
     record.testOutput = test.output;
-    console.log(`  ${R}FAIL${X} PR #${pr.number}: tests failed`);
+    console.log(`  ${R}FAIL${X} PR #${pr.number}: +${delta} new test failures (baseline: ${baselineFailCount}, PR: ${test.failCount})`);
     state.stats.totalFailed++;
     appendEvent({
       type: 'merge.fail',
@@ -410,6 +465,8 @@ export async function processPR(
       reason: 'tests_failed',
       branch: pr.headRefName,
       repo: repo.repo,
+      baseline_fails: baselineFailCount,
+      pr_fails: test.failCount,
     });
     return record;
   }

@@ -24,6 +24,7 @@ import {
   ghPrList,
   processPR,
   findReadyPRs,
+  parseTestCounts,
   AutoMergeState,
   ProcessedSession,
   RepoConfig,
@@ -203,7 +204,23 @@ describe('JulesAutoMerge', () => {
     }
   });
 
-  // Test 8
+  // Test 8: parseTestCounts
+  it('parseTestCounts parses bun test and pytest output correctly', () => {
+    // Bun test format
+    expect(parseTestCounts(' 243 pass\n 9 fail\n 3753 expect() calls')).toEqual({ pass: 243, fail: 9 });
+    expect(parseTestCounts(' 50 pass\n 0 fail')).toEqual({ pass: 50, fail: 0 });
+    expect(parseTestCounts(' 0 pass\n 5 fail')).toEqual({ pass: 0, fail: 5 });
+
+    // Pytest format
+    expect(parseTestCounts('====== 12 passed, 3 failed ======')).toEqual({ pass: 12, fail: 3 });
+    expect(parseTestCounts('====== 8 passed ======')).toEqual({ pass: 8, fail: 0 });
+    expect(parseTestCounts('====== 2 failed ======')).toEqual({ pass: 0, fail: 2 });
+
+    // No recognizable format
+    expect(parseTestCounts('some random output')).toEqual({ pass: 0, fail: 0 });
+  });
+
+  // Test 9
   it('findReadyPRs deduplicates by PR number', async () => {
     // Mock getCompletedSessions, getSessionDetails, ghPrList
     const MOCK_SESSIONS = [
