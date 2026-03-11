@@ -7,6 +7,13 @@
 
 set -euo pipefail
 
+export PATH="$HOME/.bun/bin:$HOME/.npm-global/bin:$PATH"
+export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:8118}"
+export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:8118}"
+# A0 direct — bypass proxy
+export NO_PROXY="${NO_PROXY:+$NO_PROXY,}72.56.86.51"
+export no_proxy="${no_proxy:+$no_proxy,}72.56.86.51"
+
 LOG_DIR="$HOME/.claude/MEMORY/STATE/health-logs"
 mkdir -p "$LOG_DIR"
 

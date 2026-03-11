@@ -62,16 +62,20 @@ async function checkHttp(name: string, url: string, headers?: Record<string, str
   }
 }
 
-function checkCli(name: string, cmd: string[]): CheckResult {
+async function checkCli(name: string, cmd: string[]): Promise<CheckResult> {
   const start = Date.now();
   try {
-    const result = Bun.spawnSync(cmd, { timeout: 10_000 });
-    const output = result.stdout.toString().trim();
+    const proc = Bun.spawn(cmd, { stdout: 'pipe', stderr: 'pipe' });
+    const timer = setTimeout(() => proc.kill(), 5_000);
+    const exitCode = await proc.exited;
+    clearTimeout(timer);
+    const output = await new Response(proc.stdout).text();
+    const stderr = await new Response(proc.stderr).text();
     return {
       service: name,
-      status: result.exitCode === 0 ? 'up' : 'down',
+      status: exitCode === 0 ? 'up' : 'down',
       latencyMs: Date.now() - start,
-      detail: result.exitCode === 0 ? output.split('\n')[0] : result.stderr.toString().trim().split('\n')[0],
+      detail: exitCode === 0 ? output.trim().split('\n')[0] : stderr.trim().split('\n')[0],
       timestamp: new Date().toISOString(),
     };
   } catch (err: any) {
@@ -83,36 +87,8 @@ function checkCli(name: string, cmd: string[]): CheckResult {
 }
 
 async function checkA0(): Promise<CheckResult> {
-  const start = Date.now();
-  const envPath = join(homedir(), '.config', 'PAI', '.env');
-  let token = '';
-  try {
-    const env = await Bun.file(envPath).text();
-    const m = env.match(/^A0_API_TOKEN=(.+)$/m);
-    if (m) token = m[1].trim();
-  } catch {}
-  if (!token) return { service: 'AgentZero', status: 'down', latencyMs: 0, detail: 'No API token', timestamp: new Date().toISOString() };
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15_000);
-    const res = await fetch('http://72.56.86.51:50002/api_message', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-KEY': token },
-      body: JSON.stringify({ message: 'respond with only: OK', context: 'health-monitor' }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-    const data = await res.json() as any;
-    return {
-      service: 'AgentZero',
-      status: data.response ? 'up' : 'down',
-      latencyMs: Date.now() - start,
-      detail: data.response ? `Response: ${data.response.slice(0, 30)}` : `Error: ${data.error || 'no response'}`,
-      timestamp: new Date().toISOString(),
-    };
-  } catch (err: any) {
-    return { service: 'AgentZero', status: 'down', latencyMs: Date.now() - start, detail: err.message, timestamp: new Date().toISOString() };
-  }
+  // Use /health endpoint — lightweight, no LLM invocation, <1s response
+  return checkHttp('AgentZero', 'http://72.56.86.51:50002/health');
 }
 
 async function checkZai(): Promise<CheckResult> {
@@ -154,12 +130,24 @@ async function checkZai(): Promise<CheckResult> {
 }
 
 async function main() {
+  // Race each check against a 8s deadline to prevent hangs (gemini --version can freeze)
+  const withTimeout = (p: Promise<CheckResult>, name: string): Promise<CheckResult> =>
+    Promise.race([
+      p,
+      new Promise<CheckResult>(resolve =>
+        setTimeout(() => resolve({
+          service: name, status: 'down', latencyMs: 8000,
+          detail: 'Timeout (8s)', timestamp: new Date().toISOString(),
+        }), 8_000)
+      ),
+    ]);
+
   const checks = await Promise.all([
-    checkA0(),
-    checkZai(),
-    checkHttp('VoiceServer', 'http://localhost:8888/health'),
-    Promise.resolve(checkCli('GitHubCLI', ['gh', 'auth', 'status'])),
-    Promise.resolve(checkCli('GeminiCLI', ['gemini', '--version'])),
+    withTimeout(checkA0(), 'AgentZero'),
+    withTimeout(checkZai(), 'Z.AI'),
+    withTimeout(checkHttp('VoiceServer', 'http://localhost:8888/health'), 'VoiceServer'),
+    withTimeout(checkCli('GitHubCLI', ['gh', 'auth', 'status']), 'GitHubCLI'),
+    withTimeout(checkCli('GeminiCLI', ['gemini', '--version']), 'GeminiCLI'),
   ]);
 
   const report: HealthReport = {

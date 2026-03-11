@@ -253,7 +253,7 @@ poll() {
     am_merged_d=$(jq '[.processedSessions[] | select(.result == "merged")] | length' "$AUTOMERGE_JSON" 2>/dev/null || echo 0)
     am_failed_d=$(jq '[.processedSessions[] | select(.result | startswith("failed"))] | length' "$AUTOMERGE_JSON" 2>/dev/null || echo 0)
     am_skipped_d=$(jq '[.processedSessions[] | select(.result == "skipped")] | length' "$AUTOMERGE_JSON" 2>/dev/null || echo 0)
-    am_last=$(jq -r '.lastCheck // empty' "$AUTOMERGE_JSON" 2>/dev/null | head -c 16 | sed 's/T/ /')
+    am_last=$(jq -r '.lastCheck // empty' "$AUTOMERGE_JSON" 2>/dev/null | sed 's/T/ /' | cut -c6-16)
   else
     am_total=0; am_merged_d=0; am_failed_d=0; am_skipped_d=0; am_last="—"
   fi
@@ -266,9 +266,21 @@ poll() {
     "$(printf '%bТестов%b  %b%b%s%b %bсьютов%b' "$SLT" "$RST" "$WHT" "$BLD" "$test_file_count" "$RST" "$SLT" "$RST")" \
     "$(printf '%b+%s%b %b✗%s%b %b~%s%b' "$GRN" "$am_merged_d" "$RST" "$RED" "$am_failed_d" "$RST" "$SLT" "$am_skipped_d" "$RST")"
 
+  # Stale indicator for automerge
+  local am_stale=""
+  if [ -f "$AUTOMERGE_JSON" ]; then
+    local am_check_raw am_check_epoch am_age_h
+    am_check_raw=$(jq -r '.lastCheck // empty' "$AUTOMERGE_JSON" 2>/dev/null)
+    if [ -n "$am_check_raw" ] && [ "$am_check_raw" != "null" ]; then
+      am_check_epoch=$(date -d "$am_check_raw" +%s 2>/dev/null || echo 0)
+      am_age_h=$(( ($(date +%s) - am_check_epoch) / 3600 ))
+      [ "$am_age_h" -ge 24 ] && am_stale=$(printf ' %b⚠%sд%b' "$YLW" "$((am_age_h / 24))" "$RST")
+    fi
+  fi
+
   two_col \
     "$(printf '%bEvents%b  %b24ч:%b%b%b%s%b  %b7д:%b%b%b%s%b' "$SLT" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$events_24h" "$RST" "$SLT" "$RST" "$WHT" "$BLD" "$events_7d" "$RST")" \
-    "$(printf '%bПосл:%b %b%s%b' "$SLT" "$RST" "$WHT" "$am_last" "$RST")"
+    "$(printf '%bПосл:%b %b%s%b%s' "$SLT" "$RST" "$WHT" "$am_last" "$RST" "$am_stale")"
 
   two_col_bot
 

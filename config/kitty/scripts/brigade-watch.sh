@@ -119,8 +119,14 @@ poll() {
     clean_out=$(echo "$jules_out" | sed 's/\x1b\[[0-9;]*m//g')
 
     local in_progress completed
-    in_progress=$(echo "$clean_out" | grep -c "IN_PROGRESS")
-    completed=$(echo "$clean_out" | grep -c "COMPLETED")
+    in_progress=$(echo "$clean_out" | grep -c "IN_PROGRESS" || true)
+    completed=$(echo "$clean_out" | grep -c "COMPLETED" || true)
+    # sessions output may be truncated — count from summary line if present
+    local summary_total
+    summary_total=$(echo "$clean_out" | grep -oP '\d+ sessions?' | head -1 | grep -oP '\d+' || true)
+    if [ -n "$summary_total" ] && [ "$summary_total" -gt "$((in_progress + completed))" ] 2>/dev/null; then
+      completed=$((summary_total - in_progress))
+    fi
 
     box_line "$(printf '  %bJules%b     %b▸%b%b%s%b %bработе%b  %b▸%b%b%s%b %bготово%b' \
       "$WHT" "$RST" "$YLW" "$RST" "$WHT" "$in_progress" "$RST" "$SLT" "$RST" \
@@ -130,11 +136,9 @@ poll() {
   fi
 
   # --- OpenCode ---
-  local oc_version oc_str
+  local oc_str
   if command -v opencode >/dev/null 2>&1; then
-    oc_version=$(timeout 3 opencode --version 2>/dev/null | head -1 | grep -oP 'v?[\d.]+' | head -1)
-    [ -z "$oc_version" ] && oc_version="ok"
-    oc_str=$(printf '  %bOpenCode%b  %b✅%b %b%s%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$oc_version" "$RST")
+    oc_str=$(printf '  %bOpenCode%b  %b✅%b %bok%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$RST")
   else
     oc_str=$(printf '  %bOpenCode%b  %b❌%b %bне найден%b' "$WHT" "$RST" "$RED" "$RST" "$DIM" "$RST")
   fi
@@ -145,11 +149,9 @@ poll() {
   # ═══════════════════════════════════════════════════
   section_header "💻" "T2 CLI АГЕНТЫ" "$VIO"
 
-  local gem_version gem_str
+  local gem_str
   if command -v gemini >/dev/null 2>&1; then
-    gem_version=$(timeout 3 gemini --version 2>/dev/null | head -1 | grep -oP 'v?[\d.]+' | head -1)
-    [ -z "$gem_version" ] && gem_version="ok"
-    gem_str=$(printf '  %bGemini%b    %b✅%b %b%s%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$gem_version" "$RST")
+    gem_str=$(printf '  %bGemini%b    %b✅%b %bok%b' "$WHT" "$RST" "$GRN" "$RST" "$DIM" "$RST")
   else
     gem_str=$(printf '  %bGemini%b    %b❌%b %bне найден%b' "$WHT" "$RST" "$RED" "$RST" "$DIM" "$RST")
   fi
@@ -212,9 +214,21 @@ poll() {
       check_time=$(echo "$last_check" | sed 's/T/ /' | cut -c1-19)
     fi
 
-    box_line "$(printf '%b+%s%b  %b✗%s%b  %b~%s%b          %bcheck: %s%b' \
+    # Stale indicator: warn if lastCheck > 24h ago
+    local stale_tag=""
+    if [ "$last_check" != "never" ] && [ "$last_check" != "null" ]; then
+      local check_epoch now_epoch check_age_h
+      check_epoch=$(date -d "$last_check" +%s 2>/dev/null || echo 0)
+      now_epoch=$(date +%s)
+      check_age_h=$(( (now_epoch - check_epoch) / 3600 ))
+      if [ "$check_age_h" -ge 24 ]; then
+        stale_tag=$(printf ' %b⚠ %sд назад%b' "$YLW" "$((check_age_h / 24))" "$RST")
+      fi
+    fi
+
+    box_line "$(printf '%b+%s%b  %b✗%s%b  %b~%s%b          %bcheck: %s%b%s' \
       "$GRN" "$merged" "$RST" "$RED" "$failed_am" "$RST" "$SLT" "$skipped" "$RST" \
-      "$DIM" "$check_time" "$RST")"
+      "$DIM" "$check_time" "$RST" "$stale_tag")"
 
     # Last 5 processed
     local recent
