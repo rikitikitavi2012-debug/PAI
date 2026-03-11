@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-03-10T04:01:02Z",
+  "timestamp": "2026-03-11T04:01:09Z",
   "checks": {
     "voice_server": {"status": "DOWN", "latency_ms": null},
     "github_auth": {"status": "OK", "user": "rikitikitavi2012-debug"},
-    "hooks_count": {"count": 30, "baseline": 30, "alert": false},
+    "hooks_count": {"count": 31, "baseline": 30, "alert": true, "note": "New hook: AgentTab.hook.ts"},
     "events_size": {"lines": 238, "alert": false},
     "disk_usage": {"percent": 67, "alert": false},
     "open_prs": {"count": 3, "stale": [], "error": "403 - Resource not accessible by personal access token"},
     "tests": {"passed": null, "failed": null, "alert": false, "note": "Bun not installed"}
   },
   "overall": "WARNING",
-  "alerts": ["VoiceServer DOWN - http://host.docker.internal:8888/health not responding"]
+  "alerts": ["VoiceServer DOWN - http://host.docker.internal:8888/health not responding", "Hooks count changed: 30 → 31 (new hook: AgentTab.hook.ts)"]
 }
