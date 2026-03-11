@@ -80,7 +80,7 @@ describe('rotateIfNeeded', () => {
     const lines = [];
     // Older events first
     for (let i = 0; i < 5; i++) {
-      lines.push(makeEvent(daysAgo(10 + i))); // These 5 will be archived
+      lines.push(makeEvent(`2020-01-0${i + 1}T12:00:00Z`)); // These 5 will be archived
     }
     // Newer events
     for (let i = 0; i < 3000; i++) {
@@ -96,10 +96,7 @@ describe('rotateIfNeeded', () => {
     expect(remaining.length).toBe(3000);
 
     // Check archive file. It should contain 5 events.
-    const oldDate = new Date();
-    oldDate.setDate(oldDate.getDate() - 10);
-    const monthStr = oldDate.toISOString().slice(0, 7);
-    const archivePath = join(tempDir, `events-archive-${monthStr}.jsonl`);
+    const archivePath = join(tempDir, `events-archive-2020-01.jsonl`);
 
     expect(existsSync(archivePath)).toBe(true);
     const archiveLines = readFileSync(archivePath, 'utf-8').trim().split('\n');
@@ -209,9 +206,9 @@ describe('EventRotation', () => {
   test('all events older than 7 days → all archived, events.jsonl empty', () => {
     // Use dates all within the same month to test single-archive case
     const lines = [
-      makeEvent(daysAgo(10), 'voice.sent'),
-      makeEvent(daysAgo(12), 'prd.synced'),
-      makeEvent(daysAgo(14), 'rating.captured'),
+      makeEvent('2020-01-01T12:00:00Z', 'voice.sent'),
+      makeEvent('2020-01-02T12:00:00Z', 'prd.synced'),
+      makeEvent('2020-01-03T12:00:00Z', 'rating.captured'),
     ];
     writeFileSync(eventsPath, lines.join('\n') + '\n');
 
