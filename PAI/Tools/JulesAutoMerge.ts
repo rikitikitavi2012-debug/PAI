@@ -521,14 +521,20 @@ export async function processPR(
   }
 
   // Merge via gh pr merge (--admin only for repos with branch protection)
+  // Unset GITHUB_TOKEN to force gh CLI to use OAuth token from gh auth (which has merge perms)
+  // instead of fine-grained PAT injected by Claude Code (which lacks mergePullRequest permission)
   const mergeArgs = ['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo, '--squash',
     '--subject', `Merge PR #${pr.number}: ${pr.title}`, '--body', ''];
   if (repo.adminMerge) mergeArgs.push('--admin');
-  const merge = run(mergeArgs);
-  if (!merge.ok) {
+  const mergeEnv = { ...process.env };
+  delete mergeEnv.GITHUB_TOKEN;
+  delete mergeEnv.GH_TOKEN;
+  const merge = Bun.spawnSync(mergeArgs, { cwd: PAI_DIR, stdout: 'pipe', stderr: 'pipe', env: mergeEnv });
+  const mergeResult = { ok: merge.exitCode === 0, stdout: merge.stdout?.toString().trim() || '', stderr: merge.stderr?.toString().trim() || '' };
+  if (!mergeResult.ok) {
     record.result = 'failed_merge';
-    record.testOutput = merge.stderr;
-    console.log(`  ${R}FAIL${X} PR #${pr.number}: merge failed — ${merge.stderr.slice(0, 100)}`);
+    record.testOutput = mergeResult.stderr;
+    console.log(`  ${R}FAIL${X} PR #${pr.number}: merge failed — ${mergeResult.stderr.slice(0, 100)}`);
     state.stats.totalFailed++;
     appendEvent({
       type: 'merge.fail',
