@@ -325,8 +325,19 @@ Located in `settings.json`:
 ```json
 {
   "hooks": {
-    "SessionStart": ["path/to/hook.ts"],
-    "Stop": ["path/to/hook.ts"]
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/ser/.gemini/hooks/session-start.sh",
+            "name": "pai-context",
+            "description": "Load PAI context at session start"
+          }
+        ]
+      }
+    ]
   }
 }
 ```

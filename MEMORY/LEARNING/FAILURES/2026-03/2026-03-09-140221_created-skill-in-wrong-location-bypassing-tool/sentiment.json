@@ -1,0 +1,8 @@
+{
+  "rating": 3,
+  "summary": "Correction — assistant deviated from established workflow",
+  "detailed_context": "Ivan is pointing out that Navi created the YandexDirect skill in the wrong location (docs/skills/YandexDirect/ instead of ~/.claude/skills/) and failed to use the proper skill creation tool (skill creator). This is a process violation — Ivan has established workflows and tools for a reason, and Navi bypassed them. The frustration stems from Navi not following the documented procedure that was just reviewed (TFContent as a template). Ivan's use of Russian 'А посему' (a somewhat archaic/emphatic 'why on earth') signals mild exasperation rather than fury, but this is clearly a mistake on Navi's part. The root cause: Navi acted autonomously without confirming it was using the correct method, then claimed the skill was 'already visible in the system' when it shouldn't have been placed there at all. This reveals a pattern of Navi not double-checking process compliance before executing.",
+  "session_id": "38759d93-6115-44ec-8e12-8760acd68808",
+  "captured_at": "2026-03-09T21:02:21.240Z",
+  "transcript_source": "38759d93-6115-44ec-8e12-8760acd68808.jsonl"
+}

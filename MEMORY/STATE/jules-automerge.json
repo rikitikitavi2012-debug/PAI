@@ -1,5 +1,5 @@
 {
-  "lastCheck": "2026-03-07T21:45:16.836Z",
+  "lastCheck": "2026-03-11T22:14:43.718Z",
   "processedSessions": [
     {
       "sessionId": "sessions/8584917624898497977",
@@ -377,11 +377,407 @@
       "repo": "rikitikitavi2012-debug/agent-zero-custom",
       "zaiReviewSeverity": "ERROR",
       "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/8517399345680979369",
+      "prNumber": 43,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/43",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:04:14.776Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/1146811933306376892",
+      "prNumber": 42,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/42",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:04:48.609Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/6704383928927489392",
+      "prNumber": 44,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/44",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:05:20.337Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/9220890652968483750",
+      "prNumber": 41,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/41",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:05:56.422Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/5801520875415076408",
+      "prNumber": 38,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/38",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:06:35.968Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/2870835045156833435",
+      "prNumber": 39,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/39",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:07:10.951Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/9765906344139359284",
+      "prNumber": 40,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/40",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:07:44.597Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/17174800266245960026",
+      "prNumber": 36,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/36",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:08:18.419Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/4750780931836219032",
+      "prNumber": 37,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/37",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T21:08:50.976Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "bun test v1.3.9 (cf6cdbbb)\n179.83\t60.50\t240.33\nClaude Max\t$100/monthly\nGoogle One AI Pro\t$20.83/mo\nZ.AI Coding Pro\t$27/mo\nOpenCode Go\t$10/monthly\nElevenLabs Creator\t$22/monthly\nTimeweb Cloud\t4710₽\n9.79\t5.21\t2026-03-05\nshellcheck not found, skipping shellcheck tests"
+    },
+    {
+      "sessionId": "sessions/8517399345680979369",
+      "prNumber": 43,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/43",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:20:56.813Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/1146811933306376892",
+      "prNumber": 42,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/42",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:23:56.991Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/6704383928927489392",
+      "prNumber": 44,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/44",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:25:26.329Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "ERROR",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/9220890652968483750",
+      "prNumber": 41,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/41",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:26:32.862Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/5801520875415076408",
+      "prNumber": 38,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/38",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:27:43.960Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/2870835045156833435",
+      "prNumber": 39,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/39",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:28:46.374Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "ERROR",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/9765906344139359284",
+      "prNumber": 40,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/40",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:30:45.312Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "ERROR",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/17174800266245960026",
+      "prNumber": 36,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/36",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:32:02.753Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/4750780931836219032",
+      "prNumber": 37,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/37",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:33:35.273Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW",
+      "testOutput": "accepts at most 1 arg(s), received 2"
+    },
+    {
+      "sessionId": "sessions/8517399345680979369",
+      "prNumber": 43,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/43",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:40:36.288Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "ERROR",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/1146811933306376892",
+      "prNumber": 42,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/42",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:43:47.053Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "ERROR",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/6704383928927489392",
+      "prNumber": 44,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/44",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:46:01.647Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/9220890652968483750",
+      "prNumber": 41,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/41",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:47:14.546Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/5801520875415076408",
+      "prNumber": 38,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/38",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:49:53.478Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/2870835045156833435",
+      "prNumber": 39,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/39",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:52:22.558Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/9765906344139359284",
+      "prNumber": 40,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/40",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:53:28.924Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/17174800266245960026",
+      "prNumber": 36,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/36",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:54:40.403Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/4750780931836219032",
+      "prNumber": 37,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/37",
+      "result": "failed_merge",
+      "processedAt": "2026-03-11T21:55:48.584Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "ERROR",
+      "testOutput": "GraphQL: Resource not accessible by personal access token (mergePullRequest)"
+    },
+    {
+      "sessionId": "sessions/8517399345680979369",
+      "prNumber": 43,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/43",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T22:04:06.113Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "rge-cron-test-KNtNpT/MEMORY/STATE/health-logs/automerge-2026-03-11.log'\n    path: \"/tmp/automerge-cron-test-KNtNpT/MEMORY/STATE/health-logs/automerge-2026-03-11.log\",\n syscall: \"open\",\n   errno: -2,\n    code: \"ENOENT\"\n\n      at <anonymous> (/tmp/jules-automerge-1773266680187/hooks/tests/automerge-cron.test.ts:165:21)\n(fail) automerge-cron.sh > handles timeout correctly [946.91ms]\n\nhooks/tests/brigade-scripts.test.ts:\n\n 244 pass\n 8 fail\n 3800 expect() calls\nRan 252 tests across 42 files. [31.22s]"
+    },
+    {
+      "sessionId": "sessions/1146811933306376892",
+      "prNumber": 42,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/42",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T22:05:13.021Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "rge-cron-test-rhyF0F/MEMORY/STATE/health-logs/automerge-2026-03-11.log'\n    path: \"/tmp/automerge-cron-test-rhyF0F/MEMORY/STATE/health-logs/automerge-2026-03-11.log\",\n syscall: \"open\",\n   errno: -2,\n    code: \"ENOENT\"\n\n      at <anonymous> (/tmp/jules-automerge-1773266713021/hooks/tests/automerge-cron.test.ts:165:21)\n(fail) automerge-cron.sh > handles timeout correctly [946.34ms]\n\nhooks/tests/brigade-scripts.test.ts:\n\n 244 pass\n 8 fail\n 3800 expect() calls\nRan 252 tests across 42 files. [30.80s]"
+    },
+    {
+      "sessionId": "sessions/6704383928927489392",
+      "prNumber": 44,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/44",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T22:05:45.349Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "rge-cron-test-kLQRJG/MEMORY/STATE/health-logs/automerge-2026-03-11.log'\n    path: \"/tmp/automerge-cron-test-kLQRJG/MEMORY/STATE/health-logs/automerge-2026-03-11.log\",\n syscall: \"open\",\n   errno: -2,\n    code: \"ENOENT\"\n\n      at <anonymous> (/tmp/jules-automerge-1773266745349/hooks/tests/automerge-cron.test.ts:165:21)\n(fail) automerge-cron.sh > handles timeout correctly [948.44ms]\n\nhooks/tests/brigade-scripts.test.ts:\n\n 244 pass\n 8 fail\n 3800 expect() calls\nRan 252 tests across 42 files. [31.16s]"
+    },
+    {
+      "sessionId": "sessions/9220890652968483750",
+      "prNumber": 41,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/41",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T22:06:18.183Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "rge-cron-test-1dexDa/MEMORY/STATE/health-logs/automerge-2026-03-11.log'\n    path: \"/tmp/automerge-cron-test-1dexDa/MEMORY/STATE/health-logs/automerge-2026-03-11.log\",\n syscall: \"open\",\n   errno: -2,\n    code: \"ENOENT\"\n\n      at <anonymous> (/tmp/jules-automerge-1773266778183/hooks/tests/automerge-cron.test.ts:165:21)\n(fail) automerge-cron.sh > handles timeout correctly [944.58ms]\n\nhooks/tests/brigade-scripts.test.ts:\n\n 244 pass\n 8 fail\n 3800 expect() calls\nRan 252 tests across 42 files. [33.34s]"
+    },
+    {
+      "sessionId": "sessions/5801520875415076408",
+      "prNumber": 38,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/38",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T22:06:53.442Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "rge-cron-test-6tMTyO/MEMORY/STATE/health-logs/automerge-2026-03-11.log'\n    path: \"/tmp/automerge-cron-test-6tMTyO/MEMORY/STATE/health-logs/automerge-2026-03-11.log\",\n syscall: \"open\",\n   errno: -2,\n    code: \"ENOENT\"\n\n      at <anonymous> (/tmp/jules-automerge-1773266813442/hooks/tests/automerge-cron.test.ts:165:21)\n(fail) automerge-cron.sh > handles timeout correctly [932.35ms]\n\nhooks/tests/brigade-scripts.test.ts:\n\n 244 pass\n 8 fail\n 3800 expect() calls\nRan 252 tests across 42 files. [31.48s]"
+    },
+    {
+      "sessionId": "sessions/2870835045156833435",
+      "prNumber": 39,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/39",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T22:07:27.229Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "rge-cron-test-p4JbDk/MEMORY/STATE/health-logs/automerge-2026-03-11.log'\n    path: \"/tmp/automerge-cron-test-p4JbDk/MEMORY/STATE/health-logs/automerge-2026-03-11.log\",\n syscall: \"open\",\n   errno: -2,\n    code: \"ENOENT\"\n\n      at <anonymous> (/tmp/jules-automerge-1773266847229/hooks/tests/automerge-cron.test.ts:165:21)\n(fail) automerge-cron.sh > handles timeout correctly [950.49ms]\n\nhooks/tests/brigade-scripts.test.ts:\n\n 244 pass\n 8 fail\n 3800 expect() calls\nRan 252 tests across 42 files. [32.17s]"
+    },
+    {
+      "sessionId": "sessions/9765906344139359284",
+      "prNumber": 40,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/40",
+      "result": "failed_tests",
+      "processedAt": "2026-03-11T22:08:01.202Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "rge-cron-test-yvuSa9/MEMORY/STATE/health-logs/automerge-2026-03-11.log'\n    path: \"/tmp/automerge-cron-test-yvuSa9/MEMORY/STATE/health-logs/automerge-2026-03-11.log\",\n syscall: \"open\",\n   errno: -2,\n    code: \"ENOENT\"\n\n      at <anonymous> (/tmp/jules-automerge-1773266881202/hooks/tests/automerge-cron.test.ts:165:21)\n(fail) automerge-cron.sh > handles timeout correctly [949.23ms]\n\nhooks/tests/brigade-scripts.test.ts:\n\n 244 pass\n 8 fail\n 3800 expect() calls\nRan 252 tests across 42 files. [31.03s]"
+    },
+    {
+      "sessionId": "sessions/17174800266245960026",
+      "prNumber": 36,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/36",
+      "result": "merged",
+      "processedAt": "2026-03-11T22:08:34.126Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM"
+    },
+    {
+      "sessionId": "sessions/8517399345680979369",
+      "prNumber": 43,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/43",
+      "result": "merged",
+      "processedAt": "2026-03-11T22:16:05.455Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "ERROR"
+    },
+    {
+      "sessionId": "sessions/1146811933306376892",
+      "prNumber": 42,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/42",
+      "result": "merged",
+      "processedAt": "2026-03-11T22:18:35.445Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM"
+    },
+    {
+      "sessionId": "sessions/6704383928927489392",
+      "prNumber": 44,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/44",
+      "result": "merged",
+      "processedAt": "2026-03-11T22:19:43.512Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM"
+    },
+    {
+      "sessionId": "sessions/9220890652968483750",
+      "prNumber": 41,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/41",
+      "result": "merged",
+      "processedAt": "2026-03-11T22:20:46.393Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "MEDIUM"
+    },
+    {
+      "sessionId": "sessions/5801520875415076408",
+      "prNumber": 38,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/38",
+      "result": "merged",
+      "processedAt": "2026-03-11T22:21:51.092Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW"
+    },
+    {
+      "sessionId": "sessions/2870835045156833435",
+      "prNumber": 39,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/39",
+      "result": "merged",
+      "processedAt": "2026-03-11T22:23:14.920Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW"
+    },
+    {
+      "sessionId": "sessions/9765906344139359284",
+      "prNumber": 40,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/40",
+      "result": "merged",
+      "processedAt": "2026-03-11T22:25:06.065Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW"
     }
   ],
   "stats": {
-    "totalMerged": 16,
-    "totalFailed": 16,
+    "totalMerged": 24,
+    "totalFailed": 50,
     "totalSkipped": 9
   }
 }

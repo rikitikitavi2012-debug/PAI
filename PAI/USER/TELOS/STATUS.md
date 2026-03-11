@@ -6,7 +6,7 @@
 
 ---
 
-## Последнее обновление: 2026-03-05
+## Последнее обновление: 2026-03-12
 
 ---
 
@@ -64,7 +64,7 @@
 | TELOS | Файлы контекста | 24 файла (+FINANCES.md) | Актуальные и глубокие |
 | PAI | Хуки | 30 | Все defensive/fail-open |
 | PAI | Тесты | 226 / 34+ сюит | 100% pass |
-| PAI | AI Brigade | 4 T1 + 1 T2 + 2 T3 = 7 членов | Navi, Jules, A0, OpenCode, Gemini, GLM-5, zai-cli |
+| PAI | AI Brigade | 5 T1 + 2 T3 = 7 членов (все T1 в PAI контексте) | Navi, Jules, A0, Gemini, OpenCode, GLM-5, zai-cli |
 | PAI | Inference providers | 5 (Haiku, Sonnet, Opus, Gemini, GLM-5) | 3 AI компании |
 | PAI | Скиллы | 11 | Аудит по v4 (G10) |
 | PAI | Community PRs | 8 (6 open, 2 merged) | Регулярный вклад |
@@ -110,6 +110,11 @@
 
 | Победа | Дата | Связано с |
 |--------|------|-----------|
+| Бригада полностью в PAI контексте — все 5 T1 агентов видят TELOS, ABOUTME, правила | 2026-03-12 | M3, S1, MO9 |
+| Gemini CLI интегрирован в PAI — GEMINI.md + shared context + 5 skills + 2 hooks + 5 commands | 2026-03-11 | M3, S1, G11 |
+| OpenCode CLI интегрирован в PAI — AGENTS.md + plugin + shared context + 5 skills + EXA search | 2026-03-11 | M3, S1, G11 |
+| OpenCode EXA search настроен нативно (OPENCODE_ENABLE_EXA) — как на Windows | 2026-03-12 | M3, S1 |
+| Z.AI MCP fixed — Privoxy ломал Axios, обошли proxy для MCP серверов | 2026-03-12 | M3, S1 |
 | FINANCES.md создан — 24-й файл TELOS, фундамент цифровой бухгалтерии | 2026-03-05 | M0, G3, P0 |
 | Бригада классифицирована T1/T2/T3 — 4 автономных + 1 CLI + 2 инструмента | 2026-03-05 | M3, S1, MO9 |
 | OpenCode CLI повышен до T1 — headless mode, Navi вызывает программно | 2026-03-05 | M3, S1 |

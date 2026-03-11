@@ -46,6 +46,8 @@
 - **getPaiDir()** from lib/paths.ts — canonical way to get PAI base dir. 11 hooks migrated (2026-03-02). Only harness.ts and notifications.ts still use direct env access
 - **WorktreeCreate/Remove — FUNCTIONAL hooks** (не notification!). WorktreeCreate ЗАМЕНЯЕТ встроенный git worktree add. ОБЯЗАН: создать worktree + вывести путь на stdout. Пустой stdout = agent spawn failure. Починено 2026-03-02 (d376658)
 - **Pure event-only hooks → EventLogger**: Хуки которые ТОЛЬКО логируют в events.jsonl должны быть handlers в EventLogger.hook.ts, а не отдельные файлы. Routing table pattern: HANDLERS[hook_event_name] → handler function
+- **Agent Live Tabs**: AgentTab.hook.ts opens/closes Kitty tabs on SubagentStart/Stop. agent-live.sh streams transcript as colored action log. Kitty socket: dynamic discovery via readdirSync('/tmp'). SubagentStart hook does NOT receive description — only agent_type + agent_id
+- **Kitty socket PID suffix**: Path is `unix:/tmp/kitty-USER-PID`, not `unix:/tmp/kitty-USER`. Always discover dynamically
 - **PostToolUseFailure НЕ существует** как Claude Code hook event. Tool failures обрабатываются через PostToolUse (2026-03-02)
 
 ## Jules Integration (Google AI Coding Agent)

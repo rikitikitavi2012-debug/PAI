@@ -62,3 +62,4 @@ MEMORY/AUDIT/
 MEMORY/SECURITY/
 MEMORY/RELATIONSHIP/
 .venv-pytest/
+.claude/worktrees/

@@ -1,0 +1,8 @@
+{
+  "rating": 3,
+  "summary": "Frustrated — unclear instructions, needs better guidance",
+  "detailed_context": "Ivan is trying to connect his domain (timber-frame-spb.ru) to Vercel and add DNS settings. He's uploaded a screenshot showing the Vercel interface but doesn't understand what to do next. Navi's previous response was incomplete — it cut off mid-sentence ('Осталось только добавить домен. **Что делать прямо с...'). Ivan is now frustrated because: (1) Navi's last message was truncated/unclear, (2) Ivan doesn't know which button to click or what steps to follow, (3) he's asking for clarification on what action to take ('не чего не показывает что нажимать' = 'doesn't show what to press'). The phrase 'вставил не чего не показывает' suggests Ivan is confused about interface navigation. Navi should have provided step-by-step instructions with clear button names, DNS record details (A records, CNAME), and exactly which fields to fill in. Instead, the response appears truncated or incomplete, leaving Ivan stranded. This is a correction situation where Ivan is expressing mild frustration at lack of clarity.",
+  "session_id": "3bd2d95c-346f-4819-911e-f0d649b088c4",
+  "captured_at": "2026-03-09T16:22:55.820Z",
+  "transcript_source": "3bd2d95c-346f-4819-911e-f0d649b088c4.jsonl"
+}

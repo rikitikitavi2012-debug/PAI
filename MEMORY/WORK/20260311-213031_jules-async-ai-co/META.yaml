@@ -1,0 +1,11 @@
+id: "20260311-213031_jules-async-ai-co"
+title: "Jules async AI co"
+session_id: "c5ba0245-6762-4ed4-a0b6-f05102452d6e"
+created_at: "2026-03-11T21:30:31+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

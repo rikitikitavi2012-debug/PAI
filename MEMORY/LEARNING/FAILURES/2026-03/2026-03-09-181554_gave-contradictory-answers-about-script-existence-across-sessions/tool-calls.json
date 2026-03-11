@@ -1,0 +1,35 @@
+[
+  {
+    "name": "ToolSearch",
+    "input": {
+      "query": "select:Grep,Glob",
+      "max_results": 2
+    },
+    "timestamp": "2026-03-10T01:13:36.375Z"
+  },
+  {
+    "name": "Glob",
+    "input": {
+      "pattern": "**/*update*telos*",
+      "path": "/home/ser/.claude"
+    },
+    "timestamp": "2026-03-10T01:13:39.935Z"
+  },
+  {
+    "name": "Grep",
+    "input": {
+      "pattern": "update.?telos",
+      "-i": true,
+      "path": "/home/ser/.claude"
+    },
+    "timestamp": "2026-03-10T01:13:40.591Z"
+  },
+  {
+    "name": "Read",
+    "input": {
+      "file_path": "/home/ser/.claude/skills/Telos/Tools/UpdateTelos.ts",
+      "limit": 30
+    },
+    "timestamp": "2026-03-10T01:13:43.735Z"
+  }
+]

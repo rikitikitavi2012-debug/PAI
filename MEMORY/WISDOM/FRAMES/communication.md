@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** communication
 - **Confidence:** 50%
-- **Observation Count:** 5
-- **Last Crystallized:** 2026-03-07
+- **Observation Count:** 7
+- **Last Crystallized:** 2026-03-10
 - **Source:** Converted from communication.json
 
 ---
@@ -48,3 +48,5 @@
 
 
 - 2026-03-07: [anti-pattern] Mild frustration — A0 provided inaccurate information
+- 2026-03-09: [anti-pattern] Correction — skill structure doesn't match expected format
+- 2026-03-10: [anti-pattern] Frustrated by contradictory information across sessions

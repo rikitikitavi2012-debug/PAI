@@ -4,7 +4,7 @@
 
 Дирижёр: Ivan. Архитектор: Navi.
 
-*Последнее обновление: 2026-03-05*
+*Последнее обновление: 2026-03-11*
 
 ---
 
@@ -25,7 +25,7 @@
 | 1 | **Navi** | T1 | Архитектор, ведущий | Anthropic | Opus 4.6 | `pai` | Да (NL) |
 | 2 | **Jules** | T1 | Async-исполнитель | Google | Gemini | JulesAPI.ts | Нет |
 | 3 | **Agent Zero** | T1 | Автономный 24/7 | Z.AI + OpenCode Zen | GLM-5 + Kimi 2.5 | AgentZero.ts | Нет |
-| 4 | **Gemini CLI** | T2 | Второе мнение, cross-check | Google | Gemini Pro | `gemi` | Да (NL) |
+| 4 | **Gemini CLI** | T1 | Второе мнение, research, PAI-интегрирован | Google | Gemini Pro | `gemi` | Да (NL) |
 | 5 | **OpenCode CLI** | T1 | Мульти-провайдер кодер | OpenCode Go | Kimi 2.5 (default) | `oc` | Да (NL) |
 | 6 | **GLM-5** | T3 | Bulk inference, резерв | Zhipu AI | GLM-5 744B | Inference.ts | Нет |
 | 7 | **zai-cli** | T3 | Vision, search, read | Zhipu AI | GLM-4.6V | MCP stdio | Нет |
@@ -124,11 +124,53 @@ mcp__agent-zero__finish_chat      -- завершить чат
 
 ---
 
-### 5. OpenCode CLI (Kimi 2.5)
+### 4. Gemini CLI (PAI-integrated)
 
-**Роль:** Мульти-провайдерный автономный кодер. Open-source аналог Claude Code с headless mode (`opencode run`). Navi вызывает программно для параллельных задач. Ivan открывает в отдельном Kitty окне.
-**LLM:** Kimi 2.5 (OpenCode Go, default). Можно переключить на Z.AI GLM-5, OpenAI, Anthropic и другие через `-m provider/model`.
-**Версия:** v1.2.17
+**Роль:** Второе мнение, параллельный research, Google-специфичные задачи, контент для TF. Полностью интегрирован в PAI (GEMINI.md + shared context + 5 skills + 2 hooks + 5 commands).
+**LLM:** Gemini Pro (Google)
+**Версия:** v0.31.0
+**Инструкции:** `~/.gemini/GEMINI.md` (авто-загружается, импортирует ABOUTME, TELOS, Steering Rules через симлинки)
+
+**Запуск:**
+```bash
+# Интерактивный (Ivan в отдельном окне):
+gemi                                    # через прокси NL + --include-directories PAI
+
+# Headless (Navi программно):
+echo "задача" | gemi -p "" -y -o text   # headless + YOLO + text output
+echo "задача" | gemini -p "" -y -o text --include-directories /home/ser/.claude/PAI/USER/
+
+# Inference API (T3 уровень, без CLI контекста):
+bun PAI/Tools/Inference.ts --level gemini "system" "user"
+```
+
+**PAI интеграция (2026-03-11):**
+- `~/.gemini/GEMINI.md` — роль, принципы, context routing
+- `~/.gemini/shared/` — симлинки на ABOUTME, TELOS (MISSION, GOALS, STATUS, CHALLENGES, STRATEGIES), AISTEERINGRULES
+- 5 скиллов: ContentAnalysis, Investigation, Media, TFContent, Thinking
+- 2 хука: SessionStart (PAI context), BeforeTool (PAI guard — read-only)
+- 5 команд: /telos, /pai, /navi, /think, /tf
+- `.bashrc` gemi() включает `--include-directories ~/.claude/PAI/USER/`
+
+**Когда Navi делегирует Gemini:**
+- Параллельный research (Navi спавнит Gemini пока сам делает другое)
+- Jules задачи (масштабный рефакторинг через /jules extension)
+- Google-специфичное (Google APIs, Android, GCP)
+- Second opinion (проверка решения другой моделью)
+- Batch content (TFContent статьи, SEO анализ)
+
+**Лимиты:** Pro sub = 5x лимиты. Бесплатно (входит в Google One AI Pro).
+
+**НЕ делегировать:** PAI инфраструктуру (hooks, skills, settings). Задачи требующие PAI Tools (Inference.ts, bun Tools/). Задачи требующие Claude Code agents (Task(), TeamCreate).
+
+---
+
+### 5. OpenCode CLI (PAI-integrated)
+
+**Роль:** Мульти-провайдерный автономный кодер. Open-source аналог Claude Code с headless mode (`opencode run`). Полностью интегрирован в PAI (AGENTS.md + shared context + 5 skills). Navi вызывает программно, Ivan — в Kitty окне.
+**LLM:** Kimi 2.5 (OpenCode Go, default). Можно переключить на Z.AI GLM-5, OpenAI, Anthropic через `-m provider/model`.
+**Версия:** v1.2.24
+**Инструкции:** `~/.config/opencode/AGENTS.md` (авто-загружается при каждом запуске)
 
 **Запуск:**
 ```bash
@@ -142,49 +184,37 @@ opencode run --format json "задача"     # JSON output для pipeline
 opencode run --dir /path/to/project "задача"   # в конкретной директории
 opencode run -f file.ts "проанализируй"       # с файлом-вложением
 opencode run -c "продолжай"             # продолжить сессию
+opencode run --agent review "задача"    # конкретный агент
 ```
+
+**PAI интеграция (2026-03-11):**
+- `~/.config/opencode/AGENTS.md` — роль, принципы, context routing, build/test commands
+- `~/.config/opencode/shared/` — симлинки на ABOUTME, TELOS (MISSION, GOALS, STATUS, CHALLENGES, STRATEGIES), AISTEERINGRULES
+- 5 скиллов: ContentAnalysis, Investigation, Media, TFContent, Thinking
+- OpenCode также читает `~/.claude/CLAUDE.md` как fallback (если AGENTS.md не найден)
+- Поддержка плагинов: `@opencode-ai/plugin` (TypeScript hooks для lifecycle)
 
 **Конфигурация:**
 - Основная: `~/.config/opencode/opencode.json`
-- Провайдеры: Z.AI (12 моделей) + OpenCode Go (Kimi 2.5)
+- Провайдеры: Z.AI (3 модели: GLM-4 Plus, GLM-4.1V Thinking, GLM-5 Air) + OpenCode Go (Kimi 2.5)
 - MCP: zai-vision (13 tools) подключён
 - Прокси: через `oc` алиас (NL VPS)
 
 **Лимиты:** OpenCode Go sub ($10/мес). Z.AI через Coding Plan (входит в $27/мес).
 
-**Когда Navi вызывает OpenCode:**
+**Когда Navi делегирует OpenCode:**
 - Параллельный code review (Kimi 2.5 ревьюит пока Navi делает другое)
-- Мульти-модель сравнение (одна задача на разных моделях)
-- Кодинг в проекте без PAI контекста (timber-frame-site, digital-foreman-app)
-- Bulk операции (анализ файлов, генерация)
+- Мульти-модель сравнение (одна задача на разных моделях через `-m`)
+- Кодинг в проектах (timber-frame-site, digital-foreman-app)
+- Bulk операции (анализ файлов, генерация, миграции)
+- Альтернативный LLM провайдер (Z.AI, если Anthropic/Google недоступны)
 
 **Когда Ivan работает с OpenCode:**
 - Открывает `oc` в отдельном Kitty окне
 - Параллельная работа с Navi на другой задаче
 - Эксперименты с моделями Z.AI
 
-**НЕ делегировать:** Задачи требующие PAI контекст (TELOS, CLAUDE.md, hooks). Нет доступа к нервной системе PAI.
-
----
-
-## T2: CLI Agents (только интерактивные)
-
-### 6. Gemini CLI
-
-**Роль:** Второе мнение, cross-check, Google-специфичные знания. Только интерактивный -- нет headless mode.
-**LLM:** Gemini Pro (Google)
-**Версия:** v0.31.0
-
-**Запуск:**
-```bash
-gemi                                    # интерактивный режим через прокси NL
-# Программно через Navi (НЕ gemini CLI, а Inference.ts):
-bun PAI/Tools/Inference.ts --level gemini "system" "user"
-```
-
-**Лимиты:** Pro sub = 5x лимиты. Бесплатно (входит в Google One AI Pro).
-
-**Почему T2, а не T1:** Нет headless mode. Navi не может вызвать `gemini run "задача"` программно. Только интерактивный для Ivan или через Inference.ts API (но это T3 уровень, не CLI).
+**НЕ делегировать:** PAI инфраструктуру (hooks, skills, settings). Задачи требующие Claude Code agents (Task(), TeamCreate).
 
 ---
 
@@ -238,23 +268,25 @@ bun PAI/Tools/Inference.ts --level <level> "system" "user"
 
 ## Матрица делегирования
 
-| Задача | Navi (T1) | Jules (T1) | A0 (T1) | OpenCode (T1) | Gemini (T2) | Примечание |
-|--------|:---------:|:----------:|:-------:|:-------------:|:-----------:|------------|
+| Задача | Navi (T1) | Jules (T1) | A0 (T1) | Gemini (T1) | OpenCode (T1) | Примечание |
+|--------|:---------:|:----------:|:-------:|:-----------:|:-------------:|------------|
 | PAI архитектура | **V** | -- | -- | -- | -- | Только Navi (контекст) |
 | TELOS/settings/hooks | **V** | -- | -- | -- | -- | Только Navi |
-| Написание тестов | . | **V** | -- | . | -- | Jules async приоритет |
-| Баги, TODO | . | **V** | -- | . | -- | Jules или OpenCode |
+| Написание тестов | . | **V** | -- | -- | . | Jules async приоритет |
+| Баги, TODO | . | **V** | -- | -- | . | Jules или OpenCode |
 | Dependency updates | -- | **V** | -- | -- | -- | Jules proactive |
 | Security scans | . | **V** | -- | -- | -- | Jules proactive |
-| Глубокий ресёрч | . | -- | **V** | -- | -- | A0 = browser + search |
+| Глубокий ресёрч | . | -- | **V** | **V** | -- | A0 browser, Gemini parallel |
 | Code execution (Python) | -- | -- | **V** | -- | -- | A0 sandbox |
 | DevOps, серверы | -- | -- | **V** | -- | -- | A0 ops-commander |
-| Code review | . | -- | . | **V** | . | OpenCode = быстрый ревью |
-| Кодинг без PAI контекста | -- | . | -- | **V** | . | P1, P3 проекты |
-| Мульти-модель анализ | -- | -- | -- | **V** | -- | -m provider/model |
-| Параллельный кодинг | -- | -- | -- | **V** | **V** | Ivan в окне / Navi run |
-| Второе мнение | -- | -- | -- | . | **V** | Cross-check |
-| Интерактивная работа | **V** | -- | -- | **V** | **V** | Navi/OC/Gemini |
+| Code review | . | -- | . | . | **V** | OpenCode = быстрый ревью |
+| Кодинг без PAI контекста | -- | . | -- | . | **V** | P1, P3 проекты |
+| Мульти-модель анализ | -- | -- | -- | . | **V** | -m provider/model |
+| Параллельный research | . | -- | -- | **V** | -- | Gemini headless + PAI ctx |
+| Контент TF/SEO | . | -- | -- | **V** | -- | Gemini TFContent skill |
+| Второе мнение | -- | -- | -- | **V** | . | Cross-check |
+| Google-специфичное | -- | -- | -- | **V** | -- | GCP, APIs, Android |
+| Интерактивная работа | **V** | -- | -- | **V** | **V** | Navi/Gemini/OC |
 
 Легенда: **V** = приоритет, **.** = может, **--** = не делегировать
 

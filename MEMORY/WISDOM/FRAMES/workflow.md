@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 30
-- **Last Crystallized:** 2026-03-07
+- **Observation Count:** 35
+- **Last Crystallized:** 2026-03-10
 - **Source:** Converted from workflow.json
 
 ---
@@ -154,3 +154,8 @@
 - 2026-03-06: [principle] Praised UI/UX concept and Navi's improvement on TUI tasks
 - 2026-03-06: [anti-pattern] Frustrated with duplicate header and display issues in chat
 - 2026-03-07: [anti-pattern] Frustrated — A0 broke after restart, needs diagnosis
+- 2026-03-09: [anti-pattern] Vague correction demand after incomplete diagnosis
+- 2026-03-09: [anti-pattern] Frustrated by quota display inconsistency, questioning Navi's analysis
+- 2026-03-09: [anti-pattern] Frustrated — unclear instructions, needs better guidance
+- 2026-03-09: [anti-pattern] Pointing out missing option in dropdown list
+- 2026-03-10: [anti-pattern] Frustrated — Navi forgot context despite explicit evidence shown

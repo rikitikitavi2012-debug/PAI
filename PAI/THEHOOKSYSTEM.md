@@ -358,7 +358,7 @@ Hooks have access to all environment variables from `~/.claude/settings.json` `"
 {
   "env": {
     "PAI_DIR": "$HOME/.claude",
-    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "64000"
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "80000"
   }
 }
 ```

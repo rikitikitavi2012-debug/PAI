@@ -1026,16 +1026,16 @@
     }
   },
   "counts": {
-    "skills": 11,
-    "workflows": 164,
-    "hooks": 30,
-    "signals": 77,
-    "files": 111,
-    "work": 140,
-    "sessions": 1205,
-    "research": 17,
-    "ratings": 159,
-    "updatedAt": "2026-03-09T11:41:07.360Z"
+    "skills": 13,
+    "workflows": 174,
+    "hooks": 31,
+    "signals": 95,
+    "files": 115,
+    "work": 153,
+    "sessions": 1241,
+    "research": 18,
+    "ratings": 178,
+    "updatedAt": "2026-03-11T18:29:53.431Z"
   },
   "mcpServers": {
     "supabase": {

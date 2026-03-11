@@ -1,0 +1,8 @@
+{
+  "rating": 4,
+  "summary": "Pointing out missing option in dropdown list",
+  "detailed_context": "Ivan is troubleshooting Yandex Wordstat API access. He followed Navi's guidance to look for 'Использование API Вордстата' (Use Wordstat API) in a dropdown menu, but the option isn't there. This is a correction/omission detection — Ivan is indicating that Navi's previous instruction was incomplete or incorrect. The tone is matter-of-fact, not angry, but this reveals that Navi either: (1) misunderstood the current UI state, (2) gave instructions based on outdated documentation, or (3) didn't account for variations in the Yandex interface. Ivan is now forced to investigate further because the expected option is missing. This is mild frustration — not a major failure, but Navi's guidance didn't account for reality. Navi should have either verified the exact menu options or acknowledged uncertainty about UI variations.",
+  "session_id": "3bd2d95c-346f-4819-911e-f0d649b088c4",
+  "captured_at": "2026-03-09T18:24:16.980Z",
+  "transcript_source": "3bd2d95c-346f-4819-911e-f0d649b088c4.jsonl"
+}

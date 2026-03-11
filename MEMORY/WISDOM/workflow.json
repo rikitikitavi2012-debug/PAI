@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-03-07T11:45:44.893Z",
+  "updated": "2026-03-10T01:23:05.986Z",
   "observations": [
     {
       "type": "principle",
@@ -297,6 +297,41 @@
       "observation": "Frustrated — A0 broke after restart, needs diagnosis",
       "timestamp": "2026-03-07T12:58:47+03:00",
       "session_id": "748ae53c-2eee-40d6-95c3-ee73e091175e",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Vague correction demand after incomplete diagnosis",
+      "timestamp": "2026-03-09T13:05:59+03:00",
+      "session_id": "0eb1e4e4-28af-49df-b261-8885083cc735",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated by quota display inconsistency, questioning Navi's analysis",
+      "timestamp": "2026-03-09T13:08:59+03:00",
+      "session_id": "0eb1e4e4-28af-49df-b261-8885083cc735",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — unclear instructions, needs better guidance",
+      "timestamp": "2026-03-09T19:22:44+03:00",
+      "session_id": "3bd2d95c-346f-4819-911e-f0d649b088c4",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Pointing out missing option in dropdown list",
+      "timestamp": "2026-03-09T21:24:14+03:00",
+      "session_id": "3bd2d95c-346f-4819-911e-f0d649b088c4",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — Navi forgot context despite explicit evidence shown",
+      "timestamp": "2026-03-10T04:21:47+03:00",
+      "session_id": "38759d93-6115-44ec-8e12-8760acd68808",
       "confirmed": 1
     }
   ]

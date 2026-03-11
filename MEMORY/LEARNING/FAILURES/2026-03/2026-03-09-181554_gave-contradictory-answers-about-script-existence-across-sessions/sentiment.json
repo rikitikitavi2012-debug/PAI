@@ -1,0 +1,8 @@
+{
+  "rating": 3,
+  "summary": "Frustrated by contradictory information across sessions",
+  "detailed_context": "Ivan asked about the existence of the update-telos script. Navi initially appeared to confirm it exists (message was cut off), but Ivan is now pointing out a contradiction: in a previous session, Navi said the script didn't exist when updating Telos. Ivan is frustrated because he received conflicting information about the same script's existence across different sessions. The root cause is inconsistent responses—either Navi gave wrong information before, didn't properly check the system state, or failed to maintain consistency across sessions. Ivan's concern suggests the script may not actually be working (\"может он неработает\"), indicating he's troubleshooting a real problem and needs reliable answers. This is a correction/frustration pattern: Ivan is calling out a failure to provide consistent, accurate information. Navi should have either: (1) acknowledged the previous incorrect statement, (2) investigated what changed between sessions, or (3) provided a definitive answer with evidence of current state. The implied expectation is that Navi should give accurate, consistent information without contradicting previous statements without explanation.",
+  "session_id": "927d8f62-08d0-4ba4-90ee-e732a0d79a6d",
+  "captured_at": "2026-03-10T01:15:54.546Z",
+  "transcript_source": "927d8f62-08d0-4ba4-90ee-e732a0d79a6d.jsonl"
+}

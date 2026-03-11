@@ -57,7 +57,7 @@ async function loadEnv(): Promise<void> {
 // Types
 // ============================================================================
 
-type Model = "flux" | "nano-banana" | "nano-banana-pro" | "gpt-image-1";
+type Model = "flux" | "flux-2-max" | "nano-banana" | "nano-banana-pro" | "gpt-image-1" | "gpt-image-1.5";
 type ReplicateSize = "1:1" | "16:9" | "3:2" | "2:3" | "3:4" | "4:3" | "4:5" | "5:4" | "9:16" | "21:9";
 type OpenAISize = "1024x1024" | "1536x1024" | "1024x1536";
 type GeminiSize = "1K" | "2K" | "4K";
@@ -148,7 +148,22 @@ function detectImageFormat(data: Buffer | Uint8Array): { format: string; ext: st
  * Returns the final path (may differ from requested if format mismatch detected).
  */
 async function saveImage(data: Buffer | Uint8Array | any, requestedPath: string): Promise<string> {
-  const buffer = data instanceof Buffer ? data : Buffer.from(data as any);
+  // Handle Replicate FileOutput objects (SDK 1.x returns these from run())
+  let rawData = data;
+  if (rawData && typeof rawData === 'object' && typeof rawData[Symbol.asyncIterator] === 'function') {
+    // FileOutput is an async iterable — collect chunks into a buffer
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of rawData) {
+      chunks.push(chunk instanceof Uint8Array ? chunk : new Uint8Array(chunk));
+    }
+    rawData = Buffer.concat(chunks);
+  } else if (rawData && typeof rawData === 'object' && typeof rawData.url === 'function') {
+    // Fallback: fetch from URL if available
+    const url = rawData.url();
+    const resp = await fetch(url);
+    rawData = Buffer.from(await resp.arrayBuffer());
+  }
+  const buffer = rawData instanceof Buffer ? rawData : Buffer.from(rawData as any);
   const detected = detectImageFormat(buffer);
   if (detected) {
     const requestedExt = extname(requestedPath).toLowerCase();
@@ -336,8 +351,8 @@ function parseArgs(argv: string[]): CLIArgs {
 
     switch (key) {
       case "model":
-        if (value !== "flux" && value !== "nano-banana" && value !== "nano-banana-pro" && value !== "gpt-image-1") {
-          throw new CLIError(`Invalid model: ${value}. Must be: flux, nano-banana, nano-banana-pro, or gpt-image-1`);
+        if (!["flux", "flux-2-max", "nano-banana", "nano-banana-pro", "gpt-image-1", "gpt-image-1.5"].includes(value)) {
+          throw new CLIError(`Invalid model: ${value}. Must be: flux, flux-2-max, nano-banana, nano-banana-pro, gpt-image-1, or gpt-image-1.5`);
         }
         parsed.model = value;
         i++; // Skip next arg (value)
@@ -412,21 +427,22 @@ function parseArgs(argv: string[]): CLIArgs {
   if (!parsed.size) {
     switch (parsed.model) {
       case "gpt-image-1":
-        parsed.size = "1024x1024";
+      case "gpt-image-1.5":
+        parsed.size = "1536x1024"; // 16:9-ish landscape by default
         break;
       case "nano-banana-pro":
         parsed.size = "2K";
         break;
-      default: // flux, nano-banana
+      default: // flux, flux-2-max, nano-banana
         parsed.size = "16:9";
         break;
     }
   }
 
   // Validate size based on model
-  if (parsed.model === "gpt-image-1") {
+  if (parsed.model === "gpt-image-1" || parsed.model === "gpt-image-1.5") {
     if (!OPENAI_SIZES.includes(parsed.size as OpenAISize)) {
-      throw new CLIError(`Invalid size for gpt-image-1: ${parsed.size}. Must be: ${OPENAI_SIZES.join(", ")}`);
+      throw new CLIError(`Invalid size for ${parsed.model}: ${parsed.size}. Must be: ${OPENAI_SIZES.join(", ")}`);
     }
   } else if (parsed.model === "nano-banana-pro") {
     if (!GEMINI_SIZES.includes(parsed.size as GeminiSize)) {
@@ -550,6 +566,30 @@ async function generateWithFlux(prompt: string, size: ReplicateSize, output: str
   return finalPath;
 }
 
+async function generateWithFlux2Max(prompt: string, size: ReplicateSize, output: string): Promise<string> {
+  const token = process.env.REPLICATE_API_TOKEN;
+  if (!token) {
+    throw new CLIError("Missing environment variable: REPLICATE_API_TOKEN");
+  }
+
+  const replicate = new Replicate({ auth: token });
+
+  console.log("🎨 Generating with FLUX.2 [max] (32B params, 4MP)...");
+
+  const result = await replicate.run("black-forest-labs/flux-2-max", {
+    input: {
+      prompt,
+      aspect_ratio: size,
+      output_format: "png",
+      output_quality: 95,
+    },
+  });
+
+  const finalPath = await saveImage(result, output);
+  console.log(`✅ Image saved to ${finalPath}`);
+  return finalPath;
+}
+
 async function generateWithNanoBanana(prompt: string, size: ReplicateSize, output: string): Promise<string> {
   const token = process.env.REPLICATE_API_TOKEN;
   if (!token) {
@@ -573,7 +613,7 @@ async function generateWithNanoBanana(prompt: string, size: ReplicateSize, outpu
   return finalPath;
 }
 
-async function generateWithGPTImage(prompt: string, size: OpenAISize, output: string): Promise<string> {
+async function generateWithGPTImage(prompt: string, size: OpenAISize, output: string, modelVersion: "gpt-image-1" | "gpt-image-1.5" = "gpt-image-1"): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new CLIError("Missing environment variable: OPENAI_API_KEY");
@@ -581,10 +621,10 @@ async function generateWithGPTImage(prompt: string, size: OpenAISize, output: st
 
   const openai = new OpenAI({ apiKey });
 
-  console.log("🤖 Generating with GPT-image-1...");
+  console.log(`🤖 Generating with ${modelVersion}...`);
 
   const response = await openai.images.generate({
-    model: "gpt-image-1",
+    model: modelVersion,
     prompt,
     size,
     n: 1,
@@ -616,9 +656,9 @@ async function generateWithNanoBananaPro(
   const ai = new GoogleGenAI({ apiKey });
 
   if (referenceImages && referenceImages.length > 0) {
-    console.log(`🍌✨ Generating with Nano Banana Pro (Gemini 3 Pro) at ${size} ${aspectRatio} with ${referenceImages.length} reference image(s)...`);
+    console.log(`🍌✨ Generating with Nano Banana 2 (Gemini 3.1 Flash Image) at ${size} ${aspectRatio} with ${referenceImages.length} reference image(s)...`);
   } else {
-    console.log(`🍌✨ Generating with Nano Banana Pro (Gemini 3 Pro) at ${size} ${aspectRatio}...`);
+    console.log(`🍌✨ Generating with Nano Banana 2 (Gemini 3.1 Flash Image) at ${size} ${aspectRatio}...`);
   }
 
   // Prepare content parts
@@ -647,7 +687,7 @@ async function generateWithNanoBananaPro(
   parts.push({ text: prompt });
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-pro-image-preview",
+    model: "gemini-3.1-flash-image-preview",
     contents: [{ parts }],
     config: {
       responseModalities: ["TEXT", "IMAGE"],
@@ -718,6 +758,8 @@ async function main(): Promise<void> {
 
         if (args.model === "flux") {
           promises.push(generateWithFlux(finalPrompt, args.size as ReplicateSize, varOutput));
+        } else if (args.model === "flux-2-max") {
+          promises.push(generateWithFlux2Max(finalPrompt, args.size as ReplicateSize, varOutput));
         } else if (args.model === "nano-banana") {
           promises.push(generateWithNanoBanana(finalPrompt, args.size as ReplicateSize, varOutput));
         } else if (args.model === "nano-banana-pro") {
@@ -732,6 +774,8 @@ async function main(): Promise<void> {
           );
         } else if (args.model === "gpt-image-1") {
           promises.push(generateWithGPTImage(finalPrompt, args.size as OpenAISize, varOutput));
+        } else if (args.model === "gpt-image-1.5") {
+          promises.push(generateWithGPTImage(finalPrompt, args.size as OpenAISize, varOutput, "gpt-image-1.5"));
         }
       }
 
@@ -745,6 +789,8 @@ async function main(): Promise<void> {
     let actualOutput: string = args.output;
     if (args.model === "flux") {
       actualOutput = await generateWithFlux(finalPrompt, args.size as ReplicateSize, args.output);
+    } else if (args.model === "flux-2-max") {
+      actualOutput = await generateWithFlux2Max(finalPrompt, args.size as ReplicateSize, args.output);
     } else if (args.model === "nano-banana") {
       actualOutput = await generateWithNanoBanana(finalPrompt, args.size as ReplicateSize, args.output);
     } else if (args.model === "nano-banana-pro") {
@@ -757,6 +803,8 @@ async function main(): Promise<void> {
       );
     } else if (args.model === "gpt-image-1") {
       actualOutput = await generateWithGPTImage(finalPrompt, args.size as OpenAISize, args.output);
+    } else if (args.model === "gpt-image-1.5") {
+      actualOutput = await generateWithGPTImage(finalPrompt, args.size as OpenAISize, args.output, "gpt-image-1.5");
     }
 
     // Remove background if requested (use actual output path)

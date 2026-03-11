@@ -4,7 +4,7 @@
 
 Стратегии — это повторяемые методы, которые связаны с вызовами (C#) и целями (G#).
 
-*Последнее обновление: 2026-03-03*
+*Последнее обновление: 2026-03-12*
 
 ---
 
@@ -23,23 +23,24 @@
 **Адресует:** C1 (нехватка времени), G0, G2, G10
 **Принцип:** Делегируй AI то, что другие делают вручную. PAI + Agent Zero + Venice AI = мультипликатор продуктивности.
 **Реализация:**
-1. PAI v4.0.3: 30 хуков, 235 тестов, 11 скиллов, security system — всё активно
-2. **AI Brigade (члены — автономные агенты):**
-   - **Navi** (Claude Code) — архитектор, тимлид, интерактивная разработка, ревью
-   - **Jules** (Google) — async-кодер: тесты, баги, фиксы, dependency updates. API: JulesAPI.ts
-   - **Agent Zero** — 24/7 VPS Docker (v0.9.8.2). API: AgentZero.ts. LLM: GLM-5 + kimi-k2.5 + opus (browser). 4 субагента: developer/researcher/hacker/default. 8 skills. FAISS memory (threshold 0.3 для русского!). 8 scheduled tasks
-3. **Инструменты (вызываются членами бригады, не думают сами):**
+1. PAI v4.0.3: 31 хук, 235 тестов, 13 скиллов, security system — всё активно
+2. **AI Brigade — 5 T1 автономных агентов, все в PAI контексте (2026-03-12):**
+   - **Navi** (Claude Code) — архитектор, тимлид. Контекст: CLAUDE.md + loadAtStartup
+   - **Jules** (Google) — async-кодер: тесты, баги, фиксы. Контекст: AGENTS.md в repo
+   - **Agent Zero** — 24/7 VPS Docker. Контекст: system prompt + FAISS memory + per-task от Navi
+   - **Gemini CLI** — second opinion, research, TF контент. Контекст: GEMINI.md + symlinks + hooks
+   - **OpenCode CLI** — мульти-провайдер кодер, EXA search. Контекст: AGENTS.md + plugin + symlinks
+3. **Инструменты T3 (вызываются членами бригады):**
    - **Inference.ts** — unified API для 5 LLM: fast/standard/smart/gemini/glm5
-   - **Gemini CLI** — inference provider для Navi (второе мнение, cross-check). 1000 req/day free
    - **GLM-5 / zai-cli** — inference provider + MCP tools (vision, search, read). Резерв при блокировках
-   - **JulesAutoMerge.ts** — pipeline: тесты в worktree → A0 code review → gh pr merge → sync
+   - **JulesAutoMerge.ts** — pipeline: тесты в worktree → A0 code review → merge
    - **CommunityCheck.ts** — мониторинг upstream PRs/issues
    - **MCP серверы** — расширения Claude Code (filesystem, fetch)
 4. Venice AI (через A0T стейкинг) — приватные LLM без цензуры
 5. Каждую повторяющуюся задачу автоматизировать через агента или инструмент
 6. Test harness для хуков — сеть безопасности при изменениях (235 тестов / 40 сюит)
 7. Feedback loop: RatingCapture → WisdomSync → FRAMES — автоматическое обучение
-8. Hook performance optimization: SecurityValidator 282→26ms (JSON cache), UpdateTabTitle 10s→<500ms. Суммарно −33с/сессию
+8. Hook performance optimization: SecurityValidator 282→26ms, UpdateTabTitle 10s→<500ms
 
 ### S2: Ступенчатый рост (Найм → Накопления → Инвестиции → Бизнес)
 **Адресует:** C2 (финансовая зависимость), G1, G3, M0
@@ -154,7 +155,7 @@
 
 | Стратегия | Применена | Результат | Нужна корректировка |
 |-----------|----------|-----------|---------------------|
-| S1 | 2025-2026 | PAI v4.0.3: 30 хуков, 235 тестов, AI Brigade (Navi+Jules+A0). 30 задач Jules (93% completion), 17 PR merged. A0: 5 scheduled tasks, code review pipeline. 8 upstream PRs. Git-as-Message-Bus для async координации. | Нет |
+| S1 | 2025-2026 | PAI v4.0.3: 31 хук, 235 тестов. AI Brigade: 5 T1 агентов, все в PAI контексте (2026-03-12). Jules: 30 задач (93%), 17 PR merged. A0: code review pipeline, 5 scheduled tasks. Gemini CLI + OpenCode CLI: PAI-интегрированы, headless mode. EXA native search. | Нет |
 | S3 | 2025-2026 | VPS NL работает, Agent Zero развёрнут | Добавить Venice AI |
 | S2 | 2024-2026 | Накоплено 3.5 млн ₽ | Нет, продолжать |
 | S7 | 2026-03 | 6 PRs, contributor acknowledgment в v4.0.3 | Нет, продолжать |
@@ -169,9 +170,11 @@
 
 | Член | Текущий уровень | Следующий шаг | Приоритет |
 |------|----------------|---------------|-----------|
-| **Navi** | Архитектор, 171 тест, 30 хуков, 11 скиллов | Аудит скиллов по v4, расширение research modes | P1 |
+| **Navi** | Архитектор, 171 тест, 31 хук, 13 скиллов | Аудит скиллов по v4, расширение research modes | P1 |
 | **Jules** | Async-кодер, 4+ задачи выполнено | Больше upstream задач, self-testing (JulesAutoMerge тесты) | P1 |
 | **Agent Zero** | Code review в pipeline, health endpoint | Health monitoring (scheduler), community watcher, background research | P1 |
+| **Gemini CLI** | PAI-интегрирован (GEMINI.md + 5 skills + 2 hooks + 5 commands) | Плагины Gemini, deeper MCP интеграция, extension PAI | P2 (межсезонье) |
+| **OpenCode CLI** | PAI-интегрирован (AGENTS.md + plugin + EXA native) | Кастомные агенты, MCP расширение, deeper plugin hooks | P2 (межсезонье) |
 
 ### Инструменты — улучшение
 
@@ -194,11 +197,13 @@
 
 | Член/Инструмент | Модель оплаты | Контроль |
 |----------------|---------------|----------|
-| Navi (Claude) | Anthropic Max подписка | Безлимит в рамках подписки |
-| Jules | Google Coding Plan подписка | Безлимит, можно поставить API key в A0 |
-| Agent Zero | Per API call (LiteLLM → Claude Sonnet) | Контролировать! Каждый ревью ~$0.01-0.03 |
-| Gemini CLI | Free tier (1000 req/day) | Бесплатно |
-| GLM-5 | Per API call | Дешевле Claude, bulk inference |
+| Navi (Claude) | Anthropic Max подписка ($100/мес) | Безлимит в рамках подписки |
+| Jules | Google One AI Pro ($20.83/мес) | Безлимит |
+| Agent Zero | Z.AI + Kimi ($27/мес shared) | ~$0 extra при Z.AI/Kimi |
+| Gemini CLI | Google One AI Pro (shared с Jules) | 5x лимиты, бесплатно |
+| OpenCode CLI | OpenCode Go ($10/мес) | Безлимит Kimi 2.5 |
+| GLM-5 / zai-cli | Z.AI Coding Plan (shared с A0) | Bulk inference |
+| **Итого** | | **~$131/мес** |
 
 ---
 

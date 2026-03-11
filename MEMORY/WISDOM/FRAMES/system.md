@@ -64,6 +64,16 @@
 - **Frequency:** Confirmed 1 times
 - **Since:** 2026-02-25
 
+### Privoxy HTTP proxy breaks Axios requests in Node.js MCP servers — override proxy env vars for MCP processes
+- **Severity:** High
+- **Frequency:** Confirmed 1 times
+- **Since:** 2026-03-12
+
+### Agent integration pattern: symlinks for Gemini/OpenCode, system prompt + memory for A0, CLAUDE.md for Navi — each agent has its own PAI context channel
+- **Severity:** Low
+- **Frequency:** Confirmed 1 times
+- **Since:** 2026-03-12
+
 ### Placeholder strings like  in agent configs silently pass through to production — need validation layer before deployment
 - **Severity:** Medium
 - **Frequency:** Confirmed 1 times

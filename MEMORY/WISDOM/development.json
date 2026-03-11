@@ -1,6 +1,6 @@
 {
   "domain": "development",
-  "updated": "2026-03-06T21:16:44.161Z",
+  "updated": "2026-03-10T19:00:56.957Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -140,6 +140,13 @@
       "observation": "Mixed feedback — appreciates progress but frustrated with bugs",
       "timestamp": "2026-03-06T23:49:40+03:00",
       "session_id": "d445edb3-ba2f-4025-be16-82404698b328",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — multiple critical bugs in navigator after merge",
+      "timestamp": "2026-03-10T21:45:11+03:00",
+      "session_id": "e556cd0e-b800-46c4-a05a-e9226c3e3208",
       "confirmed": 1
     }
   ]
