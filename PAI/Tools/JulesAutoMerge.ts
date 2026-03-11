@@ -263,7 +263,7 @@ async function getBaselineFailCount(repo: RepoConfig): Promise<number> {
   return result.failCount;
 }
 
-async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<TestRunResult> {
+async function runTestsOnBranch(repo: RepoConfig, branchName: string, mergeBase = false): Promise<TestRunResult> {
   const worktreePath = `/tmp/jules-automerge-${Date.now()}`;
 
   // Fetch remote branch
@@ -273,6 +273,19 @@ async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<T
   // Create worktree
   const wt = run(['git', 'worktree', 'add', worktreePath, `${repo.remote}/${branchName}`]);
   if (!wt.ok) return { passed: false, output: `Worktree failed: ${wt.stderr}`, durationMs: 0, failCount: 999, passCount: 0 };
+
+  // Merge base branch into PR branch to pick up latest fixes (avoids false positives
+  // when baseline has fewer fails than PR due to recently merged fix PRs)
+  if (mergeBase && branchName !== repo.branch) {
+    run(['git', 'fetch', repo.remote, repo.branch], { cwd: worktreePath });
+    const mg = run(['git', 'merge', `${repo.remote}/${repo.branch}`, '--no-edit'], { cwd: worktreePath });
+    if (!mg.ok) {
+      // Merge conflict — can't test, report as failure
+      run(['git', 'worktree', 'remove', worktreePath, '--force']);
+      try { rmSync(worktreePath, { recursive: true, force: true }); } catch {}
+      return { passed: false, output: `Merge conflict with ${repo.branch}: ${mg.stderr}`, durationMs: 0, failCount: 999, passCount: 0 };
+    }
+  }
 
   try {
     const start = Date.now();
@@ -431,7 +444,7 @@ export async function processPR(
   // Run tests with baseline comparison
   console.log(`  ${D}Testing PR #${pr.number}...${X}`);
   const baselineFailCount = await getBaselineFailCount(repo);
-  const test = await runTestsOnBranch(repo, pr.headRefName);
+  const test = await runTestsOnBranch(repo, pr.headRefName, true);
   const delta = test.failCount - baselineFailCount;
   const deltaStr = delta > 0 ? `+${delta}` : `${delta}`;
   console.log(`  ${D}Tests: ${test.passCount} pass, ${test.failCount} fail (baseline: ${baselineFailCount}, delta: ${deltaStr}) (${(test.durationMs / 1000).toFixed(1)}s)${X}`);
