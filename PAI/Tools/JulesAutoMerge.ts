@@ -285,7 +285,7 @@ async function runTestsOnBranch(repo: RepoConfig, branchName: string): Promise<T
       : ['bun', 'test', 'hooks/tests/'];
     const test = run(testCmd, { cwd: worktreePath, timeout: TEST_TIMEOUT });
     const durationMs = Date.now() - start;
-    const output = test.stdout || test.stderr;
+    const output = [test.stdout, test.stderr].filter(Boolean).join('\n');
     const counts = parseTestCounts(output);
     return {
       passed: test.ok,
@@ -521,9 +521,9 @@ export async function processPR(
   }
 
   // Merge via gh pr merge (--admin only for repos with branch protection)
-  const mergeArgs = ['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo,
-    '--squash', '--subject', `Merge PR #${pr.number}: ${pr.title}`, '--body', ''];
-  if (repo.adminMerge) mergeArgs.splice(5, 0, '--admin');
+  const mergeArgs = ['gh', 'pr', 'merge', String(pr.number), '--repo', repo.repo, '--squash',
+    '--subject', `Merge PR #${pr.number}: ${pr.title}`, '--body', ''];
+  if (repo.adminMerge) mergeArgs.push('--admin');
   const merge = run(mergeArgs);
   if (!merge.ok) {
     record.result = 'failed_merge';
