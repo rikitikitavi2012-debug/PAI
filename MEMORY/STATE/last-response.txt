@@ -1,11 +1,14 @@
-════ PAI | NATIVE MODE ═══════════════════════
-🗒️ TASK: Документация синхронизирована с текущим состоянием
-🔧 CHANGE:
-- **CLAUDE.md** — Next.js 16, Tailwind v4, NO Supabase, архитектура + скиллы
-- **PROGRESS.md** — +3 секции (KB, портфолио, блог), API отмечены одобренными
-- **BRIGADE_PLAYBOOK.md** — 5 Known Issues, портфолио/статьи DONE
-- **A0_DELEGATION_PROMPT.md** — Wordstat данные, 8 написанных статей, ссылка на CONTENT_STRATEGY
-- **Архив** — 3 устаревших файла в docs/archive/
-- **TELOS** — P1 + G1 обновлены (предыдущий шаг)
-✅ VERIFY: build проходит, коммит `9140f67`
-🗣️ Navi: Вся документация и TELOS синхронизированы. Проект в актуальном состоянии.
+Вот точные пути:
+
+```
+~/.claude/PAI/USER/DOMAINS/construction/
+├── timber_frame/
+│   ├── TF_Engineering.md      ← расчёты, M&T, knee braces
+│   ├── TF_Materials.md        ← GL24h, поставщики СПб
+│   ├── TF_Joinery_Specs.md    ← допуски ±1мм, все соединения
+│   └── TF_Climate_SPB.md      ← климат СПб, TCO 10 лет
+└── market/
+    └── PRICE_LIST_WORKS.md    ← прайс работ, 3 сегмента
+```
+
+Полный путь: `~/.claude/PAI/USER/DOMAINS/construction/timber_frame/`. Это часть PAI — твоя личная база знаний, не в репозитории сайта.

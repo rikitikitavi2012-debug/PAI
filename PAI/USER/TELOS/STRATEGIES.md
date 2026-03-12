@@ -59,7 +59,8 @@
 2. A0T стейкинг → Venice AI API (приватные LLM, без блокировок)
 3. SSH-туннели + http-proxy-to-socks для обхода ограничений (Anthropic + Google)
 4. Z.AI (Zhipu AI, Китай) — прямой доступ без прокси. GLM-5 + MCP tools (vision, search, read). Стратегический резерв: если заблокируют Anthropic и Google — Zhipu остаётся
-4. Для дома в горах: FTTH Ростелеком + резервный Мегафон 4G + Peplink bonding
+5. **План Б: Z.AI как замена Anthropic API (проверено 2026-03-12).** Z.AI endpoint `https://api.z.ai/api/anthropic` полностью совместим с форматом Anthropic API. Активация: раскомментировать 2 строки в `.bashrc` (ANTHROPIC_BASE_URL + ANTHROPIC_API_KEY). Тестовая среда: `~/test-zai-claude/` — project-level settings перенаправляют только эту папку на Z.AI. Claude Code маппит: claude-opus-4-6 → GLM-4.7, glm-5 → GLM-5. Ограничение: GLM-4.7 идёт по балансу (не Coding Plan) — нужно пополнить при активации
+6. Для дома в горах: FTTH Ростелеком + резервный Мегафон 4G + Peplink bonding
 
 ### S4: Диверсификация капитала
 **Адресует:** C2 (финансовая зависимость), G5, G6, G7, G8, M0

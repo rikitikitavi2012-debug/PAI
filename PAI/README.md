@@ -15,8 +15,8 @@ PAI is a general problem-solving system that magnifies human capabilities. It ru
   CLAUDE.md                    # Master config (generated from template)
   CLAUDE.md.template           # Source template with variables
   settings.json                # Single source of truth for all configuration
-  hooks/                       # Event lifecycle hooks (21+)
-  skills/                      # 12 categories, 49 skills — each with SKILL.md
+  hooks/                       # Event lifecycle hooks (30+)
+  skills/                      # 11 skills — each with SKILL.md
   MEMORY/                      # Persistent memory (work, learning, relationship, state)
   PAI/                         # This directory — system docs + tools + user context
     Algorithm/                 # Versioned algorithm files + LATEST pointer

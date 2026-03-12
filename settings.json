@@ -1032,13 +1032,13 @@
     "skills": 13,
     "workflows": 174,
     "hooks": 31,
-    "signals": 105,
-    "files": 121,
-    "work": 165,
-    "sessions": 1526,
+    "signals": 113,
+    "files": 124,
+    "work": 171,
+    "sessions": 1536,
     "research": 35,
-    "ratings": 191,
-    "updatedAt": "2026-03-12T11:15:50.981Z"
+    "ratings": 202,
+    "updatedAt": "2026-03-12T17:59:24.292Z"
   },
   "mcpServers": {
     "supabase": {

@@ -1,0 +1,11 @@
+id: "20260312-205128_task"
+title: "Тест на какой моделе ты работаешь?"
+session_id: "9927c0b9-0d84-4044-88d4-8a2df71688c9"
+created_at: "2026-03-12T20:51:28+03:00"
+completed_at: "2026-03-12T20:59:24+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

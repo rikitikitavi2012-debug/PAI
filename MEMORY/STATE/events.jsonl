@@ -374,3 +374,30 @@
 {"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.4"},"timestamp":"2026-03-12T15:19:28.599Z","session_id":"unknown"}
 {"type":"voice.sent","source":"VoiceCompletion","character_count":73,"timestamp":"2026-03-12T15:26:44.027Z","session_id":"unknown"}
 {"type":"inference.fail","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"15.1","error":"timeout"},"timestamp":"2026-03-12T15:26:59.228Z","session_id":"unknown"}
+{"type":"inference.fail","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"0.6","error":"http_401"},"timestamp":"2026-03-12T17:51:29.574Z","session_id":"unknown"}
+{"type":"inference.fail","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"0.7","error":"http_401"},"timestamp":"2026-03-12T17:51:29.671Z","session_id":"unknown"}
+{"type":"inference.fail","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"0.7","error":"http_401"},"timestamp":"2026-03-12T17:51:29.776Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":41,"timestamp":"2026-03-12T17:51:36.611Z","session_id":"unknown"}
+{"type":"task.completed","source":"EventLogger","task_id":"10","task_subject":"Создать vision document TF Workbench","timestamp":"2026-03-12T17:52:16.966Z","session_id":"unknown"}
+{"type":"inference.fail","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"1.0","error":"http_401"},"timestamp":"2026-03-12T17:52:28.890Z","session_id":"unknown"}
+{"type":"inference.fail","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.0","error":"http_401"},"timestamp":"2026-03-12T17:52:28.924Z","session_id":"unknown"}
+{"type":"inference.fail","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.2","error":"http_401"},"timestamp":"2026-03-12T17:52:28.996Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":86,"timestamp":"2026-03-12T17:53:11.780Z","session_id":"unknown"}
+{"type":"task.completed","source":"EventLogger","task_id":"11","task_subject":"Обновить TELOS PROJECTS.md — новый проект TF Workbench","timestamp":"2026-03-12T17:54:02.924Z","session_id":"unknown"}
+{"type":"task.completed","source":"EventLogger","task_id":"12","task_subject":"Сохранить memory о TF Workbench","timestamp":"2026-03-12T17:55:28.417Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.4"},"timestamp":"2026-03-12T17:55:36.056Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"4.9"},"timestamp":"2026-03-12T17:55:39.434Z","session_id":"unknown"}
+{"type":"task.completed","source":"EventLogger","task_id":"13","task_subject":"Commit всё","timestamp":"2026-03-12T17:55:50.893Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T17:55:52.445Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"2.9"},"timestamp":"2026-03-12T17:55:55.331Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T17:56:13.198Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"14.7"},"timestamp":"2026-03-12T17:56:28.017Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.1"},"timestamp":"2026-03-12T17:59:15.256Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.0"},"timestamp":"2026-03-12T17:59:17.089Z","session_id":"unknown"}
+{"type":"work.completed","source":"SessionCleanup","slug":"20260312-205128_task","timestamp":"2026-03-12T17:59:24.247Z","session_id":"unknown"}
+{"type":"session.completed","source":"SessionCleanup","timestamp":"2026-03-12T17:59:24.378Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T17:59:30.868Z","session_id":"unknown"}
+{"type":"inference.fail","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"15.1","error":"timeout"},"timestamp":"2026-03-12T17:59:46.015Z","session_id":"unknown"}
+{"type":"automerge.cycle","source":"JulesAutoMerge","action":"start","repos_checked":3,"timestamp":"2026-03-12T18:00:01.097Z","session_id":"unknown"}
+{"type":"rating.captured","source":"RatingCapture","rating":8,"rating_source":"explicit","summary":"Хорошо закомить и Пропиши это в телос или где что бы не забыть","timestamp":"2026-03-12T18:01:26.397Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.2"},"timestamp":"2026-03-12T18:01:27.772Z","session_id":"unknown"}
