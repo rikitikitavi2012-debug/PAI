@@ -45,9 +45,27 @@
 
 ## Anti-Patterns (from observations)
 
+### VERIFICATION BYPASS — не говорить "готово" без проверки результата [CRYSTAL: 90%]
+- **Severity:** Critical
+- **Frequency:** Confirmed 6+ times (dashboards, images, scripts, navigator)
+- **Since:** 2026-03-05
+- **Rule:** Перед "готово" — обязателен один из: screenshot + визуальная проверка, shellcheck + функциональный тест, duplicate check + quality review. Если не проверил — не готово.
+
+### MODEL DRIFT — не менять модель/инструмент без сверки с PREFERENCES [CRYSTAL: 85%]
+- **Severity:** High
+- **Frequency:** Confirmed 3+ times (GPT-Image-1 вместо Flux 2 Max, дубликаты)
+- **Since:** 2026-03-11
+- **Rule:** Перед генерацией изображений — читать PREFERENCES.md проекта. Перед выбором инструмента — проверить project standards. Не переключать автономно.
+
+### INCOMPLETE DIAGNOSIS — не предлагать workaround до корневого анализа [CRYSTAL: 85%]
+- **Severity:** High
+- **Frequency:** Confirmed 5+ times (index.lock, A0 health, API status)
+- **Since:** 2026-03-05
+- **Rule:** Перед любым фиксом: 1) Что наблюдаем (симптом) 2) Что в логах (error messages) 3) Что в системе (filesystem, process list). Только потом предлагать решение.
+
 ### When Ivan brings data from previous sessions — verify against current state FIRST before acting, old analyses can be stale
-- **Severity:** Medium
-- **Frequency:** Confirmed 1 times
+- **Severity:** High
+- **Frequency:** Confirmed 3+ times (script existence, API status, feature availability)
 - **Since:** 2026-02-22
 
 ### Выполнение 3+ независимых задач последовательно вместо параллельного делегирования агентам — потеря времени в 3-5x. Всегда спавнить агентов для параллельной работы.

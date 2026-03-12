@@ -1,14 +1,17 @@
-Вот точные пути:
+Из Upgrade отчёта осталось необсуждённым:
 
-```
-~/.claude/PAI/USER/DOMAINS/construction/
-├── timber_frame/
-│   ├── TF_Engineering.md      ← расчёты, M&T, knee braces
-│   ├── TF_Materials.md        ← GL24h, поставщики СПб
-│   ├── TF_Joinery_Specs.md    ← допуски ±1мм, все соединения
-│   └── TF_Climate_SPB.md      ← климат СПб, TCO 10 лет
-└── market/
-    └── PRICE_LIST_WORKS.md    ← прайс работ, 3 сегмента
-```
+**Фичи Claude Code (v2.1.72-74) — уже доступны:**
+1. **Agent tool `model` param** — субагенты с разными моделями (Haiku для лёгких, Opus для сложных). Экономия токенов
+2. **ExitWorktree** — программный выход из worktree. Сейчас worktree иногда зависают
+3. **Prompt cache fix — до 12x дешевле** — уже работает, просто знать
+4. **`/context` команда** — диагностика: сколько токенов жрёт контекст, что оптимизировать
 
-Полный путь: `~/.claude/PAI/USER/DOMAINS/construction/timber_frame/`. Это часть PAI — твоя личная база знаний, не в репозитории сайта.
+**Community PR'ы — могут быть полезны:**
+5. **PR #921 ResearchCapture** — автосохранение research в MEMORY (закрывает gap)
+6. **PR #919 Piper TTS** — бесплатный голос вместо ElevenLabs ($25/мес)
+7. **PR #936 pai-only mode** — PAI контекст только при `pai`, экономия токенов при обычном `claude`
+
+**Внутренние паттерны из рефлексий:**
+8. **28 failure captures** — 4 повторяющихся проблемы (verification bypass, model drift, context loss, incomplete diagnosis)
+
+Что интересно разобрать? Или хватит на сегодня — сессия была продуктивная.
