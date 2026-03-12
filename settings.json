@@ -1035,14 +1035,14 @@
   "counts": {
     "skills": 13,
     "workflows": 174,
-    "hooks": 31,
+    "hooks": 32,
     "signals": 113,
     "files": 124,
-    "work": 171,
-    "sessions": 1536,
+    "work": 172,
+    "sessions": 1538,
     "research": 35,
-    "ratings": 202,
-    "updatedAt": "2026-03-12T17:59:24.292Z"
+    "ratings": 204,
+    "updatedAt": "2026-03-12T19:03:53.822Z"
   },
   "mcpServers": {
     "supabase": {
