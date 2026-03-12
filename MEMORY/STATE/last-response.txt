@@ -1,10 +1,1 @@
-Все 4 установлены:
-
-| Скилл | Пакеты | Время |
-|-------|--------|-------|
-| Scraping/Apify | apify-client + 71 | 10мин (большой) |
-| Agents/Tools | handlebars, yaml | мгновенно |
-| Telos/ReportTemplate | Next.js 14 + React 18 + Tailwind 3 | 53с |
-| Telos/DashboardTemplate | Next.js 15 + React 19 + Tailwind 4 | 46с |
-
-Все слепые зоны по зависимостям закрыты. Worktrees и health-report оставил — вернёмся когда будет время.
+2 мобильных бага пофикшены и задеплоены (`c04e0ab`). Жду оставшиеся 3 агента для полного отчёта.
