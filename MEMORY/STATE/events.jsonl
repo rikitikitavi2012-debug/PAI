@@ -358,52 +358,19 @@
 {"type":"a0.message_sent","source":"AgentZero","data":{"context_id":"new","preview":"Как идёт исследование конкурентов? Покажи результа"},"timestamp":"2026-03-11T22:29:25.957Z","session_id":"unknown"}
 {"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.4"},"timestamp":"2026-03-11T22:29:49.308Z","session_id":"unknown"}
 {"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.6"},"timestamp":"2026-03-11T22:29:51.329Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":92,"timestamp":"2026-03-12T12:38:50.017Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"2.8"},"timestamp":"2026-03-12T12:39:09.755Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.0"},"timestamp":"2026-03-12T12:39:19.976Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"2.9"},"timestamp":"2026-03-12T12:39:36.549Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":73,"timestamp":"2026-03-12T12:39:56.477Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T12:40:35.700Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"3.2"},"timestamp":"2026-03-12T12:40:38.841Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.0"},"timestamp":"2026-03-12T12:41:20.519Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"5.4"},"timestamp":"2026-03-12T12:41:22.762Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.1"},"timestamp":"2026-03-12T12:42:19.743Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"2.9"},"timestamp":"2026-03-12T12:42:21.348Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":71,"timestamp":"2026-03-12T12:42:33.259Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":84,"timestamp":"2026-03-12T12:42:53.714Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"2.0"},"timestamp":"2026-03-12T12:42:55.718Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.8"},"timestamp":"2026-03-12T12:43:53.032Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.6"},"timestamp":"2026-03-12T12:43:54.710Z","session_id":"unknown"}
-{"type":"agent.start","source":"EventLogger","agent_type":"BrowserAgent","agent_id":"afa8e5abd1634ab08","timestamp":"2026-03-12T12:44:12.768Z","session_id":"unknown"}
-{"type":"agent.start","source":"EventLogger","agent_type":"BrowserAgent","agent_id":"ae915ea660f6cab0a","timestamp":"2026-03-12T12:44:14.227Z","session_id":"unknown"}
-{"type":"agent.start","source":"EventLogger","agent_type":"BrowserAgent","agent_id":"abf74b28e6b0c846d","timestamp":"2026-03-12T12:44:15.947Z","session_id":"unknown"}
-{"type":"agent.start","source":"EventLogger","agent_type":"BrowserAgent","agent_id":"a234de43cccd1b951","timestamp":"2026-03-12T12:44:19.123Z","session_id":"unknown"}
-{"type":"agent.start","source":"EventLogger","agent_type":"BrowserAgent","agent_id":"ac631aa8735c0e1ad","timestamp":"2026-03-12T12:44:21.881Z","session_id":"unknown"}
-{"type":"agent.start","source":"EventLogger","agent_type":"BrowserAgent","agent_id":"a35d97f67e6228488","timestamp":"2026-03-12T12:44:23.556Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T12:44:45.245Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-desktop-qa-screenshots","phase":"observe","progress":"0/12","timestamp":"2026-03-12T12:44:57.292Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-mobile-qa-screenshots","phase":"observe","progress":"0/10","timestamp":"2026-03-12T12:45:09.028Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-mobile-qa-screenshots","phase":"think","progress":"0/10","timestamp":"2026-03-12T12:45:16.806Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-mobile-qa-screenshots","phase":"plan","progress":"0/10","timestamp":"2026-03-12T12:45:24.538Z","session_id":"unknown"}
-{"type":"agent.stop","source":"EventLogger","agent_id":"afa8e5abd1634ab08","agent_type":"BrowserAgent","transcript_path":"/home/ser/.claude/projects/-home-ser-projects-timber-frame-site/717bf4b9-e589-4906-8b05-11d7098bf20f/subagents/agent-afa8e5abd1634ab08.jsonl","last_message_preview":"Screenshots captured. Here is my visual QA report:\n\n---\n\n**HOME PAGE (`/`) — /tmp/qa-desktop-home.png**\n\nLayout: Full-width dark theme renders correctly. Navigation bar with logo \"Timber Frame\", menu ","timestamp":"2026-03-12T12:45:24.645Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.2"},"timestamp":"2026-03-12T12:45:26.123Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T12:45:31.109Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-mobile-qa-screenshots","phase":"build","progress":"0/10","timestamp":"2026-03-12T12:45:32.988Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-mobile-qa-screenshots","phase":"execute","progress":"0/10","timestamp":"2026-03-12T12:45:36.372Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-desktop-qa-screenshots","phase":"observe","progress":"0/12","timestamp":"2026-03-12T12:46:32.846Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-desktop-qa-screenshots","phase":"observe","progress":"12/12","timestamp":"2026-03-12T12:46:38.715Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-desktop-qa-screenshots","phase":"complete","progress":"12/12","timestamp":"2026-03-12T12:46:39.147Z","session_id":"unknown"}
-{"type":"agent.stop","source":"EventLogger","agent_id":"ae915ea660f6cab0a","agent_type":"BrowserAgent","transcript_path":"/home/ser/.claude/projects/-home-ser-projects-timber-frame-site/717bf4b9-e589-4906-8b05-11d7098bf20f/subagents/agent-ae915ea660f6cab0a.jsonl","last_message_preview":"Excellent — both pages render very well. I have enough data for a complete QA report.\n\n════ PAI | NATIVE MODE ═══════════════════════\n🗒️ TASK: QA screenshot two blog posts desktop\n📃 CONTENT:\n\n## QA ","timestamp":"2026-03-12T12:47:14.711Z","session_id":"unknown"}
-{"type":"agent.stop","source":"EventLogger","agent_id":"ac631aa8735c0e1ad","agent_type":"BrowserAgent","transcript_path":"/home/ser/.claude/projects/-home-ser-projects-timber-frame-site/717bf4b9-e589-4906-8b05-11d7098bf20f/subagents/agent-ac631aa8735c0e1ad.jsonl","last_message_preview":"All three screenshots captured and analyzed. Now generating the full report.\n\n════ PAI | NATIVE MODE ════════════════════════════\n**TASK:** Mobile QA — 3 pages, iPhone 14 viewport 390x844\n**SCREENSHOT","timestamp":"2026-03-12T12:47:14.832Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.1"},"timestamp":"2026-03-12T12:47:16.163Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T12:47:20.847Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.8"},"timestamp":"2026-03-12T12:47:23.161Z","session_id":"unknown"}
-{"type":"agent.stop","source":"EventLogger","agent_id":"abf74b28e6b0c846d","agent_type":"BrowserAgent","transcript_path":"/home/ser/.claude/projects/-home-ser-projects-timber-frame-site/717bf4b9-e589-4906-8b05-11d7098bf20f/subagents/agent-abf74b28e6b0c846d.jsonl","last_message_preview":"━━━ 📚 LEARN ━━━ 7/7\n\n🧠 LEARNING:\n- `playwright-cli` is the BrowserAgent skill command but it's not installed — `npx playwright screenshot` is the working alternative on this machine\n- For future bro","timestamp":"2026-03-12T12:47:24.109Z","session_id":"unknown"}
-{"type":"rating.captured","source":"RatingCapture","rating":8,"rating_source":"explicit","summary":"Молодец а что показывает Stash: 1 │ Mod: 4 │ Sync: ↑14↓3 с татус лайне и что сделать надо?","timestamp":"2026-03-12T12:47:31.688Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.7"},"timestamp":"2026-03-12T12:47:33.568Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T12:48:04.770Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"2.3"},"timestamp":"2026-03-12T12:48:07.081Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T12:48:32.092Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.2"},"timestamp":"2026-03-12T12:48:33.757Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-mobile-qa-screenshots","phase":"verify","progress":"9/10","timestamp":"2026-03-12T12:49:10.463Z","session_id":"unknown"}
-{"type":"prd.synced","source":"PRDSync","slug":"20260312-mobile-qa-screenshots","phase":"verify","progress":"9/10","timestamp":"2026-03-12T12:49:23.789Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":66,"timestamp":"2026-03-12T14:58:28.088Z","session_id":"unknown"}
+{"type":"a0.health_check","source":"HealthMonitor","all_healthy":false,"services_up":4,"services_down":1,"failures":["VoiceServer"],"timestamp":"2026-03-12T15:00:09.090Z","session_id":"cron"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.6"},"timestamp":"2026-03-12T15:07:47.600Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"4.6"},"timestamp":"2026-03-12T15:07:50.505Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":85,"timestamp":"2026-03-12T15:13:41.023Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"2.9"},"timestamp":"2026-03-12T15:13:43.970Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.6"},"timestamp":"2026-03-12T15:14:36.309Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.5"},"timestamp":"2026-03-12T15:14:38.170Z","session_id":"unknown"}
+{"type":"agent.start","source":"EventLogger","agent_type":"Explore","agent_id":"aa1f8ce271f88972b","timestamp":"2026-03-12T15:15:08.103Z","session_id":"unknown"}
+{"type":"agent.stop","source":"EventLogger","agent_id":"aa1f8ce271f88972b","agent_type":"Explore","transcript_path":"/home/ser/.claude/projects/-home-ser-projects-timber-frame-site/717bf4b9-e589-4906-8b05-11d7098bf20f/subagents/agent-aa1f8ce271f88972b.jsonl","last_message_preview":"Perfect. Now let me create a comprehensive assessment table. Let me compile the data:\n\n## Document Freshness & Relevance Assessment\n\n| # | **Filename** | **Last Date Mentioned** | **File Last Modified","timestamp":"2026-03-12T15:15:45.487Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T15:16:15.318Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"3.0"},"timestamp":"2026-03-12T15:16:18.478Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.2"},"timestamp":"2026-03-12T15:19:26.482Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.4"},"timestamp":"2026-03-12T15:19:28.599Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":73,"timestamp":"2026-03-12T15:26:44.027Z","session_id":"unknown"}
+{"type":"inference.fail","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"15.1","error":"timeout"},"timestamp":"2026-03-12T15:26:59.228Z","session_id":"unknown"}

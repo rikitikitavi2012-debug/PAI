@@ -1,14 +1,41 @@
 {
-  "timestamp": "2026-03-12T04:01:13Z",
-  "checks": {
-    "voice_server": {"status": "DOWN", "latency_ms": null},
-    "github_auth": {"status": "OK", "user": "rikitikitavi2012-debug"},
-    "hooks_count": {"count": 31, "baseline": 30, "alert": false, "note": "Stable at 31 hooks"},
-    "events_size": {"lines": 360, "alert": false},
-    "disk_usage": {"percent": 67, "alert": false},
-    "open_prs": {"count": 9, "stale": [], "error": "403 - Resource not accessible by personal access token", "branches": ["add-agent-tests", "add-evals-code-graders-tests", "add-tests-content-investigation", "feat/add-parser-unit-tests", "fix-telos-parser-tests", "fix/event-rotation-flaky-tests", "prompting-tools-tests", "test-scraping-apify", "test/telos-skills-unit-tests"]},
-    "tests": {"passed": null, "failed": null, "alert": false, "note": "Bun not installed"}
-  },
-  "overall": "WARNING",
-  "alerts": ["VoiceServer DOWN - http://host.docker.internal:8888/health not responding"]
+  "timestamp": "2026-03-12T15:00:09.089Z",
+  "checks": [
+    {
+      "service": "AgentZero",
+      "status": "up",
+      "latencyMs": 235,
+      "detail": "HTTP 200",
+      "timestamp": "2026-03-12T15:00:02.069Z"
+    },
+    {
+      "service": "Z.AI",
+      "status": "up",
+      "latencyMs": 4777,
+      "detail": "GLM-5: OK",
+      "timestamp": "2026-03-12T15:00:06.613Z"
+    },
+    {
+      "service": "VoiceServer",
+      "status": "down",
+      "latencyMs": 228,
+      "detail": "HTTP 503",
+      "timestamp": "2026-03-12T15:00:02.064Z"
+    },
+    {
+      "service": "GitHubCLI",
+      "status": "up",
+      "latencyMs": 1807,
+      "detail": "github.com",
+      "timestamp": "2026-03-12T15:00:03.643Z"
+    },
+    {
+      "service": "GeminiCLI",
+      "status": "up",
+      "latencyMs": 7252,
+      "detail": "",
+      "timestamp": "2026-03-12T15:00:09.089Z"
+    }
+  ],
+  "allHealthy": false
 }

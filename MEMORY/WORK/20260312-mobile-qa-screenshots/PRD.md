@@ -2,7 +2,7 @@
 task: Mobile QA screenshot audit three pages
 slug: 20260312-mobile-qa-screenshots
 effort: Standard
-phase: verify
+phase: complete
 progress: 9/10
 mode: ALGORITHM
 started: 2026-03-12T00:00:00Z
@@ -36,3 +36,8 @@ Not a fix session — audit and report only.
 ## Decisions
 
 ## Verification
+
+- ISC-1..4: Screenshots confirmed via `identify`. home=390x7032, blog-list=390x5879, blog-post=757x19235
+- ISC-5..8: Visual inspection of crops confirms readable text, good hero, hamburger nav, single-col cards
+- ISC-9: Blog post top — keyword tags wrap into multi-line broken grid on mobile (flex-wrap needed)
+- ISC-10: FAIL — blog post page rendered at 757px. Root cause: `src/app/blog/[slug]/page.tsx` line 147 wrapper `max-w-[900px] mx-auto px-4` lacks `overflow-hidden`. The comparison table in `blog-prose` is `display:block; overflow-x:auto` but without `overflow-hidden` on the parent the browser expands the document body to fit the table's intrinsic width (~757px), causing horizontal scroll on the entire page.
