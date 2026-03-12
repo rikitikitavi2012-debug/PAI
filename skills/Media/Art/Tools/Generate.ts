@@ -57,7 +57,7 @@ async function loadEnv(): Promise<void> {
 // Types
 // ============================================================================
 
-type Model = "flux" | "flux-2-max" | "nano-banana" | "nano-banana-pro" | "gpt-image-1" | "gpt-image-1.5";
+type Model = "flux" | "flux-2-max" | "nano-banana" | "nano-banana-pro" | "gpt-image-1" | "gpt-image-1.5" | "ideogram";
 type ReplicateSize = "1:1" | "16:9" | "3:2" | "2:3" | "3:4" | "4:3" | "4:5" | "5:4" | "9:16" | "21:9";
 type OpenAISize = "1024x1024" | "1536x1024" | "1024x1536";
 type GeminiSize = "1K" | "2K" | "4K";
@@ -209,13 +209,13 @@ function showHelp(): void {
   console.log(`
 generate - Image Generation CLI
 
-Generate {YOUR_BUSINESS_NAME} branded images using Flux 1.1 Pro, Nano Banana, or GPT-image-1.
+Generate {YOUR_BUSINESS_NAME} branded images using Flux, Nano Banana, GPT-image, or Ideogram.
 
 USAGE:
   generate --model <model> --prompt "<prompt>" [OPTIONS]
 
 REQUIRED:
-  --model <model>      Model to use: flux, nano-banana, nano-banana-pro, gpt-image-1
+  --model <model>      Model to use: flux, flux-2-max, nano-banana, nano-banana-pro, gpt-image-1, gpt-image-1.5, ideogram
   --prompt <text>      Image generation prompt (quote if contains spaces)
 
 OPTIONS:
@@ -351,8 +351,8 @@ function parseArgs(argv: string[]): CLIArgs {
 
     switch (key) {
       case "model":
-        if (!["flux", "flux-2-max", "nano-banana", "nano-banana-pro", "gpt-image-1", "gpt-image-1.5"].includes(value)) {
-          throw new CLIError(`Invalid model: ${value}. Must be: flux, flux-2-max, nano-banana, nano-banana-pro, gpt-image-1, or gpt-image-1.5`);
+        if (!["flux", "flux-2-max", "nano-banana", "nano-banana-pro", "gpt-image-1", "gpt-image-1.5", "ideogram"].includes(value)) {
+          throw new CLIError(`Invalid model: ${value}. Must be: flux, flux-2-max, nano-banana, nano-banana-pro, gpt-image-1, gpt-image-1.5, or ideogram`);
         }
         parsed.model = value;
         i++; // Skip next arg (value)
@@ -433,6 +433,9 @@ function parseArgs(argv: string[]): CLIArgs {
       case "nano-banana-pro":
         parsed.size = "2K";
         break;
+      case "ideogram":
+        parsed.size = "16:9"; // Ideogram uses Replicate aspect ratios
+        break;
       default: // flux, flux-2-max, nano-banana
         parsed.size = "16:9";
         break;
@@ -455,6 +458,10 @@ function parseArgs(argv: string[]): CLIArgs {
     // Default to 16:9 if not specified
     if (!parsed.aspectRatio) {
       parsed.aspectRatio = "16:9";
+    }
+  } else if (parsed.model === "ideogram") {
+    if (!REPLICATE_SIZES.includes(parsed.size as ReplicateSize)) {
+      throw new CLIError(`Invalid size for ideogram: ${parsed.size}. Must be: ${REPLICATE_SIZES.join(", ")}`);
     }
   } else {
     if (!REPLICATE_SIZES.includes(parsed.size as ReplicateSize)) {
@@ -722,6 +729,29 @@ async function generateWithNanoBananaPro(
   return finalPath;
 }
 
+async function generateWithIdeogram(prompt: string, size: ReplicateSize, output: string): Promise<string> {
+  const token = process.env.REPLICATE_API_TOKEN;
+  if (!token) {
+    throw new CLIError("Missing environment variable: REPLICATE_API_TOKEN");
+  }
+
+  const replicate = new Replicate({ auth: token });
+
+  console.log("📊 Generating with Ideogram v2 (infographics/text/diagrams)...");
+
+  const result = await replicate.run("ideogram-ai/ideogram-v2" as `${string}/${string}`, {
+    input: {
+      prompt,
+      aspect_ratio: size,
+      magic_prompt_option: "Auto",
+    },
+  });
+
+  const finalPath = await saveImage(result, output);
+  console.log(`✅ Image saved to ${finalPath}`);
+  return finalPath;
+}
+
 // ============================================================================
 // Main
 // ============================================================================
@@ -776,6 +806,8 @@ async function main(): Promise<void> {
           promises.push(generateWithGPTImage(finalPrompt, args.size as OpenAISize, varOutput));
         } else if (args.model === "gpt-image-1.5") {
           promises.push(generateWithGPTImage(finalPrompt, args.size as OpenAISize, varOutput, "gpt-image-1.5"));
+        } else if (args.model === "ideogram") {
+          promises.push(generateWithIdeogram(finalPrompt, args.size as ReplicateSize, varOutput));
         }
       }
 
@@ -805,6 +837,8 @@ async function main(): Promise<void> {
       actualOutput = await generateWithGPTImage(finalPrompt, args.size as OpenAISize, args.output);
     } else if (args.model === "gpt-image-1.5") {
       actualOutput = await generateWithGPTImage(finalPrompt, args.size as OpenAISize, args.output, "gpt-image-1.5");
+    } else if (args.model === "ideogram") {
+      actualOutput = await generateWithIdeogram(finalPrompt, args.size as ReplicateSize, args.output);
     }
 
     // Remove background if requested (use actual output path)
