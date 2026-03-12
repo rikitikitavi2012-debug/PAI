@@ -191,7 +191,64 @@ Scarf joint НЕЛЬЗЯ размещать:
 
 > **Притуп (doloto.info):** Курс 5 дней: долото + киянка + угольник. Всё ручное. "Тимбер-фрейм по карману каждому."
 
+### Дополнение: инструменты от мастеров (YouTube extraction)
+
+| Инструмент | Назначение | Источник |
+|-----------|-----------|---------|
+| Makita 7305L (hollow chisel mortiser) | Чистый паз без доработки | John Sweet — японский рынок, не поставляется в США |
+| Barr Tools chisels (McCall, Idaho) | "Best TF chisels in the world" | John Sweet — ламинированная сталь по японской технологии |
+| Oscillating multi-tool | Чистовая обработка пазов после стамески | Two Guys Timberframing |
+| Magic eraser | Стирание карандашных линий при перемаркировке | Two Guys Timberframing |
+| Shop-made dovetail jigs | Серийная порезка dovetail pockets (<1 мин/шт) | Two Guys — с 1/2" reveal offset |
+
+---
+
+## 8. Практические правила от мастеров (YouTube extraction, 2026-03-12)
+
+### Scribe Rule vs Square Rule — выбор метода
+
+| Метод | Когда | Кому | Преимущество |
+|-------|-------|------|-------------|
+| **Scribe Rule** | 1-2 мастера, уникальные рамы | Мастер-одиночка | Максимальная подгонка к материалу |
+| **Square Rule** | Команда, серийное производство | Бригада 3+ | Детерминированная математика, масштабируется |
+
+> "Regardless of what happened when the beam was being cut, the joinery is always going to fit." — John Sweet (о Square Rule)
+
+### Числовые константы Square Rule
+- 8×8" (фактически ~7-7/8") → **7-1/2"** (190 мм)
+- 8×10" → **9-1/2"** (241 мм)
+- Все соединения режутся по константе < минимального фактического размера
+
+### Bladed Scarf — сильнейшее соединение для сращивания
+
+```
+Раскладка: 24" lap + 5" tab = 29" (737 мм) общая длина
+Прочность: "twice as strong as anything else" vs простые lap joints
+Применение: (1) сращивание балок, (2) ремонт сгнивших оснований стоек
+Тест качества: если можно разобрать после сборки → слишком свободный
+Tab intentionally oversize: 5" tab в 4" pocket → подгонка при сборке
+```
+
+### Критические правила разметки (от Two Guys Timberframing)
+
+1. **Линейка от 1, не от 0** — конец линейки повреждён/неточен
+2. **Crown up ПЕРЕД разметкой** — найти и пометить "TOP" на каждом брусе
+3. **Один базовый фейс** — все замеры от одной грани
+4. **Fit-first на rough-cut** — ставить деталь физически и обводить
+5. **Острый карандаш** — тупой = 1/16"–1/8" неопределённости
+6. **Anchor Seal на КАЖДОЕ соединение** — не только торцы
+
+### Production rates (реальные бенчмарки)
+
+| Операция | Время | Бригада | Источник |
+|----------|-------|---------|---------|
+| Все knee braces для 44 ft рамы | 4 часа | 2 чел | Two Guys |
+| Dovetail pocket (серия) | <1 мин/шт | 1 чел + jig | Two Guys |
+| Стропильная система (полный цикл) | 6 дней | 2 чел | Two Guys |
+| Подъём barn frame (multi-story) | 4 дня | 2 чел + crane | Two Guys |
+| Разгрузка полного прицепа брусьев | 5-6 часов | forklift | John Sweet |
+
 ---
 
 *Скомпилировано: Navi/PAI 2026-03-12.*
-*Источники: TFEC 2-2018, Chappell "A Timber Framer's Workshop", Sobon "Timber Frame Construction", Beemer "Learn to Timber Frame".*
+*Источники: TFEC 2-2018, Chappell, Sobon, Beemer + YouTube extraction (10 videos, Two Guys Timberframing, Essential Craftsman, Northmen Guild, Shelter Institute, Timber Frame HQ).*
