@@ -3,11 +3,15 @@
 ## Американское возрождение (1970-е)
 
 ### Tedd Benson (р. ~1950)
-- Основатель Bensonwood (1974, Нью-Хэмпшир)
-- Автор: "Building the Timber Frame House" (1981) — манифест возрождения, "The Timber-Frame Home", "Timberframe: The Art and Craft" (2001)
+- Основатель Bensonwood (1972, Нью-Хэмпшир → Keene, NH)
+- **Книги:** "Building the Timber Frame House" (1980, манифест возрождения), "The Timber-frame Home" (1988), "The Revised and Updated Timber-Frame Home" (1997), "Timberframe: The Art and Craft" (1999)
 - PBS "This Old House", Good Morning America
 - Пионер интеграции timber frame с высокоэффективным утеплением (SIPs)
-- **Значение**: без Benson американского TF revival не было бы
+- **Tektoniks** (2018): 3D → CNC (6-осевые роботы) → off-site manufacturing; 110,000 sq.ft. завод
+- **0.6 ACH при -50 Pa** — benchmark пассивного дома от Bensonwood
+- **Вехи:** 1975 первое off-site, 1997 CNC, 2012 Unity Homes, 2018 Tektoniks
+- **Бизнес-модель:** партнёрство (архитекторы + строители), фиксированные расходы, библиотека компонентов
+- **Значение**: без Benson американского TF revival не было бы; показал путь от craft к industrial
 
 ### Jack Sobon
 - Мастер-плотник, исследователь исторических техник
@@ -57,10 +61,16 @@
 
 ### Ben Law (Великобритания)
 - Эксперт по roundwood timber framing (каркас из необработанного круглого леса)
-- Автор: "Roundwood Timber Framing", "Woodland Craft"
-- Построил Woodland House из собственного леса
-- Курсы по устойчивому лесопользованию + пермакультура
-- **Значение**: показал что TF может быть ultra-sustainable и доступным
+- Автор: "Roundwood Timber Framing: Building Naturally Using Local Resources" (400+ фото)
+- **Woodland House** (Grand Designs 2001, BBC) — принёс roundwood TF мировую известность
+- **Woodland Barn** — workshop из roundwood
+- Founding member FSC, живёт в Prickly Nut Wood с 1991
+- **Породы:** Sweet chestnut (каштан), European larch (лиственница) — coppice management
+- **Техники:** Specialist jointing для roundwood, scribing (от log building), cruck frames
+- **Цены:** Roundwood frames от £1,250; Roundwood caravans от £12,500
+- The Roundwood Timber Framing Company Limited
+- **Климат UK ≈ СПб:** влажность, умеренные температуры → прямая применимость
+- **Значение**: показал что TF может быть ultra-sustainable, доступным (~30% экономия) и работать в холодном влажном климате
 
 ### Cecil Alec Hewett (Великобритания, историк)
 - Автор: "The Development of Carpentry 1200-1700"
