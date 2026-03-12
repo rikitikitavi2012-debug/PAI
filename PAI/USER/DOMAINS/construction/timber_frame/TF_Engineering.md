@@ -381,5 +381,48 @@ Oregon, 1930-е годы. Не проходит современный расч�
 
 ---
 
+---
+
+## 11. M&T Structural Testing — ключевые числа (Miller & Schmidt, UWyo)
+
+> Источник: 22 tension + 10 shear full-scale specimens, Yellow Poplar + White Oak pegs.
+
+### Несущая способность на растяжение (tension)
+
+| Параметр | Значение | COV |
+|----------|----------|-----|
+| Mean yield load (2-peg, ∅25 мм) | **5,549 lb (24.7 kN)** | 19.5% |
+| Mean yield stress | 1,713 psi (11.8 МПа) | 19.5% |
+| Ultimate load range | 4,220 — 12,210 lb (18.8 — 54.3 kN) | — |
+| Factor of Safety vs EYM | **2.20** | — |
+
+### Проектное уравнение (для ЛЮБЫХ пород)
+
+```
+Fv = 1365 × G_PEG^0.926 × G_BASE^0.778  (psi)
+
+Где G = specific gravity (плотность):
+  Дуб белый: 0.68    Сосна: 0.42-0.50
+  Дуб красный: 0.63  Ель: 0.35-0.40
+  Лиственница: 0.59  Берёза: 0.55-0.65
+```
+
+> **Для контента:** "Одно соединение шип-паз с двумя дубовыми нагелями ∅25 мм
+> выдерживает на разрыв 24.7 кН (2.5 тонны) с запасом прочности 2.2×."
+
+### Латеральная жёсткость — knee braces НЕ ДОСТАТОЧНЫ одни
+
+| Порода frame | Stiffness (lb/in) | Требуемая (H/400) | % от нормы |
+|-------------|-------------------|-------------------|-----------|
+| White Oak | 3,060 | 3,720 | **82%** ❌ |
+| Red Oak | 1,460 | 3,720 | 39% ❌ |
+| Douglas Fir | 1,380 | 3,720 | 37% ❌ |
+| E. White Pine | 900 | 3,720 | 24% ❌ |
+
+> **ВСЕ** unsheathed frames не проходят по жёсткости. Knee braces обязательно
+> дополнять SIP-панелями или диагональной обшивкой для боковой устойчивости.
+
+---
+
 *Скомпилировано: Navi/PAI 2026-03-12.*
-*Источники: TFEC 1-2019, Eurocode 5, СП 64.13330.2017, Chappell, EN 14080:2013, YouTube extraction (10 videos), Glulam academic research (ClaudeResearcher deep).*
+*Источники: TFEC 1-2019, Eurocode 5, СП 64.13330.2017, Chappell, EN 14080:2013, Miller & Schmidt (UWyo, 2004), Erikson & Schmidt (2003), YouTube extraction (10 videos), 4× ClaudeResearcher deep research.*
