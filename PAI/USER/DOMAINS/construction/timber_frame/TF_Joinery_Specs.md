@@ -250,5 +250,54 @@ Tab intentionally oversize: 5" tab в 4" pocket → подгонка при сб
 
 ---
 
+## 9. Количественные данные прочности соединений (Academic research)
+
+> Источник: 13 рецензируемых публикаций (1999-2026), полноразмерные испытания.
+
+### Mortise & Tenon — экспериментальные данные
+
+**60 полноразмерных образцов (Schmidt & Daniels, UWyo, Douglas fir + white oak pegs):**
+- Design load factor: фактическая нагрузка > **2.0× расчётной**
+- Failure mode hierarchy: peg bending > bearing/crushing > peg shear
+- Edge distance ≥ 2.5D → гарантия ductile (пластичного) разрушения
+- Tight fit → меньше повреждений нагелей (shoulder bearing помогает)
+
+**Rotational stiffness:**
+- Неусиленный M&T: **30-120 kNm/rad**
+- С усилением (GFRP/steel): до **470 kNm/rad**
+- Bi-linear модель: K1 (elastic) → yield → K2 (post-yield) → within 20% от эксперимента
+
+### Dovetail — критический параметр: зазор
+
+| Зазор (мм) | Потеря yield moment | Initial sliding |
+|------------|-------------------|-----------------|
+| 0 | 0% | ~0 |
+| 1.5 | **~50%** | 0.08 rad |
+
+> **КРИТИЧНО:** 1.5 мм зазор = потеря 50% yield moment. Усушка создаёт зазоры → обслуживание обязательно.
+
+### Scarf joints — реалистичные ожидания
+
+| Тип scarf | % от цельной балки (изгиб) | % жёсткости |
+|-----------|---------------------------|-------------|
+| Drawbolts (простой) | 27.5% | 32% |
+| Oak keys + clamps | 28.3% | 35% |
+| Steel clamps + tie-rods | 31.0% | 43% |
+| Side-halved & bridled (лучший) | ~35% | Наивысшая |
+
+> "Bladed scarf = twice as strong" → правда при сравнении с simple halved (+40-70%), НЕ vs цельная балка.
+
+### Knee braces — парадокс прочности
+
+| Параметр | Один (без обшивки) | С SIP обшивкой |
+|----------|-------------------|----------------|
+| Прочность (strength) | **Исключительная** | Ещё выше |
+| Жёсткость (stiffness) | Недостаточная | Достаточная |
+
+> Knee braces = страховка прочности, НЕ основная система жёсткости.
+> С SIP-панелями — картина кардинально меняется.
+
+---
+
 *Скомпилировано: Navi/PAI 2026-03-12.*
-*Источники: TFEC 2-2018, Chappell, Sobon, Beemer + YouTube extraction (10 videos, Two Guys Timberframing, Essential Craftsman, Northmen Guild, Shelter Institute, Timber Frame HQ).*
+*Источники: TFEC 2-2018, Chappell, Sobon, Beemer, YouTube extraction (10 videos), Academic research (13 peer-reviewed, 1999-2026).*
