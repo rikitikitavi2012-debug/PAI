@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-03-10T01:23:05.986Z",
+  "updated": "2026-03-12T00:19:55.377Z",
   "observations": [
     {
       "type": "principle",
@@ -332,6 +332,34 @@
       "observation": "Frustrated — Navi forgot context despite explicit evidence shown",
       "timestamp": "2026-03-10T04:21:47+03:00",
       "session_id": "38759d93-6115-44ec-8e12-8760acd68808",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Multiple quality issues found; frustration with image generation choices",
+      "timestamp": "2026-03-12T01:58:50+03:00",
+      "session_id": "fdc6f977-f8f7-4202-858c-62c0dbc4fecd",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Quality concerns about generated images, questioning model choices",
+      "timestamp": "2026-03-12T02:12:16+03:00",
+      "session_id": "fdc6f977-f8f7-4202-858c-62c0dbc4fecd",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration — images in new articles need rework",
+      "timestamp": "2026-03-12T02:26:46+03:00",
+      "session_id": "fdc6f977-f8f7-4202-858c-62c0dbc4fecd",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Dissatisfied with image realism, requesting correction",
+      "timestamp": "2026-03-12T02:59:15+03:00",
+      "session_id": "fdc6f977-f8f7-4202-858c-62c0dbc4fecd",
       "confirmed": 1
     }
   ]

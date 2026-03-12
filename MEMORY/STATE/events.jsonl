@@ -358,3 +358,14 @@
 {"type":"a0.message_sent","source":"AgentZero","data":{"context_id":"new","preview":"Как идёт исследование конкурентов? Покажи результа"},"timestamp":"2026-03-11T22:29:25.957Z","session_id":"unknown"}
 {"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.4"},"timestamp":"2026-03-11T22:29:49.308Z","session_id":"unknown"}
 {"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.6"},"timestamp":"2026-03-11T22:29:51.329Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":92,"timestamp":"2026-03-12T12:38:50.017Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"2.8"},"timestamp":"2026-03-12T12:39:09.755Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.0"},"timestamp":"2026-03-12T12:39:19.976Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"2.9"},"timestamp":"2026-03-12T12:39:36.549Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":73,"timestamp":"2026-03-12T12:39:56.477Z","session_id":"unknown"}
+{"type":"voice.sent","source":"VoiceCompletion","character_count":0,"timestamp":"2026-03-12T12:40:35.700Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"3.2"},"timestamp":"2026-03-12T12:40:38.841Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"3.0"},"timestamp":"2026-03-12T12:41:20.519Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"5.4"},"timestamp":"2026-03-12T12:41:22.762Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.1"},"timestamp":"2026-03-12T12:42:19.743Z","session_id":"unknown"}
+{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"2.9"},"timestamp":"2026-03-12T12:42:21.348Z","session_id":"unknown"}

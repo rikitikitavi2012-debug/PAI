@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 35
-- **Last Crystallized:** 2026-03-10
+- **Observation Count:** 39
+- **Last Crystallized:** 2026-03-12
 - **Source:** Converted from workflow.json
 
 ---
@@ -159,3 +159,7 @@
 - 2026-03-09: [anti-pattern] Frustrated — unclear instructions, needs better guidance
 - 2026-03-09: [anti-pattern] Pointing out missing option in dropdown list
 - 2026-03-10: [anti-pattern] Frustrated — Navi forgot context despite explicit evidence shown
+- 2026-03-11: [anti-pattern] Multiple quality issues found; frustration with image generation choices
+- 2026-03-11: [anti-pattern] Quality concerns about generated images, questioning model choices
+- 2026-03-11: [anti-pattern] Mild frustration — images in new articles need rework
+- 2026-03-12: [anti-pattern] Dissatisfied with image realism, requesting correction

@@ -8,6 +8,7 @@
     "PAI_CONFIG_DIR": "/home/ser/.config/PAI",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
+  "includeGitInstructions": false,
   "permissions": {
     "allow": [
       "Bash",
@@ -62,7 +63,6 @@
     ],
     "defaultMode": "default"
   },
-  "includeGitInstructions": false,
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [],
   "hooks": {
@@ -885,6 +885,7 @@
       "includeGitInstructions: false saves ~2K tokens by skipping built-in git system prompt."
     ]
   },
+  "effortLevel": "medium",
   "plansDirectory": "Plans/",
   "loadAtStartup": {
     "_docs": "Files force-loaded into session context at startup by LoadContext.hook.ts. Paths relative to PAI_DIR. Injected as <system-reminder> blocks.",
@@ -1029,13 +1030,13 @@
     "skills": 13,
     "workflows": 174,
     "hooks": 31,
-    "signals": 95,
-    "files": 115,
-    "work": 153,
-    "sessions": 1241,
-    "research": 18,
-    "ratings": 178,
-    "updatedAt": "2026-03-11T18:29:53.431Z"
+    "signals": 105,
+    "files": 121,
+    "work": 165,
+    "sessions": 1526,
+    "research": 35,
+    "ratings": 191,
+    "updatedAt": "2026-03-12T11:15:50.981Z"
   },
   "mcpServers": {
     "supabase": {

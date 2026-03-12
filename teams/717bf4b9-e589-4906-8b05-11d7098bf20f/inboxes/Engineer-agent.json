@@ -1,0 +1,8 @@
+[
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"6\",\"subject\":\"ISC-48: Фильтрация портфолио по типу\",\"description\":\"Компонент фильтрации по типу (терраса/веранда/навес/пергола) на portfolio/page.tsx\",\"assignedBy\":\"team-lead\",\"timestamp\":\"2026-03-12T09:46:56.068Z\"}",
+    "timestamp": "2026-03-12T09:46:56.068Z",
+    "read": false
+  }
+]

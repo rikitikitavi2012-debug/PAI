@@ -1,25 +1,10 @@
-**7 из 7 MERGED!** 
+Все 4 установлены:
 
-```
-═══ PAI ═══════════════════════════
-🔧 CHANGE: Все 7 оставшихся PR замержены в master
-✅ VERIFY: Baseline 248 pass / 4 fail, все PR delta: 0, все review LOW/MEDIUM
-🗣️ Navi: Полный успех. Итого замержено 9/9 PR:
-```
+| Скилл | Пакеты | Время |
+|-------|--------|-------|
+| Scraping/Apify | apify-client + 71 | 10мин (большой) |
+| Agents/Tools | handlebars, yaml | мгновенно |
+| Telos/ReportTemplate | Next.js 14 + React 18 + Tailwind 3 | 53с |
+| Telos/DashboardTemplate | Next.js 15 + React 19 + Tailwind 4 | 46с |
 
-| PR | Что | Статус |
-|----|-----|--------|
-| #36 | TelosParser fix tests | MERGED |
-| #37 | EventRotation fix tests | MERGED |
-| #38 | Prompting Tools tests | MERGED |
-| #39 | Evals Graders tests | MERGED |
-| #40 | Parser skills tests | MERGED |
-| #41 | Telos utility tests | MERGED |
-| #42 | Scraping Apify tests | MERGED |
-| #43 | ContentAnalysis+Investigation tests | MERGED |
-| #44 | Agents Tools tests | MERGED |
-
-**Итого за сессию:**
-- Пофиксил 4 бага в JulesAutoMerge (baseline comparison, splice, GITHUB_TOKEN, merge-base)
-- Тесты выросли с 230 → 248 pass
-- Ещё 3 Jules задачи в работе (HealthMonitor, Media, Security Recon) — PR придут позже
+Все слепые зоны по зависимостям закрыты. Worktrees и health-report оставил — вернёмся когда будет время.

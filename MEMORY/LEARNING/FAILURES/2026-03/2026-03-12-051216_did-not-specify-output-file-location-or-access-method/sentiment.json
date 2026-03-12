@@ -1,0 +1,8 @@
+{
+  "rating": 4,
+  "summary": "Mild frustration — can't locate output files",
+  "detailed_context": "Ivan completed the Ideogram integration task successfully (images were generated, code compiled, committed). However, he's now unable to locate the /tmp folder containing the generated images in VS Code. This is a follow-up problem arising from the work Navi helped complete. The tone is mildly frustrated — not angry, but indicating a friction point: Navi provided working code but didn't clarify WHERE the outputs would be stored or HOW to access them from VS Code's file explorer. Ivan had to discover this limitation himself. This reveals an expectation: when providing file-generating code, Navi should proactively explain output location and how to view results. The 'не могу найти' (can't find) indicates Ivan tried and failed, suggesting Navi's instructions were incomplete. Not severe frustration (no profanity, direct language), but clear dissatisfaction with the practical usability gap between 'code works' and 'user can easily access results.'",
+  "session_id": "0ee34029-ecc1-463e-ab62-d25e5ad58760",
+  "captured_at": "2026-03-12T12:12:16.578Z",
+  "transcript_source": "0ee34029-ecc1-463e-ab62-d25e5ad58760.jsonl"
+}

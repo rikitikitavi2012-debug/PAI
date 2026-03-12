@@ -2,8 +2,8 @@
 task: "Внедрить TF-экспертность в сайт и TFContent skill"
 slug: "20260312-033000_tf-expertise-apply"
 effort: extended
-phase: execute
-progress: 0/16
+phase: complete
+progress: 16/16
 mode: algorithm
 started: 2026-03-12T03:30:00
 updated: 2026-03-12T03:30:00
@@ -35,7 +35,7 @@ updated: 2026-03-12T03:30:00
 - [x] ISC-13: Статья "chto-takoe" — таблица сравнения обновлена
 - [x] ISC-14: Статья "chto-takoe" — добавлена секция о мировых мастерах/традициях
 - [x] ISC-15: Все изменения закоммичены
-- [ ] ISC-16: Анти-критерий: НЕ сломан существующий формат и структура файлов
+- [x] ISC-16: Анти-критерий: НЕ сломан существующий формат и структура файлов
 
 ## Decisions
 
