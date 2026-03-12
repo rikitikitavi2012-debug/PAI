@@ -84,3 +84,15 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | TF history timeline | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/05-history.md` |
 | TF organizations & media | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/06-organizations-and-media.md` |
 | TF expertise strategy | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/07-strategy-plan.md` |
+
+## Timber Frame Engineering Domain
+
+| Topic | Path |
+|-------|------|
+| TF engineering calculations (M&T, bent frame) | `PAI/USER/DOMAINS/construction/timber_frame/TF_Engineering.md` |
+| TF joinery specs (sizes, tolerances, pegs) | `PAI/USER/DOMAINS/construction/timber_frame/TF_Joinery_Specs.md` |
+| TF materials (glulam, larch, coatings) | `PAI/USER/DOMAINS/construction/timber_frame/TF_Materials.md` |
+| TF climate adaptation (SPB specifics, TCO) | `PAI/USER/DOMAINS/construction/timber_frame/TF_Climate_SPB.md` |
+| TF ↔ SP64 ↔ TFEC bridge (design algorithm) | `PAI/USER/DOMAINS/construction/timber_frame/TF_vs_SP64_Bridge.md` |
+| SP64 Wooden Structures (base norms) | `PAI/USER/DOMAINS/construction/normatives/SP64_Wooden_Structures.md` |
+| Construction domain overview | `PAI/USER/DOMAINS/construction/README.md` |

@@ -33,7 +33,15 @@ If this directory exists, load and apply any PREFERENCES.md or resources found t
 - `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/05-history.md` — хронология 7000 лет
 - `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/06-organizations-and-media.md` — организации + YouTube
 
-**Принцип экспертного контента:** демонстрировать понимание "ПОЧЕМУ", а не "ЧТО". Каждое решение объяснять через причинно-следственные связи. Ссылаться на мастеров и книги как доказательство глубины знаний.
+**Инженерные данные (load on-demand для технических статей):**
+- `~/.claude/PAI/USER/DOMAINS/construction/timber_frame/TF_Engineering.md` — Расчёты M&T, bent frame, мост TFEC↔СП 64
+- `~/.claude/PAI/USER/DOMAINS/construction/timber_frame/TF_Joinery_Specs.md` — Размеры, допуски, нагели
+- `~/.claude/PAI/USER/DOMAINS/construction/timber_frame/TF_Materials.md` — GL24h, лиственница, покрытия, поставщики
+- `~/.claude/PAI/USER/DOMAINS/construction/timber_frame/TF_Climate_SPB.md` — Адаптация к климату, TCO, аргументы для клиентов
+- `~/.claude/PAI/USER/DOMAINS/construction/timber_frame/TF_vs_SP64_Bridge.md` — Алгоритм проектирования по двум стандартам
+- `~/.claude/PAI/USER/DOMAINS/construction/normatives/SP64_Wooden_Structures.md` — Базовые расчёты по СП 64
+
+**Принцип экспертного контента:** демонстрировать понимание "ПОЧЕМУ", а не "ЧТО". Каждое решение объяснять через причинно-следственные связи. Ссылаться на мастеров и книги как доказательство глубины знаний. Подкреплять инженерными расчётами из DOMAINS.
 
 **Do NOT write content without reading TFExpertise.md first. This is the core differentiator — expert-level construction knowledge, not generic copywriting.**
 
