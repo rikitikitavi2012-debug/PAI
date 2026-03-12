@@ -26,12 +26,25 @@ If this directory exists, load and apply any PREFERENCES.md or resources found t
 3. Target article brief (from `docs/A0_TASK_BRIEF.md` or user instructions)
 
 **Deep expertise (load on-demand for specific topics):**
-- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/01-masters-world.md` — 15 мировых мастеров (подробные био)
-- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/02-masters-russia.md` — российские мастера и школы
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/01-masters-world.md` — 15 мировых мастеров (Benson/Tektoniks, Ben Law/roundwood)
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/02-masters-russia.md` — российские мастера (Притуп + школы)
 - `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/03-books-and-standards.md` — 16 книг + все стандарты
 - `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/04-joinery-and-typology.md` — 12 соединений + 10 типологий
 - `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/05-history.md` — хронология 7000 лет
 - `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/06-organizations-and-media.md` — организации + YouTube
+
+**YouTube & Blog insights (load for practitioner-level content):**
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/08-youtube-insights.md` — 10 videos, 500+ insights от мастеров (Square Rule, bladed scarf, production rates)
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/12-blog-insights.md` — doloto.info, timberframehq, bensonwood, ben-law
+
+**Academic & Engineering (load for technical articles):**
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/09-glulam-connections.md` — EN 14080, delamination, fire (shear=3.5 all GL grades)
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/11-structural-analysis-joinery.md` — 13 papers: M-theta, dovetail gap=-50%, scarf=28-31%
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/13-engineering-deep-dive.md` — Snow, SIP R-24, roundwood +40%, foundations, costs
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/14-mortise-tenon-structural-testing.md` — Miller/Schmidt: design equation, 22 specimens, peg data
+
+**Historical texts (load for authority-building content):**
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/10-historical-texts.md` — Moxon 1703, Tredgold 1820 (L/480), Nicholson, Audel's, русское зодчество
 
 **Инженерные данные (load on-demand для технических статей):**
 - `~/.claude/PAI/USER/DOMAINS/construction/timber_frame/TF_Engineering.md` — Расчёты M&T, bent frame, мост TFEC↔СП 64
