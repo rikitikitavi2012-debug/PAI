@@ -21,9 +21,19 @@ If this directory exists, load and apply any PREFERENCES.md or resources found t
 
 **Before ANY content creation, read these files in order:**
 
-1. `~/.claude/skills/TFContent/TFExpertise.md` — Construction domain knowledge (materials, norms, pricing, climate)
+1. `~/.claude/skills/TFContent/TFExpertise.md` — Core domain knowledge (materials, norms, pricing, climate, masters, joinery, typology)
 2. `~/.claude/skills/TFContent/TFBrandVoice.md` — Tone of Voice rules, persona targeting, anti-patterns
 3. Target article brief (from `docs/A0_TASK_BRIEF.md` or user instructions)
+
+**Deep expertise (load on-demand for specific topics):**
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/01-masters-world.md` — 15 мировых мастеров (подробные био)
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/02-masters-russia.md` — российские мастера и школы
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/03-books-and-standards.md` — 16 книг + все стандарты
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/04-joinery-and-typology.md` — 12 соединений + 10 типологий
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/05-history.md` — хронология 7000 лет
+- `~/.claude/MEMORY/RESEARCH/2026-03/tf-knowledge-base/06-organizations-and-media.md` — организации + YouTube
+
+**Принцип экспертного контента:** демонстрировать понимание "ПОЧЕМУ", а не "ЧТО". Каждое решение объяснять через причинно-следственные связи. Ссылаться на мастеров и книги как доказательство глубины знаний.
 
 **Do NOT write content without reading TFExpertise.md first. This is the core differentiator — expert-level construction knowledge, not generic copywriting.**
 

@@ -72,3 +72,15 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | Projects | `PAI/USER/PROJECTS/PROJECTS.md` |
 | Business context | `PAI/USER/BUSINESS/` |
 | All USER context index | `PAI/USER/README.md` |
+
+## Timber Frame Knowledge Base
+
+| Topic | Path |
+|-------|------|
+| TF world masters & pioneers | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/01-masters-world.md` |
+| TF Russian masters & schools | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/02-masters-russia.md` |
+| TF books & standards | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/03-books-and-standards.md` |
+| TF joinery & construction types | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/04-joinery-and-typology.md` |
+| TF history timeline | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/05-history.md` |
+| TF organizations & media | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/06-organizations-and-media.md` |
+| TF expertise strategy | `MEMORY/RESEARCH/2026-03/tf-knowledge-base/07-strategy-plan.md` |
