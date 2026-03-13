@@ -9,7 +9,7 @@
 |---|--------|------|------|--------|
 | P0 | PAI + TELOS (Личная AI-инфраструктура) | `~/.claude` | TypeScript, Bun, Hooks | Активен, непрерывный (PAI v4.0.3 (март 2026)) |
 | P3 | Цифровой Прораб (PWA приложение) | `/home/ser/projects/digital-foreman-app/` | React 19 + Vite 7 + TailwindCSS 4 + Zustand + Dexie.js (Ind… | Активная разработка (scaffolding + 3 модуля готовы) |
-| P1 | Сайт Timber Frame (премиум террасы, веранды, навесы) | `/home/ser/projects/timber-frame-site/` | Next.js 16 / TypeScript / Tailwind v4 / shadcn/ui / Vercel | MVP LIVE + ВИЗУАЛ ГОТОВ — timber-frame-spb.ru задеплоен 08.03.2026. Портфолио п… |
+| P1 | Сайт Timber Frame + Благоустройство (премиум террасы + полный цикл участка) | `/home/ser/projects/timber-frame-site/` | Next.js 16 / TypeScript / Tailwind v4 / shadcn/ui / Vercel | MVP LIVE + ВИЗУАЛ ГОТОВ — timber-frame-spb.ru задеплоен 08.03.2026. Портфолио в… |
 
 ## Планируемые
 
