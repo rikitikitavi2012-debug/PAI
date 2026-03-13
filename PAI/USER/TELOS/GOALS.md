@@ -190,7 +190,7 @@
 | G11 | M1, M3 | S7 | Активна (непрерывная) |
 | G12 | M1, M0 | S0 | Идея |
 | G13 | M1, M3 | S7 | Активна |
-| G14 | M1, M3, M0 | S1 | Активна (Фаза 2) |
+| G14 | M1, M3, M0 | S1 | Активна (Фаза 2→3, контекст интегрирован) |
 
 ---
 
@@ -347,7 +347,7 @@
 **Поддерживает:** M1 (Инновации), M3 (Техно-суверенитет), M0 (Независимость)
 **Стратегия:** S1 (AI-автоматизация)
 **Срок:** Непрерывный (фазы по сезонам)
-**Описание:** Формирование и развитие цифровой бригады AI-агентов как единого рабочего организма. Один человек + бригада = производительность команды из 5-10. Каждый агент в PAI контексте (TELOS, ABOUTME, правила), каждый знает свою роль и может получить задачу от Navi или Ivan. Бригада — главный force multiplier для всех проектов.
+**Описание:** Формирование и развитие цифровой бригады AI-агентов как единого рабочего организма. Один человек + бригада = производительность команды из 5-10. Каждый агент в PAI контексте (TELOS, ABOUTME, DOMAINS, правила), каждый знает свою роль и может получить задачу от Navi или Ivan. Бригада — главный force multiplier для всех проектов. Каждый агент растёт вместе с экспертизой Ivan — новые домены автоматически попадают ко всем через sync/symlinks.
 
 **Почему отдельная цель (не только S1):**
 - S1 = стратегия (как автоматизировать). G14 = цель (построить бригаду как боевую единицу)
@@ -379,22 +379,30 @@
 - [x] 5/5 T1 агентов в PAI контексте — 2026-03-12
 - [x] BRIGADE.md — единый реестр, матрица делегирования, health check
 
-*Фаза 2: Срабатывание и коммуникации (текущая)*
+*Фаза 2: Срабатывание и коммуникации (текущая → завершается)*
 - [x] Navi → Jules: async задачи через JulesAPI.ts
 - [x] Navi → A0: sync/async через AgentZero.ts + MCP
 - [x] Navi → Gemini: headless через `gemi -p "" -y -o text`
 - [x] Navi → OpenCode: headless через `opencode run`
 - [x] Jules → A0: code review в JulesAutoMerge pipeline
-- [ ] A0 → Navi: обратная связь по результатам (сейчас pull, нужен push)
+- [x] A0 knowledge sync: Weekly PAI Context Sync (Вс 02:00) — TELOS + DOMAINS + USER → knowledge/custom/ (104 файла)
+- [x] A0 behaviour.md: обновлён с доменной экспертизой и протоколами
+- [x] A0 health check: auto-pull PAI-personal при каждой проверке
+- [x] Gemini: BELIEFS + WISDOM @imports, полная routing table (DOMAINS, landscaping, market, normatives, TF KB)
+- [x] OpenCode: BELIEFS + WISDOM symlinks, полная routing table (DOMAINS, landscaping, market, processes)
+- [x] BrigadeAudit workflow: 3-модельный аудит TELOS (Gemini + Kimi + GLM-5 → consensus)
+- [x] Единый health monitoring бригады (brigade-watch.sh в Kitty)
+- [ ] A0 → Navi: push-уведомления по результатам (сейчас pull через `poll`)
 - [ ] Cross-agent координация: агент А запрашивает помощь агента Б через Navi
-- [ ] Единый health monitoring всей бригады (cron/dashboard)
 
-*Фаза 3: Автономные операции (межсезонье 2026-2027)*
+*Фаза 3: Автономные операции (сезон 2026 → межсезонье)*
+- [x] A0 7 scheduled tasks: health check, TELOS progress, learning mining, security scan, context sync, memory compaction, upstream monitor
 - [ ] A0 как дежурный: мониторинг проектов, алерты, автофиксы
 - [ ] Jules: proactive задачи без указки (security scans, dependency updates)
-- [ ] Gemini/OpenCode: deeper интеграция (плагины, MCP, custom agents)
+- [ ] OpenCode custom agents: construction-reviewer, telos-auditor (markdown в agents/)
 - [ ] Multi-agent workflows: цепочки задач (Navi → Jules → A0 review → merge)
 - [ ] Brigade self-healing: если агент упал, другие подхватывают
+- [ ] DOMAINS auto-growth: новый домен у Ivan → автоматически у всех агентов
 
 *Фаза 4: Compound Effect (2027+)*
 - [ ] Каждый агент обучается на результатах бригады (shared FRAMES)

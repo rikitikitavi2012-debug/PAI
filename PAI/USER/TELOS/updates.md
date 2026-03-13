@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-03-13 — G14 обновлена: бригадная интеграция завершена
+
+**Что:** Обновление G14 (Цифровая бригада) по итогам полной интеграции всех агентов.
+
+**Изменения в Фазе 2 (9 пунктов завершены):**
+- A0: knowledge/custom/ заполнен (104 файла: TELOS + DOMAINS + USER)
+- A0: Weekly PAI Context Sync создан (Вс 02:00 MSK)
+- A0: behaviour.md обновлён с доменной экспертизой
+- A0: health check с auto-pull PAI-personal
+- Gemini CLI: +BELIEFS, +WISDOM @imports, routing table расширена на DOMAINS/landscaping/market/normatives
+- OpenCode: +BELIEFS, +WISDOM symlinks, routing table расширена аналогично
+- BrigadeAudit workflow создан и зарегистрирован в Telos skill
+
+**Фаза 3 обновлена:**
+- A0 scheduled tasks (7 шт) перенесены из TODO в done
+- Добавлены: OpenCode custom agents, DOMAINS auto-growth
+
+**Описание G14 расширено:** добавлено про DOMAINS sync и рост экспертизы вместе с Ivan.
+
+---
+
 ## 2026-03-13 — Мульти-модельный аудит TELOS (Gemini + Kimi K2.5 + GLM-5/A0)
 
 **Метод:** 3 модели сканировали `/home/ser/.claude/PAI/USER/` параллельно с разных линз:
