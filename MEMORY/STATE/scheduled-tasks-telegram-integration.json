@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-03-13T21:02:00Z",
+  "task": "Connect scheduled tasks to Telegram notifications",
+  "status": "COMPLETED",
+  "changes": {
+    "modified_tasks": 7,
+    "new_tasks": 1,
+    "tasks_updated": [
+      {
+        "uuid": "4llSE4LR",
+        "name": "Weekly Security Scan — PAI-personal",
+        "schedule": "Sun 00:00 MSK",
+        "notify_added": true
+      },
+      {
+        "uuid": "XOwuzaKf",
+        "name": "Weekly TELOS Progress Tracker",
+        "schedule": "Mon 03:00 MSK",
+        "notify_added": true
+      },
+      {
+        "uuid": "2HRlisSR",
+        "name": "Weekly Learning Pattern Mining",
+        "schedule": "Mon 04:00 MSK",
+        "notify_added": true
+      },
+      {
+        "uuid": "mSo4moec",
+        "name": "Monthly MEMORY Compaction",
+        "schedule": "1st of month 02:00 MSK",
+        "notify_added": true
+      },
+      {
+        "uuid": "vN0bta7k",
+        "name": "Weekly Upstream Monitor",
+        "schedule": "Sun 05:00 MSK",
+        "notify_added": true
+      },
+      {
+        "uuid": "Wqg7hKhH",
+        "name": "Daily PAI Health Check",
+        "schedule": "Daily 04:00 MSK",
+        "notify_added": true
+      },
+      {
+        "uuid": "zhDeNotK",
+        "name": "Weekly PAI Context Sync",
+        "schedule": "Sun 02:00 MSK",
+        "notify_added": true
+      }
+    ],
+    "new_task": {
+      "uuid": "cV8vAcA6",
+      "name": "Daily Digest — Morning Summary",
+      "schedule": "Daily 07:00 MSK (04:00 UTC)",
+      "purpose": "Aggregate 24h task results and send morning summary to Telegram"
+    }
+  },
+  "notification_flow": {
+    "mechanism": "notify_user tool → NotificationBridge (5s poll) → Telegram bot",
+    "format": {
+      "type": "success|error|info",
+      "title": "Task name",
+      "message": "✅/❌ Status in one line",
+      "detail": "3-5 lines summary with metrics"
+    }
+  }
+}
