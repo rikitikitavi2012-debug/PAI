@@ -1,5 +1,10 @@
 # PAI — Personal AI Infrastructure
 
+## Language
+
+**Всегда пиши на русском языке:** PR descriptions, plan summaries, комментарии в планах, commit body.
+Английский только для: кода, технических терминов, commit type prefix (`feat:`, `fix:`, `test:`), переменных.
+
 ## Project Overview
 
 PAI is a hook-driven infrastructure layer for Claude Code CLI. It extends Claude Code
