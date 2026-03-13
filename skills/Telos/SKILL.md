@@ -1,6 +1,6 @@
 ---
 name: Telos
-description: Life OS and project analysis — goals, dependencies, beliefs, wisdom, books, movies, narrative points, interview extraction, McKinsey reports, and project dashboards. USE WHEN Telos, life goals, projects, dependencies, books, movies, beliefs, wisdom, update TELOS, narrative points, interview extraction, write report, McKinsey report, TELOS report, project analysis, dashboard, n=24.
+description: Life OS and project analysis — goals, dependencies, beliefs, wisdom, books, movies, narrative points, interview extraction, McKinsey reports, brigade audit, and project dashboards. USE WHEN Telos, life goals, projects, dependencies, books, movies, beliefs, wisdom, update TELOS, narrative points, interview extraction, write report, McKinsey report, TELOS report, project analysis, dashboard, n=24, audit TELOS, brigade audit, бригадный аудит, scan TELOS with brigade.
 ---
 
 ## 🚨 MANDATORY: Voice Notification (REQUIRED BEFORE ANY ACTION)
@@ -44,6 +44,7 @@ Running the **WorkflowName** workflow in the **Telos** skill to ACTION...
 | **InterviewExtraction** | "extract content", "extract interviews", "analyze interviews" | `Workflows/InterviewExtraction.md` |
 | **CreateNarrativePoints** | "create narrative", "narrative points", "TELOS report", "n=24" | `Workflows/CreateNarrativePoints.md` |
 | **WriteReport** | "write report", "McKinsey report", "create TELOS report", "professional report" | `Workflows/WriteReport.md` |
+| **BrigadeAudit** | "audit TELOS", "brigade audit", "бригадный аудит", "scan TELOS with brigade", "найди противоречия в TELOS" | `Workflows/BrigadeAudit.md` |
 
 **Note:** For general project analysis, dashboards, dependency mapping, and executive summaries, the skill handles these directly without a separate workflow file.
 
@@ -93,6 +94,18 @@ User: "write a TELOS report for Acme Corp"
 --> Output at {project_dir}/report - run `bun dev` to view
 --> White background, subtle Tokyo Night Storm accents
 --> Includes: cover page, executive summary, findings, recommendations, roadmap
+```
+
+**Example 6: Brigade audit of TELOS**
+```
+User: "аудит TELOS бригадой"
+--> Invokes BrigadeAudit workflow
+--> Syncs PAI-personal repo for A0 access
+--> Launches 3 models in parallel: Gemini CLI, OpenCode (Kimi), A0 (GLM-5)
+--> Each model scans ~/.claude/PAI/USER/ with a different analytical lens
+--> Navi synthesizes 3 reports, scores consensus (3/3, 2/3, 1/3)
+--> {PRINCIPAL.NAME} reviews and corrects findings
+--> Approved changes applied via Update workflow
 ```
 
 ---
