@@ -65,18 +65,27 @@ ABOUTME, AISTEERINGRULES, BELIEFS, CHALLENGES, GOALS, MISSION, STATUS, STRATEGIE
 | `instructions` array | Поддерживается | Нет |
 | Claude compat | Читает CLAUDE.md fallback | Нет |
 
+## Custom Agents (4 шт, `~/.config/opencode/agents/`)
+
+| Агент | Файл | Модель | Mode | Назначение |
+|-------|------|--------|------|------------|
+| construction | construction.md | GLM-5 | subagent | Строительная экспертиза, нормативы, сметы |
+| content | content.md | Kimi K2.5 | subagent | SEO-контент для timber-frame-spb.ru |
+| reviewer | reviewer.md | MiniMax M2.5 | subagent | Code review другой моделью |
+| telos | telos.md | Kimi K2.5 | subagent | TELOS анализ, противоречия, прогресс |
+
+**Вызов:** subagent'ы спавнятся build агентом изнутри сессии (делегирование).
+**AGENTS.md** содержит таблицу агентов — build видит и знает когда делегировать.
+
 ## Возможности для роста
 
-- **`instructions` array** — подключить доп. файлы прямо в config
-- **Custom agents** — создать специализированных агентов (construction-reviewer, telos-auditor)
-- **`opencode serve`** — HTTP API для программного доступа (localhost:4096)
+- **`instructions` array** — подключить доп. файлы прямо в config (пока не нужно — plugin + AGENTS.md покрывают)
+- **`opencode serve`** — HTTP API для программного A2A доступа (localhost:4096)
 
 ## Улучшения (TODO)
 
-- [ ] Создать custom agent `construction` в `~/.config/opencode/agents/construction.md`
-- [ ] Добавить `instructions` array с DOMAINS файлами в opencode.json
 - [ ] Рассмотреть `opencode serve` для A2A интеграции с Navi
-- [ ] Добавить Research/Telos skills через agents/ markdown
+- [ ] При появлении новых доменов — создать агента (real-estate, investment и т.д.)
 
 ## Связанные файлы
 
