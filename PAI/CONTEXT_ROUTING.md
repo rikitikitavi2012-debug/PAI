@@ -98,3 +98,14 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | SP64 Wooden Structures (base norms) | `PAI/USER/DOMAINS/construction/normatives/SP64_Wooden_Structures.md` |
 | Construction domain overview | `PAI/USER/DOMAINS/construction/README.md` |
 | Landscaping domain overview | `PAI/USER/DOMAINS/construction/landscaping/README.md` |
+
+## Landscaping Engineering Domain
+
+| Topic | Path |
+|-------|------|
+| LS drainage & stormwater (design, norms, SPB soils) | `PAI/USER/DOMAINS/construction/landscaping/LS_Drainage.md` |
+| LS concrete work (foundations, parking, retaining walls) | `PAI/USER/DOMAINS/construction/landscaping/LS_Concrete.md` |
+| LS paving (materials, base layers, patterns) | `PAI/USER/DOMAINS/construction/landscaping/LS_Paving.md` |
+| LS earthworks (grading, compaction, SPB soils) | `PAI/USER/DOMAINS/construction/landscaping/LS_Earthworks.md` |
+| LS climate SPB (frost, water table, seasonality) | `PAI/USER/DOMAINS/construction/landscaping/LS_Climate_SPB.md` |
+| Landscaping estimates analysis (53 КП, pricing) | `PAI/USER/DOMAINS/construction/estimates/ANALYSIS.md` |
