@@ -190,7 +190,7 @@
 | G11 | M1, M3 | S7 | Активна (непрерывная) |
 | G12 | M1, M0 | S0 | Идея |
 | G13 | M1, M3 | S7 | Активна |
-| G14 | M1, M3, M0 | S1 | Активна (Фаза 2→3, контекст интегрирован) |
+| G14 | M1, M3, M0 | S1 | Активна (Фаза 2: 12/14, Фаза 3 started) |
 
 ---
 
@@ -379,7 +379,7 @@
 - [x] 5/5 T1 агентов в PAI контексте — 2026-03-12
 - [x] BRIGADE.md — единый реестр, матрица делегирования, health check
 
-*Фаза 2: Срабатывание и коммуникации (текущая → завершается)*
+*Фаза 2: Срабатывание и коммуникации (12/14 done)*
 - [x] Navi → Jules: async задачи через JulesAPI.ts
 - [x] Navi → A0: sync/async через AgentZero.ts + MCP
 - [x] Navi → Gemini: headless через `gemi -p "" -y -o text`
@@ -399,10 +399,14 @@
 - [x] A0 7 scheduled tasks: health check, TELOS progress, learning mining, security scan, context sync, memory compaction, upstream monitor
 - [ ] A0 как дежурный: мониторинг проектов, алерты, автофиксы
 - [ ] Jules: proactive задачи без указки (security scans, dependency updates)
-- [ ] OpenCode custom agents: construction-reviewer, telos-auditor (markdown в agents/)
+- [x] OpenCode 4 custom agents: construction (GLM-5), content (Kimi), reviewer (MiniMax M2.5), telos (Kimi) — build agent делегирует по экспертизе
+- [ ] Gemini custom commands: landscaping.toml, estimates.toml для быстрого доступа к доменам
+- [ ] OpenCode `opencode serve` — HTTP API для A2A интеграции (Navi программно вызывает OpenCode агентов)
+- [ ] A0 улучшение русского поиска: тест `labse` / `rubert-tiny2` вместо multilingual-MiniLM
 - [ ] Multi-agent workflows: цепочки задач (Navi → Jules → A0 review → merge)
 - [ ] Brigade self-healing: если агент упал, другие подхватывают
-- [ ] DOMAINS auto-growth: новый домен у Ivan → автоматически у всех агентов
+- [ ] DOMAINS auto-growth: скрипт при `git push` → Gemini/OpenCode routing tables обновляются автоматически
+- [ ] Единый шаблон интеграции нового агента (checklist: symlinks, routing, agent.md, test)
 
 *Фаза 4: Compound Effect (2027+)*
 - [ ] Каждый агент обучается на результатах бригады (shared FRAMES)
