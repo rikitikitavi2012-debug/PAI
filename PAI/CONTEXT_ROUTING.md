@@ -70,7 +70,8 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | Topic | Path |
 |-------|------|
 | Projects | `PAI/USER/PROJECTS/PROJECTS.md` |
-| Business context | `PAI/USER/BUSINESS/` |
+| Company overview | `PAI/USER/BUSINESS/COMPANY.md` |
+| Brand guidelines | `PAI/USER/BUSINESS/BRAND.md` |
 | All USER context index | `PAI/USER/README.md` |
 
 ## Timber Frame Knowledge Base
@@ -96,3 +97,4 @@ Load context on-demand by reading the file at the path listed. Only load what th
 | TF ↔ SP64 ↔ TFEC bridge (design algorithm) | `PAI/USER/DOMAINS/construction/timber_frame/TF_vs_SP64_Bridge.md` |
 | SP64 Wooden Structures (base norms) | `PAI/USER/DOMAINS/construction/normatives/SP64_Wooden_Structures.md` |
 | Construction domain overview | `PAI/USER/DOMAINS/construction/README.md` |
+| Landscaping domain overview | `PAI/USER/DOMAINS/construction/landscaping/README.md` |
