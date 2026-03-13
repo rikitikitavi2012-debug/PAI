@@ -189,6 +189,10 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/PRDSync.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/ProjectsSync.hook.ts"
           }
         ]
       },
@@ -198,6 +202,10 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/PRDSync.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/ProjectsSync.hook.ts"
           }
         ]
       }
@@ -1038,11 +1046,11 @@
     "hooks": 32,
     "signals": 113,
     "files": 124,
-    "work": 172,
-    "sessions": 1538,
-    "research": 35,
-    "ratings": 204,
-    "updatedAt": "2026-03-12T19:03:53.822Z"
+    "work": 176,
+    "sessions": 1543,
+    "research": 36,
+    "ratings": 206,
+    "updatedAt": "2026-03-13T10:32:18.559Z"
   },
   "mcpServers": {
     "supabase": {
