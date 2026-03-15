@@ -10,6 +10,7 @@
 
 ## Feedback
 - [Не спамить A0](feedback_no_spam_a0.md) — не слать повторные запросы A0, ждать ответ или poll
+- [Upstream Strategy](feedback_upstream_strategy.md) — НИКОГДА не merge upstream. Только cherry-pick. CLAUDE.md и Algorithm — наши.
 
 ## Project
 - [TF Fencing Idea](project_tf_fencing_idea.md) — идея по ограждениям для timber frame сайта

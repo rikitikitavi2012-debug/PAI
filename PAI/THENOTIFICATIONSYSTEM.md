@@ -85,7 +85,7 @@ curl -s -X POST http://localhost:8888/notify \
 
 ## Effort Level in Voice Notifications
 
-**Voice phase announcements are inline curls in the Algorithm template** (defined in CLAUDE.md), not hooks. Each Algorithm phase has a `curl -s -X POST http://localhost:8888/notify` call that gets spoken. The effort level determines which curls fire:
+**Voice phase announcements are inline curls in the Algorithm template** (defined in v3.6.0.md), not hooks. Each Algorithm phase has a `curl -s -X POST http://localhost:8888/notify` call that gets spoken. The effort level determines which curls fire:
 
 | Effort | Budget | Voice Curls |
 |--------|--------|-------------|

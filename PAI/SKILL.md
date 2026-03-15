@@ -388,7 +388,7 @@ Created in PLAN via `generatePRDTemplate()`. PRDWriteback syncs ISC to disk each
 
 ## Red Lines
 
-- **Mandatory output format.** Every response MUST use exactly one output format from CLAUDE.md Execution Modes (ALGORITHM, NATIVE, ITERATION, or MINIMAL). No freeform output. No exceptions.
+- **Mandatory output format.** Every response MUST use exactly one output format from CLAUDE.md Execution Modes (ALGORITHM, NATIVE, or MINIMAL). No freeform output. No exceptions.
 - **No tool calls in OBSERVE** except TaskCreate, voice curls, context recovery.
 - **No agents for instant ops.** Grep/Glob/Read if <2s.
 - **No silent stalls.** Complete quickly or background with progress.
