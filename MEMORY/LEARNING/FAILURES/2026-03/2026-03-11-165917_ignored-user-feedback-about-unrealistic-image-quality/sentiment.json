@@ -1,8 +1,0 @@
-{
-  "rating": 4,
-  "summary": "Dissatisfied with image realism, requesting correction",
-  "detailed_context": "Ivan provided a screenshot showing timber frame joinery (dovetail joints) and criticized Navi's generated images for looking unnatural. He pointed out that the master's instrument and dovetail joints don't appear realistic, and instructed Navi to study reference photos of actual dovetail joints and master craftsmen working with timber frames. Ivan wants Navi to regenerate the images with a more realistic process and joint representation. This is a correction feedback: Navi failed to capture authentic woodworking technique and craftsmanship details in the generated images. The root cause is likely that Navi's image generation lacked understanding of actual timber framing methods, tool handling, and joint proportions. Ivan's expectation is for photorealistic or highly detailed reference material showing genuine woodworking processes, not stylized or anatomically incorrect representations. This reveals Ivan values authenticity and technical accuracy in visual content, especially for specialized crafts.",
-  "session_id": "fdc6f977-f8f7-4202-858c-62c0dbc4fecd",
-  "captured_at": "2026-03-11T23:59:17.665Z",
-  "transcript_source": "fdc6f977-f8f7-4202-858c-62c0dbc4fecd.jsonl"
-}

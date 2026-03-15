@@ -1,8 +1,0 @@
-{
-  "rating": 3,
-  "summary": "Vague correction demand after incomplete diagnosis",
-  "detailed_context": "Ivan asked why A0 went down. Navi diagnosed that A0 is actually online and responding, providing technical evidence. Ivan's response 'исправь что не таак было' (fix what wasn't right) is vague and implies dissatisfaction with Navi's previous analysis or presentation. The phrase suggests Navi either: (1) misdiagnosed the problem initially, (2) presented information in a confusing way, or (3) failed to identify what actually WAS wrong. Ivan is asking for correction but hasn't specified what was incorrect. This is a mild frustration signal—not angry, but clearly indicating Navi's work didn't fully address the underlying issue or was presented unclearly. The vagueness itself suggests Ivan is slightly exasperated at having to clarify further.",
-  "session_id": "0eb1e4e4-28af-49df-b261-8885083cc735",
-  "captured_at": "2026-03-09T10:06:02.892Z",
-  "transcript_source": "0eb1e4e4-28af-49df-b261-8885083cc735.jsonl"
-}

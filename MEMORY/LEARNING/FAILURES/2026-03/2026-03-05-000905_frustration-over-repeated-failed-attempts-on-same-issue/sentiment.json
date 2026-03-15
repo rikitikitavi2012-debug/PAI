@@ -1,8 +1,0 @@
-{
-  "rating": 3,
-  "summary": "Frustration over repeated failed attempts on same issue",
-  "detailed_context": "Ivan is expressing exasperation about multiple sessions spent on tab telemetry without achieving the desired result. The phrase 'сколько сессий делаем' (how many sessions are we doing) combined with 'почему мы не можем достичь' (why can't we achieve) indicates accumulated frustration from repeated failures. This is an implied negative sentiment — Ivan is not directly blaming Navi with anger, but the underlying message is clear: despite multiple attempts across sessions, the problem remains unsolved. The casual grammar ('дочтичь' misspelled as 'достичь') suggests typed in frustration rather than deliberate message. This reveals Ivan expects solution-oriented progress and is disappointed that previous session work hasn't resolved the core issue. Navi should acknowledge the accumulated frustration, review what was attempted in prior sessions, and propose a fundamentally different approach rather than incremental fixes.",
-  "session_id": "de245f91-db29-4f0a-94d2-4ec8293d4bc9",
-  "captured_at": "2026-03-05T08:09:05.200Z",
-  "transcript_source": "de245f91-db29-4f0a-94d2-4ec8293d4bc9.jsonl"
-}

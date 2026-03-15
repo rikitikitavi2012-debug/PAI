@@ -1,8 +1,0 @@
-{
-  "rating": 4,
-  "summary": "Frustrated — A0 broke after restart, needs diagnosis",
-  "detailed_context": "Ivan was troubleshooting MCP server configuration and performed a server restart to apply settings. After restart, A0 crashed with an AttributeError in the history object ('History' object has no attribute 'messages'). Ivan is now asking what went wrong and why A0 stopped working post-restart. The frustration stems from: (1) A0 was working before restart, (2) restart was necessary for configuration but introduced a new critical failure, (3) A0 appears to have corrupted or lost its history state during reload. Ivan's tone is exasperated ('что сломалось', 'не работает') — he's asking diagnostic questions but with clear frustration that a required troubleshooting step caused regression. Navi should have predicted this risk, checked A0's state immediately after restart, and either prevented the crash or warned Ivan about potential side effects. The implied expectation: restarts should not break core functionality.",
-  "session_id": "748ae53c-2eee-40d6-95c3-ee73e091175e",
-  "captured_at": "2026-03-07T09:58:50.038Z",
-  "transcript_source": "748ae53c-2eee-40d6-95c3-ee73e091175e.jsonl"
-}

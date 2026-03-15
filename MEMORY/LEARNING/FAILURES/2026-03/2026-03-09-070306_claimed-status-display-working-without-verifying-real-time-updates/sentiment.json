@@ -1,8 +1,0 @@
-{
-  "rating": 3,
-  "summary": "Frustrated — status line display froze, not reflecting reality",
-  "detailed_context": "Ivan noticed that the status line (showing USAGE metrics) has frozen and is no longer displaying real-time information. The display shows '5H: 3% ↻17:00' but this is stale — it's not updating to reflect current reality. This is a regression or malfunction in a component that was previously working. Ivan is reporting a bug with mild frustration. The frozen status line suggests either the monitoring process died, the display update mechanism broke, or the symlink/tail setup from the previous steps inadvertently affected this display. This requires investigation into why the status metrics stopped updating. The tone suggests Ivan expects real-time status and is disappointed the system isn't maintaining that. This is a functional failure that needs correction.",
-  "session_id": "24a8c517-096d-469a-b920-eec9ca8849e7",
-  "captured_at": "2026-03-09T14:03:06.150Z",
-  "transcript_source": "24a8c517-096d-469a-b920-eec9ca8849e7.jsonl"
-}

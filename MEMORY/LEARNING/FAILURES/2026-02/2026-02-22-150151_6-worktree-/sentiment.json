@@ -1,8 +1,0 @@
-{
-  "rating": 3,
-  "summary": "6 скиллов получили метаданные, агенты теперь знают про worktree изоляцию что это такое и зачем сделали",
-  "detailed_context": "**Итог этой сессии — всё что сделано:**\n\n| Задача | Статус |\n|--------|--------|\n| TELOSTracker.ts — bidirectional TELOS↔PAI | ✅ |\n| isolation: worktree в Algorithm docs | ✅ |\n| compatibility field в 36 скиллах | ✅ |\n| Session closure объяснение | ✅ |\n\n**Очередь осталась:**\n- PAI Dashboard (Path C) — когда время найдётся\n- G0 GOALS.md — обновить статус просроченного дедлайна Цифрового Прораба\n\n🗣️ Navi: Два HIGH-приоритета закрыты — 36 скиллов получили метаданные, агенты теперь знают про worktre",
-  "session_id": "47a95f1e-ee52-46e1-b78c-d0b70d46963b",
-  "captured_at": "2026-02-22T23:01:51.583Z",
-  "transcript_source": "47a95f1e-ee52-46e1-b78c-d0b70d46963b.jsonl"
-}

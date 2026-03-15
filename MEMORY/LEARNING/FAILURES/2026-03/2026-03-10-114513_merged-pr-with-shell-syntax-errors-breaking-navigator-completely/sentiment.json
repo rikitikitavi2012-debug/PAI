@@ -1,8 +1,0 @@
-{
-  "rating": 2,
-  "summary": "Frustrated — multiple critical bugs in navigator after merge",
-  "detailed_context": "Ivan discovered severe bugs in the TELOS navigator immediately after Navi merged the PR. The navigator crashes with 'local: can only be used in a function' errors when accessing projects (01234), missions, and calls — all stemming from shell syntax errors at lines 516 and 521 in telos-navigator.sh. Additionally, the strategies section buttons (0-7) are completely non-functional. Ivan is documenting these failures with screenshots, indicating frustration that Navi allowed broken code to pass testing and reach production (master branch). The root issue: Navi ran tests that reported 23/23 pass, but the actual functionality is broken — suggesting either incomplete test coverage or a disconnect between test validation and real-world usage. Navi should have done manual integration testing beyond unit/shell tests before merging. This is a critical failure because Ivan had to discover bugs post-merge rather than catch them during review. The 'local' keyword error indicates variables declared outside functions — a basic shell scripting error that should have been caught in code review.",
-  "session_id": "e556cd0e-b800-46c4-a05a-e9226c3e3208",
-  "captured_at": "2026-03-10T18:45:13.898Z",
-  "transcript_source": "e556cd0e-b800-46c4-a05a-e9226c3e3208.jsonl"
-}
