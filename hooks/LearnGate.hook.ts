@@ -5,8 +5,11 @@
  * Blocks PRD.md from being set to `phase: complete` unless LEARN.md exists
  * in the same directory. Guarantees Algorithm LEARN reflections persist to disk.
  *
- * TRIGGER: PreToolUse (matcher: Edit, Write) — own matcher entry, not shared
- * PERFORMANCE: <30ms. Pure filesystem check, no AI inference.
+ * TRIGGER: PreToolUse (matcher: Edit, Write) — own matcher entry
+ * PERFORMANCE: <5ms on fast path, <30ms on PRD path.
+ *
+ * STDIN STRATEGY: Read with 100ms timeout. If stdin is empty/broken,
+ * output continue immediately. Auto-memory operations may not pipe stdin.
  */
 
 import { existsSync, writeSync } from 'fs';
@@ -15,76 +18,66 @@ import { parseFrontmatter } from './lib/prd-utils';
 
 const CONTINUE = '{"continue":true}\n';
 
-function output(json: string): never {
-  // writeSync(1, ...) = synchronous write to stdout fd — guaranteed flush before exit
-  writeSync(1, json.endsWith('\n') ? json : json + '\n');
+function out(s: string): never {
+  writeSync(1, s.endsWith('\n') ? s : s + '\n');
   process.exit(0);
 }
 
-async function main() {
-  let input: any;
+// Read stdin with very short timeout — fail fast for auto-memory ops
+let raw = '';
+const reader = Bun.stdin.stream().getReader();
 
+const readDone = (async () => {
   try {
-    const reader = Bun.stdin.stream().getReader();
-    let raw = '';
-
-    const readLoop = (async () => {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        raw += new TextDecoder().decode(value, { stream: true });
-      }
-    })();
-
-    await Promise.race([readLoop, new Promise<void>(r => setTimeout(r, 500))]);
-    reader.cancel().catch(() => {});
-
-    if (!raw.trim()) output(CONTINUE);
-    input = JSON.parse(raw);
-  } catch {
-    output(CONTINUE);
-  }
-
-  const toolInput = input.tool_input || {};
-  const filePath: string = toolInput.file_path || '';
-
-  // Only check PRD.md files in MEMORY/WORK/
-  if (!filePath.includes('MEMORY/WORK/') || !filePath.endsWith('PRD.md')) {
-    output(CONTINUE);
-  }
-
-  // Detect if this edit/write sets phase to "complete"
-  let setsPhaseComplete = false;
-
-  if (input.tool_name === 'Edit') {
-    const oldString: string = toolInput.old_string || '';
-    const newString: string = toolInput.new_string || '';
-    const isFrontmatterEdit = /^phase:\s*(observe|think|plan|build|execute|verify|learn)/i.test(oldString);
-    if (isFrontmatterEdit) {
-      setsPhaseComplete = /^phase:\s*complete$/im.test(newString);
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      raw += new TextDecoder().decode(value, { stream: true });
     }
-  } else if (input.tool_name === 'Write') {
-    const content: string = toolInput.content || '';
-    const fm = parseFrontmatter(content);
-    if (fm) {
-      setsPhaseComplete = fm.phase?.toLowerCase() === 'complete';
-    }
-  }
+  } catch {}
+})();
 
-  if (!setsPhaseComplete) output(CONTINUE);
+// 100ms is enough — stdin data arrives in <5ms when piped correctly
+await Promise.race([readDone, new Promise<void>(r => setTimeout(r, 100))]);
+reader.cancel().catch(() => {});
 
-  // Check if LEARN.md exists in the PRD directory
-  const prdDir = dirname(filePath);
-  const learnPath = join(prdDir, 'LEARN.md');
+if (!raw.trim()) out(CONTINUE);
 
-  if (existsSync(learnPath)) {
-    output(CONTINUE);
-  } else {
-    output(JSON.stringify({
-      decision: 'block',
-      reason: `LEARN phase requires persistence: write LEARN.md to ${prdDir}/ before setting phase: complete. Шаблон: ## Reflections, ## Patterns, ## Actions.`
-    }));
-  }
+let input: any;
+try {
+  input = JSON.parse(raw);
+} catch {
+  out(CONTINUE);
 }
 
-main().catch(() => output(CONTINUE));
+const toolInput = input.tool_input || {};
+const filePath: string = toolInput.file_path || '';
+
+if (!filePath.includes('MEMORY/WORK/') || !filePath.endsWith('PRD.md')) {
+  out(CONTINUE);
+}
+
+let setsPhaseComplete = false;
+
+if (input.tool_name === 'Edit') {
+  const oldStr: string = toolInput.old_string || '';
+  const newStr: string = toolInput.new_string || '';
+  if (/^phase:\s*(observe|think|plan|build|execute|verify|learn)/i.test(oldStr)) {
+    setsPhaseComplete = /^phase:\s*complete$/im.test(newStr);
+  }
+} else if (input.tool_name === 'Write') {
+  const fm = parseFrontmatter(toolInput.content || '');
+  if (fm) setsPhaseComplete = fm.phase?.toLowerCase() === 'complete';
+}
+
+if (!setsPhaseComplete) out(CONTINUE);
+
+const prdDir = dirname(filePath);
+if (existsSync(join(prdDir, 'LEARN.md'))) {
+  out(CONTINUE);
+} else {
+  out(JSON.stringify({
+    decision: 'block',
+    reason: `LEARN: напиши LEARN.md в ${prdDir}/ перед phase: complete. Секции: ## Reflections, ## Patterns, ## Actions.`
+  }));
+}
