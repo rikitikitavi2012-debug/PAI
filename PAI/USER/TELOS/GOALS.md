@@ -457,6 +457,7 @@
 
 - [x] **Telegram-бот для управления бригадой с телефона** — @A0_timecloud_bot активирован (2026-03-13). Python/aiogram бот в контейнере agent-zero-new (50002). Функции: отправка задач A0, статус, пересылка уведомлений. NotificationBridge: поллит A0 API каждые 5сек, форвардит алерты в TG. Фикс v0.9.8+ применён (poll params).
 - [ ] **Мониторинг конкурентов** — A0 ежемесячно проверяет топ-10 конкурентов: новые сайты, изменение цен, новый контент в нише TF. Алерт если появился новый конкурент или изменились цены.
+- [ ] **A0 Algorithm upgrade v3.0 → v4.0** — A0 работает на TheAlgorithm v3.0 (skill в /a0/usr/skills/). Нет ISC-Metric Mapping, Experiments TSV, Cycle Selector, Autoresearch Sub-Loop, Drift Defense. Адаптировать v4.0-alpha под архитектуру A0: Python scripts + allowed_tools + agent.system.md/behaviour.md. Учесть: A0 = headless (нет voice), контейнер (нет git worktree), другой model (Sonnet vs Opus). Фаза 4, межсезонье.
 - [ ] **Cross-model review в Algorithm** — A0 (Sonnet) автоматически ревьюит результаты Navi (Opus). Разные модели = разные слепые зоны.
 - [ ] **L2 Autoresearch** — самооптимизация PAI скиллов через eval (Autoresearch итерирует над Algorithm.md, eval = avg rating)
 - [ ] **Scheduled autoresearch** — ночные оптимизации по расписанию (A0 запускает, Telegram отчёт утром)

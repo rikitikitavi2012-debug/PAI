@@ -82,6 +82,7 @@
 - [ ] L2 Autoresearch: самооптимизация PAI скиллов через eval (Фаза 4)
 - [ ] State persistence (ARIS-style) для autoresearch sessions (Фаза 4)
 - [ ] Scheduled autoresearch runs: ночные оптимизации по расписанию (Фаза 4)
+- [ ] A0 Algorithm upgrade v3.0→v4.0: адаптация v4.0-alpha под A0 архитектуру (Python skills, контейнер, Sonnet) — Фаза 4
 - [ ] Аудит скиллов по v4 структуре (11 скиллов, новая архитектура)
 - [x] PAI Workspace v2: 2 таба (Center + Telemetry), Strategic Dashboard с live cost tracking
 - [x] Z.AI интеграция в pipeline (GLM-5 inference, zai-cli MCP, ZaiVision screenshots)
