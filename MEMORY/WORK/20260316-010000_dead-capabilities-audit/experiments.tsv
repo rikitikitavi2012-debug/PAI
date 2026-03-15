@@ -1,0 +1,15 @@
+# [Q] ISC-1: Phantom dependency count = 0
+# metric_direction: lower_is_better
+# target: 0
+# think_reentries: 0
+# amplitude: normal
+iteration	commit	metric	delta	status	description
+0	-	11	0	baseline	initial phantom count after full audit
+1	-	8	-3	keep	apt install qpdf tesseract-ocr shellcheck (system install, no git commit)
+2	f10af26	6	-2	keep	fix Browser SKILL.md — cross-platform Chrome paths, remove open -a and /Applications/
+3	87851c2	5	-1	keep	fix Art SKILL.md — replace Finder/Preview with cross-platform preview
+4	ab84402	4	-1	keep	fix Security OSINT — cross-platform Gephi/Maltego paths
+5	-	4	0	skip	APIFY_TOKEN already resolved — code supports both names, .env has APIFY_TOKEN
+6	3fc7724	3	-1	keep	add root package.json with yaml dependency
+7	3f358d1	3	0	keep	update THEHOOKSYSTEM.md — 34 hooks documented (verify already passed)
+8	-	0	-3	keep	corrected phantom list — Perplexity/xAI are agent types not direct API deps, CF_ACCOUNT_ID exists
