@@ -193,7 +193,12 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/AlgorithmTracker.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/ResearchCapture.hook.ts"
@@ -206,7 +211,12 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/PRDSync.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/ProjectsSync.hook.ts"
@@ -219,7 +229,12 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/PRDSync.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/ProjectsSync.hook.ts"
@@ -1061,13 +1076,13 @@
     "skills": 13,
     "workflows": 175,
     "hooks": 34,
-    "signals": 126,
+    "signals": 136,
     "files": 212,
-    "work": 188,
-    "sessions": 1712,
-    "research": 49,
-    "ratings": 236,
-    "updatedAt": "2026-03-15T18:19:32.648Z"
+    "work": 194,
+    "sessions": 1767,
+    "research": 52,
+    "ratings": 243,
+    "updatedAt": "2026-03-15T21:49:02.037Z"
   },
   "mcpServers": {
     "supabase": {
