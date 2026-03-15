@@ -217,3 +217,23 @@ After the sub-loop completes (target reached, budget exhausted, or stopped), con
 **Partial success:** If the re-entry limit (2) is exhausted without reaching the target, mark the `[Q]` criterion as `PARTIAL` in the PRD: `- [~] ISC-N [Q]: description (achieved: X, target: Y)`. Record the best achieved value. LEARN Track 3 must analyze why the target wasn't reached and whether the target was realistic. Partial success is better than no record — the achieved improvement is preserved.
 
 **PARTIAL as regression gate:** When a `[Q]` reaches PARTIAL status, its best achieved value still becomes a regression gate for subsequent `[Q]` criteria (same 5% relative tolerance). The fact that the target wasn't reached doesn't exempt the achieved gains from protection.
+
+---
+
+## Threshold Rationale
+
+All thresholds are v4.0-alpha starting points. Calibrate by production data in LEARN Track 3.
+
+| Threshold | Value | Why this value |
+|-----------|-------|----------------|
+| Re-entry limit | 2 | 3+ creates infinite re-planning loops observed in v3.x; 1 is too brittle for genuinely hard problems; 2 gives one course-correction opportunity |
+| Regression tolerance | 5% relative | Statistical convention for "practically significant" change; tighter (3%) triggers false positives on noisy metrics; looser (10%) allows meaningful regression |
+| Stagnation → Amplify | 5 discards | Balances patience vs waste; 3 is too aggressive (false positives on stochastic metrics); 10 wastes half the budget before reacting |
+| Stagnation → STOP | 10 discards | 5 normal + 5 amplified = exhausted both amplitude levels; continuing past this is pure randomness |
+| Fast/slow gate boundary | 5s | Practical: grep/lint/type-check < 1s, full test suites > 10s; 5s splits cleanly between instant checks and heavy runners |
+| Slow gate schedule | every 5 iters | At 100-iteration budget, 20 slow gate runs is 20% overhead — acceptable; every-iteration would be 100% overhead |
+| Conflict detection | 5 attempts | Same rationale as stagnation amplify — balances signal vs waste |
+| Self-interrogation | every 20 iters | ~20% of typical Extended budget (50 iterations); frequent enough to catch drift, rare enough to not dominate runtime |
+| ISC floors (8/16/24/40/64) | ~2× per tier | Derived from ISC Range column in Effort Levels; floor = minimum of range for each tier |
+
+**Override any threshold** via PRD frontmatter comment: `# threshold_name: value`. Document why in the criterion's rationale.
