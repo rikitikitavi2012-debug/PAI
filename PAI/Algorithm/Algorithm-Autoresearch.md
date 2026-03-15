@@ -94,6 +94,11 @@ After context compaction, recover sub-loop state by reading experiments.tsv:
 - **Consecutive discards:** count trailing `discard` rows from bottom of file
 - **Change amplitude:** `# amplitude: normal|amplified|reduced` header comment (updated by L3 decisions)
 
+**Mid-iteration recovery:** After compaction or crash, check `git status`. If uncommitted changes exist:
+- Changes are in MODIFY/COMMIT stage → `git commit -m "exp(N): recovered mid-iteration"`, then resume at VERIFY
+- Changes are unclear or broken → `git checkout -- .` (discard), then resume at IDEATE (Phase 2)
+- **Never resume mid-MODIFY.** Either commit what's there (resume VERIFY) or discard (resume IDEATE).
+
 For main Algorithm state, also read the PRD (see v4.0-alpha.md Context Recovery section).
 
 ### Stagnation Detection
