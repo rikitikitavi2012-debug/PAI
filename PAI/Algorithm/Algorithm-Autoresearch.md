@@ -48,8 +48,8 @@ Phase 4: COMMIT
   - Message format: "exp(N): description" where N = iteration number
 
 Phase 5: VERIFY
-  - Run metric command → record new value
-  - Run regression gates: check all [B] criteria still pass
+  - Run metric command → record new value (timeout: 60s — if not returned, kill process, log status=timeout in experiments.tsv, treat as crash)
+  - Run regression gates: fast gates every iteration, slow gates per schedule (see Regression Gates)
   - Run anti-criteria check: no ISC-A violations
 
 Phase 6: DECIDE
