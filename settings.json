@@ -83,7 +83,12 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/LearnGate.hook.ts"
@@ -96,7 +101,12 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/LearnGate.hook.ts"
