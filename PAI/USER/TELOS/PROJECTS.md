@@ -20,6 +20,7 @@
 - **11 скиллов** — Agents, ContentAnalysis, Investigation, Media, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
 - **Security system** — SecurityValidator.hook.ts + patterns.yaml (trusted/blocked/confirm/alert + path categories)
 - **3-layer mode routing** — ModeClassifier hook (regex) → Complexity Gate (LLM) → Algorithm file
+- **Algorithm v4.0-alpha** — Cycle Selector ([B]/[Q] routing), Autoresearch Sub-Loop (8-phase iterative optimization), Layered Drift Defense (L1/L2/L3), Iteration Budget. Validated by 6-level review (3 models). Files: v4.0-alpha.md + Algorithm-Autoresearch.md
 - **Memory pipeline** — LEARNING/WISDOM/RELATIONSHIP/WORK/STATE/SECURITY + events.jsonl
 - **Feedback loop** — RatingCapture (implicit sentiment) → WisdomSync → FRAMES
 - **JulesAutoMerge pipeline** — тесты в worktree → A0 code review → gh pr merge --squash → git pull sync
@@ -71,6 +72,16 @@
 - [x] Feedback loop (RatingCapture → WisdomSync → FRAMES)
 - [x] Community: 6 PRs в upstream
 - [x] Git workflow: fork, main/master, worktrees
+- [x] Algorithm v4.0-alpha: Cycle Selector + Autoresearch Sub-Loop + Drift Defense + Iteration Budget (2026-03-15)
+- [x] Algorithm validation: 6-level review (RedTeam + Manual + Architect + Gemini 2.5 + A0 Sonnet + Jules 15 tests), 25 issues found, 20 fixed (2026-03-15)
+- [ ] Algorithm v4.0 (stable): живой тест с [Q] критерием → убрать alpha
+- [ ] /autoresearch skill: SKILL.md + references + interactive plan wizard (Фаза 3)
+- [ ] Trust Level framework: L1-L4 graduated autonomy для autoresearch (Фаза 3)
+- [ ] Telegram notifications: A0 → @A0_timecloud_bot для Trust L3+ autoresearch (Фаза 3)
+- [ ] Cross-model review через A0 в Algorithm pipeline (Фаза 4, межсезонье 2026-2027)
+- [ ] L2 Autoresearch: самооптимизация PAI скиллов через eval (Фаза 4)
+- [ ] State persistence (ARIS-style) для autoresearch sessions (Фаза 4)
+- [ ] Scheduled autoresearch runs: ночные оптимизации по расписанию (Фаза 4)
 - [ ] Аудит скиллов по v4 структуре (11 скиллов, новая архитектура)
 - [x] PAI Workspace v2: 2 таба (Center + Telemetry), Strategic Dashboard с live cost tracking
 - [x] Z.AI интеграция в pipeline (GLM-5 inference, zai-cli MCP, ZaiVision screenshots)
