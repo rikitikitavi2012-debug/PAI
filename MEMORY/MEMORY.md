@@ -13,6 +13,7 @@
 - [Upstream Strategy](feedback_upstream_strategy.md) — НИКОГДА не merge upstream. Только cherry-pick. CLAUDE.md и Algorithm — наши.
 - [Cross-Model Review](feedback_crossmodel_review.md) — ОБЯЗАТЕЛЬНО Gemini + A0 review при изменениях Algorithm. Claude has shared blind spots.
 - [/simplify после нового кода](feedback_simplify_pattern.md) — запускать /simplify review после новых хуков/утилит и Extended+ сессий
+- [Jules batch скрипт](feedback_jules_batch_script.md) — 3+ задач для Jules = через scripts/jules-batch-tasks.sh, не вручную
 
 ## Project
 - [TF Fencing Idea](project_tf_fencing_idea.md) — идея по ограждениям для timber frame сайта
