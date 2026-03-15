@@ -10,7 +10,7 @@
 
 ### Installation Status: ✅ INSTALLED & READY
 
-**Location:** `/Applications/Gephi.app`
+**Location:** `gephi (apt install gephi OR brew install gephi)`
 **Version:** 0.10.1
 **Installation Method:** Homebrew (`brew install gephi`)
 **Java Requirement:** OpenJDK 25 (already installed)
@@ -18,10 +18,10 @@
 ### Launch Command
 ```bash
 # GUI Launch
-open -a Gephi
+gephi # cross-platform CLI
 
 # Or from Applications folder
-open /Applications/Gephi.app
+open gephi (apt install gephi OR brew install gephi)
 ```
 
 ### What Gephi Does
@@ -520,7 +520,7 @@ Source,Target,Type
 ```
 
 **Step 3: Import to Gephi**
-1. Launch Gephi: `open -a Gephi`
+1. Launch Gephi: `gephi # cross-platform CLI`
 2. File → Import Spreadsheet
 3. Load nodes.csv (Node Table)
 4. Load edges.csv (Edge Table)
@@ -556,7 +556,7 @@ Source,Target,Type
 
 | Tool | Status | Location | Command to Launch |
 |------|--------|----------|-------------------|
-| **Gephi** | ✅ INSTALLED | /Applications/Gephi.app | `open -a Gephi` |
+| **Gephi** | ✅ INSTALLED | gephi (apt install gephi OR brew install gephi) | `gephi # cross-platform CLI` |
 | **OpenCTI** | 📄 DOCUMENTED | Not installed | See installation section above |
 | **MISP** | 📄 DOCUMENTED | Not installed | See installation section above |
 

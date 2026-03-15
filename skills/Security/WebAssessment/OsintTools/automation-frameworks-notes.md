@@ -178,7 +178,7 @@ cd OsintTools/spiderfoot
 
 ### Installation Details
 
-**Location:** `/Applications/Maltego.app`
+**Location:** `maltego (install from maltego.com)`
 
 **Installation Method:**
 ```bash
@@ -197,7 +197,7 @@ brew install --cask maltego
 
 **1. Launch Maltego:**
 ```bash
-open /Applications/Maltego.app
+open maltego (install from maltego.com)
 ```
 
 **2. Create Free Account:**
@@ -400,7 +400,7 @@ cd OsintTools/spiderfoot
 
 **Launch Maltego:**
 ```bash
-open /Applications/Maltego.app
+open maltego (install from maltego.com)
 ```
 
 **Update SpiderFoot:**
