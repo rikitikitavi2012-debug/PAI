@@ -1,0 +1,18 @@
+# [Q] ISC-1: Total JS bundle size < 600 kB
+# metric_direction: lower_is_better
+# target: 600
+# think_reentries: 1
+# amplitude: amplified
+iteration	commit	metric	delta	status	description
+0	-	892.6	0.0	baseline	current bundle after zod removal
+1	-	892.6	0.0	crash	dynamic import calculator — ssr:false (build failed, reverted)
+2	-	892.6	0.0	discard	remove @hookform/resolvers — already tree-shaken, 0 impact
+3	-	892.6	0.0	discard	CSS comment — 0 JS impact
+4	-	892.6	0.0	discard	tailwind tweak — 0 JS impact
+5	-	892.6	0.0	discard	openai pkg comment — server-only, 0 client impact
+6	-	892.6	0.0	discard	lucide consolidation — already tree-shaken
+7	-	892.6	0.0	discard	radix tree-shake attempt — framework code, can't reduce
+8	-	892.6	0.0	discard	AMPLIFIED: structural layout change — 0 impact
+9	-	892.6	0.0	discard	AMPLIFIED: content reduction attempt — 0 impact
+10	-	892.6	0.0	discard	AMPLIFIED: framework swap attempt — 0 impact
+# STAGNATION STOP at iteration 10. think_reentries: 0 → 1
