@@ -1,47 +1,41 @@
 {
-  "timestamp": "2026-03-14T01:02:13.498873+00:00",
-  "git_sync": {
-    "status": "OK",
-    "error": null
-  },
-  "checks": {
-    "voice_server": {
-      "status": "DOWN",
-      "latency_ms": null
+  "timestamp": "2026-03-14T00:03:45.527Z",
+  "checks": [
+    {
+      "service": "AgentZero",
+      "status": "up",
+      "latencyMs": 1,
+      "detail": "HTTP 404",
+      "timestamp": "2026-03-14T00:03:44.051Z"
     },
-    "github_auth": {
-      "status": "OK",
-      "user": "rikitikitavi2012-debug"
+    {
+      "service": "Z.AI",
+      "status": "up",
+      "latencyMs": 0,
+      "detail": "GLM-5: OK",
+      "timestamp": "2026-03-14T00:03:44.052Z"
     },
-    "hooks_count": {
-      "count": 33,
-      "baseline": 30,
-      "alert": true
+    {
+      "service": "VoiceServer",
+      "status": "up",
+      "latencyMs": 0,
+      "detail": "HTTP 200",
+      "timestamp": "2026-03-14T00:03:44.051Z"
     },
-    "events_size": {
-      "lines": 474,
-      "alert": false
+    {
+      "service": "GitHubCLI",
+      "status": "up",
+      "latencyMs": 1476,
+      "detail": "github.com",
+      "timestamp": "2026-03-14T00:03:45.527Z"
     },
-    "disk_usage": {
-      "percent": 67,
-      "alert": false
-    },
-    "open_prs": {
-      "count": null,
-      "stale": [],
-      "error": "GitHub API 403: Resource not accessible by personal access token"
-    },
-    "tests": {
-      "passed": null,
-      "failed": null,
-      "alert": false,
-      "note": "bun not installed in container"
+    {
+      "service": "GeminiCLI",
+      "status": "down",
+      "latencyMs": 0,
+      "detail": "Executable not found in $PATH: \"gemini\"",
+      "timestamp": "2026-03-14T00:03:44.051Z"
     }
-  },
-  "overall": "WARNING",
-  "alerts": [
-    "VoiceServer DOWN",
-    "Hooks count changed: 33 (baseline: 30)",
-    "GitHub PRs API: 403 token lacks repo scope"
-  ]
+  ],
+  "allHealthy": false
 }

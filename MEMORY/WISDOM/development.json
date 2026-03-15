@@ -1,6 +1,6 @@
 {
   "domain": "development",
-  "updated": "2026-03-10T19:00:56.957Z",
+  "updated": "2026-03-14T00:19:00.626Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -147,6 +147,27 @@
       "observation": "Frustrated — multiple critical bugs in navigator after merge",
       "timestamp": "2026-03-10T21:45:11+03:00",
       "session_id": "e556cd0e-b800-46c4-a05a-e9226c3e3208",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — new pages deployed but not accessible/visible",
+      "timestamp": "2026-03-14T02:50:02+03:00",
+      "session_id": "56e9ed89-6cfe-4579-81cc-b85ac39e8798",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Dissatisfied — promised updates not visible after deployment",
+      "timestamp": "2026-03-14T02:55:26+03:00",
+      "session_id": "56e9ed89-6cfe-4579-81cc-b85ac39e8798",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — red errors appeared after deployment",
+      "timestamp": "2026-03-14T02:57:20+03:00",
+      "session_id": "56e9ed89-6cfe-4579-81cc-b85ac39e8798",
       "confirmed": 1
     }
   ]

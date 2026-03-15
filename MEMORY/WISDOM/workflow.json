@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-03-12T00:19:55.377Z",
+  "updated": "2026-03-14T00:19:00.619Z",
   "observations": [
     {
       "type": "principle",
@@ -360,6 +360,41 @@
       "observation": "Dissatisfied with image realism, requesting correction",
       "timestamp": "2026-03-12T02:59:15+03:00",
       "session_id": "fdc6f977-f8f7-4202-858c-62c0dbc4fecd",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Correction — misunderstood scope of Navi's capabilities",
+      "timestamp": "2026-03-13T23:29:59+03:00",
+      "session_id": "aeaa8e73-4a5c-4e4b-8fad-60f0504a19c6",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration — pointing out Ivan should have had access already",
+      "timestamp": "2026-03-14T00:10:43+03:00",
+      "session_id": "aeaa8e73-4a5c-4e4b-8fad-60f0504a19c6",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Impressed with comprehensive execution and clear reporting",
+      "timestamp": "2026-03-14T00:04:44+03:00",
+      "session_id": "aeaa8e73-4a5c-4e4b-8fad-60f0504a19c6",
+      "confirmed": 2
+    },
+    {
+      "type": "principle",
+      "observation": "Strong approval — work progressing smoothly without issues",
+      "timestamp": "2026-03-14T00:39:55+03:00",
+      "session_id": "aeaa8e73-4a5c-4e4b-8fad-60f0504a19c6",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Correction — missing page 41, requesting visual verification",
+      "timestamp": "2026-03-14T02:20:15+03:00",
+      "session_id": "56e9ed89-6cfe-4579-81cc-b85ac39e8798",
       "confirmed": 1
     }
   ]

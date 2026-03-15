@@ -27,7 +27,10 @@ Jules читает `AGENTS.md` из корня репо **перед каждо�
 
 **Официально не поддерживается.** Нет настройки языка ни в UI, ни в API.
 **Workaround:** Инструкция в AGENTS.md: "Всегда пиши на русском: PR descriptions, plan summaries, commit body."
-Jules работает на Gemini Pro — понимает русский. Compliance не гарантирован но должен работать.
+Jules работает на Gemini Pro — понимает русский. **ПОДТВЕРЖДЕНО 2026-03-13:**
+- Тест: задача BreadcrumbNav на timber-frame-site
+- PR #1: title, description, commit message — всё на русском
+- Код комментарии на английском (как просили в промпте)
 
 ## Что можно настроить (UI/API)
 

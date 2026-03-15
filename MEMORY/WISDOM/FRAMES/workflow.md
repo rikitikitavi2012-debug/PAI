@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 39
-- **Last Crystallized:** 2026-03-12
+- **Observation Count:** 44
+- **Last Crystallized:** 2026-03-14
 - **Source:** Converted from workflow.json
 
 ---
@@ -181,3 +181,8 @@
 - 2026-03-11: [anti-pattern] Quality concerns about generated images, questioning model choices
 - 2026-03-11: [anti-pattern] Mild frustration — images in new articles need rework
 - 2026-03-12: [anti-pattern] Dissatisfied with image realism, requesting correction
+- 2026-03-13: [anti-pattern] Correction — misunderstood scope of Navi's capabilities
+- 2026-03-13: [anti-pattern] Mild frustration — pointing out Ivan should have had access already
+- 2026-03-13: [principle] Impressed with comprehensive execution and clear reporting
+- 2026-03-13: [principle] Strong approval — work progressing smoothly without issues
+- 2026-03-14: [anti-pattern] Correction — missing page 41, requesting visual verification

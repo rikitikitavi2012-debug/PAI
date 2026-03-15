@@ -75,6 +75,14 @@ telos, the-algorithm, a0-deployer, chart-architect, doc-forge, exa-synergy, ops-
 3. **Brigade Dashboard** — мониторинг A0 health в Kitty (config/kitty/scripts/brigade-watch.sh)
 4. **Events** — все взаимодействия логируются в MEMORY/STATE/events.jsonl
 
+## Scheduled Tasks → Telegram (2026-03-14)
+
+Все 7 задач + Daily Digest отправляют отчёты в @A0_timecloud_bot:
+```
+Task → notify_user tool → NotificationBridge (5s poll) → Telegram → Ivan
+```
+Daily Digest UUID: `cV8vAcA6` (ежедневно 07:00 MSK / 04:00 UTC)
+
 ## Ограничения
 
 - **WSL файлы недоступны** — только через git repo
@@ -96,7 +104,7 @@ Navi наращивает экспертизу (DOMAINS/, TELOS/)
 ## Улучшения (TODO)
 
 - [ ] Улучшить русский поиск: попробовать `labse` или `rubert-tiny2` вместо multilingual-MiniLM
-- [ ] A2A интеграция: если Navi получит API endpoint — прямая коммуникация без git
+- [x] A2A протокол: настроен между контейнерами 50001↔50002 (FastA2A, 2026-03-13)
 - [ ] Webhook на push: GitHub → A0 pull (мгновенная синхронизация vs еженедельная)
 - [ ] Увеличить `memories_max_result` до 8 для research задач
 - [ ] PREFERENCES.md добавить в user-core/ sync (сейчас файл не найден в USER/)

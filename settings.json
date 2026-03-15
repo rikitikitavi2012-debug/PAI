@@ -9,7 +9,6 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS": "10000"
   },
-  "autoMemoryDirectory": "/home/ser/.claude/MEMORY/",
   "includeGitInstructions": false,
   "permissions": {
     "allow": [
@@ -899,8 +898,9 @@
       "includeGitInstructions: false saves ~2K tokens by skipping built-in git system prompt."
     ]
   },
-  "effortLevel": "medium",
+  "effortLevel": "high",
   "plansDirectory": "Plans/",
+  "autoMemoryDirectory": "/home/ser/.claude/MEMORY/",
   "loadAtStartup": {
     "_docs": "Files force-loaded into session context at startup by LoadContext.hook.ts. Paths relative to PAI_DIR. Injected as <system-reminder> blocks.",
     "files": [
@@ -1042,15 +1042,15 @@
   },
   "counts": {
     "skills": 13,
-    "workflows": 174,
-    "hooks": 32,
-    "signals": 113,
-    "files": 124,
-    "work": 176,
-    "sessions": 1543,
-    "research": 36,
-    "ratings": 206,
-    "updatedAt": "2026-03-13T10:32:18.559Z"
+    "workflows": 175,
+    "hooks": 33,
+    "signals": 126,
+    "files": 212,
+    "work": 183,
+    "sessions": 1617,
+    "research": 48,
+    "ratings": 232,
+    "updatedAt": "2026-03-14T00:19:00.970Z"
   },
   "mcpServers": {
     "supabase": {

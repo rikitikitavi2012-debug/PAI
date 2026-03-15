@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** development
 - **Confidence:** 75%
-- **Observation Count:** 19
-- **Last Crystallized:** 2026-03-10
+- **Observation Count:** 22
+- **Last Crystallized:** 2026-03-14
 - **Source:** Converted from development.json
 
 ---
@@ -82,3 +82,6 @@
 
 - 2026-03-06: [anti-pattern] Mixed feedback — appreciates progress but frustrated with bugs
 - 2026-03-10: [anti-pattern] Frustrated — multiple critical bugs in navigator after merge
+- 2026-03-14: [anti-pattern] Frustrated — new pages deployed but not accessible/visible
+- 2026-03-14: [anti-pattern] Dissatisfied — promised updates not visible after deployment
+- 2026-03-14: [anti-pattern] Frustrated — red errors appeared after deployment
