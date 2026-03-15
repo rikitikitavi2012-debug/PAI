@@ -26,6 +26,9 @@ import { getPaiDir } from './paths';
 
 export type AlgorithmPhase = 'OBSERVE' | 'THINK' | 'PLAN' | 'CYCLE SELECTOR' | 'BUILD' | 'EXECUTE' | 'VERIFY' | 'LEARN' | 'IDLE' | 'COMPLETE';
 
+/** Autoresearch 8-phase sub-loop states (run within EXECUTE) */
+export type AutoresearchSubPhase = 'REVIEW' | 'IDEATE' | 'MODIFY' | 'COMMIT' | 'VERIFY' | 'DECIDE' | 'LOG' | 'REPEAT';
+
 export interface AlgorithmCriterion {
   id: string;
   description: string;
@@ -93,6 +96,8 @@ export interface AlgorithmState {
     anti: boolean;
     open: boolean;
   };
+  /** Autoresearch sub-phase when currentPhase is EXECUTE (e.g., REVIEW, IDEATE, MODIFY) */
+  subPhase?: AutoresearchSubPhase;
   currentAction?: string;
   completedAt?: number;
   summary?: string;
@@ -247,6 +252,7 @@ export function phaseTransition(sessionId: string, phase: AlgorithmPhase): void 
     delete state.completedAt;
     delete state.summary;
     delete state.qualityGate;
+    delete state.subPhase;
     writeState(state);
     return;
   }
@@ -269,6 +275,8 @@ export function phaseTransition(sessionId: string, phase: AlgorithmPhase): void 
   state.active = true;
   state.currentPhase = phase;
   state.phaseStartedAt = now;
+  // Clear sub-phase when leaving EXECUTE (sub-phases only valid during EXECUTE)
+  delete state.subPhase;
 
   // LEARN sets completedAt for grace period display but stays active
   // until the Stop handler calls algorithmEnd()
@@ -276,6 +284,21 @@ export function phaseTransition(sessionId: string, phase: AlgorithmPhase): void 
     state.completedAt = now;
   }
 
+  writeState(state);
+}
+
+/**
+ * Called when an Autoresearch sub-phase voice curl is detected during EXECUTE.
+ * Sets the subPhase field without changing the main phase.
+ */
+export function subPhaseTransition(sessionId: string, subPhase: AutoresearchSubPhase): void {
+  const state = readState(sessionId);
+  if (!state) return;
+
+  // Only valid during EXECUTE phase
+  if (state.currentPhase !== 'EXECUTE') return;
+
+  state.subPhase = subPhase;
   writeState(state);
 }
 

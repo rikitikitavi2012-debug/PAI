@@ -11,6 +11,8 @@ export interface AlgorithmPhasesConfig {
     emoji: string;
     english_alt?: string;
   }>;
+  /** Autoresearch 8-phase sub-loop keywords (matched in voice curls during EXECUTE) */
+  sub_phases?: string[];
   effort_levels: string[];
 }
 
@@ -35,6 +37,7 @@ const FALLBACK_PHASES: AlgorithmPhasesConfig = {
     VERIFY: { english: "entering the verify phase", russian: "вхожу в фазу проверки", emoji: "✅", english_alt: "entering the verify phase." },
     LEARN: { english: "entering the learn phase", russian: "вхожу в фазу обучения", emoji: "🎓" }
   },
+  sub_phases: ["review", "ideate", "modify", "commit", "verify", "decide", "log", "repeat"],
   effort_levels: ["TRIVIAL", "QUICK", "STANDARD", "THOROUGH"]
 };
 

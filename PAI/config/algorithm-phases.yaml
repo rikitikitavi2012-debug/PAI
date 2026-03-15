@@ -35,6 +35,16 @@ phases:
     russian: "вхожу в фазу обучения"
     emoji: "🎓"
 
+sub_phases:
+  - review
+  - ideate
+  - modify
+  - commit
+  - verify
+  - decide
+  - log
+  - repeat
+
 effort_levels:
   - TRIVIAL
   - QUICK

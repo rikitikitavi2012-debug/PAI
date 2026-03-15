@@ -18,9 +18,9 @@
  */
 
 import {
-  readState, writeState, phaseTransition, criteriaAdd, criteriaUpdate, agentAdd, effortLevelUpdate,
+  readState, writeState, phaseTransition, criteriaAdd, criteriaUpdate, agentAdd, effortLevelUpdate, subPhaseTransition,
 } from './lib/algorithm-state';
-import type { AlgorithmCriterion, AlgorithmPhase, AlgorithmState } from './lib/algorithm-state';
+import type { AlgorithmCriterion, AlgorithmPhase, AlgorithmState, AutoresearchSubPhase } from './lib/algorithm-state';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { setPhaseTab } from './lib/tab-setter';
@@ -30,25 +30,34 @@ import { loadAlgorithmPhases, AlgorithmPhasesConfig } from '../PAI/lib/vocabular
 
 // ── Phase Detection from Voice Curls ──
 
-function detectPhaseFromBash(command: string, config: AlgorithmPhasesConfig): { phase: AlgorithmPhase | null; isAlgorithmEntry: boolean } {
+function detectPhaseFromBash(command: string, config: AlgorithmPhasesConfig): { phase: AlgorithmPhase | null; subPhase: AutoresearchSubPhase | null; isAlgorithmEntry: boolean } {
   if (command.includes('CYCLE SELECTOR') || command.includes('CYCLE SELECTOR:')) {
-    return { phase: 'CYCLE SELECTOR' as AlgorithmPhase, isAlgorithmEntry: false };
+    return { phase: 'CYCLE SELECTOR' as AlgorithmPhase, subPhase: null, isAlgorithmEntry: false };
   }
 
   // Only match voice notification curls to localhost:8888
   if (!command.includes('localhost:8888') || !command.includes('/notify')) {
-    return { phase: null, isAlgorithmEntry: false };
+    return { phase: null, subPhase: null, isAlgorithmEntry: false };
   }
 
   // Extract the message field from the curl -d JSON body
   const messageMatch = command.match(/"message"\s*:\s*"([^"]+)"/);
-  if (!messageMatch) return { phase: null, isAlgorithmEntry: false };
+  if (!messageMatch) return { phase: null, subPhase: null, isAlgorithmEntry: false };
 
   const message = messageMatch[1].toLowerCase();
 
   // Check for algorithm entry
   if (message.includes(config.algorithm_entry)) {
-    return { phase: null, isAlgorithmEntry: true };
+    return { phase: null, subPhase: null, isAlgorithmEntry: true };
+  }
+
+  // Check for Autoresearch sub-phase transitions (before main phases to avoid
+  // "verify" in sub-loop matching main VERIFY phase)
+  const subPhases = config.sub_phases || ['review', 'ideate', 'modify', 'commit', 'verify', 'decide', 'log', 'repeat'];
+  for (const sp of subPhases) {
+    if (message.includes(`autoresearch ${sp}`) || message.includes(`sub-loop ${sp}`) || message.includes(`subloop ${sp}`)) {
+      return { phase: null, subPhase: sp.toUpperCase() as AutoresearchSubPhase, isAlgorithmEntry: false };
+    }
   }
 
   // Check for phase transitions
@@ -56,11 +65,11 @@ function detectPhaseFromBash(command: string, config: AlgorithmPhasesConfig): { 
     if (message.includes(data.english) ||
         message.includes(data.russian) ||
         (data.english_alt && message.includes(data.english_alt))) {
-      return { phase: phase as AlgorithmPhase, isAlgorithmEntry: false };
+      return { phase: phase as AlgorithmPhase, subPhase: null, isAlgorithmEntry: false };
     }
   }
 
-  return { phase: null, isAlgorithmEntry: false };
+  return { phase: null, subPhase: null, isAlgorithmEntry: false };
 }
 
 // ── Criteria Detection ──
@@ -158,7 +167,7 @@ async function main() {
   // ── 1. Bash → Phase detection from voice curls ──
   if (tool_name === 'Bash' && tool_input?.command) {
     const phasesConfig = await loadAlgorithmPhases();
-    const { phase, isAlgorithmEntry } = detectPhaseFromBash(tool_input.command, phasesConfig);
+    const { phase, subPhase, isAlgorithmEntry } = detectPhaseFromBash(tool_input.command, phasesConfig);
 
     if (isAlgorithmEntry) {
       ensureSessionActive(session_id);
@@ -201,6 +210,12 @@ async function main() {
       setPhaseTab(phase, session_id);
 
       process.stderr.write(`[AlgorithmTracker] phase: ${phase}\n`);
+    }
+
+    // Autoresearch sub-phase detection (only meaningful during EXECUTE)
+    if (subPhase) {
+      subPhaseTransition(session_id, subPhase);
+      process.stderr.write(`[AlgorithmTracker] subPhase: ${subPhase}\n`);
     }
   }
 
