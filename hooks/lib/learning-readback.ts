@@ -226,7 +226,176 @@ export function loadSignalTrends(paiDir: string): string | null {
 
     const trendEmoji = trend === 'up' ? 'trending up' : trend === 'down' ? 'trending down' : 'stable';
 
-    return `**Performance Signals:** Today: ${todayAvg}/10 | Week: ${weekAvg}/10 | Month: ${monthAvg}/10 | Trend: ${trendEmoji} | Total signals: ${totalCount}`;
+    let result = `**Performance Signals:** Today: ${todayAvg}/10 | Week: ${weekAvg}/10 | Month: ${monthAvg}/10 | Trend: ${trendEmoji} | Total signals: ${totalCount}`;
+
+    // When trending down, add the most recent failure pattern for context
+    if (trend === 'down') {
+      const failuresDir = join(paiDir, 'MEMORY', 'LEARNING', 'FAILURES');
+      if (existsSync(failuresDir)) {
+        try {
+          const months = readdirSync(failuresDir, { withFileTypes: true })
+            .filter(d => d.isDirectory() && /^\d{4}-\d{2}$/.test(d.name))
+            .map(d => d.name).sort().reverse();
+          for (const month of months.slice(0, 1)) {
+            const monthPath = join(failuresDir, month);
+            const dirs = readdirSync(monthPath, { withFileTypes: true })
+              .filter(d => d.isDirectory()).map(d => d.name).sort().reverse();
+            for (const dir of dirs.slice(0, 1)) {
+              const ctxPath = join(monthPath, dir, 'CONTEXT.md');
+              if (existsSync(ctxPath)) {
+                const ctx = readFileSync(ctxPath, 'utf-8');
+                const avoid = ctx.match(/\*\*AVOID:\*\*\s*(.{1,80})/);
+                if (avoid) {
+                  result += `\n  ⚠️ Declining trend — most recent failure: ${avoid[1]}`;
+                }
+              }
+            }
+          }
+        } catch { /* non-fatal */ }
+      }
+    }
+
+    return result;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Load LEARN.md insights from recent completed PRDs.
+ * Extracts ## Reflections and ## Patterns sections for compact readback.
+ * Returns the 5 most recent, max 500 chars total.
+ */
+export function loadLearnInsights(paiDir: string): string | null {
+  const workDir = join(paiDir, 'MEMORY', 'WORK');
+  if (!existsSync(workDir)) return null;
+
+  try {
+    // Get PRD dirs sorted by name (newest first, since names are timestamped)
+    const dirs = readdirSync(workDir, { withFileTypes: true })
+      .filter(d => d.isDirectory() && /^\d{8}-\d{6}_/.test(d.name))
+      .map(d => d.name)
+      .sort()
+      .reverse();
+
+    const insights: string[] = [];
+    let totalLen = 0;
+    const MAX_TOTAL = 500;
+
+    for (const dir of dirs) {
+      if (insights.length >= 5 || totalLen >= MAX_TOTAL) break;
+
+      const learnPath = join(workDir, dir, 'LEARN.md');
+      if (!existsSync(learnPath)) continue;
+
+      // Verify PRD is complete (don't read learnings from in-progress work)
+      const prdPath = join(workDir, dir, 'PRD.md');
+      if (existsSync(prdPath)) {
+        try {
+          const prdHead = readFileSync(prdPath, 'utf-8').substring(0, 300);
+          if (!prdHead.includes('phase: complete')) continue;
+        } catch { continue; }
+      }
+
+      try {
+        const content = readFileSync(learnPath, 'utf-8');
+
+        // Extract Reflections section
+        const reflMatch = content.match(/## Reflections\n([\s\S]*?)(?=\n## |\n*$)/);
+        // Extract Patterns section
+        const pattMatch = content.match(/## Patterns\n([\s\S]*?)(?=\n## |\n*$)/);
+
+        const bullets: string[] = [];
+        for (const match of [reflMatch, pattMatch]) {
+          if (!match) continue;
+          const lines = match[1].split('\n')
+            .filter(l => l.trim().startsWith('- '))
+            .map(l => l.trim().substring(2).substring(0, 80));
+          bullets.push(...lines);
+        }
+
+        if (bullets.length === 0) continue;
+
+        // Extract task name from dir slug
+        const slug = dir.replace(/^\d{8}-\d{6}_/, '').replace(/-/g, ' ');
+        const entry = `*${slug}:* ${bullets.slice(0, 2).join('; ')}`;
+
+        if (totalLen + entry.length > MAX_TOTAL) break;
+        insights.push(entry);
+        totalLen += entry.length;
+      } catch { /* skip unreadable */ }
+    }
+
+    if (insights.length === 0) return null;
+
+    return `**Recent LEARN Insights (from completed PRDs):**\n${insights.map(i => `  ${i}`).join('\n')}`;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Load experiment patterns from experiments.tsv across PRDs.
+ * Aggregates: total experiments, keep rate, most effective change types.
+ * Returns compact summary, max 300 chars.
+ */
+export function loadExperimentPatterns(paiDir: string): string | null {
+  const workDir = join(paiDir, 'MEMORY', 'WORK');
+  if (!existsSync(workDir)) return null;
+
+  try {
+    const dirs = readdirSync(workDir, { withFileTypes: true })
+      .filter(d => d.isDirectory() && /^\d{8}-\d{6}_/.test(d.name))
+      .map(d => d.name)
+      .sort()
+      .reverse();
+
+    let totalExperiments = 0;
+    let totalKeep = 0;
+    let totalDiscard = 0;
+    const keepDescriptions: string[] = [];
+
+    for (const dir of dirs) {
+      const tsvPath = join(workDir, dir, 'experiments.tsv');
+      if (!existsSync(tsvPath)) continue;
+
+      try {
+        const content = readFileSync(tsvPath, 'utf-8');
+        const lines = content.split('\n')
+          .filter(l => !l.startsWith('#') && !l.startsWith('iteration') && l.includes('\t'));
+
+        for (const line of lines) {
+          const cols = line.split('\t');
+          if (cols.length < 6) continue;
+          const status = cols[4]?.trim();
+          if (status === 'baseline') continue;
+
+          totalExperiments++;
+          if (status === 'keep') {
+            totalKeep++;
+            const delta = parseFloat(cols[3] || '0');
+            const desc = cols[5]?.trim() || '';
+            if (desc && delta !== 0) {
+              keepDescriptions.push(desc.substring(0, 60));
+            }
+          } else if (status === 'discard') {
+            totalDiscard++;
+          }
+        }
+      } catch { /* skip unreadable */ }
+    }
+
+    if (totalExperiments === 0) return null;
+
+    const keepRate = totalExperiments > 0 ? Math.round((totalKeep / totalExperiments) * 100) : 0;
+    const topKeeps = keepDescriptions.slice(0, 3).join('; ');
+
+    let summary = `**Experiment History:** ${totalExperiments} total, ${keepRate}% keep rate (${totalKeep} kept, ${totalDiscard} discarded)`;
+    if (topKeeps) {
+      summary += `\n  Best changes: ${topKeeps}`;
+    }
+
+    return summary;
   } catch {
     return null;
   }

@@ -37,7 +37,7 @@ import { join } from 'path';
 import { spawnSync } from 'child_process';
 import { getPaiDir } from './lib/paths';
 import { recordSessionStart } from './lib/notifications';
-import { loadLearningDigest, loadWisdomFrames, loadFailurePatterns, loadSignalTrends } from './lib/learning-readback';
+import { loadLearningDigest, loadWisdomFrames, loadFailurePatterns, loadSignalTrends, loadLearnInsights, loadExperimentPatterns } from './lib/learning-readback';
 import { rotateEvents } from './lib/event-rotation';
 import { getEventsPath } from './lib/event-emitter';
 
@@ -495,9 +495,14 @@ async function main() {
       const failurePatterns = loadFailurePatterns(paiDir);
       const signalTrends = loadSignalTrends(paiDir);
 
+      const learnInsights = loadLearnInsights(paiDir);
+      const experimentPatterns = loadExperimentPatterns(paiDir);
+
       const learningParts: string[] = [];
       if (signalTrends) learningParts.push(signalTrends);
       if (wisdomFrames) learningParts.push(wisdomFrames);
+      if (learnInsights) learningParts.push(learnInsights);
+      if (experimentPatterns) learningParts.push(experimentPatterns);
       if (learningDigest) learningParts.push(learningDigest);
       if (failurePatterns) learningParts.push(failurePatterns);
 
