@@ -83,7 +83,7 @@ Every **20 iterations**, pause the loop and answer:
 
 If answers suggest drift or futility → STOP loop, return to PAI THINK phase with findings.
 
-**Re-entry limit:** Maximum **2** re-entries to THINK from autoresearch stagnation or drift. On third stagnation, STOP and present results as-is. This prevents infinite re-planning loops. Track re-entry count in experiments.tsv header comment: `# think_reentries: N`.
+**Re-entry limit:** Maximum **2** re-entries to THINK from autoresearch stagnation or drift. On third stagnation, STOP and present results as-is. This prevents infinite re-planning loops. Track re-entry count in experiments.tsv header comment: `# think_reentries: N`. **Initialize to 0** when creating experiments.tsv. Counter is **per-[Q]** — reset to 0 when starting a new `[Q]` criterion's sub-loop.
 
 ### Context Recovery (during Autoresearch)
 
@@ -95,9 +95,9 @@ After context compaction, recover sub-loop state by reading experiments.tsv:
 - **Change amplitude:** `# amplitude: normal|amplified|reduced` header comment (updated by L3 decisions)
 
 **Mid-iteration recovery:** After compaction or crash, check `git status`. If uncommitted changes exist:
-- Changes are in MODIFY/COMMIT stage → `git commit -m "exp(N): recovered mid-iteration"`, then resume at VERIFY
-- Changes are unclear or broken → `git checkout -- .` (discard), then resume at IDEATE (Phase 2)
-- **Never resume mid-MODIFY.** Either commit what's there (resume VERIFY) or discard (resume IDEATE).
+- Changes look coherent and compilable (files complete, no syntax errors) → assume COMMIT stage was reached: `git commit -m "exp(N): recovered mid-iteration"`, resume at VERIFY
+- Changes are broken, partial, or unclear → assume mid-MODIFY: `git checkout -- .` (discard), resume at IDEATE (Phase 2)
+- **Heuristic:** run a quick sanity check (lint, type-check, or `bun build --dry-run`) to decide. If it passes → commit path. If it fails → discard path.
 
 For main Algorithm state, also read the PRD (see v4.0-alpha.md Context Recovery section).
 
@@ -215,3 +215,5 @@ OBSERVE → THINK → PLAN → CYCLE SELECTOR → BUILD →
 After the sub-loop completes (target reached, budget exhausted, or stopped), control returns to the main Algorithm flow at VERIFY. The experiments.tsv data feeds into LEARN Track 2 (Empirical) and Track 3 (Synthesis).
 
 **Partial success:** If the re-entry limit (2) is exhausted without reaching the target, mark the `[Q]` criterion as `PARTIAL` in the PRD: `- [~] ISC-N [Q]: description (achieved: X, target: Y)`. Record the best achieved value. LEARN Track 3 must analyze why the target wasn't reached and whether the target was realistic. Partial success is better than no record — the achieved improvement is preserved.
+
+**PARTIAL as regression gate:** When a `[Q]` reaches PARTIAL status, its best achieved value still becomes a regression gate for subsequent `[Q]` criteria (same 5% relative tolerance). The fact that the target wasn't reached doesn't exempt the achieved gains from protection.
