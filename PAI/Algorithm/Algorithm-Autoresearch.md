@@ -114,7 +114,7 @@ Track consecutive non-improvement results ("consecutive" = immediately sequentia
 - Oscillation: σ of last 10 keep-values > 2× net improvement over same 10 iterations → reduce change amplitude
 - Plateau: delta < 1% of remaining gap for 10 iterations → amplify or STOP
 
-**All STOP destinations route to THINK** (not PLAN). THINK re-evaluates ISC and risks, then flows through PLAN → Cycle Selector naturally. Re-entry counter applies to ALL STOP events.
+**All STOP destinations route to THINK** (not PLAN). THINK re-evaluates ISC and risks, then flows through PLAN → Cycle Selector naturally. **ALL STOP events (Stagnation AND L3 Structural) increment `think_reentries` and respect the 2 re-entry limit.** On third STOP from any source, halt and present results as-is.
 
 ### Regression Gates
 
@@ -174,10 +174,10 @@ Three layers operate at different frequencies to catch different types of drift.
 | Positive trend, low revert rate | slope > 0, reverts < 30% | Continue — healthy |
 | Positive trend, high revert rate | slope > 0, reverts 30-50% | Continue cautiously — reduce change amplitude |
 | Flat trend | slope ≈ 0 for 10 iterations | Amplify — try bolder changes or new categories |
-| Negative trend | slope < 0 | STOP — re-enter THINK, something is wrong |
+| Negative trend | slope < 0 | STOP — increment think_reentries, re-enter THINK |
 | High oscillation | σ > 2× net change | Reduce amplitude — changes are too volatile |
-| Positive trend, critical revert rate | slope > 0, reverts > 50% | STOP — improvements are fragile and unreliable |
-| Revert rate critical | slope ≤ 0, reverts > 50% | STOP — re-enter THINK |
+| Positive trend, critical revert rate | slope > 0, reverts > 50% | STOP — increment think_reentries, improvements fragile |
+| Revert rate critical | slope ≤ 0, reverts > 50% | STOP — increment think_reentries, re-enter THINK |
 
 ---
 
