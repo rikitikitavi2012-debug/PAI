@@ -164,7 +164,9 @@ Claude Code supports the following hook events:
 - **Inference:** `import { inference } from '../PAI/Tools/Inference'` → `inference({ level: 'fast' })`
 
 **SessionAutoName.hook.ts** - Automatic Session Naming
-- Infers a short descriptive name for the session from the first substantive prompt
+- Generates a deterministic 4-word name from prompt keywords on the first prompt (no inference on first prompt — fast path)
+- Spawns a detached background process to upgrade the name via inference async after returning
+- On subsequent prompts: checks for `/rename` override or rework detection; re-generates with inference upgrade on rework
 - Updates `MEMORY/STATE/session-names.json` with the session ID → name mapping
 - Used by the startup banner and session management tools
 - **Inference:** `import { inference } from '../PAI/Tools/Inference'` → `inference({ level: 'fast' })`
@@ -1085,11 +1087,14 @@ HOOK LIFECYCLE:
 6. Hook exits 0 (always succeeds)
 7. Claude Code continues
 
-HOOKS BY EVENT (22 hooks total):
+HOOKS BY EVENT (34 hook files, 50 settings entries):
 
-SESSION START (2 hooks):
+SESSION START (5 entries):
   KittyEnvPersist.hook.ts        Persist Kitty env vars + tab reset
   LoadContext.hook.ts             Dynamic context injection (relationship, learning, work)
+  StartupGreeting.hook.ts         Welcome message + brigade briefing
+  ModeClassifier.hook.ts          Classify request mode (Algorithm/Native/Minimal)
+  ProjectsSync.hook.ts            Sync TELOS projects state
 
 SESSION END (5 hooks):
   WorkCompletionLearning.hook.ts Work/learning capture to MEMORY/
@@ -1098,36 +1103,52 @@ SESSION END (5 hooks):
   UpdateCounts.hook.ts           Refresh system counts (skills, hooks, signals)
   IntegrityCheck.hook.ts         System integrity checks
 
-USER PROMPT SUBMIT (3 hooks):
+USER PROMPT SUBMIT (5 entries):
   RatingCapture.hook.ts          Unified rating capture (explicit + implicit)
   UpdateTabTitle.hook.ts         Tab title + working state (orange)
   SessionAutoName.hook.ts        Auto-name session from first prompt
+  ModeClassifier.hook.ts         Classify mode for each prompt
+  LearnGate.hook.ts              Block phase:complete without LEARN.md
 
 STOP (5 hooks):
   LastResponseCache.hook.ts      Cache response for RatingCapture bridge
   ResponseTabReset.hook.ts       Tab title/color reset after response
   VoiceCompletion.hook.ts        Voice TTS (main sessions only)
   DocIntegrity.hook.ts           Cross-ref + semantic drift checks
-  AlgorithmTab.hook.ts           Algorithm phase + progress in tab
+  AlgorithmTracker.hook.ts       Algorithm phase + progress in tab (+ Autoresearch sub-phases)
 
-PRE TOOL USE (4 hooks):
-  SecurityValidator.hook.ts      Security validation [Bash, Edit, Write, Read]
+PRE TOOL USE (9 entries):
+  SecurityValidator.hook.ts      Security validation [Bash, Edit, Write, Read] (4 matchers)
   SetQuestionTab.hook.ts         Tab state on question [AskUserQuestion]
   AgentExecutionGuard.hook.ts    Agent spawn guardrails [Task]
   SkillGuard.hook.ts             Skill invocation validation [Skill]
+  AutoWorkCreation.hook.ts       Auto-create WORK dir on Write to MEMORY/WORK/
 
-POST TOOL USE (2 hooks):
+POST TOOL USE (10 entries):
   QuestionAnswered.hook.ts       Post-question tab reset [AskUserQuestion]
-  PRDSync.hook.ts                PRD → work.json sync [Write, Edit]
+  PRDSync.hook.ts                PRD → work.json sync [Write, Edit] (2 matchers)
+  WisdomSync.hook.ts             Sync wisdom frames on Write/Edit
+  ResearchCapture.hook.ts        Capture research outputs
+  EventLogger.hook.ts            Log events to events.jsonl
+
+OTHER EVENTS:
+  PreCompact.hook.ts             Save state before context compaction [PreCompact]
+  PostCompactRecovery.hook.ts    Recover state after compaction [InstructionsLoaded]
+  AgentTab.hook.ts               Tab updates for agent sessions [TeammateIdle]
+  WorktreeCreate.hook.ts         Initialize worktree state [WorktreeCreate]
+  WorktreeRemove.hook.ts         Cleanup worktree state [WorktreeRemove]
+  ConfigChange event             Blocked by SecurityValidator [ConfigChange]
+  SubagentStart/Stop hooks       Agent lifecycle tracking [SubagentStart, SubagentStop]
+  TaskCompleted.hook.ts          Task completion handling [TaskCompleted]
 
 KEY FILES:
 ~/.claude/settings.json              Hook configuration
-~/.claude/hooks/                     Hook scripts (22 files)
-~/.claude/hooks/handlers/            Handler modules (6 files)
-~/.claude/hooks/lib/                 Shared libraries (13 files)
+~/.claude/hooks/                     Hook scripts (34 files)
+~/.claude/hooks/handlers/            Handler modules
+~/.claude/hooks/lib/                 Shared libraries
 ~/.claude/hooks/lib/learning-utils.ts Learning categorization
 ~/.claude/hooks/lib/time.ts          PST timestamp utilities
-~/.claude/hooks/lib/event-types.ts   Typed event definitions (22 interfaces)
+~/.claude/hooks/lib/event-types.ts   Typed event definitions
 ~/.claude/hooks/lib/event-emitter.ts appendEvent() → events.jsonl
 ~/.claude/MEMORY/WORK/               Work tracking
 ~/.claude/MEMORY/LEARNING/           Learning captures
