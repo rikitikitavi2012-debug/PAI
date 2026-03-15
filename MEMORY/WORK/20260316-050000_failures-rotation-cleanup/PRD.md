@@ -2,8 +2,8 @@
 task: "FAILURES rotation — compress transcripts, rotate old, clean existing 188 MB"
 slug: "20260316-050000_failures-rotation-cleanup"
 effort: extended
-phase: observe
-progress: 0/18
+phase: complete
+progress: 18/18
 mode: algorithm
 started: 2026-03-16T05:00:00+03:00
 updated: 2026-03-16T05:00:00+03:00
