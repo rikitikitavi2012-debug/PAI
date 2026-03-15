@@ -5,19 +5,21 @@
  * Blocks PRD.md from being set to `phase: complete` unless LEARN.md exists
  * in the same directory. Guarantees Algorithm LEARN reflections persist to disk.
  *
- * TRIGGER: PreToolUse (matcher: Edit, Write)
+ * TRIGGER: PreToolUse (matcher: Edit, Write) — own matcher entry, not shared
  * PERFORMANCE: <30ms. Pure filesystem check, no AI inference.
- *
- * NOTE: PreToolUse hooks MUST use async stdin (Bun.stdin.stream) — not
- * readFileSync(0) which hangs when Claude Code's pipe doesn't close promptly.
- * PostToolUse hooks can use readFileSync(0) safely.
  */
 
-import { existsSync } from 'fs';
+import { existsSync, writeSync } from 'fs';
 import { dirname, join } from 'path';
 import { parseFrontmatter } from './lib/prd-utils';
 
-const CONTINUE = JSON.stringify({ continue: true });
+const CONTINUE = '{"continue":true}\n';
+
+function output(json: string): never {
+  // writeSync(1, ...) = synchronous write to stdout fd — guaranteed flush before exit
+  writeSync(1, json.endsWith('\n') ? json : json + '\n');
+  process.exit(0);
+}
 
 async function main() {
   let input: any;
@@ -25,7 +27,6 @@ async function main() {
   try {
     const reader = Bun.stdin.stream().getReader();
     let raw = '';
-    let timedOut = false;
 
     const readLoop = (async () => {
       while (true) {
@@ -35,20 +36,13 @@ async function main() {
       }
     })();
 
-    const timer = setTimeout(() => { timedOut = true; }, 500);
     await Promise.race([readLoop, new Promise<void>(r => setTimeout(r, 500))]);
-    clearTimeout(timer);
     reader.cancel().catch(() => {});
 
-    if (timedOut || !raw.trim()) {
-      console.log(CONTINUE);
-      process.exit(0);
-    }
-
+    if (!raw.trim()) output(CONTINUE);
     input = JSON.parse(raw);
   } catch {
-    console.log(CONTINUE);
-    process.exit(0);
+    output(CONTINUE);
   }
 
   const toolInput = input.tool_input || {};
@@ -56,8 +50,7 @@ async function main() {
 
   // Only check PRD.md files in MEMORY/WORK/
   if (!filePath.includes('MEMORY/WORK/') || !filePath.endsWith('PRD.md')) {
-    console.log(CONTINUE);
-    process.exit(0);
+    output(CONTINUE);
   }
 
   // Detect if this edit/write sets phase to "complete"
@@ -66,7 +59,6 @@ async function main() {
   if (input.tool_name === 'Edit') {
     const oldString: string = toolInput.old_string || '';
     const newString: string = toolInput.new_string || '';
-    // Only match frontmatter edits: old_string must contain a known phase value
     const isFrontmatterEdit = /^phase:\s*(observe|think|plan|build|execute|verify|learn)/i.test(oldString);
     if (isFrontmatterEdit) {
       setsPhaseComplete = /^phase:\s*complete$/im.test(newString);
@@ -79,28 +71,20 @@ async function main() {
     }
   }
 
-  if (!setsPhaseComplete) {
-    console.log(CONTINUE);
-    process.exit(0);
-  }
+  if (!setsPhaseComplete) output(CONTINUE);
 
   // Check if LEARN.md exists in the PRD directory
   const prdDir = dirname(filePath);
   const learnPath = join(prdDir, 'LEARN.md');
 
   if (existsSync(learnPath)) {
-    console.log(CONTINUE);
+    output(CONTINUE);
   } else {
-    console.log(JSON.stringify({
+    output(JSON.stringify({
       decision: 'block',
-      reason: `LEARN phase requires persistence: write LEARN.md to ${prdDir}/ before setting phase: complete. Шаблон: ## Reflections (что делать по-другому), ## Patterns (переиспользуемые инсайты), ## Actions (файлы MEMORY/WISDOM).`
+      reason: `LEARN phase requires persistence: write LEARN.md to ${prdDir}/ before setting phase: complete. Шаблон: ## Reflections, ## Patterns, ## Actions.`
     }));
   }
-
-  process.exit(0);
 }
 
-main().catch(() => {
-  console.log(CONTINUE);
-  process.exit(0);
-});
+main().catch(() => output(CONTINUE));
