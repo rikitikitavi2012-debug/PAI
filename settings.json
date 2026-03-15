@@ -83,6 +83,10 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/LearnGate.hook.ts"
           }
         ]
       },
@@ -92,6 +96,10 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts"
+          },
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/LearnGate.hook.ts"
           }
         ]
       },
@@ -1045,11 +1053,11 @@
     "hooks": 33,
     "signals": 126,
     "files": 212,
-    "work": 183,
-    "sessions": 1617,
-    "research": 48,
-    "ratings": 232,
-    "updatedAt": "2026-03-14T00:19:00.970Z"
+    "work": 188,
+    "sessions": 1712,
+    "research": 49,
+    "ratings": 236,
+    "updatedAt": "2026-03-15T18:19:32.648Z"
   },
   "mcpServers": {
     "supabase": {
