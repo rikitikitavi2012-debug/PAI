@@ -22,7 +22,7 @@ Does this task require multiple steps, multiple files, investigation, planning, 
 
 **YES → Algorithm confirmed:**
 `curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Алгоритм подтверждён", "voice_id": "3EuKHIEZbSzrHGNmdYsx", "voice_enabled": true}'`
-Load `PAI/Algorithm/v3.5.0.md` — **only if not already in context this session** (skip on subsequent turns or after /compact recovery). Follow that file exactly.
+Load `PAI/Algorithm/v3.6.0.md` — **only if not already in context this session** (skip on subsequent turns or after /compact recovery). Follow that file exactly.
 
 **NO → Downshift to NATIVE:**
 `curl -s -X POST http://localhost:8888/notify -H "Content-Type: application/json" -d '{"message": "Задача простая, нативный режим", "voice_id": "ogi2DyUAKJb7CEdqqvlU", "voice_enabled": true}'`
