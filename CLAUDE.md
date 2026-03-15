@@ -18,6 +18,8 @@ FOR: Everything not routed to MINIMAL by ModeClassifier.
 
 **⚡ COMPLEXITY GATE — evaluate first, before anything else:**
 
+**Mechanism chain (no circular dependency):** ModeClassifier (deterministic regex hook, pre-prompt) → Complexity Gate (LLM judgment, per-task) → ISC Count Gate (mechanical count, per-PRD). Three independent mechanisms at three different levels. Escape hatch is in ISC Count Gate, not Complexity Gate.
+
 Does this task require multiple steps, multiple files, investigation, planning, or verification?
 
 **YES → Algorithm confirmed:**
