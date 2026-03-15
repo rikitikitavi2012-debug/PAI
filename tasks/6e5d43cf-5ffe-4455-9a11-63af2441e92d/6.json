@@ -1,9 +1,0 @@
-{
-  "id": "6",
-  "subject": "ISC-C6: Memory Viewer shows session history with search functionality",
-  "description": "The /memory route displays Navi's memory about Ivan, session history, and provides full-text search across sessions. | Verify: Browser: navigate to /memory, verify session list and search input",
-  "activeForm": "Verifying Memory Viewer",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

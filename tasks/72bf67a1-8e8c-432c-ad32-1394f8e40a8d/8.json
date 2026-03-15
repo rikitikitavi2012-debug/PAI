@@ -1,9 +1,0 @@
-{
-  "id": "8",
-  "subject": "ISC-C8: Dashboard pages render correctly with file-based data",
-  "description": "All three pages (/, /telos, /memory) load and display real data from PAI files without errors. Verify: Browser: open all three pages, check for data",
-  "activeForm": "Verifying dashboard renders correctly",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

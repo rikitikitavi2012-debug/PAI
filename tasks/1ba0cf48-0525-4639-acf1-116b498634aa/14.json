@@ -1,9 +1,0 @@
-{
-  "id": "14",
-  "subject": "ISC-C14: skill-index.json от v4.0.1 установлен и валиден",
-  "description": "Verify: Read: file exists and valid JSON",
-  "activeForm": "Проверка skill-index.json",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

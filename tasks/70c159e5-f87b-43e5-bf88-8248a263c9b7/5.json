@@ -1,9 +1,0 @@
-{
-  "id": "5",
-  "subject": "ISC-C5: Git инициализирован и связан с GitHub репозиторием",
-  "description": "git init + remote add origin к rikitikitavi2012-debug/tg-bot-digital-foreman. Verify: CLI: git remote -v",
-  "activeForm": "Настройка git",
-  "status": "completed",
-  "blocks": [],
-  "blockedBy": []
-}

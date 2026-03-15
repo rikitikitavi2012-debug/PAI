@@ -1,9 +1,0 @@
-{
-  "id": "64",
-  "subject": "ISC-C5: Наши уникальные хуки портированы в v4.0.1 формат",
-  "description": "AlgorithmTracker, StartupGreeting, StopOrchestrator и другие наши хуки | Verify: Read: хуки существуют и совместимы",
-  "activeForm": "Портирую наши хуки",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

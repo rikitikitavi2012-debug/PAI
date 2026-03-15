@@ -1,9 +1,0 @@
-{
-  "id": "18",
-  "subject": "ISC-C18: Staging работает как рабочая PAI система",
-  "description": "Verify: Custom: запуск claude с staging и проверка загрузки",
-  "activeForm": "Финальная проверка staging",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "12",
-  "subject": "ISC-C10: Структура docs/ содержит PRD техспеку и контекст проекта",
-  "description": "Ключевые документы: PRD, tech_spec, context, brief, decisions, status. Verify: Read: docs/ listing",
-  "activeForm": "Проверка документации",
-  "status": "completed",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "3",
-  "subject": "ISC-C3: Fabric skill has zero placeholder variables in all files",
-  "description": "Audit Fabric skill for placeholder leaks. Verify: Grep patterns",
-  "activeForm": "Auditing Fabric skill placeholders",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "1",
-  "subject": "ISC-C1: Kitty преимущества для Claude Code ясно перечислены",
-  "description": "Перечислены конкретные фишки Kitty терминала для работы с Claude Code: графический протокол, GPU рендеринг, скорость, tabs/layouts, шрифты | Verify: Custom: ответ содержит 5+ конкретных преимуществ",
-  "activeForm": "Описываю преимущества Kitty",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

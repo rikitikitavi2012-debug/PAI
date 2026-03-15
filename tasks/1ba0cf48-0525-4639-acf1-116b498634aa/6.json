@@ -1,9 +1,0 @@
-{
-  "id": "6",
-  "subject": "ISC-C6: Все хуки v4.0.1 присутствуют в staging",
-  "description": "Verify: CLI: count hook files in staging",
-  "activeForm": "Проверка хуков v4.0.1",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

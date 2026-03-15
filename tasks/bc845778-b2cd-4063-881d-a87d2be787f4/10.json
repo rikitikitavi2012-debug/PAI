@@ -1,9 +1,0 @@
-{
-  "id": "10",
-  "subject": "ISC-C10: CreateSkill skill has zero placeholders and phantom refs",
-  "description": "Full audit of CreateSkill skill. Verify: Grep for placeholders + ref existence check",
-  "activeForm": "Auditing CreateSkill skill",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

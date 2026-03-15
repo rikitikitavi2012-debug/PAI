@@ -1,9 +1,0 @@
-{
-  "id": "14",
-  "subject": "ISC-C14: Environment variables documented in .env.example without secrets",
-  "description": ".env.example file lists all required env vars with placeholder values. No actual secrets committed. | Verify: Read: .env.example exists with all NEXT_PUBLIC_SUPABASE_* vars listed",
-  "activeForm": "Verifying env documentation",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

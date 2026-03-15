@@ -1,9 +1,0 @@
-{
-  "id": "9",
-  "subject": "ISC-A1: Никаких секретов (.env, .json credentials) в git коммите",
-  "description": "Анти-критерий: .env и service account JSON НЕ коммитятся. Verify: Grep: git diff --cached for secrets",
-  "activeForm": "Проверка безопасности",
-  "status": "completed",
-  "blocks": [],
-  "blockedBy": []
-}

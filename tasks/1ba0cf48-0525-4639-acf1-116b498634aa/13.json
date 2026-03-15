@@ -1,9 +1,0 @@
-{
-  "id": "13",
-  "subject": "ISC-C13: PAI директория с Tools на месте",
-  "description": "Verify: CLI: ls PAI/Tools/ in staging, check TranscriptParser exists",
-  "activeForm": "Проверка PAI/Tools",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "17",
-  "subject": "ISC-A3: No client-side exposure of Supabase service role key",
-  "description": "Only NEXT_PUBLIC_SUPABASE_ANON_KEY exposed to client. Service role key used exclusively in server-side code (API routes, server components). | Verify: Grep: SUPABASE_SERVICE_ROLE never appears in client components",
-  "activeForm": "Checking key exposure",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "6",
-  "subject": "ISC-C6: Goal editing on dashboard writes changes back to GOALS.md",
-  "description": "PATCH /api/goals/[id] updates the corresponding goal section in GOALS.md file, preserving markdown format. Verify: CLI: edit goal via API, then read GOALS.md to confirm change",
-  "activeForm": "Implementing goal write-back to file",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "65",
-  "subject": "ISC-A1: Миграция не затрагивает MEMORY директорию с историей работы",
-  "description": "MEMORY/ только копируется, никогда не перезаписывается | Verify: CLI: diff backup vs new MEMORY",
-  "activeForm": "Защищаю MEMORY",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

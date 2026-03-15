@@ -1,9 +1,0 @@
-{
-  "id": "9",
-  "subject": "ISC-C9: File parsers preserve original markdown format when writing back",
-  "description": "When editing goals via dashboard and writing back to GOALS.md, the markdown structure, formatting, and unmodified sections remain intact. Verify: Read: compare GOALS.md before/after edit",
-  "activeForm": "Ensuring markdown format preservation",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "4",
-  "subject": "ISC-C4: Get contents извлекает полный текст страницы",
-  "description": "Exa умеет получать полный markdown-контент URL",
-  "activeForm": "Тестируем get contents",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

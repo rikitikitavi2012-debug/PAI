@@ -1,9 +1,0 @@
-{
-  "id": "1",
-  "subject": "ISC-C1: Полный бэкап v3.0 создан в ~/.claude-v3-backup-20260228",
-  "description": "Verify: CLI: ls ~/.claude-v3-backup-20260228/settings.json",
-  "activeForm": "Создание бэкапа v3.0",
-  "status": "completed",
-  "blocks": [],
-  "blockedBy": []
-}

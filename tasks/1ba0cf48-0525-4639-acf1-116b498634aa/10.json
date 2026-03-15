@@ -1,9 +1,0 @@
-{
-  "id": "10",
-  "subject": "ISC-C10: PostCompactRecovery портирован в v4.0.1 формат",
-  "description": "Verify: Read: hook exists and imports correctly from v4.0.1 lib",
-  "activeForm": "Портирование PostCompactRecovery",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "2",
-  "subject": "ISC-C2: Поиск по дате фильтрует свежие новости",
-  "description": "Exa умеет фильтровать по дате публикации",
-  "activeForm": "Тестируем news search",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "5",
-  "subject": "ISC-C5: Research поиск находит академические источники",
-  "description": "Exa умеет искать по научным статьям и исследованиям",
-  "activeForm": "Тестируем research search",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

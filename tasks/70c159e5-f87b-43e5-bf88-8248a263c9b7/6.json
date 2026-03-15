@@ -1,9 +1,0 @@
-{
-  "id": "6",
-  "subject": "ISC-C6: Файлы pyproject.toml requirements.txt .gitignore .env.example перенесены",
-  "description": "Конфигурационные файлы на месте. Verify: CLI: ls config files",
-  "activeForm": "Перенос конфигурации",
-  "status": "completed",
-  "blocks": [],
-  "blockedBy": []
-}

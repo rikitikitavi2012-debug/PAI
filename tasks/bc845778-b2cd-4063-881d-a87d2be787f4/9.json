@@ -1,9 +1,0 @@
-{
-  "id": "9",
-  "subject": "ISC-C9: Evals skill has zero placeholders and phantom refs",
-  "description": "Full audit of Evals skill. Verify: Grep for placeholders + ref existence check",
-  "activeForm": "Auditing Evals skill",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

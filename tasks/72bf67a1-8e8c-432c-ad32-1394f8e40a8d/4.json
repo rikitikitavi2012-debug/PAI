@@ -1,9 +1,0 @@
-{
-  "id": "4",
-  "subject": "ISC-C4: API routes read sessions from MEMORY directory files",
-  "description": "GET /api/sessions reads session data from ~/.claude/MEMORY/WORK/ and MEMORY/RELATIONSHIP/ directories. Verify: CLI: curl localhost:3000/api/sessions returns parsed session data",
-  "activeForm": "Implementing sessions file reader",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

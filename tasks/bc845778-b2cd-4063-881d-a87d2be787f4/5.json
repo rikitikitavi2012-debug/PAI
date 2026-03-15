@@ -1,9 +1,0 @@
-{
-  "id": "5",
-  "subject": "ISC-C5: Council skill has zero placeholders and phantom refs",
-  "description": "Full audit of Council skill. Verify: Grep for placeholders + ref existence check",
-  "activeForm": "Auditing Council skill",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

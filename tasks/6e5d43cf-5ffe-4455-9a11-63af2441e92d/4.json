@@ -1,9 +1,0 @@
-{
-  "id": "4",
-  "subject": "ISC-C4: Overview screen displays TELOS goals and infrastructure status",
-  "description": "The Overview page at / shows TELOS goals summary, infrastructure status (agentzero + xray-vps), and recent sessions. | Verify: Browser: screenshot / route, verify 3 sections visible",
-  "activeForm": "Verifying Overview screen",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

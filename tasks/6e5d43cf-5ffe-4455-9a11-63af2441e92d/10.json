@@ -1,9 +1,0 @@
-{
-  "id": "10",
-  "subject": "ISC-C10: API routes follow Next.js App Router conventions consistently",
-  "description": "All API endpoints use app/api/[resource]/route.ts pattern with proper HTTP methods, error handling, and TypeScript types. | Verify: Glob: check app/api/**/route.ts files exist with proper exports",
-  "activeForm": "Verifying API routes",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

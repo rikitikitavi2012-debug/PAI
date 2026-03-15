@@ -1,9 +1,0 @@
-{
-  "id": "7",
-  "subject": "ISC-C7: AlgorithmTracker портирован и совместим с v4.0.1",
-  "description": "Verify: CLI: bun check or dry run of AlgorithmTracker",
-  "activeForm": "Портирование AlgorithmTracker",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

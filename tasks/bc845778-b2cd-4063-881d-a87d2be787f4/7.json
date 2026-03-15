@@ -1,9 +1,0 @@
-{
-  "id": "7",
-  "subject": "ISC-C7: Art skill has zero placeholders and phantom refs",
-  "description": "Full audit of Art skill. Verify: Grep for placeholders + ref existence check",
-  "activeForm": "Auditing Art skill",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

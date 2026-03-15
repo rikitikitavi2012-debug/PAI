@@ -1,9 +1,0 @@
-{
-  "id": "11",
-  "subject": "ISC-C11: skill-index.json entries match actual skill directories on disk",
-  "description": "Every skill in skill-index.json must have a corresponding directory. No orphaned entries. Verify: Parse JSON, check each path",
-  "activeForm": "Cross-checking skill index vs filesystem",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

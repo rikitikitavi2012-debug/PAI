@@ -1,9 +1,0 @@
-{
-  "id": "13",
-  "subject": "ISC-A1: No generated files manually patched without fixing generator",
-  "description": "Anti-criterion: if any bug found in generated files (skill-index.json, skill-workflow-capabilities.json), fix the generator script not the output. Verify: Check if any fixes touch generated files without corresponding generator fix",
-  "activeForm": "Verifying generator-first principle",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

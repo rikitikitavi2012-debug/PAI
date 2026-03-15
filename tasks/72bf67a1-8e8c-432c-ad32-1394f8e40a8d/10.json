@@ -1,9 +1,0 @@
-{
-  "id": "10",
-  "subject": "ISC-C10: Project builds successfully without Supabase environment variables",
-  "description": "npm run build completes with exit code 0 and no .env.local file needed. Verify: CLI: rm .env.local && npm run build succeeds",
-  "activeForm": "Verifying clean build without Supabase",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

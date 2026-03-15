@@ -1,9 +1,0 @@
-{
-  "id": "2",
-  "subject": "ISC-C2: Весь исходный код из app/ перенесён без потерь",
-  "description": "19 Python файлов из app/ скопированы. Verify: CLI: diff count source vs target",
-  "activeForm": "Перенос исходного кода",
-  "status": "completed",
-  "blocks": [],
-  "blockedBy": []
-}

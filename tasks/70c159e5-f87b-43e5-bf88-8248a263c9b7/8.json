@@ -1,9 +1,0 @@
-{
-  "id": "8",
-  "subject": "ISC-C8: Python venv создан и зависимости установлены в WSL",
-  "description": "Новый venv в WSL, pip install -r requirements.txt. Verify: CLI: source venv/bin/activate && pip list",
-  "activeForm": "Создание виртуального окружения",
-  "status": "completed",
-  "blocks": [],
-  "blockedBy": []
-}

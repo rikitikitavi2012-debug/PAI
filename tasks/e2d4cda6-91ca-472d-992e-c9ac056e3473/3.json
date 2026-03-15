@@ -1,9 +1,0 @@
-{
-  "id": "3",
-  "subject": "ISC-C3: Find similar находит страницы по URL образцу",
-  "description": "findSimilar работает — находит похожие сайты",
-  "activeForm": "Тестируем find similar",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

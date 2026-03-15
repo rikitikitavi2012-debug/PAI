@@ -1,9 +1,0 @@
-{
-  "id": "5",
-  "subject": "ISC-C5: API routes read memory entries from TELOS markdown files",
-  "description": "GET /api/memory-entries parses LEARNED.md, BELIEFS.md, BOOKS.md, MOVIES.md, MODELS.md, FRAMES.md and categorizes entries. Verify: CLI: curl localhost:3000/api/memory-entries returns categorized entries",
-  "activeForm": "Implementing memory entries file reader",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

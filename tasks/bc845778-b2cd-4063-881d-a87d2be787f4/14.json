@@ -1,9 +1,0 @@
-{
-  "id": "14",
-  "subject": "ISC-A2: No regressions introduced in previously audited skills",
-  "description": "Anti-criterion: the 10 already-audited skills must remain clean. Verify: Spot-check 2-3 previously audited skills",
-  "activeForm": "Checking for regressions in audited skills",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

@@ -1,9 +1,0 @@
-{
-  "id": "12",
-  "subject": "ISC-A2: No hardcoded absolute paths exposed in client-side code",
-  "description": "File paths like /home/ser/.claude/ only appear in server-side API routes, never in client components. Verify: Grep: no /home/ser in src/components/ or client files",
-  "activeForm": "Checking for path exposure",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

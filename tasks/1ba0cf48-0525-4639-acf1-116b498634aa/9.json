@@ -1,9 +1,0 @@
-{
-  "id": "9",
-  "subject": "ISC-C9: AutoWorkCreation портирован в v4.0.1 формат",
-  "description": "Verify: Read: hook imports from v4.0.1 lib paths",
-  "activeForm": "Портирование AutoWorkCreation",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

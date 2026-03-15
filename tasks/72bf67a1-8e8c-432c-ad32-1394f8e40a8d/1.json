@@ -1,9 +1,0 @@
-{
-  "id": "1",
-  "subject": "ISC-C1: API routes read missions directly from MISSION.md file",
-  "description": "GET /api/missions parses ~/.claude/skills/PAI/USER/TELOS/MISSION.md and returns structured mission data (M0-M3). Verify: CLI: curl localhost:3000/api/missions returns real mission data",
-  "activeForm": "Implementing missions file reader",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

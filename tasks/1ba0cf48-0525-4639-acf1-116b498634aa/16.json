@@ -1,9 +1,0 @@
-{
-  "id": "16",
-  "subject": "ISC-C16: Русификация агентов сохранена или перенесена",
-  "description": "Verify: Grep: Russian text in agent files in staging",
-  "activeForm": "Проверка русификации агентов",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

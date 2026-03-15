@@ -1,9 +1,0 @@
-{
-  "id": "18",
-  "subject": "ISC-A4: No over-engineered authentication for single-user dashboard",
-  "description": "No auth system added unless Ivan explicitly requests it. Single-user dashboard uses Supabase RLS with anon key, not full auth flow. | Verify: Grep: no auth middleware, no login page exists",
-  "activeForm": "Checking for unnecessary auth",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

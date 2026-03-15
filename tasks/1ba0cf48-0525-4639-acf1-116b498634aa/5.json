@@ -1,9 +1,0 @@
-{
-  "id": "5",
-  "subject": "ISC-C5: custom-agents и plugins скопированы целиком",
-  "description": "Verify: CLI: ls staging dirs",
-  "activeForm": "Копирование custom-agents и plugins",
-  "status": "in_progress",
-  "blocks": [],
-  "blockedBy": []
-}

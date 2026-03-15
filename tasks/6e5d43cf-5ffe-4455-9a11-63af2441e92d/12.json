@@ -1,9 +1,0 @@
-{
-  "id": "12",
-  "subject": "ISC-C12: Responsive layout works on desktop and tablet viewports",
-  "description": "Dashboard layout adapts between desktop (sidebar visible) and tablet (sidebar collapsed). Minimum viable responsive design. | Verify: Browser: screenshot at 1440px and 768px widths",
-  "activeForm": "Verifying responsive layout",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

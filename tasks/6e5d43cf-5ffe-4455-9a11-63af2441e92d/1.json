@@ -1,9 +1,0 @@
-{
-  "id": "1",
-  "subject": "ISC-C1: Next.js App Router project scaffolded with TypeScript enabled",
-  "description": "The project has a working Next.js scaffold with App Router, TypeScript, Tailwind CSS, ESLint, src directory, and @/* import alias. | Verify: CLI: ls src/app/layout.tsx && npx tsc --noEmit",
-  "activeForm": "Verifying Next.js scaffold",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}

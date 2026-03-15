@@ -1,9 +1,0 @@
-{
-  "id": "15",
-  "subject": "ISC-C15: agents директория содержит все v4.0.1 агенты",
-  "description": "Verify: CLI: count agent files in staging",
-  "activeForm": "Проверка агентов",
-  "status": "pending",
-  "blocks": [],
-  "blockedBy": []
-}
