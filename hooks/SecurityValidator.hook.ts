@@ -62,10 +62,15 @@
  * - All decisions logged for audit trail
  */
 
-import { readFileSync, existsSync, writeFileSync, mkdirSync, statSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync, mkdirSync, statSync, writeSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
 import { paiPath } from './lib/paths';
+
+/** Synchronous stdout write — guarantees flush before process.exit() */
+function stdoutWrite(json: string): void {
+  writeSync(1, json.endsWith('\n') ? json : json + '\n');
+}
 
 // ========================================
 // Security Event Logging
@@ -479,7 +484,7 @@ async function handleBash(input: HookInput): Promise<void> {
     : (input.tool_input?.command as string) || '';
 
   if (!rawCommand) {
-    console.log(JSON.stringify({ continue: true }));
+    stdoutWrite(JSON.stringify({ continue: true }));
     return;
   }
 
@@ -515,7 +520,7 @@ async function handleBash(input: HookInput): Promise<void> {
         reason: result.reason,
         action_taken: 'Prompted user for confirmation'
       });
-      console.log(JSON.stringify({
+      stdoutWrite(JSON.stringify({
         decision: 'ask',
         message: `[PAI SECURITY] ⚠️ ${result.reason}\n\nCommand: ${command.slice(0, 200)}\n\nProceed?`
       }));
@@ -534,11 +539,11 @@ async function handleBash(input: HookInput): Promise<void> {
       });
       console.error(`[PAI SECURITY] ⚠️ ALERT: ${result.reason}`);
       console.error(`Command: ${command.slice(0, 100)}`);
-      console.log(JSON.stringify({ continue: true }));
+      stdoutWrite(JSON.stringify({ continue: true }));
       break;
 
     default:
-      console.log(JSON.stringify({ continue: true }));
+      stdoutWrite(JSON.stringify({ continue: true }));
   }
 }
 
@@ -573,7 +578,7 @@ async function handleFileWrite(input: HookInput, toolName: string): Promise<void
     : (input.tool_input?.file_path as string) || '';
 
   if (!filePath) {
-    console.log(JSON.stringify({ continue: true }));
+    stdoutWrite(JSON.stringify({ continue: true }));
     return;
   }
 
@@ -607,7 +612,7 @@ async function handleFileWrite(input: HookInput, toolName: string): Promise<void
         reason: result.reason,
         action_taken: 'Prompted user for confirmation'
       });
-      console.log(JSON.stringify({
+      stdoutWrite(JSON.stringify({
         decision: 'ask',
         message: `[PAI SECURITY] ⚠️ ${result.reason}\n\nPath: ${filePath}\n\nProceed?`
       }));
@@ -649,7 +654,7 @@ async function handleFileWrite(input: HookInput, toolName: string): Promise<void
         reason: contentResult.reason!,
         action_taken: 'Prompted user for confirmation'
       });
-      console.log(JSON.stringify({
+      stdoutWrite(JSON.stringify({
         decision: 'ask',
         message: `[PAI SECURITY] ⚠️ ${contentResult.reason}\n\nPath: ${filePath}\n\nProceed?`
       }));
@@ -657,7 +662,7 @@ async function handleFileWrite(input: HookInput, toolName: string): Promise<void
     }
   }
 
-  console.log(JSON.stringify({ continue: true }));
+  stdoutWrite(JSON.stringify({ continue: true }));
 }
 
 async function handleRead(input: HookInput): Promise<void> {
@@ -666,7 +671,7 @@ async function handleRead(input: HookInput): Promise<void> {
     : (input.tool_input?.file_path as string) || '';
 
   if (!filePath) {
-    console.log(JSON.stringify({ continue: true }));
+    stdoutWrite(JSON.stringify({ continue: true }));
     return;
   }
 
@@ -690,7 +695,7 @@ async function handleRead(input: HookInput): Promise<void> {
       break;
 
     default:
-      console.log(JSON.stringify({ continue: true }));
+      stdoutWrite(JSON.stringify({ continue: true }));
   }
 }
 
@@ -726,12 +731,12 @@ async function main(): Promise<void> {
     clearTimeout(timeoutId);
 
     if (timedOut && !raw.trim()) {
-      console.log(JSON.stringify({ continue: true }));
+      stdoutWrite(JSON.stringify({ continue: true }));
       process.exit(0);
     }
 
     if (!raw.trim()) {
-      console.log(JSON.stringify({ continue: true }));
+      stdoutWrite(JSON.stringify({ continue: true }));
       process.exit(0);
     }
 
@@ -739,7 +744,7 @@ async function main(): Promise<void> {
   } catch (err) {
     // Parse error or timeout - fail open but LOG
     process.stderr.write(`[SecurityValidator] stdin parse error, failing open: ${err}\n`);
-    console.log(JSON.stringify({ continue: true }));
+    stdoutWrite(JSON.stringify({ continue: true }));
     process.exit(0);
     return;
   }
@@ -761,7 +766,7 @@ async function main(): Promise<void> {
       break;
     default:
       // Allow all other tools
-      console.log(JSON.stringify({ continue: true }));
+      stdoutWrite(JSON.stringify({ continue: true }));
   }
 
   // Explicit exit: prevents dangling setTimeout timers from Promise.race
@@ -772,6 +777,6 @@ async function main(): Promise<void> {
 // Run main, fail open on any error (but LOG it so failures are visible)
 main().catch((err) => {
   process.stderr.write(`[SecurityValidator] CRITICAL: main() crashed, failing open: ${err}\n`);
-  console.log(JSON.stringify({ continue: true }));
+  stdoutWrite(JSON.stringify({ continue: true }));
   process.exit(0);
 });
