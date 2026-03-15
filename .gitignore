@@ -79,3 +79,4 @@ MEMORY/RELATIONSHIP/
 .venv-pytest/
 .claude/worktrees/
 PAI/USER/DOMAINS/construction/estimates/raw/
+node_modules/
