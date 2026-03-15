@@ -45,7 +45,7 @@ These override default behavior. If the directory does not exist, proceed with s
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚠️  ALL GENERATED IMAGES GO TO ~/Downloads/ FIRST                   ⚠️
 ⚠️  NEVER output directly to project directories                    ⚠️
-⚠️  User MUST preview in Finder/Preview before use                  ⚠️
+⚠️  User MUST preview before use (file manager or `xdg-open`)       ⚠️
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
