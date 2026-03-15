@@ -973,8 +973,7 @@
   },
   "pai": {
     "repoUrl": "https://github.com/danielmiessler/PAI",
-    "version": "4.0.3",
-    "algorithmVersion": "3.5.0"
+    "version": "4.0.3"
   },
   "preferences": {
     "temperatureUnit": "fahrenheit",

@@ -24,7 +24,7 @@ import { getPaiDir } from './paths';
 
 // ── Types ──
 
-export type AlgorithmPhase = 'OBSERVE' | 'THINK' | 'PLAN' | 'BUILD' | 'EXECUTE' | 'VERIFY' | 'LEARN' | 'IDLE' | 'COMPLETE';
+export type AlgorithmPhase = 'OBSERVE' | 'THINK' | 'PLAN' | 'CYCLE SELECTOR' | 'BUILD' | 'EXECUTE' | 'VERIFY' | 'LEARN' | 'IDLE' | 'COMPLETE';
 
 export interface AlgorithmCriterion {
   id: string;

@@ -121,7 +121,10 @@ function getStats(): SystemStats {
     const settings = JSON.parse(readFileSync(join(CLAUDE_DIR, "settings.json"), "utf-8"));
     name = settings.daidentity?.displayName || settings.daidentity?.name || "PAI";
     paiVersion = settings.pai?.version || "2.0";
-    algorithmVersion = (settings.pai?.algorithmVersion || algorithmVersion).replace(/^v/i, '');
+    try {
+      const latestPath = join(process.env.PAI_DIR || join(process.env.HOME || '', '.claude'), 'PAI', 'Algorithm', 'LATEST');
+      algorithmVersion = readFileSync(latestPath, 'utf8').trim().replace(/^v/i, '');
+    } catch (e) {}
     catchphrase = settings.daidentity?.startupCatchphrase || catchphrase;
     repoUrl = settings.pai?.repoUrl || repoUrl;
   } catch {}

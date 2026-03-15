@@ -268,14 +268,7 @@ export async function handleUpdateCounts(sessionCostUsd?: number): Promise<void>
     }
 
     // Extract and write Algorithm version from CLAUDE.md
-    try {
-      const claudeMd = readFileSync(join(paiDir, 'CLAUDE.md'), 'utf-8');
-      const algoMatch = claudeMd.match(/Algorithm\/v([\d.]+)\.md/);
-      if (algoMatch) {
-        settings.pai = settings.pai || {};
-        settings.pai.algorithmVersion = algoMatch[1];
-      }
-    } catch {}
+
 
     // Write back
     writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');

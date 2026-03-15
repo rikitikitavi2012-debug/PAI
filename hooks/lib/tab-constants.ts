@@ -33,6 +33,7 @@ export const PHASE_TAB_CONFIG: Record<string, { symbol: string; inactiveBg: stri
   OBSERVE:  { symbol: '👁️', inactiveBg: '#0C2D48', label: 'observe',  gerund: 'Observing the user request.' },
   THINK:    { symbol: '🧠', inactiveBg: '#2D1B69', label: 'think',    gerund: 'Analyzing the problem space.' },
   PLAN:     { symbol: '📋', inactiveBg: '#1E1B4B', label: 'plan',     gerund: 'Planning the execution approach.' },
+  'CYCLE SELECTOR': { symbol: '🔀', inactiveBg: '#451A03', label: 'route', gerund: 'Selecting execution mode.' },
   BUILD:    { symbol: '🔨', inactiveBg: '#78350F', label: 'build',    gerund: 'Building the solution artifacts.' },
   EXECUTE:  { symbol: '⚡', inactiveBg: '#713F12', label: 'execute',  gerund: 'Executing the planned work.' },
   VERIFY:   { symbol: '✅', inactiveBg: '#14532D', label: 'verify',   gerund: 'Verifying ideal state criteria.' },

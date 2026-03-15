@@ -13,6 +13,10 @@ phases:
     english: "entering the plan phase"
     russian: "вхожу в фазу планирования"
     emoji: "📋"
+  "CYCLE SELECTOR":
+    english: "cycle selector"
+    russian: "выбор цикла"
+    emoji: "🔀"
   BUILD:
     english: "entering the build phase"
     russian: "вхожу в фазу сборки"

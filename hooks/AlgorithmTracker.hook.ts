@@ -31,6 +31,10 @@ import { loadAlgorithmPhases, AlgorithmPhasesConfig } from '../PAI/lib/vocabular
 // ── Phase Detection from Voice Curls ──
 
 function detectPhaseFromBash(command: string, config: AlgorithmPhasesConfig): { phase: AlgorithmPhase | null; isAlgorithmEntry: boolean } {
+  if (command.includes('CYCLE SELECTOR') || command.includes('CYCLE SELECTOR:')) {
+    return { phase: 'CYCLE SELECTOR' as AlgorithmPhase, isAlgorithmEntry: false };
+  }
+
   // Only match voice notification curls to localhost:8888
   if (!command.includes('localhost:8888') || !command.includes('/notify')) {
     return { phase: null, isAlgorithmEntry: false };

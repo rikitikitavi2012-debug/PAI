@@ -30,6 +30,9 @@
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
 interface UserPromptInput {
   session_id?: string;
   prompt?: string;
@@ -144,6 +147,13 @@ function buildMinimalContext(): string {
 }
 
 function buildAlgorithmContext(): string {
+  let algorithmVersion = 'v3.5.0';
+  try {
+    const latestPath = join(process.env.PAI_DIR || join(process.env.HOME || '', '.claude'), 'PAI', 'Algorithm', 'LATEST');
+    algorithmVersion = readFileSync(latestPath, 'utf8').trim();
+  } catch (e) {
+    // fallback if file not found
+  }
   return [
     `MODE CLASSIFICATION (ModeClassifier.hook.ts):`,
     ``,
@@ -151,13 +161,13 @@ function buildAlgorithmContext(): string {
     ``,
     `You MUST use ALGORITHM mode. Do NOT use NATIVE mode for this request.`,
     `Your FIRST output MUST be the ALGORITHM entry header:`,
-    `  ♻︎ Entering the PAI ALGORITHM… (v3.5.0) ═════════════`,
+    `  ♻︎ Entering the PAI ALGORITHM… (${algorithmVersion}) ═════════════`,
     `  🗒️ TASK: [8 word description]`,
     ``,
     `Then proceed through all 7 phases: OBSERVE → THINK → PLAN → BUILD → EXECUTE → VERIFY → LEARN.`,
     `The Complexity Gate in the OBSERVE phase will downshift to NATIVE if the task is genuinely simple.`,
     ``,
-    `MANDATORY FIRST ACTION in OBSERVE: load PAI/Algorithm/v3.5.0.md with the Read tool.`,
+    `MANDATORY FIRST ACTION in OBSERVE: load PAI/Algorithm/${algorithmVersion}.md with the Read tool.`,
   ].join('\n');
 }
 
