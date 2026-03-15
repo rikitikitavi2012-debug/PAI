@@ -2,6 +2,10 @@
 
 Referenced from `v4.0-alpha.md` EXECUTE phase. Loaded only when Cycle Selector routes to Autoresearch or Hybrid EXECUTE.
 
+### Prerequisites
+
+Before starting the sub-loop, **Verification Rehearsal** (defined in v4.0-alpha.md EXECUTE section) MUST complete for each `[Q]` metric. This validates that the metric command produces reliable measurements. Run once per `[Q]` criterion, not once per iteration.
+
 ### 8-Phase Iteration Cycle
 
 Each iteration = one atomic experiment. Goal: improve a `[Q]` metric while preserving all `[B]` regression gates.
@@ -81,9 +85,11 @@ Track consecutive non-improvement results:
 **Amplify does NOT reset the consecutive discard counter.** The counter continues from its current value. If experiments 5-10 after Amplify are all discards, STOP triggers at 10 total.
 
 **Additional signals:**
-- Revert rate > 50% over last 20 experiments → STOP, re-enter PLAN
+- Revert rate > 50% over last 20 experiments → STOP, re-enter THINK (counts toward re-entry limit)
 - Oscillation: σ of last 10 keep-values > 2× net improvement over same 10 iterations → reduce change amplitude
 - Plateau: delta < 1% of remaining gap for 10 iterations → amplify or STOP
+
+**All STOP destinations route to THINK** (not PLAN). THINK re-evaluates ISC and risks, then flows through PLAN → Cycle Selector naturally. Re-entry counter applies to ALL STOP events.
 
 ### Regression Gates
 
@@ -143,10 +149,10 @@ Three layers operate at different frequencies to catch different types of drift.
 | Positive trend, low revert rate | slope > 0, reverts < 30% | Continue — healthy |
 | Positive trend, high revert rate | slope > 0, reverts 30-50% | Continue cautiously — reduce change amplitude |
 | Flat trend | slope ≈ 0 for 10 iterations | Amplify — try bolder changes or new categories |
-| Negative trend | slope < 0 | STOP — re-enter PLAN, something is wrong |
+| Negative trend | slope < 0 | STOP — re-enter THINK, something is wrong |
 | High oscillation | σ > 2× net change | Reduce amplitude — changes are too volatile |
 | Positive trend, critical revert rate | slope > 0, reverts > 50% | STOP — improvements are fragile and unreliable |
-| Revert rate critical | slope ≤ 0, reverts > 50% | STOP — re-enter PLAN |
+| Revert rate critical | slope ≤ 0, reverts > 50% | STOP — re-enter THINK |
 
 ---
 
