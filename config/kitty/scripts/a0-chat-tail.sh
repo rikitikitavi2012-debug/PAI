@@ -27,7 +27,7 @@ HAS_STATUS=0
 RST='\e[0m'; BLD='\e[1m'; DIM='\e[2m'; ITL='\e[3m'
 CYN='\e[38;2;103;232;249m'; VIO='\e[38;2;167;139;250m'; GRN='\e[38;2;74;222;128m'
 RED='\e[38;2;251;113;133m'; YLW='\e[38;2;251;191;36m'; SEP='\e[38;2;71;85;105m'
-WHT='\e[38;2;203;213;225m'; SLT='\e[38;2;148;163;184m'; BLU='\e[38;2;96;165;250m'
+WHT='\e[38;2;203;213;225m'; SLT='\e[38;2;148;163;184m'; _BLU='\e[38;2;96;165;250m'
 ORG='\e[38;2;251;146;60m'; PNK='\e[38;2;244;114;182m'; EMR='\e[38;2;52;211;153m'
 GH1='\e[38;2;56;189;248m'; GH2='\e[38;2;99;102;241m'; GH3='\e[38;2;167;139;250m'
 BG_IVAN='\e[48;2;22;40;28m'; BG_A0='\e[48;2;20;30;45m'; BG_RST='\e[49m'
@@ -141,7 +141,8 @@ word_wrap() {
   local text="$1" width="$2"
   while [ ${#text} -gt 0 ]; do
     [ ${#text} -le "$width" ] && { echo "$text"; break; }
-    local chunk="${text:0:$width}" last_sp="${chunk% *}"
+    local chunk="${text:0:$width}"
+    local last_sp="${chunk% *}"
     if [ "$last_sp" != "$chunk" ] && [ ${#last_sp} -gt $((width/3)) ]; then
       echo "$last_sp"; text="${text:${#last_sp}}"; text="${text# }"
     else echo "$chunk"; text="${text:$width}"; fi
@@ -199,7 +200,9 @@ format_item() {
 
 # ── Gradient line helper (batched printf for efficiency) ──
 print_gradient_line() {
-  local sw=$((TERM_COLS-4)) th=$((sw/3)) rem=$((sw - (sw/3)*2))
+  local sw=$((TERM_COLS-4))
+  local th=$((sw/3))
+  local rem=$((sw - (sw/3)*2))
   local s1; s1=$(printf '─%.0s' $(seq 1 "$th"))
   local s2; s2=$(printf '─%.0s' $(seq 1 "$th"))
   local s3; s3=$(printf '─%.0s' $(seq 1 "$rem"))

@@ -68,7 +68,7 @@ poll() {
     a0_latency=$(( (a0_end - a0_start) / 1000000 ))
 
     # Parse fields cleanly — avoid JSON leak
-    local a0_sha_raw a0_sha_short a0_branch a0_containers
+    local a0_sha_raw _a0_sha_short _a0_branch a0_containers
     a0_sha_raw=$(echo "$a0_json" | jq -r '.gitinfo.sha // .sha // empty' 2>/dev/null)
     [ -z "$a0_sha_raw" ] && a0_sha_raw=$(echo "$a0_json" | jq -r '.gitinfo // empty' 2>/dev/null)
     # If gitinfo is a JSON object stringified or raw, extract just the sha
@@ -77,8 +77,8 @@ poll() {
       parsed_sha=$(echo "$a0_sha_raw" | jq -r '.sha // empty' 2>/dev/null)
       [ -n "$parsed_sha" ] && a0_sha_raw="$parsed_sha"
     fi
-    a0_sha_short="${a0_sha_raw:0:8}"
-    a0_branch=$(echo "$a0_json" | jq -r '.gitinfo.branch // .branch // empty' 2>/dev/null)
+    _a0_sha_short="${a0_sha_raw:0:8}"
+    _a0_branch=$(echo "$a0_json" | jq -r '.gitinfo.branch // .branch // empty' 2>/dev/null)
     a0_containers=$(echo "$a0_json" | jq -r '.containers // 3' 2>/dev/null)
 
     local a0_status_icon a0_status_color
@@ -316,8 +316,10 @@ poll() {
   section_header "🏥" "HEALTH" "$GRN"
 
   local health_dir="$HOME/.claude/MEMORY/STATE/health-logs"
-  local today_file="$health_dir/health-$(date '+%Y-%m-%d').jsonl"
-  local yester_file="$health_dir/health-$(date -d 'yesterday' '+%Y-%m-%d' 2>/dev/null || date -v-1d '+%Y-%m-%d' 2>/dev/null).jsonl"
+  local today_file
+  today_file="$health_dir/health-$(date '+%Y-%m-%d').jsonl"
+  local yester_file
+  yester_file="$health_dir/health-$(date -d 'yesterday' '+%Y-%m-%d' 2>/dev/null || date -v-1d '+%Y-%m-%d' 2>/dev/null).jsonl"
   local health_entries=""
   [ -f "$yester_file" ] && health_entries+=$(cat "$yester_file" 2>/dev/null)
   [ -f "$yester_file" ] && [ -f "$today_file" ] && health_entries+=$'\n'
