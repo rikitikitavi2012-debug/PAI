@@ -1,0 +1,152 @@
+## Autoresearch Sub-Loop Protocol
+
+Referenced from `v4.0-alpha.md` EXECUTE phase. Loaded only when Cycle Selector routes to Autoresearch or Hybrid EXECUTE.
+
+### 8-Phase Iteration Cycle
+
+Each iteration = one atomic experiment. Goal: improve a `[Q]` metric while preserving all `[B]` regression gates.
+
+```
+Phase 1: REVIEW
+  - Read current metric value, experiments.tsv, recent git log
+  - Note which approaches have been tried and their deltas
+
+Phase 2: IDEATE
+  - Choose ONE focused change to try next
+  - Prefer unexplored directions over variations of failed approaches
+  - Consider: what has the highest expected delta per effort?
+
+Phase 3: MODIFY
+  - Make ONE focused change (atomic — single concern)
+  - Keep changes small: easier to attribute metric movement to cause
+
+Phase 4: COMMIT
+  - git commit BEFORE verification (enables clean revert)
+  - Message format: "exp(N): description" where N = iteration number
+
+Phase 5: VERIFY
+  - Run metric command → record new value
+  - Run regression gates: check all [B] criteria still pass
+  - Run anti-criteria check: no ISC-A violations
+
+Phase 6: DECIDE
+  - Metric improved AND gates pass → KEEP
+  - Metric same or worse → REVERT (git revert)
+  - Metric improved BUT gate broken → REVERT (gate > metric)
+  - Anti-criteria violated → REVERT + ALERT
+  - Crash/error → fix attempt (max 3) → if still broken, SKIP
+
+Phase 7: LOG
+  - Append row to experiments.tsv:
+    iteration | commit | metric | delta | status | description
+  - commit = "-" for discarded/reverted changes
+  - delta = change from most recent keep/baseline (ignore discard/crash/skip)
+
+Phase 8: REPEAT
+  - Continue if: budget remaining AND target not reached AND not stagnating
+  - Stop if: iteration cap reached OR target achieved OR stagnation detected
+```
+
+### Self-Interrogation Checkpoint
+
+Every **20 iterations**, pause the loop and answer:
+
+1. Is the metric still measuring what the ISC criterion actually describes? (Goodhart check)
+2. Am I optimizing the right thing, or have I drifted to a proxy?
+3. Are the regression gates still meaningful, or have they become trivially satisfied?
+4. What category of changes has produced the best deltas? Should I focus there?
+5. Is continued iteration likely to reach the target, or should I re-enter THINK?
+
+If answers suggest drift or futility → STOP loop, return to PAI THINK phase with findings.
+
+### Stagnation Detection
+
+Track consecutive non-improvement results:
+
+| Consecutive Discards | Action |
+|---------------------|--------|
+| 5 | **Amplify**: increase mutation size, try bolder changes |
+| 10 | **STOP**: return to PAI THINK with trajectory data |
+
+**Additional signals:**
+- Revert rate > 50% over last 20 experiments → STOP, re-enter PLAN
+- Oscillation detected (metric swings ±N without net improvement over 10 iterations) → reduce change amplitude
+- Plateau detected (delta < 1% of remaining gap for 10 iterations) → amplify or STOP
+
+### Regression Gates
+
+`[B]` criteria from the PRD serve as regression gates during the sub-loop:
+- Before DECIDE, verify each `[B]` criterion still passes
+- Gate failure → automatic REVERT, regardless of metric improvement
+- This prevents Goodhart's Law: metric goes up but quality goes down
+
+`ISC-A` anti-criteria serve as hard stops:
+- Anti-criteria violation → REVERT + halt loop + return to PAI THINK
+- These represent constraints that must never be broken (budget limits, safety rules, etc.)
+
+---
+
+## Layered Drift Defense
+
+Three layers operate at different frequencies to catch different types of drift.
+
+### L1: Strategic (every 20 experiments)
+
+**Trigger:** Self-Interrogation checkpoint (see above).
+
+**Purpose:** Catch drift between what the metric measures and what the ISC actually wants.
+
+**Actions:**
+- Run the 5 Self-Interrogation questions
+- Compare current optimization direction with original ISC intent
+- If misaligned → STOP, re-enter THINK with evidence
+
+### L2: Tactical (every experiment)
+
+**Trigger:** VERIFY phase of each iteration.
+
+**Purpose:** Catch individual experiments that break existing functionality.
+
+**Actions:**
+- Run regression gates (`[B]` criteria check)
+- Run anti-criteria check
+- Auto-revert on any failure — no human judgment needed
+
+### L3: Structural (every 10 experiments)
+
+**Trigger:** After LOG phase, every 10th iteration.
+
+**Purpose:** Catch trajectory-level problems (plateau, oscillation, diminishing returns).
+
+**Analysis:**
+- **Trend**: compute slope of metric over last 10 experiments (keep-only values)
+- **Revert rate**: discards / total over last 10
+- **Oscillation**: standard deviation of metric values over last 10 vs net change
+
+**Decision matrix:**
+
+| Signal | Threshold | Action |
+|--------|-----------|--------|
+| Positive trend, low revert rate | slope > 0, reverts < 30% | Continue — healthy |
+| Positive trend, high revert rate | slope > 0, reverts 30-50% | Continue cautiously — reduce change amplitude |
+| Flat trend | slope ≈ 0 for 10 iterations | Amplify — try bolder changes or new categories |
+| Negative trend | slope < 0 | STOP — re-enter PLAN, something is wrong |
+| High oscillation | σ > 2× net change | Reduce amplitude — changes are too volatile |
+| Revert rate critical | reverts > 50% | STOP — re-enter PLAN |
+
+---
+
+## Integration with PAI Algorithm
+
+This protocol operates WITHIN the EXECUTE phase. PAI Algorithm phases wrap it:
+
+```
+OBSERVE → THINK → PLAN → CYCLE SELECTOR → BUILD →
+  EXECUTE:
+    [Standard: direct work on [B] criteria]
+    [Autoresearch: this sub-loop for [Q] criteria]
+    [Hybrid: Standard first, then this sub-loop]
+→ VERIFY → LEARN
+```
+
+After the sub-loop completes (target reached, budget exhausted, or stopped), control returns to the main Algorithm flow at VERIFY. The experiments.tsv data feeds into LEARN Track 2 (Empirical) and Track 3 (Synthesis).
