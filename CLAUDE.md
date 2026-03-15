@@ -1,4 +1,4 @@
-# PAI 4.0.1 — Personal AI Infrastructure
+# PAI 4.0.3 — Personal AI Infrastructure
 
 # MODES
 
