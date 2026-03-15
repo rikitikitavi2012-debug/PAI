@@ -32,7 +32,7 @@
  * - Skipped for subagents: Yes
  */
 
-import { readFileSync, existsSync, readdirSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { spawnSync } from 'child_process';
 import { getPaiDir } from './lib/paths';
@@ -40,6 +40,7 @@ import { recordSessionStart } from './lib/notifications';
 import { loadLearningDigest, loadWisdomFrames, loadFailurePatterns, loadSignalTrends, loadLearnInsights, loadExperimentPatterns } from './lib/learning-readback';
 import { rotateEvents } from './lib/event-rotation';
 import { getEventsPath } from './lib/event-emitter';
+import { rotateFailures } from '../PAI/Tools/FailureRotation';
 
 interface DynamicContextConfig {
   relationshipContext?: boolean;
@@ -464,6 +465,26 @@ async function main() {
       }
     } catch (err) {
       console.error(`⚠️ Event rotation failed (non-fatal): ${err}`);
+    }
+
+    // Rotate FAILURES — compress/delete old transcripts (max once per day)
+    try {
+      const lastRotationPath = join(paiDir, 'MEMORY', 'STATE', 'last-failure-rotation.txt');
+      let shouldRotate = true;
+      if (existsSync(lastRotationPath)) {
+        const lastRun = readFileSync(lastRotationPath, 'utf-8').trim();
+        const lastDate = new Date(lastRun);
+        shouldRotate = (Date.now() - lastDate.getTime()) > 24 * 60 * 60 * 1000; // >24h ago
+      }
+      if (shouldRotate) {
+        const failRotation = rotateFailures();
+        if (failRotation.compressed > 0 || failRotation.deleted > 0) {
+          console.error(`🗜️ Failure rotation: ${failRotation.compressed} compressed, ${failRotation.deleted} deleted, ${Math.round(failRotation.bytesFreed / 1024 / 1024)} MB freed`);
+        }
+        writeFileSync(lastRotationPath, new Date().toISOString(), 'utf-8');
+      }
+    } catch (err) {
+      console.error(`⚠️ Failure rotation failed (non-fatal): ${err}`);
     }
 
     // Load settings for dynamic context controls
