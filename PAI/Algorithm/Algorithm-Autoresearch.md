@@ -118,8 +118,16 @@ Track consecutive non-improvement results ("consecutive" = immediately sequentia
 
 ### Regression Gates
 
-`[B]` criteria from the PRD serve as regression gates during the sub-loop:
-- Before DECIDE, verify each `[B]` criterion still passes
+`[B]` criteria from the PRD serve as regression gates during the sub-loop. Split into two tiers to manage cost:
+
+**Fast gates** (run every iteration, <5s each): grep, lint, type-check, file-exists, simple assertions. Mark in PRD with `[B-fast]` if needed.
+
+**Slow gates** (run every 5 iterations or after each `keep`): full test suites, build, browser tests, anything >5s. Mark in PRD with `[B-slow]` if needed.
+
+If no explicit `[B-fast]`/`[B-slow]` tagging: gates that complete in <5s are fast, others are slow. When in doubt, run as fast gate.
+
+- Before DECIDE, verify **fast gates** on every iteration
+- Run **slow gates** every 5 iterations, or immediately after a `keep` decision
 - Gate failure → automatic REVERT, regardless of metric improvement
 - This prevents Goodhart's Law: metric goes up but quality goes down
 
