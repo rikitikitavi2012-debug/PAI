@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 44
-- **Last Crystallized:** 2026-03-14
+- **Observation Count:** 46
+- **Last Crystallized:** 2026-03-15
 - **Source:** Converted from workflow.json
 
 ---
@@ -186,3 +186,5 @@
 - 2026-03-13: [principle] Impressed with comprehensive execution and clear reporting
 - 2026-03-13: [principle] Strong approval — work progressing smoothly without issues
 - 2026-03-14: [anti-pattern] Correction — missing page 41, requesting visual verification
+- 2026-03-15: [anti-pattern] Frustrated — couldn't see the result, unclear communication
+- 2026-03-15: [anti-pattern] Correction — Navi missed obvious prerequisite validation

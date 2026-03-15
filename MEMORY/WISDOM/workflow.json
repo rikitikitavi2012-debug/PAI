@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-03-14T00:19:00.619Z",
+  "updated": "2026-03-15T21:41:09.982Z",
   "observations": [
     {
       "type": "principle",
@@ -395,6 +395,20 @@
       "observation": "Correction — missing page 41, requesting visual verification",
       "timestamp": "2026-03-14T02:20:15+03:00",
       "session_id": "56e9ed89-6cfe-4579-81cc-b85ac39e8798",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — couldn't see the result, unclear communication",
+      "timestamp": "2026-03-15T22:30:24+03:00",
+      "session_id": "5117a22b-a836-4535-be2e-68904795f3d5",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Correction — Navi missed obvious prerequisite validation",
+      "timestamp": "2026-03-15T23:29:06+03:00",
+      "session_id": "0b60436a-596e-4198-ba18-626c338af187",
       "confirmed": 1
     }
   ]

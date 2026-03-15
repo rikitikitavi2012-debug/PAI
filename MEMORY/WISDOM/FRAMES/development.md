@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** development
 - **Confidence:** 75%
-- **Observation Count:** 22
-- **Last Crystallized:** 2026-03-14
+- **Observation Count:** 25
+- **Last Crystallized:** 2026-03-15
 - **Source:** Converted from development.json
 
 ---
@@ -85,3 +85,6 @@
 - 2026-03-14: [anti-pattern] Frustrated — new pages deployed but not accessible/visible
 - 2026-03-14: [anti-pattern] Dissatisfied — promised updates not visible after deployment
 - 2026-03-14: [anti-pattern] Frustrated — red errors appeared after deployment
+- 2026-03-15: [anti-pattern] Frustrated by repeated hook errors after fixes
+- 2026-03-15: [anti-pattern] Frustrated — hook errors persist despite claimed fix
+- 2026-03-15: [anti-pattern] Correction: audit failed due to missing files

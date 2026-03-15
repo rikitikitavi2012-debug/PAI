@@ -1343,6 +1343,6 @@ watch(getEventsPath(), (eventType) => { /* read new lines */ });
 
 ---
 
-**Last Updated:** 2026-02-25
+**Last Updated:** 2026-03-15
 **Status:** Production - 15 hooks emitting 22 event types across 14 categories
 **Maintainer:** PAI System

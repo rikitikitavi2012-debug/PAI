@@ -1,1 +1,8 @@
-{"name":"pai","private":true,"dependencies":{"yaml":"^2.8.2"}}
+{
+  "name": "pai",
+  "private": true,
+  "dependencies": {
+    "handlebars": "^4.7.8",
+    "yaml": "^2.8.2"
+  }
+}
