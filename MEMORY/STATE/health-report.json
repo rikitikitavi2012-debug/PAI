@@ -1,19 +1,47 @@
 {
-  "timestamp": "2026-03-13T04:02:07Z",
+  "timestamp": "2026-03-14T01:02:13.498873+00:00",
+  "git_sync": {
+    "status": "OK",
+    "error": null
+  },
   "checks": {
-    "voice_server": {"status": "DOWN", "latency_ms": null},
-    "github_auth": {"status": "OK", "user": "rikitikitavi2012-debug"},
-    "hooks_count": {"count": 32, "baseline": 30, "alert": true},
-    "events_size": {"lines": 474, "alert": false},
-    "disk_usage": {"percent": 67, "alert": false},
-    "open_prs": {"count": null, "stale": [], "error": "403 - Resource not accessible by personal access token"},
-    "tests": {"passed": null, "failed": null, "alert": true, "error": "Bun runtime not installed"}
+    "voice_server": {
+      "status": "DOWN",
+      "latency_ms": null
+    },
+    "github_auth": {
+      "status": "OK",
+      "user": "rikitikitavi2012-debug"
+    },
+    "hooks_count": {
+      "count": 33,
+      "baseline": 30,
+      "alert": true
+    },
+    "events_size": {
+      "lines": 474,
+      "alert": false
+    },
+    "disk_usage": {
+      "percent": 67,
+      "alert": false
+    },
+    "open_prs": {
+      "count": null,
+      "stale": [],
+      "error": "GitHub API 403: Resource not accessible by personal access token"
+    },
+    "tests": {
+      "passed": null,
+      "failed": null,
+      "alert": false,
+      "note": "bun not installed in container"
+    }
   },
   "overall": "WARNING",
   "alerts": [
-    "VoiceServer DOWN - http://host.docker.internal:8888/health not responding",
-    "Hooks count changed: 32 (baseline 30, +2 new hooks)",
-    "PRs API returned 403 - token lacks repo permissions",
-    "Tests unavailable - Bun runtime not installed"
+    "VoiceServer DOWN",
+    "Hooks count changed: 33 (baseline: 30)",
+    "GitHub PRs API: 403 token lacks repo scope"
   ]
 }
