@@ -1,0 +1,11 @@
+id: "20260313-130435_task"
+title: "Обьясни что это такое появляется под стракой ввода"
+session_id: "e0c30a9b-e687-4b27-b982-f17fe6135c23"
+created_at: "2026-03-13T13:04:35+03:00"
+completed_at: "2026-03-13T13:10:17+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

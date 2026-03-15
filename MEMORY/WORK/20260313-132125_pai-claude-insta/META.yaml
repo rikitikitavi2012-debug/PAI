@@ -1,0 +1,12 @@
+id: "20260313-132125_pai-claude-insta"
+title: "pai     
+ claude insta"
+session_id: "57e28d9c-ceb4-492c-b5f3-d0cc52ba343b"
+created_at: "2026-03-13T13:21:25+03:00"
+completed_at: "2026-03-13T13:32:18+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []
