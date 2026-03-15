@@ -17,7 +17,7 @@
 # После завершения:
 #   1. bun ~/.claude/skills/Utilities/Jules/Tools/JulesAPI.ts sessions
 #   2. gh pr list --repo rikitikitavi2012-debug/PAI-personal --state open
-#   3. Review + merge: gh pr merge N --squash
+#   3. Review + merge
 # ═══════════════════════════════════════════════════════════════
 
 set -euo pipefail
@@ -31,12 +31,10 @@ FAILED=0
 SKIPPED=0
 DRY_RUN=false
 
-# Аргументы
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=true ;;
     --count)
-      # Подсчёт задач — grep create_task вызовы (не закомментированные)
       count=$(grep -c '^create_task ' "$0" 2>/dev/null || echo 0)
       echo "Задач в скрипте: $count"
       exit 0
@@ -44,7 +42,6 @@ for arg in "$@"; do
   esac
 done
 
-# Цвета
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
@@ -55,18 +52,14 @@ create_task() {
   local name="$1"
   local prompt="$2"
   COUNT=$((COUNT + 1))
-
   echo -e "${YELLOW}[$COUNT] $name${NC}"
-
   if $DRY_RUN; then
     echo -e "  ${CYAN}DRY RUN${NC} — пропущено"
     SKIPPED=$((SKIPPED + 1))
     echo ""
     return
   fi
-
   result=$($JULES_API create --repo "$REPO" --branch "$BRANCH" --prompt "$prompt" 2>&1) || true
-
   if echo "$result" | grep -q "Session created"; then
     session_id=$(echo "$result" | grep -oP 'sessions/\K\d+')
     echo -e "  ${GREEN}OK${NC} → sessions/$session_id"
@@ -76,8 +69,6 @@ create_task() {
     FAILED=$((FAILED + 1))
   fi
   echo ""
-
-  # Пауза между задачами — Jules rate limiting
   sleep 2
 }
 
@@ -85,253 +76,259 @@ echo -e "${CYAN}═══ Jules Batch Tasks — PAI ($REPO @ $BRANCH) ═══$
 echo ""
 
 # ═══════════════════════════════════════════════════════════════
-# СТАНДАРТНЫЙ СУФФИКС
+# СТАНДАРТНЫЙ СУФФИКС — РУССКИЙ ЯЗЫК
 # ═══════════════════════════════════════════════════════════════
 
 SUFFIX="
 
-Code and comments in English. PR title in English (conventional commits: test: ...).
-PR description in English. Use bun:test for all tests.
-Test file location: follow existing patterns in the repo.
-Run 'bun test' to verify before submitting PR."
+Код и комментарии на английском. PR title на английском (conventional commits: test: ...).
+PR description на русском. Используй bun:test для всех тестов.
+Расположение тестов: следуй существующим паттернам в репозитории.
+Запусти 'bun test' для проверки перед отправкой PR."
 
 # ═══════════════════════════════════════════════════════════════
-# TASKS
+# TASKS — Batch 2: Хуки + интеграция + robustness
 # ═══════════════════════════════════════════════════════════════
 
-# ── LearnGate Hook Tests (3) ──
+# ── Тесты хуков (5) ──
 
-create_task "test: LearnGate — block without LEARN.md" \
-  "Write tests for hooks/LearnGate.hook.ts.
+create_task "test: ModeClassifier — классификация режимов" \
+  "Напиши тесты для hooks/ModeClassifier.hook.ts.
 
-File: hooks/tests/LearnGate.test.ts
+Файл: hooks/tests/ModeClassifier-modes.test.ts
 
-Test scenarios:
-1. Edit PRD.md with phase:complete and NO LEARN.md → returns {decision:'block'}
-2. Edit PRD.md with phase:complete and LEARN.md exists → returns {continue:true}
-3. Edit non-PRD file with phase:complete → returns {continue:true}
-4. Write PRD.md with phase:complete in frontmatter and no LEARN.md → returns {decision:'block'}
+Сценарии:
+1. Приветствие ('привет', 'hello') → возвращает MINIMAL режим
+2. Рейтинг ('8', '9/10') → возвращает MINIMAL режим
+3. Сложная задача ('создай компонент для...') → возвращает ALGORITHM режим
+4. Простая задача ('покажи git status') → возвращает NATIVE режим
+5. Пустой промпт → корректная обработка без краша
 
-Use temporary directories (mkdtempSync) for test PRD files.
-See hooks/tests/AlgorithmTracker.test.ts for hook testing patterns in this repo.
-The hook reads from stdin (readFileSync(0)) — mock by spawning subprocess with piped input.$SUFFIX"
+Прочитай hooks/ModeClassifier.hook.ts для понимания логики классификации.
+Используй паттерны из hooks/tests/AlgorithmTracker.test.ts.$SUFFIX"
 
-create_task "test: LearnGate — false positive prevention" \
-  "Write tests for hooks/LearnGate.hook.ts false positive edge cases.
+create_task "test: VoiceCompletion — отправка голоса" \
+  "Напиши тесты для hooks/VoiceCompletion.hook.ts.
 
-File: hooks/tests/LearnGate-edge-cases.test.ts
+Файл: hooks/tests/VoiceCompletion-send.test.ts
 
-Test scenarios:
-1. Edit PRD.md criteria text mentioning 'phase: complete' (old_string does NOT start with 'phase:') → returns {continue:true} (NOT blocked)
-2. Edit PRD.md with old_string='phase: execute' new_string='phase: verify' → returns {continue:true}
-3. Edit PRD.md with old_string='phase: learn' new_string='phase: complete' and LEARN.md is empty (0 bytes) → returns {continue:true} (existence check only, not size)
-4. Write PRD.md with no frontmatter at all → returns {continue:true}
-5. Empty stdin → returns {continue:true}
+Сценарии:
+1. Хук отправляет POST на localhost:8888/notify
+2. Корректное чтение voice_id из settings.json (daidentity.voices.main)
+3. Пустой ответ от API → fail-open, не крашится
+4. Таймаут подключения → fail-open
+5. Отсутствие settings.json → использует fallback voice_id
 
-Use mkdtempSync for temp dirs. Pipe JSON to subprocess stdin.$SUFFIX"
+Прочитай hooks/VoiceCompletion.hook.ts и hooks/lib/identity.ts.$SUFFIX"
 
-create_task "test: LearnGate — parseFrontmatter integration" \
-  "Write tests verifying LearnGate.hook.ts correctly uses parseFrontmatter from hooks/lib/prd-utils.ts.
+create_task "test: AutoWorkCreation — создание PRD" \
+  "Напиши тесты для hooks/AutoWorkCreation.hook.ts.
 
-File: hooks/tests/LearnGate-frontmatter.test.ts
+Файл: hooks/tests/AutoWorkCreation-prd.test.ts
 
-Test scenarios:
-1. Write tool with valid frontmatter containing 'phase: complete' → correctly parsed and blocked
-2. Write tool with frontmatter containing 'phase: Complete' (mixed case) → correctly parsed and blocked
-3. Write tool with phase in body but NOT in frontmatter → NOT blocked
-4. Write tool with multiple '---' separators (frontmatter + content with horizontal rules) → only checks first frontmatter block
+Сценарии:
+1. Новый промпт создаёт директорию в MEMORY/WORK/ с slug формата YYYYMMDD-HHMMSS_kebab
+2. PRD.md создаётся с правильным YAML frontmatter (task, slug, effort, phase, progress, mode, started, updated)
+3. Короткий промпт (<20 символов) → НЕ создаёт PRD (фильтр мусора)
+4. Повторный промпт в той же сессии → НЕ дублирует PRD
+5. Slug корректно кебаб-кейсит кириллицу и длинные строки
 
-Read hooks/lib/prd-utils.ts to understand parseFrontmatter behavior.$SUFFIX"
+Прочитай hooks/AutoWorkCreation.hook.ts. Используй временные директории.$SUFFIX"
 
-# ── Algorithm v4.0-alpha Tests (4) ──
+create_task "test: PreCompact — сохранение state перед компакцией" \
+  "Напиши тесты для hooks/PreCompact.hook.ts.
 
-create_task "test: Algorithm voice phrases are Russian" \
-  "Write a test verifying all Algorithm v4.0-alpha.md voice phrases use Russian.
+Файл: hooks/tests/PreCompact-state.test.ts
 
-File: PAI/Algorithm/tests/test-voice-language.ts
+Сценарии:
+1. Хук сохраняет текущую фазу алгоритма в snapshot
+2. Хук сохраняет progress (N/M) критериев
+3. Хук сохраняет effort level
+4. Хук сохраняет slug текущей PRD
+5. Snapshot файл создаётся в MEMORY/STATE/
 
-Read PAI/Algorithm/v4.0-alpha.md. Find all Voice announce instructions.
-Verify:
-1. No 'Entering the' phrases remain (English)
-2. All voice phrases contain Cyrillic characters (Russian)
-3. Algorithm entry message is 'Вхожу в Алгоритм'
-4. Each of 7 phases has a Russian voice phrase
-5. Cross-reference with PAI/config/algorithm-phases.yaml russian values
+Прочитай hooks/PreCompact.hook.ts и hooks/PostCompactRecovery.hook.ts для понимания пары.$SUFFIX"
 
-Use bun:test.$SUFFIX"
+create_task "test: PostCompactRecovery — восстановление после компакции" \
+  "Напиши тесты для hooks/PostCompactRecovery.hook.ts.
 
-create_task "test: LEARN phase mandatory persistence" \
-  "Write a test verifying Algorithm v4.0-alpha.md LEARN phase has mandatory LEARN.md creation.
+Файл: hooks/tests/PostCompactRecovery-restore.test.ts
 
-File: PAI/Algorithm/tests/test-learn-persistence.ts
+Сценарии:
+1. Хук загружает snapshot из PreCompact
+2. Восстанавливает identity context (имя DA, principal)
+3. Инжектит подсказку с текущей фазой и progress
+4. Без snapshot файла → работает без краша (fail-open)
+5. Повреждённый snapshot JSON → fallback на базовый контекст
 
-Read PAI/Algorithm/v4.0-alpha.md LEARN section. Verify:
-1. Contains 'PERSIST LEARNINGS (MANDATORY'
-2. Contains 'enforced by LearnGate hook'
-3. LEARN.md template has 3 sections: Reflections, Patterns, Actions
-4. Contains 'before setting phase: complete'
-5. Standard tier guidance exists ('5-10 lines')
-6. Extended+ tier guidance exists ('specific evidence')
-7. 'phase: complete' instruction comes AFTER LEARN.md instruction
+Прочитай hooks/PostCompactRecovery.hook.ts.$SUFFIX"
 
-Use bun:test. Read the actual file, parse with regex.$SUFFIX"
+# ── Интеграционные тесты (5) ──
 
-create_task "test: Cycle Selector search space heuristic" \
-  "Write tests for the Cycle Selector routing logic in PAI/Algorithm/v4.0-alpha.md.
+create_task "test: Inference — все уровни и провайдеры" \
+  "Напиши тесты для PAI/Tools/Inference.ts.
 
-File: PAI/Algorithm/tests/test-cycle-selector-heuristic.ts
+Файл: hooks/tests/Inference-levels.test.ts
 
-Read v4.0-alpha.md Cycle Selector section. Verify documented routing rules:
-1. Standard tier → always Standard EXECUTE
-2. Extended+ all [B] → Standard EXECUTE
-3. Extended+ with [Q] and <3 approaches → Standard
-4. Extended+ with [Q] and 3+ approaches → Autoresearch
-5. Mixed [B]+[Q] → Hybrid (Standard for [B], then per-[Q] heuristic)
-6. Human override syntax 'execute_mode:' documented
-7. Rules are evaluated in order (first match wins)
+Сценарии:
+1. Уровень fast → использует модель haiku, timeout 15s, provider claude
+2. Уровень standard → модель sonnet, timeout 30s, provider claude
+3. Уровень smart → модель opus, timeout 90s, provider claude
+4. Уровень glm5 → provider zai, timeout 30s
+5. Параметр --json → парсит JSON из ответа
+6. Кастомный --timeout переопределяет дефолтный
+7. Timeout → возвращает success:false с error:'timeout'
+8. emitInferenceEvent записывает в events.jsonl
 
-Parse the markdown table and rules text.$SUFFIX"
+Прочитай PAI/Tools/Inference.ts. Мокай fetch для тестов, не делай реальных API вызовов.$SUFFIX"
 
-create_task "test: Algorithm ISC Count Gate enforcement" \
-  "Write tests for ISC Count Gate in PAI/Algorithm/v4.0-alpha.md.
+create_task "test: hook-io readHookInput" \
+  "Напиши тесты для hooks/lib/hook-io.ts.
 
-File: PAI/Algorithm/tests/test-isc-count-gate.ts
+Файл: hooks/tests/hook-io.test.ts
 
-Read v4.0-alpha.md ISC COUNT GATE section. Verify:
-1. Gate exists between OBSERVE output and THINK phase
-2. Floor values: Standard=8, Extended=16, Advanced=24, Deep=40, Comprehensive=64
-3. Instruction 'DO NOT proceed' if below floor
-4. Splitting Test referenced as decomposition method
-5. Gate marked as MANDATORY
-6. The table has all 5 effort tiers
+Сценарии:
+1. readHookInput() корректно парсит JSON из stdin
+2. Пустой stdin → возвращает null
+3. Невалидный JSON → возвращает null
+4. Timeout (если реализован) → возвращает null
+5. Все обязательные поля (session_id, transcript_path) присутствуют в типе
 
-Parse the table from markdown.$SUFFIX"
+Прочитай hooks/lib/hook-io.ts.$SUFFIX"
 
-# ── Existing Hooks + New Algorithm Integration (4) ──
+create_task "test: prd-utils — полный набор функций" \
+  "Напиши тесты для hooks/lib/prd-utils.ts — все экспортируемые функции.
 
-create_task "test: AlgorithmTracker detects Russian voice curls" \
-  "Write tests verifying AlgorithmTracker.hook.ts correctly detects Russian voice phrases.
+Файл: hooks/tests/prd-utils-full.test.ts
 
-File: hooks/tests/AlgorithmTracker-russian.test.ts
+Сценарии:
+1. findLatestPRD() — находит PRD с самым свежим mtime
+2. parseFrontmatter() — парсит все 8 полей (task, slug, effort, phase, progress, mode, started, updated)
+3. writeFrontmatterField() — обновляет существующее поле
+4. writeFrontmatterField() — добавляет новое поле если не существует
+5. countCriteria() — считает checked и unchecked чекбоксы
+6. syncToWorkJson() — создаёт/обновляет запись в work.json
+7. readRegistry() — читает work.json, возвращает пустой объект если файл не существует
 
-The Algorithm now uses Russian voice phrases ('Вхожу в фазу наблюдения' instead of 'Entering the Observe phase'). AlgorithmTracker detects phases from voice curl commands.
+Используй временные директории. Прочитай hooks/lib/prd-utils.ts.$SUFFIX"
 
-Test scenarios:
-1. Bash curl with 'Вхожу в фазу наблюдения' → detects OBSERVE phase
-2. Bash curl with 'Вхожу в фазу мышления' → detects THINK phase
-3. Bash curl with 'Вхожу в фазу обучения' → detects LEARN phase
-4. Bash curl with 'Вхожу в Алгоритм' → detects algorithm entry
-5. All 7 phases detected via Russian phrases from PAI/config/algorithm-phases.yaml
+create_task "test: identity — чтение DA и Principal из settings" \
+  "Напиши тесты для hooks/lib/identity.ts.
 
-Read hooks/AlgorithmTracker.hook.ts and PAI/config/algorithm-phases.yaml.
-See hooks/tests/AlgorithmTracker.test.ts for existing test patterns.$SUFFIX"
+Файл: hooks/tests/identity.test.ts
 
-create_task "test: PRDSync handles phase:complete correctly" \
-  "Write tests verifying PRDSync.hook.ts syncs phase:complete to work.json.
-
-File: hooks/tests/PRDSync-complete.test.ts
-
-Test scenarios:
-1. Edit PRD.md to phase:complete → work.json updated with phase='complete'
-2. Phase change from learn→complete triggers tab color update
-3. Phase 'COMPLETE' is in the VALID_PHASES set
-4. Change detection: same phase twice doesn't re-sync (hasChanges=false)
-
-Read hooks/PRDSync.hook.ts and hooks/lib/prd-utils.ts.
-Use temp directories for test data.$SUFFIX"
-
-create_task "test: SecurityValidator patterns.yaml regex validity" \
-  "Write tests verifying all regex patterns in PAI/USER/PAISECURITYSYSTEM/patterns.yaml are valid JavaScript RegExp.
-
-File: hooks/tests/SecurityValidator-patterns.test.ts
-
-Read PAI/USER/PAISECURITYSYSTEM/patterns.yaml. Parse all 'pattern:' values.
-Test scenarios:
-1. Every pattern compiles as new RegExp(pattern, 'i') without throwing
-2. No patterns use PCRE-only syntax: (?i), (?P<name>), (?<=...) in unsupported engines
-3. Bash blocked patterns match their documented examples
-4. File path patterns with globs expand correctly
-
-This test prevents regressions like the (?i) bug that caused PreToolUse errors.$SUFFIX"
-
-create_task "test: WorkCompletionLearning coexists with LearnGate" \
-  "Write tests verifying WorkCompletionLearning.hook.ts (SessionEnd) and LearnGate.hook.ts (PreToolUse) don't conflict.
-
-File: hooks/tests/WorkCompletionLearning-LearnGate.test.ts
-
-Test scenarios:
-1. WorkCompletionLearning writes to MEMORY/LEARNING/ (its own directory)
-2. LearnGate checks for LEARN.md in MEMORY/WORK/{slug}/ (different directory)
-3. Both can fire in same session without conflict
-4. WorkCompletionLearning output format is different from LEARN.md template
-
-Read both hooks to understand their responsibilities and output locations.$SUFFIX"
-
-# ── System Hardening Tests (4) ──
-
-create_task "test: prd-utils parseFrontmatter edge cases" \
-  "Write tests for parseFrontmatter() in hooks/lib/prd-utils.ts.
-
-File: hooks/tests/prd-utils-frontmatter.test.ts
-
-Test scenarios:
-1. Valid frontmatter with all 8 standard fields → correctly parsed
-2. Frontmatter with extra whitespace around ':' → correctly parsed
-3. Frontmatter with quoted values ('phase: \"complete\"') → quotes stripped
-4. No frontmatter (no '---' markers) → returns null
-5. Empty frontmatter ('---\n---') → returns empty object
-6. Frontmatter with multiline values → handles gracefully
-7. Content with '---' horizontal rules after frontmatter → only first block parsed
-8. parseCriteriaList: correctly counts checked vs unchecked checkboxes
-
-Read hooks/lib/prd-utils.ts for function signatures.$SUFFIX"
-
-create_task "test: Algorithm phases config consistency" \
-  "Write tests verifying PAI/config/algorithm-phases.yaml is consistent with Algorithm v4.0-alpha.md.
-
-File: PAI/Algorithm/tests/test-phases-config.ts
-
-Test scenarios:
-1. Every phase in yaml has both english and russian fields
-2. Every phase in yaml has an emoji
-3. All phases from v4.0-alpha.md are present in yaml (OBSERVE, THINK, PLAN, CYCLE SELECTOR, BUILD, EXECUTE, VERIFY, LEARN)
-4. algorithm_entry field exists and is non-empty
-5. Russian phrases in yaml match the voice phrases in v4.0-alpha.md
-6. No duplicate phases
-
-Read both files and cross-reference.$SUFFIX"
-
-create_task "test: LEARN.md measurement script" \
-  "Write tests for the LEARN persistence measurement script.
-
-File: hooks/tests/learn-measurement.test.ts
-
-The script is at MEMORY/WORK/20260315-230000_learn-phase-persistence/measure-learn-rate.sh.
-
-Test scenarios:
-1. Script exits with code 0
-2. Script correctly counts completed PRDs (grep 'phase: complete')
-3. Script correctly detects LEARN.md siblings
-4. Script output contains 'Completed sessions:', 'With LEARN.md:', 'Rate:'
-5. Rate calculation is correct (use temp dir with known PRDs)
-6. Script lists missing sessions (recent 10)
-
-Create temp MEMORY/WORK structure with mix of PRDs with/without LEARN.md.$SUFFIX"
-
-create_task "test: settings.json hook registration integrity" \
-  "Write tests verifying all hooks referenced in settings.json actually exist on disk.
-
-File: hooks/tests/settings-integrity.test.ts
-
-Read settings.json. For every hook command in hooks.PreToolUse, hooks.PostToolUse, hooks.SessionEnd, hooks.SessionStart, hooks.Stop, hooks.UserPromptSubmit, hooks.PreCompact, hooks.ConfigChange, hooks.WorktreeCreate, hooks.WorktreeRemove, hooks.SubagentStart, hooks.SubagentStop, hooks.TaskCompleted, hooks.InstructionsLoaded, hooks.TeammateIdle:
-
-1. Extract all hook file paths (expand \${PAI_DIR} to process.env.PAI_DIR or ~/.claude)
-2. Verify each file exists on disk (existsSync)
-3. Verify each file is executable or has shebang
-4. Count total registered hooks = should match settings.json counts.hooks value
-5. No duplicate hook registrations (same file on same matcher)
-
-This prevents broken references after hook renames/deletes.$SUFFIX"
+Сценарии:
+1. getIdentity() возвращает объект с name, fullName, displayName, color
+2. getPrincipal() возвращает объект с name, timezone
+3. getPrincipalName() возвращает строку с именем
+4. getVoiceId() возвращает voice ID из daidentity.voices.main
+5. getAlgorithmVoice() возвращает voice из daidentity.voices.algorithm
+6. Отсутствие settings.json → возвращает дефолтные значения без краша
+
+Прочитай hooks/lib/identity.ts и settings.json (секция daidentity/principal).$SUFFIX"
+
+create_task "test: event-emitter — запись событий" \
+  "Напиши тесты для hooks/lib/event-emitter.ts.
+
+Файл: hooks/tests/event-emitter.test.ts
+
+Сценарии:
+1. appendEvent() добавляет JSON строку в events.jsonl
+2. Событие содержит timestamp в ISO формате
+3. Событие содержит session_id
+4. Событие содержит type и source поля
+5. Несколько вызовов → каждый на отдельной строке (JSONL формат)
+6. Несуществующий файл → создаётся автоматически
+7. Ошибка записи → не бросает исключение (fail-open)
+
+Прочитай hooks/lib/event-emitter.ts. Используй временный файл для тестов.$SUFFIX"
+
+# ── Robustness тесты (5) ──
+
+create_task "test: все хуки fail-open при пустом stdin" \
+  "Напиши тест проверяющий что ВСЕ PreToolUse хуки корректно обрабатывают пустой stdin.
+
+Файл: hooks/tests/all-hooks-failopen.test.ts
+
+Сценарии:
+Для каждого PreToolUse хука из settings.json:
+1. Запустить как subprocess с пустым stdin (echo '' | bun hook.ts)
+2. Проверить что exit code = 0
+3. Проверить что stdout содержит валидный JSON
+4. Проверить что stdout содержит 'continue' (fail-open)
+5. Проверить что stderr пустой (нет ошибок)
+
+Хуки для проверки: SecurityValidator, LearnGate, SetQuestionTab, AgentExecutionGuard, SkillGuard.
+Запускай через Bun.spawn с piped stdin/stdout/stderr.$SUFFIX"
+
+create_task "test: gitignore покрытие генерируемых файлов" \
+  "Напиши тест проверяющий что .gitignore покрывает все паттерны генерируемых файлов.
+
+Файл: hooks/tests/gitignore-coverage.test.ts
+
+Сценарии:
+1. tasks/ директория в .gitignore
+2. sessions/ директория в .gitignore
+3. ide/ директория в .gitignore
+4. *.cache.json в .gitignore
+5. MEMORY/LEARNING/**/tool-calls.json в .gitignore
+6. MEMORY/LEARNING/**/sentiment.json в .gitignore
+7. tmp*/ в .gitignore
+8. MEMORY/WORK/*/tasks/ в .gitignore
+9. git ls-files НЕ содержит файлы matching эти паттерны (ничего tracked из gitignored)
+
+Прочитай .gitignore и используй 'git ls-files' для проверки.$SUFFIX"
+
+create_task "test: Algorithm LEARN.md во всех complete PRDs" \
+  "Напиши тест проверяющий что LearnGate enforcement работает ретроспективно.
+
+Файл: hooks/tests/learn-gate-retrospective.test.ts
+
+Сценарии:
+1. Найди все PRD.md с phase: complete в MEMORY/WORK/
+2. Для каждого — проверь наличие LEARN.md в той же директории
+3. Выведи список PRDs БЕЗ LEARN.md (ожидаемо: все до 2026-03-15)
+4. Выведи список PRDs С LEARN.md (ожидаемо: 20260315-230000 и новее)
+5. Рассчитай процент покрытия
+6. Тест НЕ должен fail если старые PRDs без LEARN.md — это ожидаемо
+
+Это не enforcement тест а аудит — показывает прогресс adoption.$SUFFIX"
+
+create_task "test: settings.json JSON валидность и структура" \
+  "Напиши тест проверяющий структурную целостность settings.json.
+
+Файл: hooks/tests/settings-structure.test.ts
+
+Сценарии:
+1. settings.json парсится как валидный JSON
+2. Содержит обязательные секции: env, permissions, hooks, daidentity, principal
+3. daidentity содержит name, voices.main.voiceId, voices.algorithm.voiceId
+4. principal содержит name, timezone
+5. hooks содержит PreToolUse, PostToolUse, SessionEnd, SessionStart, Stop
+6. Каждый hook entry содержит type:'command' и command с путём к файлу
+7. counts.hooks = реальное количество *.hook.ts файлов в hooks/
+8. Ни один matcher entry НЕ содержит >1 хука если оба читают stdin (stdin sharing баг)
+
+Прочитай settings.json. Проверь hooks/ директорию.$SUFFIX"
+
+create_task "test: Algorithm v4.0-alpha полнота секций" \
+  "Напиши тест проверяющий что v4.0-alpha.md содержит все необходимые секции.
+
+Файл: PAI/Algorithm/tests/test-sections-completeness.ts
+
+Сценарии:
+1. Содержит все 7 фаз: OBSERVE, THINK, PLAN, CYCLE SELECTOR, BUILD, EXECUTE, VERIFY, LEARN
+2. Каждая фаза имеет FIRST ACTION инструкцию
+3. Содержит Effort Levels таблицу с 5 тирами
+4. Содержит ISC Decomposition Methodology
+5. Содержит Splitting Test (4 теста)
+6. Содержит Critical Rules секцию
+7. Содержит Context Recovery секцию
+8. Содержит PRD.md Format секцию
+9. Содержит PERSIST LEARNINGS (MANDATORY) в LEARN фазе
+10. Содержит Iteration Budget таблицу
+
+Прочитай PAI/Algorithm/v4.0-alpha.md и проверяй regex/includes.$SUFFIX"
 
 # ═══════════════════════════════════════════════════════════════
 # ИТОГО
