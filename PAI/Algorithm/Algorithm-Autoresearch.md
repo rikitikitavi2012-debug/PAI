@@ -208,3 +208,5 @@ OBSERVE → THINK → PLAN → CYCLE SELECTOR → BUILD →
 ```
 
 After the sub-loop completes (target reached, budget exhausted, or stopped), control returns to the main Algorithm flow at VERIFY. The experiments.tsv data feeds into LEARN Track 2 (Empirical) and Track 3 (Synthesis).
+
+**Partial success:** If the re-entry limit (2) is exhausted without reaching the target, mark the `[Q]` criterion as `PARTIAL` in the PRD: `- [~] ISC-N [Q]: description (achieved: X, target: Y)`. Record the best achieved value. LEARN Track 3 must analyze why the target wasn't reached and whether the target was realistic. Partial success is better than no record — the achieved improvement is preserved.
