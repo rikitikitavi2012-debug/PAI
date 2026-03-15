@@ -95,6 +95,7 @@ Track consecutive non-improvement results:
 `ISC-A` anti-criteria serve as hard stops:
 - Anti-criteria violation → REVERT + halt loop + return to PAI THINK
 - These represent constraints that must never be broken (budget limits, safety rules, etc.)
+- If the same ISC-A is violated twice across re-entries → STOP entirely, present results as-is
 
 ---
 
