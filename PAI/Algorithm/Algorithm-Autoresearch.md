@@ -6,6 +6,8 @@ Referenced from `v4.0-alpha.md` EXECUTE phase. Loaded only when Cycle Selector r
 
 Before starting the sub-loop, **Verification Rehearsal** (defined in v4.0-alpha.md EXECUTE section) MUST complete for each `[Q]` metric. This validates that the metric command produces reliable measurements. Run once per `[Q]` criterion, not once per iteration.
 
+**Noise calibration (part of Rehearsal):** Run the metric command 3× on unchanged code. Compute variance. If σ > 2% of baseline value, the metric is noisy — widen regression tolerance to `max(5%, 2×σ)` for this criterion and log: `# noise_tolerance: X%` in experiments.tsv header. This prevents false positives on inherently noisy metrics (Lighthouse, network-dependent measurements). Deterministic metrics (test count, file size) will show σ=0 — no tolerance change needed.
+
 ### Multiple [Q] Criteria
 
 When a PRD has 2+ `[Q]` criteria, optimize them **sequentially** — complete one before starting the next. Each `[Q]` gets its own experiments.tsv section, separated by a header comment:
@@ -24,6 +26,12 @@ iteration	commit	metric	delta	status	description
 ```
 
 After completing `[Q]-1`, its best achieved value becomes a regression gate for subsequent `[Q]` optimizations (tolerance: 5% relative — `best × 0.95` for higher-is-better, `best × 1.05` for lower-is-better). If optimizing `[Q]-N` conflicts with a previous `[Q]` (5+ consecutive iterations regress the prior metric beyond tolerance), STOP and present the tradeoff to the user.
+
+**Pareto deadlock resolution:** When conflict detected (5+ consecutive regressions of prior [Q]):
+1. **Measure** both metrics at current state → present exact numbers
+2. **Present tradeoff** via AskUserQuestion with concrete options: (a) relax prior [Q] tolerance to X%, (b) lower current [Q] target, (c) accept PARTIAL on current [Q], (d) re-think approach in THINK phase
+3. **User decides** — never auto-resolve Pareto conflicts. The algorithm optimizes, humans make value tradeoffs.
+4. If 3+ [Q] create circular conflicts (improving any one regresses another), mark ALL conflicting [Q] as `[~] PARTIAL` with achieved values and document the Pareto frontier in LEARN Track 3.
 
 ### 8-Phase Iteration Cycle
 
@@ -48,7 +56,9 @@ Phase 4: COMMIT
   - Message format: "exp(N): description" where N = iteration number
 
 Phase 5: VERIFY
-  - Run metric command → record new value (timeout: 60s — if not returned, kill process, log status=timeout in experiments.tsv, treat as crash)
+  - Run metric command → record new value
+    **Timeout protocol (60s):** Run via `timeout 60 <cmd>`. If exit code 124 (timeout): (1) kill child tree: `kill -- -$$` or `pkill -P $PID`, (2) log `status=timeout` in experiments.tsv, (3) treat as crash (fix attempt max 3, then SKIP). If metric command spawns children (e.g., Lighthouse → Chrome), use `timeout --kill-after=5 60 <cmd>` to ensure cleanup. Resume at Phase 2 (IDEATE) after timeout — the iteration is lost, not the session.
+    **Metric freshness:** If the metric depends on external state (deploy, CDN cache, API), validate staleness: compare two runs 5s apart. If identical despite a known code change → metric is stale, flag and pause until fresh. Real-time metrics only for Autoresearch.
   - Run regression gates: fast gates every iteration, slow gates per schedule (see Regression Gates)
   - Run anti-criteria check: no ISC-A violations
 
@@ -58,6 +68,7 @@ Phase 6: DECIDE
   - Metric improved BUT gate broken → REVERT (gate > metric)
   - Anti-criteria violated → REVERT + ALERT
   - Crash/error → fix attempt (max 3) → if still broken, SKIP
+  **Revert method:** Use `git reset --hard HEAD~1` (not `git revert`) — keeps history clean. The discarded commit is already logged in experiments.tsv with `commit=-`. For amplified multi-commit changes, use `git reset --hard <pre-experiment-hash>`. This maintains bisectable history — no noise from revert commits.
 
 Phase 7: LOG
   - Append row to experiments.tsv:
@@ -101,6 +112,12 @@ After context compaction, recover sub-loop state by reading experiments.tsv:
 
 For main Algorithm state, also read the PRD (see v4.0-alpha.md Context Recovery section).
 
+**Pause/resume (deliberate interruption):** If resuming after a deliberate pause (hours/days, not crash):
+1. Re-run the baseline metric command → compare with experiments.tsv baseline. If changed >5%, record new baseline and note: `# baseline_recalibrated: old → new (reason: external changes)`
+2. Check `git log --oneline` for commits not in experiments.tsv → if others pushed changes, the codebase state has diverged. Acknowledge in LOG.
+3. Resume at Phase 1 (REVIEW) with fresh metric, not mid-iteration. Consecutive discard counter carries over from experiments.tsv.
+4. Do NOT re-run Verification Rehearsal unless baseline recalibrated by >20%.
+
 ### Stagnation Detection
 
 Track consecutive non-improvement results ("consecutive" = immediately sequential discard rows in experiments.tsv, any `keep` resets the counter to 0):
@@ -112,10 +129,12 @@ Track consecutive non-improvement results ("consecutive" = immediately sequentia
 | 5 | **Amplify**: switch to amplified amplitude (see below) |
 | 10 | **STOP**: increment think_reentries, return to PAI THINK with trajectory data |
 
+**Domain-aware override:** If discards are caused by regression gate failures (not metric non-improvement), the domain may be constraint-heavy rather than stagnant. Check: are discards failing gates or failing to improve the metric? If >80% of discards are gate failures → the problem is gate compatibility, not stagnation. In this case: do NOT amplify (amplifying in constrained domains is dangerous). Instead, at 5 discards: narrow scope (smaller changes that are less likely to break gates). At 10: STOP and present constraint analysis — "these gates conflict with this metric" — so user can relax a gate or accept PARTIAL.
+
 **Change amplitude definitions:**
-- **Normal** (default): one element changed per iteration (single function, single CSS rule, single config value)
-- **Amplified**: multiple elements changed per iteration, or structural changes (rewrite a module, change data structure, switch library)
-- **Reduced**: point edits only (tweak a constant, adjust a threshold, rename a variable)
+- **Normal** (default): one element changed per iteration (single function, single CSS rule, single config value). "One element" = one logical concern: removing a library is one element (even if it touches 3 import sites). Refactoring a function is one element if the API stays the same, multiple if callers change behavior. Rule of thumb: if you can describe it in 8 words without "and", it's one element.
+- **Amplified**: multiple elements changed per iteration, or structural changes (rewrite a module, change data structure, switch library). Caution: attribution breaks — you won't know which sub-change caused the metric movement. Use only after stagnation signals.
+- **Reduced**: point edits only (tweak a constant, adjust a threshold, rename a variable). One line, one file. Use after oscillation signals.
 
 **Amplify does NOT reset the consecutive discard counter.** The counter continues from its current value. If experiments 5-10 after Amplify are all discards, STOP triggers at 10 total.
 
@@ -136,6 +155,8 @@ Track consecutive non-improvement results ("consecutive" = immediately sequentia
 
 If no explicit `[B-fast]`/`[B-slow]` tagging: gates that complete in <5s are fast, others are slow. When in doubt, run as fast gate.
 
+**Cost model validation (before first iteration):** Estimate total gate cost: `(slow_gate_count × avg_slow_time × iterations/5) + (fast_gate_count × avg_fast_time × iterations)`. If estimated gate cost > 30% of iteration budget time, either: (a) reduce slow gate frequency (every 10 instead of 5), (b) convert some slow gates to fast via parallelization, or (c) reduce iteration cap. Log the cost estimate in experiments.tsv header: `# gate_cost_estimate: Xs per iteration`. This prevents the scenario where 12 slow gates at 8s each consume 100% of budget.
+
 - Before DECIDE, verify **fast gates** on every iteration
 - Run **slow gates** every 5 iterations, or after a `keep` decision (but only if ≥2 iterations since last slow gate run — prevents cascading when keeps cluster)
 - Gate failure → automatic REVERT, regardless of metric improvement
@@ -145,6 +166,7 @@ If no explicit `[B-fast]`/`[B-slow]` tagging: gates that complete in <5s are fas
 - Anti-criteria violation → REVERT + halt loop + return to PAI THINK
 - These represent constraints that must never be broken (budget limits, safety rules, etc.)
 - If the same ISC-A is violated twice across re-entries → STOP entirely, present results as-is
+- **Structural violations:** If the anti-criteria violation is structural (same root cause, different manifestation — e.g., API keys leaking from logging, not from code), Autoresearch cannot fix it. On second violation of same ISC-A: STOP, flag as "structural constraint — requires dedicated refactoring outside Autoresearch scope", present to user with root cause analysis. Do NOT re-enter THINK for the same structural issue — THINK re-planning won't fix an architectural problem.
 
 ---
 
@@ -214,6 +236,10 @@ OBSERVE → THINK → PLAN → CYCLE SELECTOR → BUILD →
 
 After the sub-loop completes (target reached, budget exhausted, or stopped), control returns to the main Algorithm flow at VERIFY. The experiments.tsv data feeds into LEARN Track 2 (Empirical) and Track 3 (Synthesis).
 
+**Source of truth hierarchy:** For `[Q]` criteria state: experiments.tsv (empirical record) > PRD checkboxes (summary). If they conflict after recovery, trust experiments.tsv — it has commit hashes and metric values. PRD checkboxes are convenience markers, experiments.tsv is the audit trail.
+
+**Revisited tasks (PRD iteration 2+):** If a PRD is reopened for continued optimization, append a new section to experiments.tsv with a separator: `# --- Iteration 2 (YYYY-MM-DD) ---`. Reset iteration counter to 0 within the new section. Previous section's best value becomes the new baseline. Do NOT overwrite previous experiment data — it's the historical record.
+
 **Joint re-check (multiple [Q] only):** After ALL `[Q]` criteria are optimized, re-measure every `[Q]` metric. If a later `[Q]`'s changes accidentally improved an earlier one beyond its original result, record the improved value. If a later `[Q]` regressed an earlier one within tolerance, note it in LEARN. This catches cross-metric interactions that sequential optimization misses — a lightweight Pareto check without parallel complexity.
 
 **Partial success:** If the re-entry limit (2) is exhausted without reaching the target, mark the `[Q]` criterion as `PARTIAL` in the PRD: `- [~] ISC-N [Q]: description (achieved: X, target: Y)`. Record the best achieved value. LEARN Track 3 must analyze why the target wasn't reached and whether the target was realistic. Partial success is better than no record — the achieved improvement is preserved.
@@ -229,7 +255,7 @@ All thresholds are v4.0-alpha starting points. Calibrate by production data in L
 | Threshold | Value | Why this value |
 |-----------|-------|----------------|
 | Re-entry limit | 2 | 3+ creates infinite re-planning loops observed in v3.x; 1 is too brittle for genuinely hard problems; 2 gives one course-correction opportunity |
-| Regression tolerance | 5% relative | Statistical convention for "practically significant" change; tighter (3%) triggers false positives on noisy metrics; looser (10%) allows meaningful regression |
+| Regression tolerance | 5% relative | Statistical convention for "practically significant" change; tighter (3%) triggers false positives on noisy metrics; looser (10%) allows meaningful regression. **Discrete metrics (integers):** use `max(5%, 1/baseline)` — ensures at least 1 unit tolerance. E.g., baseline 12 test failures → tolerance = max(5%, 1/12) = max(5%, 8.3%) = 8.3% → gate triggers at >13. For continuous metrics, 5% is fine. Noisy metrics: see noise calibration in Prerequisites. |
 | Stagnation → Amplify | 5 discards | Balances patience vs waste; 3 is too aggressive (false positives on stochastic metrics); 10 wastes half the budget before reacting |
 | Stagnation → STOP | 10 discards | 5 normal + 5 amplified = exhausted both amplitude levels; continuing past this is pure randomness |
 | Fast/slow gate boundary | 5s | Practical: grep/lint/type-check < 1s, full test suites > 10s; 5s splits cleanly between instant checks and heavy runners |
