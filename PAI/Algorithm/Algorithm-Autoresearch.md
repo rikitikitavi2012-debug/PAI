@@ -45,6 +45,7 @@ Phase 7: LOG
     iteration | commit | metric | delta | status | description
   - commit = "-" for discarded/reverted changes
   - delta = change from most recent keep/baseline (ignore discard/crash/skip)
+  - If L3 changed amplitude, update header: `# amplitude: normal|amplified|reduced`
 
 Phase 8: REPEAT
   - Continue if: budget remaining AND target not reached AND not stagnating
@@ -72,6 +73,9 @@ After context compaction, recover sub-loop state by reading experiments.tsv:
 - **Current metric:** last `keep` or `baseline` row's metric value
 - **Re-entry count:** `# think_reentries: N` header comment
 - **Consecutive discards:** count trailing `discard` rows from bottom of file
+- **Change amplitude:** `# amplitude: normal|amplified|reduced` header comment (updated by L3 decisions)
+
+For main Algorithm state, also read the PRD (see v4.0-alpha.md Context Recovery section).
 
 ### Stagnation Detection
 
