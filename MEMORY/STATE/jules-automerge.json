@@ -1,5 +1,5 @@
 {
-  "lastCheck": "2026-03-15T17:31:34.018Z",
+  "lastCheck": "2026-03-15T18:00:01.545Z",
   "processedSessions": [
     {
       "sessionId": "sessions/8584917624898497977",
@@ -863,11 +863,92 @@
       "processedAt": "2026-03-15T17:51:41.991Z",
       "repo": "rikitikitavi2012-debug/PAI-personal",
       "testOutput": "Merge conflict with master: "
+    },
+    {
+      "sessionId": "sessions/16970326395497558534",
+      "prNumber": 58,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/58",
+      "result": "failed_tests",
+      "processedAt": "2026-03-15T17:51:47.960Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "\n21 |       session_id: 'test-pcr-001',\n22 |       source: 'compact',\n23 |       hook_event_name: 'SessionStart',\n24 |     });\n25 | \n26 |     expect(result.exitCode).toBe(0);\n                                 ^\nerror: expect(received).toBe(expected)\n\nExpected: 0\nReceived: 1\n\n      at <anonymous> (/tmp/jules-automerge-1773597107960/hooks/tests/PostCompactRecovery.test.ts:26:29)\n-------------------------------\n\n\n 260 pass\n 8 fail\n 1 error\n 3791 expect() calls\nRan 268 tests across 44 files. [49.69s]"
+    },
+    {
+      "sessionId": "sessions/12684383415032414340",
+      "prNumber": 53,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/53",
+      "result": "failed_tests",
+      "processedAt": "2026-03-15T17:52:44.540Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "\n21 |       session_id: 'test-pcr-001',\n22 |       source: 'compact',\n23 |       hook_event_name: 'SessionStart',\n24 |     });\n25 | \n26 |     expect(result.exitCode).toBe(0);\n                                 ^\nerror: expect(received).toBe(expected)\n\nExpected: 0\nReceived: 1\n\n      at <anonymous> (/tmp/jules-automerge-1773597164540/hooks/tests/PostCompactRecovery.test.ts:26:29)\n-------------------------------\n\n\n 260 pass\n 8 fail\n 1 error\n 3791 expect() calls\nRan 268 tests across 44 files. [49.30s]"
+    },
+    {
+      "sessionId": "sessions/11916901954404741061",
+      "prNumber": 52,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/52",
+      "result": "failed_tests",
+      "processedAt": "2026-03-15T17:53:38.915Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "\n21 |       session_id: 'test-pcr-001',\n22 |       source: 'compact',\n23 |       hook_event_name: 'SessionStart',\n24 |     });\n25 | \n26 |     expect(result.exitCode).toBe(0);\n                                 ^\nerror: expect(received).toBe(expected)\n\nExpected: 0\nReceived: 1\n\n      at <anonymous> (/tmp/jules-automerge-1773597218915/hooks/tests/PostCompactRecovery.test.ts:26:29)\n-------------------------------\n\n\n 260 pass\n 8 fail\n 1 error\n 3791 expect() calls\nRan 268 tests across 44 files. [47.59s]"
+    },
+    {
+      "sessionId": "sessions/9403757846369384915",
+      "prNumber": 51,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/51",
+      "result": "failed_tests",
+      "processedAt": "2026-03-15T17:54:33.369Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "\n21 |       session_id: 'test-pcr-001',\n22 |       source: 'compact',\n23 |       hook_event_name: 'SessionStart',\n24 |     });\n25 | \n26 |     expect(result.exitCode).toBe(0);\n                                 ^\nerror: expect(received).toBe(expected)\n\nExpected: 0\nReceived: 1\n\n      at <anonymous> (/tmp/jules-automerge-1773597273369/hooks/tests/PostCompactRecovery.test.ts:26:29)\n-------------------------------\n\n\n 260 pass\n 8 fail\n 1 error\n 3791 expect() calls\nRan 268 tests across 44 files. [42.74s]"
+    },
+    {
+      "sessionId": "sessions/6770390887604456292",
+      "prNumber": 59,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/59",
+      "result": "failed_tests",
+      "processedAt": "2026-03-15T17:55:20.904Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "\n21 |       session_id: 'test-pcr-001',\n22 |       source: 'compact',\n23 |       hook_event_name: 'SessionStart',\n24 |     });\n25 | \n26 |     expect(result.exitCode).toBe(0);\n                                 ^\nerror: expect(received).toBe(expected)\n\nExpected: 0\nReceived: 1\n\n      at <anonymous> (/tmp/jules-automerge-1773597320904/hooks/tests/PostCompactRecovery.test.ts:26:29)\n-------------------------------\n\n\n 260 pass\n 8 fail\n 1 error\n 3791 expect() calls\nRan 268 tests across 44 files. [44.93s]"
+    },
+    {
+      "sessionId": "sessions/15576636217353196745",
+      "prNumber": 62,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/62",
+      "result": "failed_tests",
+      "processedAt": "2026-03-15T17:56:10.791Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "\n21 |       session_id: 'test-pcr-001',\n22 |       source: 'compact',\n23 |       hook_event_name: 'SessionStart',\n24 |     });\n25 | \n26 |     expect(result.exitCode).toBe(0);\n                                 ^\nerror: expect(received).toBe(expected)\n\nExpected: 0\nReceived: 1\n\n      at <anonymous> (/tmp/jules-automerge-1773597370791/hooks/tests/PostCompactRecovery.test.ts:26:29)\n-------------------------------\n\n\n 260 pass\n 8 fail\n 1 error\n 3791 expect() calls\nRan 268 tests across 44 files. [45.11s]"
+    },
+    {
+      "sessionId": "sessions/5137315251693890636",
+      "prNumber": 61,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/61",
+      "result": "failed_tests",
+      "processedAt": "2026-03-15T18:00:30.568Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "testOutput": "Merge conflict with master: "
+    },
+    {
+      "sessionId": "sessions/16970326395497558534",
+      "prNumber": 58,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/58",
+      "result": "merged",
+      "processedAt": "2026-03-15T18:01:40.113Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW"
+    },
+    {
+      "sessionId": "sessions/12684383415032414340",
+      "prNumber": 53,
+      "prUrl": "https://github.com/rikitikitavi2012-debug/PAI-personal/pull/53",
+      "result": "merged",
+      "processedAt": "2026-03-15T18:03:28.654Z",
+      "repo": "rikitikitavi2012-debug/PAI-personal",
+      "zaiReviewSeverity": "LOW"
     }
   ],
   "stats": {
-    "totalMerged": 33,
-    "totalFailed": 51,
+    "totalMerged": 35,
+    "totalFailed": 58,
     "totalSkipped": 9
   }
 }

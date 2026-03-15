@@ -1,41 +1,41 @@
 {
-  "timestamp": "2026-03-15T17:52:04.267Z",
+  "timestamp": "2026-03-15T18:05:00.651Z",
   "checks": [
     {
       "service": "AgentZero",
       "status": "up",
-      "latencyMs": 3,
+      "latencyMs": 1,
       "detail": "HTTP 404",
-      "timestamp": "2026-03-15T17:51:59.651Z"
+      "timestamp": "2026-03-15T18:04:58.361Z"
     },
     {
       "service": "Z.AI",
       "status": "up",
-      "latencyMs": 3,
+      "latencyMs": 0,
       "detail": "GLM-5: OK",
-      "timestamp": "2026-03-15T17:51:59.652Z"
+      "timestamp": "2026-03-15T18:04:58.361Z"
     },
     {
       "service": "VoiceServer",
       "status": "up",
-      "latencyMs": 1,
+      "latencyMs": 0,
       "detail": "HTTP 200",
-      "timestamp": "2026-03-15T17:51:59.651Z"
+      "timestamp": "2026-03-15T18:04:58.361Z"
     },
     {
       "service": "GitHubCLI",
       "status": "up",
-      "latencyMs": 2277,
+      "latencyMs": 2290,
       "detail": "github.com",
-      "timestamp": "2026-03-15T17:52:01.927Z"
+      "timestamp": "2026-03-15T18:05:00.651Z"
     },
     {
       "service": "GeminiCLI",
-      "status": "up",
-      "latencyMs": 4616,
-      "detail": "0.33.0",
-      "timestamp": "2026-03-15T17:52:04.267Z"
+      "status": "down",
+      "latencyMs": 0,
+      "detail": "Executable not found in $PATH: \"gemini\"",
+      "timestamp": "2026-03-15T18:04:58.361Z"
     }
   ],
-  "allHealthy": true
+  "allHealthy": false
 }

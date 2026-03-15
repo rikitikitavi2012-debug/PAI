@@ -1,40 +1,9 @@
-AutoMerge вывел 0 байт — видимо не нашёл PR для merge или завершился без вывода. Jules PR'ы можно merge вручную позже — это не блокер.
+**Stash (2)** — старые WIP, можно удалить:
+- stash@{0}: от коммита f966aff (уже в master)
+- stash@{1}: от коммита 3f37813 (уже в master)
 
-Итоговая сводка, Ivan:
+**Mod (10)** — в основном автогенерируемый STATE (events, cache, weather). Не нужно коммитить.
 
-```
-═══ ALGORITHM v4.0-alpha — ФИНАЛЬНАЯ ВАЛИДАЦИЯ ═══════════
+**New (121)** — untracked файлы (LEARNING signals, RESEARCH, WORK sessions). Много накопилось.
 
-🔍 5 уровней review:
-  ✅ RedTeam (Claude Opus)    3P0 + 4P1 → fixed
-  ✅ Manual Audit (Claude)    3 edge cases → fixed
-  ✅ Architect Agent (Claude) 4C + 7M → 6 fixed
-  ✅ Gemini 2.5 Pro           1 NEW bug (amplitude) → fixed
-  ⚠️  Kimi K2.5               не сработал (pipe limit)
-
-🤖 Jules (15/15 complete):
-  15 PR с bun:test тестами → PRs #49-63
-  Покрытие: backward compat, cross-refs, phase numbering,
-  effort levels, cycle selector, sub-loop, stagnation,
-  drift defense, TSV format, ISC mapping, context recovery,
-  verification rehearsal, LEARN phase, hooks, full scenarios
-
-📊 Итого найдено и исправлено:
-  RedTeam:    7 issues
-  Manual:     3 issues  
-  Architect: 11 issues (6 fixed, 5 inherited/deferred)
-  Gemini:     1 issue (NEW — amplitude state)
-  TOTAL:     22 issues found, 17 fixed
-
-🏗️ Файлы:
-  v4.0-alpha.md           445 lines (≤450 ✅)
-  Algorithm-Autoresearch  175 lines
-  9 commits on master, pushed to private
-
-⏭️  Следующие шаги:
-  1. Новая сессия → живой тест с [Q] задачей
-  2. Merge Jules PRs (#49-63)
-  3. Когда живой тест пройдёт → v4.0-alpha → v4.0
-```
-
-🗣️ **Navi:** Алгоритм прошёл 5 уровней review, 22 бага найдено, 17 исправлено. Gemini подтвердил: cross-model review ловит то, что Claude пропускает. Для перехода к v4.0 — нужен живой тест в новой сессии. Рекомендую перезапустить и дать задачу с измеримым [Q] критерием.
+Хочешь почищу? Stash можно дропнуть, STATE файлы закоммитить пачкой, а LEARNING/RESEARCH/WORK добавить в репо?
