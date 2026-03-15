@@ -79,7 +79,9 @@ For main Algorithm state, also read the PRD (see v4.0-alpha.md Context Recovery 
 
 ### Stagnation Detection
 
-Track consecutive non-improvement results:
+Track consecutive non-improvement results ("consecutive" = immediately sequential discard rows in experiments.tsv, any `keep` resets the counter to 0):
+
+**Priority:** Stagnation Detection runs BEFORE L3 Structural analysis on applicable iterations (e.g., iteration 10 checks stagnation first, then L3).
 
 | Consecutive Discards | Action |
 |---------------------|--------|
