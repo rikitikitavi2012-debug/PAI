@@ -3,10 +3,17 @@ projects/
 file-history/
 debug/
 todos/
+tasks/
+sessions/
 session-env/
 shell-snapshots/
 paste-cache/
 chrome/
+ide/
+mcp-needs-auth-cache.json
+
+# Claude Code internal task state (per-work-session)
+MEMORY/WORK/*/tasks/
 
 # Claude Code command history
 history.jsonl
