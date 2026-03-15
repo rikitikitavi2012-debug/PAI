@@ -1,0 +1,8 @@
+{
+  "rating": 3,
+  "summary": "Frustrated by repeated hook errors after fixes",
+  "detailed_context": "Ivan is expressing exasperation at hook errors that continue to appear despite previous work. The phrase 'Опять вижу' (seeing it again) indicates this is a REPEATED PROBLEM — the same issue he thought was fixed is now occurring again. He's asking 'почему так происходит' (why is this happening) and 'почему стали появлятся' (why did these start appearing) — questions that reveal frustration with a recurring failure. The mention of memories ('Wrote 2 memories') and tool use errors suggests Navi's recent outputs or operations are triggering these hook failures. This is a pattern of incomplete fix or regression: Ivan addressed the issue, but it's back. The tone is one of resigned frustration ('Опять' = again, weary) rather than acute anger, but the implication is clear: Navi either didn't fully resolve the root cause, or introduced new code that broke the same thing again. This requires investigation into what changed since the last fix and why the hook errors persist.",
+  "session_id": "5117a22b-a836-4535-be2e-68904795f3d5",
+  "captured_at": "2026-03-15T19:11:11.915Z",
+  "transcript_source": "5117a22b-a836-4535-be2e-68904795f3d5.jsonl"
+}
