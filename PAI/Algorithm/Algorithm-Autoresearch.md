@@ -109,8 +109,13 @@ Track consecutive non-improvement results ("consecutive" = immediately sequentia
 
 | Consecutive Discards | Action |
 |---------------------|--------|
-| 5 | **Amplify**: increase mutation size, try bolder changes |
-| 10 | **STOP**: return to PAI THINK with trajectory data |
+| 5 | **Amplify**: switch to amplified amplitude (see below) |
+| 10 | **STOP**: increment think_reentries, return to PAI THINK with trajectory data |
+
+**Change amplitude definitions:**
+- **Normal** (default): one element changed per iteration (single function, single CSS rule, single config value)
+- **Amplified**: multiple elements changed per iteration, or structural changes (rewrite a module, change data structure, switch library)
+- **Reduced**: point edits only (tweak a constant, adjust a threshold, rename a variable)
 
 **Amplify does NOT reset the consecutive discard counter.** The counter continues from its current value. If experiments 5-10 after Amplify are all discards, STOP triggers at 10 total.
 
