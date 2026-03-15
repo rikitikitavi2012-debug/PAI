@@ -59,6 +59,8 @@ Every **20 iterations**, pause the loop and answer:
 
 If answers suggest drift or futility → STOP loop, return to PAI THINK phase with findings.
 
+**Re-entry limit:** Maximum **2** re-entries to THINK from autoresearch stagnation or drift. On third stagnation, STOP and present results as-is. This prevents infinite re-planning loops.
+
 ### Stagnation Detection
 
 Track consecutive non-improvement results:
@@ -68,10 +70,12 @@ Track consecutive non-improvement results:
 | 5 | **Amplify**: increase mutation size, try bolder changes |
 | 10 | **STOP**: return to PAI THINK with trajectory data |
 
+**Amplify does NOT reset the consecutive discard counter.** The counter continues from its current value. If experiments 5-10 after Amplify are all discards, STOP triggers at 10 total.
+
 **Additional signals:**
 - Revert rate > 50% over last 20 experiments → STOP, re-enter PLAN
-- Oscillation detected (metric swings ±N without net improvement over 10 iterations) → reduce change amplitude
-- Plateau detected (delta < 1% of remaining gap for 10 iterations) → amplify or STOP
+- Oscillation: σ of last 10 keep-values > 2× net improvement over same 10 iterations → reduce change amplitude
+- Plateau: delta < 1% of remaining gap for 10 iterations → amplify or STOP
 
 ### Regression Gates
 
@@ -90,16 +94,16 @@ Track consecutive non-improvement results:
 
 Three layers operate at different frequencies to catch different types of drift.
 
-### L1: Strategic (every 20 experiments)
+### L1: Strategic (every 20 iterations — Self-Interrogation Checkpoint)
 
-**Trigger:** Self-Interrogation checkpoint (see above).
+**Trigger:** Every 20th iteration (same as Self-Interrogation above — they are the same mechanism).
 
 **Purpose:** Catch drift between what the metric measures and what the ISC actually wants.
 
 **Actions:**
 - Run the 5 Self-Interrogation questions
 - Compare current optimization direction with original ISC intent
-- If misaligned → STOP, re-enter THINK with evidence
+- If misaligned → STOP, re-enter THINK with evidence (subject to re-entry limit)
 
 ### L2: Tactical (every experiment)
 
@@ -132,7 +136,8 @@ Three layers operate at different frequencies to catch different types of drift.
 | Flat trend | slope ≈ 0 for 10 iterations | Amplify — try bolder changes or new categories |
 | Negative trend | slope < 0 | STOP — re-enter PLAN, something is wrong |
 | High oscillation | σ > 2× net change | Reduce amplitude — changes are too volatile |
-| Revert rate critical | reverts > 50% | STOP — re-enter PLAN |
+| Positive trend, critical revert rate | slope > 0, reverts > 50% | STOP — improvements are fragile and unreliable |
+| Revert rate critical | slope ≤ 0, reverts > 50% | STOP — re-enter PLAN |
 
 ---
 
