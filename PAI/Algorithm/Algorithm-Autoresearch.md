@@ -23,7 +23,7 @@ iteration	commit	metric	delta	status	description
 ...
 ```
 
-After completing `[Q]-1`, its best achieved value becomes a regression gate for subsequent `[Q]` optimizations (tolerance: 5% regression allowed). If optimizing `[Q]-N` conflicts with a previous `[Q]` (5+ consecutive attempts regress the prior metric beyond tolerance), STOP and present the tradeoff to the user.
+After completing `[Q]-1`, its best achieved value becomes a regression gate for subsequent `[Q]` optimizations (tolerance: 5% relative — `best × 0.95` for higher-is-better, `best × 1.05` for lower-is-better). If optimizing `[Q]-N` conflicts with a previous `[Q]` (5+ consecutive iterations regress the prior metric beyond tolerance), STOP and present the tradeoff to the user.
 
 ### 8-Phase Iteration Cycle
 
@@ -137,7 +137,7 @@ Track consecutive non-improvement results ("consecutive" = immediately sequentia
 If no explicit `[B-fast]`/`[B-slow]` tagging: gates that complete in <5s are fast, others are slow. When in doubt, run as fast gate.
 
 - Before DECIDE, verify **fast gates** on every iteration
-- Run **slow gates** every 5 iterations, or immediately after a `keep` decision
+- Run **slow gates** every 5 iterations, or after a `keep` decision (but only if ≥2 iterations since last slow gate run — prevents cascading when keeps cluster)
 - Gate failure → automatic REVERT, regardless of metric improvement
 - This prevents Goodhart's Law: metric goes up but quality goes down
 
