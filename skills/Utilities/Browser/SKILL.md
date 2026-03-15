@@ -78,7 +78,8 @@ Browser automation should use standard CLI tools, not custom code. `playwright-c
 **Headless by default.** All automation runs headless. When the user says "show me", open the URL in their preferred browser from `~/.claude/PAI/USER/TECHSTACKPREFERENCES.md`:
 
 ```bash
-open -a "$BROWSER" "<url>"  # BROWSER from tech stack prefs
+# Cross-platform: xdg-open on Linux/WSL2, open on macOS
+xdg-open "<url>" 2>/dev/null || open "<url>" 2>/dev/null || echo "Open manually: <url>"
 ```
 
 ---
@@ -197,17 +198,17 @@ bunx playwright screenshot --wait-for-timeout 3000 "https://example.com" /tmp/lo
 ### Chrome Headless CLI
 
 ```bash
+# Find Chrome/Chromium binary (cross-platform)
+CHROME=$(command -v chromium-browser || command -v chromium || command -v google-chrome || echo "chrome-not-found")
+
 # Dump DOM (raw HTML)
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless=new --dump-dom "https://example.com"
+"$CHROME" --headless=new --no-sandbox --dump-dom "https://example.com"
 
 # Screenshot
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless=new --screenshot=/tmp/chrome-shot.png "https://example.com"
+"$CHROME" --headless=new --no-sandbox --screenshot=/tmp/chrome-shot.png "https://example.com"
 
 # Print to PDF
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless=new --print-to-pdf=/tmp/page.pdf "https://example.com"
+"$CHROME" --headless=new --no-sandbox --print-to-pdf=/tmp/page.pdf "https://example.com"
 ```
 
 ### Quick Checks
@@ -304,12 +305,12 @@ claude --chrome
 
 **Mid-session workaround** (when you need headed Chrome without restarting):
 ```bash
-# Launch Chrome with remote debugging on your profile
-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+# Launch Chrome with remote debugging (cross-platform)
+CHROME=$(command -v chromium-browser || command -v chromium || command -v google-chrome || echo "chrome-not-found")
+"$CHROME" \
   --remote-debugging-port=9222 \
-  --user-data-dir="$HOME/Library/Application Support/Google/Chrome" \
-  --profile-directory="Default" \
-  --no-first-run \
+  --user-data-dir="$HOME/.config/chromium" \
+  --no-first-run --no-sandbox \
   "<url>" &
 ```
 
