@@ -6,6 +6,25 @@ Referenced from `v4.0-alpha.md` EXECUTE phase. Loaded only when Cycle Selector r
 
 Before starting the sub-loop, **Verification Rehearsal** (defined in v4.0-alpha.md EXECUTE section) MUST complete for each `[Q]` metric. This validates that the metric command produces reliable measurements. Run once per `[Q]` criterion, not once per iteration.
 
+### Multiple [Q] Criteria
+
+When a PRD has 2+ `[Q]` criteria, optimize them **sequentially** — complete one before starting the next. Each `[Q]` gets its own experiments.tsv section, separated by a header comment:
+```
+# [Q] ISC-5: Lighthouse performance > 90
+# metric_direction: higher_is_better
+# target: 90
+iteration	commit	metric	delta	status	description
+...
+
+# [Q] ISC-8: Time to Interactive < 2s
+# metric_direction: lower_is_better
+# target: 2.0
+iteration	commit	metric	delta	status	description
+...
+```
+
+After completing `[Q]-1`, its best achieved value becomes a regression gate for subsequent `[Q]` optimizations (tolerance: 5% regression allowed). If optimizing `[Q]-N` conflicts with a previous `[Q]` (5+ consecutive attempts regress the prior metric beyond tolerance), STOP and present the tradeoff to the user.
+
 ### 8-Phase Iteration Cycle
 
 Each iteration = one atomic experiment. Goal: improve a `[Q]` metric while preserving all `[B]` regression gates.
