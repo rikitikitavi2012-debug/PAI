@@ -59,7 +59,15 @@ Every **20 iterations**, pause the loop and answer:
 
 If answers suggest drift or futility → STOP loop, return to PAI THINK phase with findings.
 
-**Re-entry limit:** Maximum **2** re-entries to THINK from autoresearch stagnation or drift. On third stagnation, STOP and present results as-is. This prevents infinite re-planning loops.
+**Re-entry limit:** Maximum **2** re-entries to THINK from autoresearch stagnation or drift. On third stagnation, STOP and present results as-is. This prevents infinite re-planning loops. Track re-entry count in experiments.tsv header comment: `# think_reentries: N`.
+
+### Context Recovery (during Autoresearch)
+
+After context compaction, recover sub-loop state by reading experiments.tsv:
+- **Iteration count:** number of data rows in experiments.tsv
+- **Current metric:** last `keep` or `baseline` row's metric value
+- **Re-entry count:** `# think_reentries: N` header comment
+- **Consecutive discards:** count trailing `discard` rows from bottom of file
 
 ### Stagnation Detection
 
