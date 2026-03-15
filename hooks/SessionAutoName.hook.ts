@@ -382,7 +382,7 @@ async function upgradeWithInference(sessionId: string, promptB64: string, expect
     const result = await inference({
       systemPrompt: NAME_PROMPT,
       userPrompt: promptText,
-      level: 'standard',
+      level: 'fast',
       timeout: 10000,
     });
 

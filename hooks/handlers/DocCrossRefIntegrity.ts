@@ -569,7 +569,7 @@ async function runInferenceAnalysis(
       userPrompt: `Analyze these source file changes and documentation sections for factual inaccuracies:\n\n${context}`,
       level: 'standard',
       expectJson: true,
-      timeout: 15000, // Sonnet needs more time but produces better quality
+      timeout: 25000, // Sonnet API latency 14-15s typical, 15s timeout was too tight
     });
 
     const elapsed = Date.now() - startTime;
