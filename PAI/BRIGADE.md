@@ -29,6 +29,7 @@
 | 5 | **OpenCode CLI** | T1 | Мульти-провайдер кодер | OpenCode Go | Kimi 2.5 (default) | `oc` | Да (NL) |
 | 6 | **GLM-5** | T3 | Bulk inference, резерв | Zhipu AI | GLM-5 744B | Inference.ts | Нет |
 | 7 | **zai-cli** | T3 | Vision, search, read | Zhipu AI | GLM-4.6V | MCP stdio | Нет |
+| 8 | **NotebookLM** | T3 | Grounded research, podcasts | Google | Gemini | notebooklm CLI | Нет |
 
 ---
 
@@ -247,6 +248,27 @@ bun PAI/Tools/Inference.ts --level glm5 --json "system" "user"
 - ZRead (3): search_doc, read_file, get_repo_structure
 
 **Также:** `bun PAI/Tools/ZaiVision.ts screenshot|analyze|diff|check` -- прямой API fetch (обходит баг zai-cli search).
+
+---
+
+### 8. NotebookLM (CLI инструмент)
+
+**Роль:** Grounded research (zero-hallucination), podcast generation, content pipeline, YouTube knowledge extraction, audio learning.
+**Провайдер:** Google (NotebookLM via notebooklm-py)
+**CLI:** `notebooklm` (v0.3.4)
+**Auth:** `~/.notebooklm/storage_state.json` (browser cookies, отдельный Google аккаунт)
+
+**Ключевые команды:**
+- `notebooklm create/list/use` — управление notebooks
+- `notebooklm source add` — URL, PDF, YouTube, файлы
+- `notebooklm ask` — grounded Q&A с цитированием
+- `notebooklm generate audio/video/report` — мультиформатный контент
+- `notebooklm download` — скачивание артефактов
+
+**PAI Skill:** `skills/NotebookLM/SKILL.md` (6 workflows)
+**Лимиты:** 50 sources/notebook, cookie expiry (дни-недели), undocumented Google API
+
+**НЕ делегировать:** Задачи требующие реального времени (latency 5-30с на запрос). Sensitive данные (отдельный аккаунт!).
 
 ---
 
