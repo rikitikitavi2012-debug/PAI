@@ -100,7 +100,7 @@ describe('AlgorithmTracker', () => {
         session_id: 'test-tracker-sub-01',
         tool_name: 'Bash',
         tool_input: {
-          command: 'curl -d \'{"message":"entering the execute phase"}\' localhost:8888/notify',
+          command: 'curl -d \'{"message":"вхожу в фазу выполнения"}\' localhost:8888/notify',
         },
       },
       { PAI_DIR: tempDir }
@@ -136,7 +136,7 @@ describe('AlgorithmTracker', () => {
         session_id: 'test-tracker-sub-02',
         tool_name: 'Bash',
         tool_input: {
-          command: 'curl -d \'{"message":"entering the execute phase"}\' localhost:8888/notify',
+          command: 'curl -d \'{"message":"вхожу в фазу выполнения"}\' localhost:8888/notify',
         },
       },
       { PAI_DIR: tempDir }
@@ -182,7 +182,7 @@ describe('AlgorithmTracker', () => {
         session_id: 'test-tracker-sub-03',
         tool_name: 'Bash',
         tool_input: {
-          command: 'curl -d \'{"message":"entering the execute phase"}\' localhost:8888/notify',
+          command: 'curl -d \'{"message":"вхожу в фазу выполнения"}\' localhost:8888/notify',
         },
       },
       { PAI_DIR: tempDir }
@@ -212,7 +212,7 @@ describe('AlgorithmTracker', () => {
         session_id: 'test-tracker-sub-03',
         tool_name: 'Bash',
         tool_input: {
-          command: 'curl -d \'{"message":"entering the verify phase"}\' localhost:8888/notify',
+          command: 'curl -d \'{"message":"вхожу в фазу проверки"}\' localhost:8888/notify',
         },
       },
       { PAI_DIR: tempDir }
@@ -233,7 +233,7 @@ describe('AlgorithmTracker', () => {
         session_id: 'test-tracker-sub-04',
         tool_name: 'Bash',
         tool_input: {
-          command: 'curl -d \'{"message":"entering the execute phase"}\' localhost:8888/notify',
+          command: 'curl -d \'{"message":"вхожу в фазу выполнения"}\' localhost:8888/notify',
         },
       },
       { PAI_DIR: tempDir }
@@ -267,7 +267,7 @@ describe('AlgorithmTracker', () => {
         session_id: 'test-tracker-04',
         tool_name: 'Bash',
         tool_input: {
-          command: 'curl -d \'{"message":"entering the pai algorithm"}\' localhost:8888/notify',
+          command: 'curl -d \'{"message":"вхожу в алгоритм"}\' localhost:8888/notify',
         },
       },
       { PAI_DIR: tempDir }

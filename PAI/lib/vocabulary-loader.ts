@@ -5,6 +5,7 @@ import { getPaiDir } from '../../hooks/lib/paths';
 // Types
 export interface AlgorithmPhasesConfig {
   algorithm_entry: string;
+  algorithm_entry_russian?: string;
   phases: Record<string, {
     english: string;
     russian: string;
@@ -28,6 +29,7 @@ export interface WisdomDomainsConfig {
 // Fallbacks
 const FALLBACK_PHASES: AlgorithmPhasesConfig = {
   algorithm_entry: "entering the pai algorithm",
+  algorithm_entry_russian: "вхожу в алгоритм",
   phases: {
     OBSERVE: { english: "entering the observe phase", russian: "вхожу в фазу наблюдения", emoji: "👀" },
     THINK: { english: "entering the think phase", russian: "вхожу в фазу мышления", emoji: "🧠" },

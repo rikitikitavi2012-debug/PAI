@@ -12,9 +12,9 @@ describe('VoiceCompletion (Send Scenarios)', () => {
   let mockServerStatus = 200;
 
   beforeAll(() => {
-    // Start mock ElevenLabs server
+    // Start mock ElevenLabs server on random free port (avoids conflict with real VoiceServer on 8888)
     server = serve({
-      port: 8888,
+      port: 0,
       async fetch(req) {
         requests.push(req);
 
@@ -46,6 +46,10 @@ describe('VoiceCompletion (Send Scenarios)', () => {
 
   const hookPath = 'hooks/VoiceCompletion.hook.ts';
 
+  function mockPort(): string {
+    return String(server.port);
+  }
+
   test('1 & 2: sends POST to localhost:8888/notify with correct voice_id from settings.json', async () => {
     tempDir = createTempDir('voice-completion-test');
 
@@ -72,7 +76,7 @@ describe('VoiceCompletion (Send Scenarios)', () => {
         session_id: 'test-session-123',
         transcript_path: transcriptPath
       },
-      { PAI_DIR: tempDir, CLAUDE_CODE_AGENT_TASK_ID: '' } // clear the subagent env
+      { PAI_DIR: tempDir, CLAUDE_CODE_AGENT_TASK_ID: '', VOICE_SERVER_PORT: mockPort() } // clear the subagent env
     );
 
     expect(result.exitCode).toBe(0);
@@ -107,7 +111,7 @@ describe('VoiceCompletion (Send Scenarios)', () => {
         session_id: 'test-session-500',
         transcript_path: transcriptPath
       },
-      { PAI_DIR: tempDir, CLAUDE_CODE_AGENT_TASK_ID: '' }
+      { PAI_DIR: tempDir, CLAUDE_CODE_AGENT_TASK_ID: '', VOICE_SERVER_PORT: mockPort() }
     );
 
     expect(result.exitCode).toBe(0); // process.exit(0) on fail-open
@@ -139,15 +143,15 @@ describe('VoiceCompletion (Send Scenarios)', () => {
         session_id: 'test-session-timeout',
         transcript_path: transcriptPath
       },
-      { PAI_DIR: tempDir, CLAUDE_CODE_AGENT_TASK_ID: '' }
+      { PAI_DIR: tempDir, CLAUDE_CODE_AGENT_TASK_ID: '', VOICE_SERVER_PORT: mockPort() }
     );
 
     expect(result.exitCode).toBe(0); // process.exit(0) on fail-open
     expect(result.stderr).toContain('Failed to send:');
 
-    // restart server for subsequent tests
+    // restart server for subsequent tests (port 0 = random free port)
     server = serve({
-      port: 8888,
+      port: 0,
       async fetch(req) {
         requests.push(req);
         if (req.method === 'POST' && new URL(req.url).pathname === '/notify') {
@@ -179,7 +183,7 @@ describe('VoiceCompletion (Send Scenarios)', () => {
         session_id: 'test-session-missing-settings',
         transcript_path: transcriptPath
       },
-      { PAI_DIR: tempDir, CLAUDE_CODE_AGENT_TASK_ID: '' }
+      { PAI_DIR: tempDir, CLAUDE_CODE_AGENT_TASK_ID: '', VOICE_SERVER_PORT: mockPort() }
     );
 
     expect(result.exitCode).toBe(0);

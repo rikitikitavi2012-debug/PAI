@@ -103,7 +103,8 @@ async function sendNotification(payload: ElevenLabsNotificationPayload, sessionI
 
   try {
     // Use ElevenLabs voice server /notify endpoint
-    const response = await fetch('http://localhost:8888/notify', {
+    const voicePort = process.env.VOICE_SERVER_PORT || '8888';
+    const response = await fetch(`http://localhost:${voicePort}/notify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

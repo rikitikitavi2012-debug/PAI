@@ -46,8 +46,9 @@ function detectPhaseFromBash(command: string, config: AlgorithmPhasesConfig): { 
 
   const message = messageMatch[1].toLowerCase();
 
-  // Check for algorithm entry
-  if (message.includes(config.algorithm_entry)) {
+  // Check for algorithm entry (English or Russian)
+  if (message.includes(config.algorithm_entry) ||
+      (config.algorithm_entry_russian && message.includes(config.algorithm_entry_russian))) {
     return { phase: null, subPhase: null, isAlgorithmEntry: true };
   }
 
