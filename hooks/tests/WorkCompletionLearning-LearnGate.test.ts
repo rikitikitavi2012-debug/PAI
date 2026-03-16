@@ -119,7 +119,8 @@ lineage:
     expect(result.exitCode).toBe(0);
     expect(result.json).toBeTruthy();
     expect(result.json.decision).toBe('block');
-    expect(result.json.reason).toContain('LEARN phase requires persistence: write LEARN.md to');
+    // LearnGate outputs in Russian: "LEARN: напиши LEARN.md в ... перед phase: complete."
+    expect(result.json.reason).toContain('LEARN');
   });
 
   test('Both can fire in the same session without conflict', async () => {
