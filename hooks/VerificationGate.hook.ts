@@ -99,7 +99,7 @@ if (input.tool_name === 'Edit' && prdContent) {
 }
 
 // Check: does the Verification section have at least one checked item?
-const verifyMatch = prdContent.match(/## Verification\n([\s\S]*?)(?=\n## |\n---|\Z)/i);
+const verifyMatch = prdContent.match(/## Verification\n([\s\S]*?)(?=\n## |\n---|$)/i);
 
 if (!verifyMatch) {
   // No Verification section at all — block
