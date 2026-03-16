@@ -57,6 +57,7 @@ async function main() {
   try {
     const input = await readStdin();
     if (!input) {
+      console.log(JSON.stringify({ continue: true }));
       process.exit(0);
     }
 
@@ -75,9 +76,11 @@ async function main() {
     }
 
     // All other skills pass through
+    console.log(JSON.stringify({ continue: true }));
     process.exit(0);
   } catch (err) {
     // On any error, pass silently — don't block skill execution
+    console.log(JSON.stringify({ continue: true }));
     process.exit(0);
   }
 }

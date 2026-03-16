@@ -100,6 +100,9 @@ async function main() {
       const parsed = JSON.parse(raw);
       summary = extractSummary(parsed);
       sessionId = parsed.session_id;
+    } else {
+      console.log(JSON.stringify({ continue: true }));
+      process.exit(0);
     }
   } catch {
     // stdin parse failed — use fallback

@@ -13,7 +13,7 @@ describe('AgentExecutionGuard', () => {
       },
     });
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toBe('');
+    expect(result.stdout).toContain('continue');
     expect(result.stderr).toBe('');
   });
 
@@ -26,7 +26,7 @@ describe('AgentExecutionGuard', () => {
       },
     });
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toBe('');
+    expect(result.stdout).toContain('continue');
   });
 
   test('valid input: FAST_MODELS (haiku) → exits 0 silently', async () => {
@@ -38,7 +38,7 @@ describe('AgentExecutionGuard', () => {
       },
     });
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toBe('');
+    expect(result.stdout).toContain('continue');
   });
 
   test('valid input: FAST scope in prompt → exits 0 silently', async () => {
@@ -50,7 +50,7 @@ describe('AgentExecutionGuard', () => {
       },
     });
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toBe('');
+    expect(result.stdout).toContain('continue');
   });
 
   test('missing fields → exits 0 (fail-open)', async () => {

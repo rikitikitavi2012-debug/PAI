@@ -52,6 +52,7 @@ async function main() {
   try {
     const input = await readStdin();
     if (!input) {
+      console.log(JSON.stringify({ continue: true }));
       process.exit(0);
     }
 
@@ -60,24 +61,28 @@ async function main() {
 
     // Already using background — correct usage, pass silently
     if (toolInput.run_in_background === true) {
+      console.log(JSON.stringify({ continue: true }));
       process.exit(0);
     }
 
     // Fast-tier agents don't need background (quick lookups)
     const agentType = toolInput.subagent_type || '';
     if (FAST_AGENT_TYPES.includes(agentType)) {
+      console.log(JSON.stringify({ continue: true }));
       process.exit(0);
     }
 
     // Haiku model indicates fast-tier — inline is acceptable
     const model = toolInput.model || '';
     if (FAST_MODELS.includes(model)) {
+      console.log(JSON.stringify({ continue: true }));
       process.exit(0);
     }
 
     // Check if prompt contains ## Scope with FAST timing
     const prompt = toolInput.prompt || '';
     if (/##\s*Scope[\s\S]*?Timing:\s*FAST/i.test(prompt)) {
+      console.log(JSON.stringify({ continue: true }));
       process.exit(0);
     }
 
@@ -102,6 +107,7 @@ Only exceptions: Explore agents, haiku-model agents, and agents with ## Scope FA
     process.exit(0);
   } catch (err) {
     // On any error, pass silently — don't block agent execution
+    console.log(JSON.stringify({ continue: true }));
     process.exit(0);
   }
 }
