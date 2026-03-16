@@ -3,7 +3,7 @@ task: "Автономная оптимизация Яндекс Директа �
 slug: "20260316-060000_yandex-direct-autoresearch"
 effort: deep
 phase: paused
-progress: 9/48
+progress: 12/48
 mode: algorithm
 started: 2026-03-16T06:00:00+03:00
 updated: 2026-03-16T06:00:00+03:00
@@ -44,9 +44,9 @@ updated: 2026-03-16T06:00:00+03:00
 - [x] ISC-9 [B]: PRD создан и персистит между сессиями
 
 ### Фаза 1 — Подготовка инфраструктуры
-- [ ] ISC-10 [B]: YANDEX_DIRECT_TOKEN получен и сохранён в .env
-- [ ] ISC-11 [B]: YANDEX_METRIKA_TOKEN получен и сохранён в .env
-- [ ] ISC-12 [B]: Цели в Метрике настроены: заявка (форма), звонок, чат
+- [x] ISC-10 [B]: YANDEX_DIRECT_TOKEN получен и сохранён в .env (единый OAuth, verified)
+- [x] ISC-11 [B]: YANDEX_METRIKA_TOKEN получен и сохранён в .env (тот же токен, metrika:read добавлен)
+- [x] ISC-12 [B]: Цели в Метрике настроены: заявка (530132871), звонок (530132872), калькулятор (530132873)
 - [ ] ISC-13 [B]: get-cpa.ts работает в sandbox mode (возвращает число)
 - [ ] ISC-14 [B]: check-budget.ts работает (Guard: дневной расход < лимит)
 - [ ] ISC-15 [B]: check-min-ctr.ts работает (Guard: CTR > порог)
