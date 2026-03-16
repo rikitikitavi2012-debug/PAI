@@ -1,0 +1,82 @@
+# PAI Infrastructure Audit — Source Manifest
+# Used by scripts/pai-audit-collector.sh
+# Review quarterly — add new file patterns as PAI grows
+#
+# Max per bundle: 450K words (~2.5MB) to stay under NLM's 500K word limit
+# NLM rejects (not truncates) oversized files
+
+# Tier 1: Core System (always include, highest priority)
+core:
+  label: "PAI Core System"
+  files:
+    - CLAUDE.md
+    - PAI/Algorithm/v4.0.0.md
+    - PAI/AISTEERINGRULES.md
+    - PAI/USER/AISTEERINGRULES.md
+    - PAI/BRIGADE.md
+    - PAI/SKILLSYSTEM.md
+    - PAI/THEHOOKSYSTEM.md
+    - PAI/THENOTIFICATIONSYSTEM.md
+    - PAI/CLIFIRSTARCHITECTURE.md
+
+# Tier 2: Memory System (critical for pattern detection)
+memory:
+  label: "PAI Memory & Learning"
+  files:
+    - MEMORY/MEMORY.md
+  globs:
+    - MEMORY/reference_*.md
+    - MEMORY/feedback_*.md
+    - MEMORY/project_*.md
+  combine:
+    - pattern: "MEMORY/WISDOM/FRAMES/*.md"
+      output: "wisdom-frames.md"
+      header: "# PAI Wisdom Frames (Combined)"
+    - pattern: "MEMORY/LEARNING/FAILURES/*/CONTEXT.md"
+      output: "failures-combined.md"
+      header: "# PAI Learning Failures (Combined)"
+      recent_only: 90  # days
+
+# Tier 3: Skills Architecture
+skills:
+  label: "PAI Skills Architecture"
+  globs:
+    - skills/*/SKILL.md
+  files:
+    - skills/skill-index.json
+
+# Tier 4: Hooks
+hooks:
+  label: "PAI Hooks"
+  combine:
+    - pattern: "hooks/*.ts"
+      output: "hooks-combined.ts"
+      header: "// PAI Hooks (Combined for Audit)"
+
+# Tier 5: Integration Points
+integrations:
+  label: "PAI Integrations"
+  combine:
+    - pattern: "PAI/Tools/*.ts"
+      output: "tools-combined.ts"
+      header: "// PAI Tools (Combined for Audit)"
+
+# Questions for NLM — fixed set (80%) + failure-derived (20%)
+questions:
+  fixed:
+    - "Проанализируй все документы. Какие ПРОТИВОРЕЧИЯ между файлами ты видишь? Правила которые конфликтуют друг с другом, дублирующиеся определения, несогласованная терминология."
+    - "Какие повторяющиеся паттерны в failures и feedback? Что система не учится исправлять?"
+    - "Где избыточная сложность (bloat)? Что можно убрать без потери функционала?"
+    - "Проверь consistency: все ли скиллы следуют SKILLSYSTEM.md? Все ли хуки документированы в THEHOOKSYSTEM.md?"
+    - "Проверь интеграции бригады: пересечение функционала, зоны конфликта, устаревшие ссылки."
+    - "Какие Wisdom Frames противоречат текущим Steering Rules или Algorithm?"
+    - "Какие файлы ссылаются на несуществующие пути, UUID, или устаревшие компоненты?"
+    - "Что является самым ценным в системе — что НЕ надо трогать?"
+  adaptive_source: "MEMORY/LEARNING/FAILURES/"
+  adaptive_template: "Проверь — паттерн '{failure_name}' всё ещё присутствует в системе? Есть ли scaffolding (хуки, правила) которые предотвращают его повторение?"
+
+# Output
+output:
+  report_dir: "MEMORY/RESEARCH/audits/"
+  report_format: "{year}-{month:02d}-audit.md"
+  notebook_name: "PAI Audit {year}-{month:02d}"
