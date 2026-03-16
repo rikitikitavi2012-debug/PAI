@@ -89,6 +89,7 @@
 - [x] A0 sync: weekly → daily (аудит подтвердил 7-day context drift → hallucination incident) — 2026-03-16
 - [x] Monthly PAI Audit workflow: collector script + manifest + 7 workflows + brigade rotation — 2026-03-16
 - [ ] Hook consolidation: моно-хуки по событиям (Stop, UserPromptSubmit, SessionEnd) — межсезонье
+- [ ] Hook stdin dedup: extract `readPreToolUseStdin()` + `detectsPhaseComplete()` в hooks/lib/ — 3 хука (LearnGate, VerificationGate, ISCQualityGate) дублируют ~25 строк boilerplate. hook-io.ts уже есть но только для Stop хуков — межсезонье
 - [ ] VerificationGate.hook.ts: механический enforcement верификации (по аналогии с LearnGate) — межсезонье
 - [ ] Escape rate metrics: автоматический подсчёт ISC escapes в NATIVE — межсезонье
 - [ ] NotebookLM cookie monitoring: алерт при expiry, auto-relogin workflow — межсезонье
@@ -96,7 +97,7 @@
 - [ ] L2 Autoresearch: самооптимизация PAI скиллов через eval (Фаза 4)
 - [ ] State persistence (ARIS-style) для autoresearch sessions (Фаза 4)
 - [ ] Scheduled autoresearch runs: ночные оптимизации по расписанию (Фаза 4)
-- [ ] A0 Algorithm upgrade v3.0→v4.0: адаптация v4.0.0 под A0 архитектуру (Python skills, контейнер, Sonnet) — Фаза 4
+- [ ] A0 Algorithm upgrade v3.0→v4.0: адаптация v4.0.0 под A0 архитектуру (Python skills, контейнер, GLM-5) — Фаза 4
 - [ ] Аудит скиллов по v4 структуре (11 скиллов, новая архитектура)
 - [x] PAI Workspace v2: 2 таба (Center + Telemetry), Strategic Dashboard с live cost tracking
 - [x] Z.AI интеграция в pipeline (GLM-5 inference, zai-cli MCP, ZaiVision screenshots)
