@@ -49,10 +49,27 @@ export async function readHookInput(): Promise<HookInput | null> {
 }
 
 /**
- * Parse transcript from hook input. Waits 150ms for transcript to be
+ * Parse transcript from hook input. Waits for transcript to be
  * fully written to disk before parsing.
+ *
+ * 300ms delay: 150ms was insufficient for long responses —
+ * Stop hook fired before transcript file was fully flushed.
+ * If last_assistant_message is provided in stdin, use it directly
+ * as a fast path (avoids transcript file race entirely).
  */
 export async function parseTranscriptFromInput(input: HookInput): Promise<ParsedTranscript> {
-  await new Promise(resolve => setTimeout(resolve, 150));
+  // Fast path: if last_assistant_message is in stdin, extract voice line directly
+  if (input.last_assistant_message) {
+    const { extractVoiceCompletion, extractCompletionPlain } = await import('../../PAI/Tools/TranscriptParser');
+    return {
+      voiceCompletion: extractVoiceCompletion(input.last_assistant_message),
+      completionPlain: extractCompletionPlain(input.last_assistant_message),
+      fullResponse: input.last_assistant_message,
+      hasAlgorithmFormat: input.last_assistant_message.includes('♻︎') || input.last_assistant_message.includes('━━━'),
+    } as ParsedTranscript;
+  }
+
+  // Slow path: read from transcript file with delay
+  await new Promise(resolve => setTimeout(resolve, 300));
   return parseTranscript(input.transcript_path);
 }

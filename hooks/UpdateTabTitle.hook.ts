@@ -114,21 +114,21 @@ function extractPromptTitle(prompt: string): string | null {
   return null;
 }
 
-const SYSTEM_PROMPT = `Create a 2-4 word COMPLETE SENTENCE summarizing the user's CURRENT MESSAGE.
+const SYSTEM_PROMPT = `Создай краткое описание сообщения пользователя на РУССКОМ ЯЗЫКЕ — 2-4 слова.
 
-RULES:
-1. Start with a gerund (-ing verb): Fixing, Checking, Updating, etc.
-2. Include the specific OBJECT being acted on
-3. MUST be a COMPLETE sentence (no dangling prepositions or articles)
-4. End with a period
-5. NEVER use generic subjects: "task", "work", "request", "response"
-6. MAXIMUM 4 words total including the gerund
-7. ONLY reference topics EXPLICITLY present in the user's message. If the user didn't mention a topic, it MUST NOT appear in your output.
+ПРАВИЛА:
+1. Начинай с глагола: Чиню, Проверяю, Обновляю, Ищу, Добавляю и т.д.
+2. Включи конкретный ОБЪЕКТ действия
+3. ДОЛЖНО быть законченным предложением
+4. Заканчивай точкой
+5. НИКОГДА не используй общие слова: "задача", "работа", "запрос"
+6. МАКСИМУМ 4 слова включая глагол
+7. ТОЛЬКО темы из сообщения пользователя. Не придумывай темы.
 
-GOOD: "Fixing auth bug.", "Checking tab code.", "Reviewing config."
-BAD: "Completing the task.", "Fixing the authentication bug in login.", "Working on it."
+ХОРОШО: "Чиню баг авторизации.", "Проверяю код табов.", "Обновляю конфиг."
+ПЛОХО: "Выполняю задачу.", "Работаю над багом авторизации в логине.", "Делаю."
 
-Output ONLY the sentence. Nothing else.`;
+Выводи ТОЛЬКО предложение. Ничего больше.`;
 
 /**
  * Check if a generated title is relevant to the user's prompt.
