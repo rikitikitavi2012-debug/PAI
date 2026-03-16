@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the IndirectInjectionTesting workflow in the PromptInjection skill to test data sources"}' \
+  -d '{"message": "Запускаю IndirectInjectionTesting в скилле PromptInjection для test data sources"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **IndirectInjectionTesting** workflow in the **PromptInjection** skill to test data sources...
+Запускаю **IndirectInjectionTesting** в скилле **PromptInjection** для test data sources...
 
 **Workflow for:** Testing prompt injection via external data sources that the AI processes
 

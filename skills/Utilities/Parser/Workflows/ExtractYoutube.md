@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ExtractYoutube workflow in the Parser skill to parse videos"}' \
+  -d '{"message": "Запускаю ExtractYoutube в скилле Parser для parse videos"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ExtractYoutube** workflow in the **Parser** skill to parse videos...
+Запускаю **ExtractYoutube** в скилле **Parser** для parse videos...
 
 **Purpose:** Extract transcript, metadata, and entities from YouTube videos
 

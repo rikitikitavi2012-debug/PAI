@@ -7,11 +7,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ValidateSkill workflow in the CreateSkill skill to validate skill structure"}' \
+  -d '{"message": "Запускаю ValidateSkill в скилле CreateSkill для validate skill structure"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ValidateSkill** workflow in the **CreateSkill** skill to validate skill structure...
+Запускаю **ValidateSkill** в скилле **CreateSkill** для validate skill structure...
 
 ---
 

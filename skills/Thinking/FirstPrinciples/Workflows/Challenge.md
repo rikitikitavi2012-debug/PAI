@@ -7,11 +7,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Challenge workflow in the FirstPrinciples skill to test assumptions"}' \
+  -d '{"message": "Запускаю Challenge в скилле FirstPrinciples для test assumptions"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **Challenge** workflow in the **FirstPrinciples** skill to test assumptions...
+Запускаю **Challenge** в скилле **FirstPrinciples** для test assumptions...
 
 ---
 

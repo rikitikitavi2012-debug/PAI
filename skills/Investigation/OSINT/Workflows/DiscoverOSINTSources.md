@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the DiscoverOSINTSources workflow to find new OSINT sources and update the collection"}' \
+  -d '{"message": "Запускаю DiscoverOSINTSources для поиска и обновления OSINT источников"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **DiscoverOSINTSources** workflow in the **OSINT** skill to discover and catalog new OSINT sources...
+Запускаю **DiscoverOSINTSources** в скилле **OSINT** для discover and catalog new OSINT sources...
 
 **Purpose:** Discover, evaluate, and integrate new OSINT sources into the skill's SOURCES.JSON and SOURCES.md collection using parallel research agents.
 

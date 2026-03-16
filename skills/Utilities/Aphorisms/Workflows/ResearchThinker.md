@@ -7,7 +7,7 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ResearchThinker workflow in the Aphorisms skill to research quotes"}' \
+  -d '{"message": "Запускаю ResearchThinker в скилле Aphorisms для research quotes"}' \
   > /dev/null 2>&1 &
 ```
 

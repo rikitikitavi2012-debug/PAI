@@ -17,7 +17,7 @@ description: Developer utilities and tools — CLI generation, skill scaffolding
 
 2. **Output text notification**:
    ```
-   Running the **WorkflowName** workflow in the **Utilities** skill...
+   Запускаю **WorkflowName** в скилле **Utilities**...
    ```
 
 # Utilities

@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the SocialMediaSearch workflow in the PrivateInvestigator skill to find profiles"}' \
+  -d '{"message": "Запускаю SocialMediaSearch в скилле PrivateInvestigator для find profiles"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **SocialMediaSearch** workflow in the **PrivateInvestigator** skill to find profiles...
+Запускаю **SocialMediaSearch** в скилле **PrivateInvestigator** для find profiles...
 
 **Purpose:** Systematically search social media platforms to find a person's online presence
 

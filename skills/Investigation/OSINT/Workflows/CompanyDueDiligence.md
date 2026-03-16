@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the CompanyDueDiligence workflow in the OSINT skill to vet investments"}' \
+  -d '{"message": "Запускаю CompanyDueDiligence в скилле OSINT для vet investments"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **CompanyDueDiligence** workflow in the **OSINT** skill to vet investments...
+Запускаю **CompanyDueDiligence** в скилле **OSINT** для vet investments...
 
 **Purpose:** Comprehensive 5-phase investment vetting combining domain-first OSINT, technical reconnaissance, multi-source research, and investment risk assessment.
 

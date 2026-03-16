@@ -7,11 +7,11 @@ Deploy a new Cloudflare Worker or MCP server.
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Create workflow in the Cloudflare skill to deploy a new worker"}' \
+  -d '{"message": "Запускаю Create в скилле Cloudflare для deploy a new worker"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **Create** workflow in the **Cloudflare** skill to deploy a new worker...
+Запускаю **Create** в скилле **Cloudflare** для deploy a new worker...
 
 ## Project Structure
 

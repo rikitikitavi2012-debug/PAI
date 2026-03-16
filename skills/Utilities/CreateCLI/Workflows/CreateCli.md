@@ -12,11 +12,11 @@ purpose: Generate complete, production-ready TypeScript CLI from requirements
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the CreateCli workflow in the CreateCLI skill to generate new CLI"}' \
+  -d '{"message": "Запускаю CreateCli в скилле CreateCLI для generate new CLI"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **CreateCli** workflow in the **CreateCLI** skill to generate new CLI...
+Запускаю **CreateCli** в скилле **CreateCLI** для generate new CLI...
 
 ---
 

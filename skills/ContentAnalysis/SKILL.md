@@ -18,7 +18,7 @@ context: fork
 
 2. **Output text notification**:
    ```
-   Running the **WorkflowName** workflow in the **ContentAnalysis** skill...
+   Запускаю **WorkflowName** в скилле **ContentAnalysis**...
    ```
 
 # ContentAnalysis

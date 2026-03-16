@@ -7,7 +7,7 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the CreateCustomAgent workflow in the Agents skill to create agents"}' \
+  -d '{"message": "Запускаю CreateCustomAgent в скилле Agents для create agents"}' \
   > /dev/null 2>&1 &
 ```
 

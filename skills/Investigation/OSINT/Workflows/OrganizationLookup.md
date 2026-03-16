@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the OrganizationLookup workflow in the OSINT skill to research organizations"}' \
+  -d '{"message": "Запускаю OrganizationLookup в скилле OSINT для research organizations"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **OrganizationLookup** workflow in the **OSINT** skill to research organizations...
+Запускаю **OrganizationLookup** в скилле **OSINT** для research organizations...
 
 **Purpose:** Investigation of non-commercial entities — NGOs, government agencies, associations, academic institutions, nonprofits, foundations, and international organizations. Different from CompanyLookup because these entities have different registries, funding models, transparency requirements, and accountability structures.
 

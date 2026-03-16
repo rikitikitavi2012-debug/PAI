@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the DomainRecon workflow in the Recon skill to map domain infrastructure"}' \
+  -d '{"message": "Запускаю DomainRecon в скилле Recon для map domain infrastructure"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **DomainRecon** workflow in the **Recon** skill to map domain infrastructure...
+Запускаю **DomainRecon** в скилле **Recon** для map domain infrastructure...
 
 **Comprehensive domain infrastructure mapping and enumeration**
 

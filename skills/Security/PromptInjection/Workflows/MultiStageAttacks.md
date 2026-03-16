@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the MultiStageAttacks workflow in the PromptInjection skill to test attack chains"}' \
+  -d '{"message": "Запускаю MultiStageAttacks в скилле PromptInjection для test attack chains"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **MultiStageAttacks** workflow in the **PromptInjection** skill to test attack chains...
+Запускаю **MultiStageAttacks** в скилле **PromptInjection** для test attack chains...
 
 **Workflow for:** Sophisticated multi-turn attack sequences that build context progressively
 

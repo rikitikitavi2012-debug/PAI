@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the PublicRecordsSearch workflow in the PrivateInvestigator skill to search records"}' \
+  -d '{"message": "Запускаю PublicRecordsSearch в скилле PrivateInvestigator для search records"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **PublicRecordsSearch** workflow in the **PrivateInvestigator** skill to search records...
+Запускаю **PublicRecordsSearch** в скилле **PrivateInvestigator** для search records...
 
 **Purpose:** Search government and official records databases for person information
 

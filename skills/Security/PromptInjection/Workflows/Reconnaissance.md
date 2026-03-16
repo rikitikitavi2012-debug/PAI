@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Reconnaissance workflow in the PromptInjection skill to map attack surface"}' \
+  -d '{"message": "Запускаю Reconnaissance в скилле PromptInjection для map attack surface"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **Reconnaissance** workflow in the **PromptInjection** skill to map attack surface...
+Запускаю **Reconnaissance** в скилле **PromptInjection** для map attack surface...
 
 **Workflow for:** Initial intelligence gathering, attack surface mapping, application analysis
 

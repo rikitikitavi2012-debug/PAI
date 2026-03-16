@@ -7,11 +7,11 @@ Query and display evaluation results, generate reports, and track trends.
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ViewResults workflow in the Evals skill to display eval results"}' \
+  -d '{"message": "Запускаю ViewResults в скилле Evals для display eval results"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ViewResults** workflow in the **Evals** skill to display eval results...
+Запускаю **ViewResults** в скилле **Evals** для display eval results...
 
 ---
 

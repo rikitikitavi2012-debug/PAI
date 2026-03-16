@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the CollisionDetection workflow in the Parser skill to prevent duplicates"}' \
+  -d '{"message": "Запускаю CollisionDetection в скилле Parser для prevent duplicates"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **CollisionDetection** workflow in the **Parser** skill to prevent duplicates...
+Запускаю **CollisionDetection** в скилле **Parser** для prevent duplicates...
 
 ## Purpose
 Prevent duplicate entities across parsed content by maintaining a global entity index with GUIDs for people, companies, links, and sources.

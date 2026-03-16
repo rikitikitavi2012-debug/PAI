@@ -7,11 +7,11 @@ Run evaluations for a specific use case.
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the RunEval workflow in the Evals skill to execute evaluation"}' \
+  -d '{"message": "Запускаю RunEval в скилле Evals для execute evaluation"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **RunEval** workflow in the **Evals** skill to execute evaluation...
+Запускаю **RunEval** в скилле **Evals** для execute evaluation...
 
 ---
 

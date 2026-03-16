@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the BatchEntityExtractionGemini3 workflow in the Parser skill to extract entities"}' \
+  -d '{"message": "Запускаю BatchEntityExtractionGemini3 в скилле Parser для extract entities"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **BatchEntityExtractionGemini3** workflow in the **Parser** skill to extract entities...
+Запускаю **BatchEntityExtractionGemini3** в скилле **Parser** для extract entities...
 
 ## Purpose
 

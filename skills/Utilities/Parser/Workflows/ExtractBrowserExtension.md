@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ExtractBrowserExtension workflow in the Parser skill to analyze extensions"}' \
+  -d '{"message": "Запускаю ExtractBrowserExtension в скилле Parser для analyze extensions"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ExtractBrowserExtension** workflow in the **Parser** skill to analyze browser extensions...
+Запускаю **ExtractBrowserExtension** в скилле **Parser** для analyze browser extensions...
 
 **Purpose:** Analyze browser extensions for security risks, clone detection, and malicious patterns
 

@@ -7,11 +7,11 @@ Fast single-round perspective check. Use for sanity checks and quick feedback.
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Quick workflow in the Council skill to get fast perspectives"}' \
+  -d '{"message": "Запускаю Quick в скилле Council для get fast perspectives"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **Quick** workflow in the **Council** skill to get fast perspectives...
+Запускаю **Quick** в скилле **Council** для get fast perspectives...
 
 ## Prerequisites
 

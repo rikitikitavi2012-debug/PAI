@@ -43,7 +43,7 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
 
 2. **Output text notification**:
    ```
-   Running the **WorkflowName** workflow in the **Research** skill to ACTION...
+   Запускаю **WorkflowName** в скилле **Research** для ACTION...
    ```
 
 **This is not optional. Execute this curl command immediately upon skill invocation.**

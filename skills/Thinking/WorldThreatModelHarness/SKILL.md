@@ -71,7 +71,7 @@ Before any workflow execution:
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running WORKFLOW_NAME in the World Threat Model Harness", "voice_id": "ogi2DyUAKJb7CEdqqvlU"}'
+  -d '{"message": "Запускаю WORKFLOW_NAME в скилле WorldThreatModelHarness", "voice_id": "ogi2DyUAKJb7CEdqqvlU"}'
 ```
 
 ## Customization Check

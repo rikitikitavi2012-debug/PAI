@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the CompanyLookup workflow in the OSINT skill to research companies"}' \
+  -d '{"message": "Запускаю CompanyLookup в скилле OSINT для research companies"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **CompanyLookup** workflow in the **OSINT** skill to research companies...
+Запускаю **CompanyLookup** в скилле **OSINT** для research companies...
 
 **Purpose:** Comprehensive business intelligence gathering for authorized research, due diligence, or security assessments.
 

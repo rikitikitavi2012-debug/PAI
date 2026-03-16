@@ -7,11 +7,11 @@ Clean, edit, and polish audio files by removing filler words, stutters, false st
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Clean workflow in the AudioEditor skill to clean audio"}' \
+  -d '{"message": "Запускаю Clean в скилле AudioEditor для clean audio"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **Clean** workflow in the **AudioEditor** skill to clean audio...
+Запускаю **Clean** в скилле **AudioEditor** для clean audio...
 
 ## Step 1: Locate the Audio File
 

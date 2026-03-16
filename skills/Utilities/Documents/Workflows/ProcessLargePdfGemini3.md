@@ -18,11 +18,11 @@ use_cases:
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ProcessLargePdfGemini3 workflow in the Documents skill to process PDF"}' \
+  -d '{"message": "Запускаю ProcessLargePdfGemini3 в скилле Documents для process PDF"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ProcessLargePdfGemini3** workflow in the **Documents** skill to process PDF...
+Запускаю **ProcessLargePdfGemini3** в скилле **Documents** для process PDF...
 
 ---
 

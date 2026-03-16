@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ParallelAnalysis workflow in the RedTeam skill to red team arguments"}' \
+  -d '{"message": "Запускаю ParallelAnalysis в скилле RedTeam для red team arguments"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ParallelAnalysis** workflow in the **RedTeam** skill to red team arguments...
+Запускаю **ParallelAnalysis** в скилле **RedTeam** для red team arguments...
 
 ## Overview
 

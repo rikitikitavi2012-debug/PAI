@@ -7,7 +7,7 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the AddAphorism workflow in the Aphorisms skill to add quotes"}' \
+  -d '{"message": "Запускаю AddAphorism в скилле Aphorisms для add quotes"}' \
   > /dev/null 2>&1 &
 ```
 

@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ParseContent workflow in the Parser skill to parse URLs"}' \
+  -d '{"message": "Запускаю ParseContent в скилле Parser для parse URLs"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ParseContent** workflow in the **Parser** skill to parse URLs...
+Запускаю **ParseContent** в скилле **Parser** для parse URLs...
 
 **Purpose:** Main orchestration workflow for parsing any URL into deterministic JSON schema
 

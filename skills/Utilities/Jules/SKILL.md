@@ -22,13 +22,13 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
    ```bash
    curl -s -X POST http://localhost:8888/notify \
      -H "Content-Type: application/json" \
-     -d '{"message": "Running the WORKFLOWNAME workflow in the Jules skill to ACTION"}' \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле Jules для ACTION"}' \
      > /dev/null 2>&1 &
    ```
 
 2. **Output text notification**:
    ```
-   Running the **WorkflowName** workflow in the **Jules** skill to ACTION...
+   Запускаю **WorkflowName** в скилле **Jules** для ACTION...
    ```
 
 **Full documentation:** `~/.claude/PAI/THENOTIFICATIONSYSTEM.md`

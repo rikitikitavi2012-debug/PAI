@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ExtractTwitter workflow in the Parser skill to parse tweets"}' \
+  -d '{"message": "Запускаю ExtractTwitter в скилле Parser для parse tweets"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ExtractTwitter** workflow in the **Parser** skill to parse tweets...
+Запускаю **ExtractTwitter** в скилле **Parser** для parse tweets...
 
 **Purpose:** Extract tweets, threads, and metadata from Twitter/X
 

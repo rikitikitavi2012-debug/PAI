@@ -7,7 +7,7 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the RecipeCards workflow in the Art skill to create recipe cards"}' \
+  -d '{"message": "Запускаю RecipeCards в скилле Art для create recipe cards"}' \
   > /dev/null 2>&1 &
 ```
 

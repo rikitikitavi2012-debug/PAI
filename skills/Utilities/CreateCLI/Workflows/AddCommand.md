@@ -12,11 +12,11 @@ purpose: Add new command to existing CLI
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the AddCommand workflow in the CreateCLI skill to add CLI command"}' \
+  -d '{"message": "Запускаю AddCommand в скилле CreateCLI для add CLI command"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **AddCommand** workflow in the **CreateCLI** skill to add CLI command...
+Запускаю **AddCommand** в скилле **CreateCLI** для add CLI command...
 
 ---
 

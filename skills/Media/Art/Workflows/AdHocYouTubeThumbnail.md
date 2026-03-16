@@ -7,7 +7,7 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the AdHocYouTubeThumbnail workflow in the Art skill"}' \
+  -d '{"message": "Запускаю AdHocYouTubeThumbnail в скилле Art"}' \
   > /dev/null 2>&1 &
 ```
 

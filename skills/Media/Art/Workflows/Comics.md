@@ -7,7 +7,7 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Comics workflow in the Art skill to create comic strips"}' \
+  -d '{"message": "Запускаю Comics в скилле Art для create comic strips"}' \
   > /dev/null 2>&1 &
 ```
 

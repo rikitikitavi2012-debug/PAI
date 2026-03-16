@@ -7,7 +7,7 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Taxonomies workflow in the Art skill to create taxonomies"}' \
+  -d '{"message": "Запускаю Taxonomies в скилле Art для create taxonomies"}' \
   > /dev/null 2>&1 &
 ```
 

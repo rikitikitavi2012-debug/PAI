@@ -7,7 +7,7 @@ Check Apify API and actor ecosystem for updates.
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Update workflow in the Apify skill to check updates"}' \
+  -d '{"message": "Запускаю Update в скилле Apify для check updates"}' \
   > /dev/null 2>&1 &
 ```
 

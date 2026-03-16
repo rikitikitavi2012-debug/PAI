@@ -22,13 +22,13 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
    ```bash
    curl -s -X POST http://localhost:8888/notify \
      -H "Content-Type: application/json" \
-     -d '{"message": "Running the WORKFLOWNAME workflow in the AudioEditor skill to ACTION"}' \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле AudioEditor для ACTION"}' \
      > /dev/null 2>&1 &
    ```
 
 2. **Output text notification**:
    ```
-   Running the **WorkflowName** workflow in the **AudioEditor** skill to ACTION...
+   Запускаю **WorkflowName** в скилле **AudioEditor** для ACTION...
    ```
 
 **This is not optional. Execute this curl command immediately upon skill invocation.**

@@ -5,7 +5,7 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the FourTierScrape workflow in the BrightData skill to scrape URL content"}' \
+  -d '{"message": "Запускаю FourTierScrape в скилле BrightData для scrape URL content"}' \
   > /dev/null 2>&1 &
 ```
 

@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ExtractPdf workflow in the Parser skill to parse PDFs"}' \
+  -d '{"message": "Запускаю ExtractPdf в скилле Parser для parse PDFs"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ExtractPdf** workflow in the **Parser** skill to parse PDFs...
+Запускаю **ExtractPdf** в скилле **Parser** для parse PDFs...
 
 **Purpose:** Extract text, metadata, and entities from PDF documents (research papers, reports, ebooks)
 

@@ -17,7 +17,7 @@ description: Life OS and project analysis — goals, dependencies, beliefs, wisd
 
 2. **Output text notification**:
    ```
-   Running the **WorkflowName** workflow in the **Telos** skill to ACTION...
+   Запускаю **WorkflowName** в скилле **Telos** для ACTION...
    ```
 
 **This is not optional. Execute this curl command immediately upon skill invocation.**
@@ -35,7 +35,7 @@ description: Life OS and project analysis — goals, dependencies, beliefs, wisd
 **When executing a workflow, output this notification directly:**
 
 ```
-Running the **WorkflowName** workflow in the **Telos** skill to ACTION...
+Запускаю **WorkflowName** в скилле **Telos** для ACTION...
 ```
 
 | Workflow | Trigger | File |

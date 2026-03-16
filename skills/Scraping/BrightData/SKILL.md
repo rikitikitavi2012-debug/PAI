@@ -19,13 +19,13 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
    ```bash
    curl -s -X POST http://localhost:8888/notify \
      -H "Content-Type: application/json" \
-     -d '{"message": "Running the WORKFLOWNAME workflow in the BrightData skill to ACTION"}' \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле BrightData для ACTION"}' \
      > /dev/null 2>&1 &
    ```
 
 2. **Output text notification**:
    ```
-   Running the **WorkflowName** workflow in the **BrightData** skill to ACTION...
+   Запускаю **WorkflowName** в скилле **BrightData** для ACTION...
    ```
 
 **This is not optional. Execute this curl command immediately upon skill invocation.**
@@ -35,7 +35,7 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
 **When executing a workflow, output this notification directly:**
 
 ```
-Running the **WorkflowName** workflow in the **Brightdata** skill to ACTION...
+Запускаю **WorkflowName** в скилле **Brightdata** для ACTION...
 ```
 
 **Route to the appropriate workflow based on the request.**

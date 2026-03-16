@@ -7,11 +7,11 @@ Create a new skill following the canonical structure with proper TitleCase namin
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the CreateSkill workflow in the CreateSkill skill to create new skill"}' \
+  -d '{"message": "Запускаю CreateSkill в скилле CreateSkill для create new skill"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **CreateSkill** workflow in the **CreateSkill** skill to create new skill...
+Запускаю **CreateSkill** в скилле **CreateSkill** для create new skill...
 
 ## Step 1: Read the Authoritative Sources
 
@@ -78,7 +78,7 @@ description: [What it does]. USE WHEN [intent triggers using OR]. [Additional ca
    ```bash
    curl -s -X POST http://localhost:8888/notify \
      -H "Content-Type: application/json" \
-     -d '{"message": "Running WORKFLOWNAME in SKILLNAME"}' \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле SKILLNAME"}' \
      > /dev/null 2>&1 &
    ```
 

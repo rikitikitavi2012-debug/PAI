@@ -7,11 +7,11 @@ Query Cloudflare account state via Code Mode MCP — list workers, check KV data
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Query workflow in the Cloudflare skill to inspect Cloudflare state"}' \
+  -d '{"message": "Запускаю Query в скилле Cloudflare для inspect Cloudflare state"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **Query** workflow in the **Cloudflare** skill to inspect Cloudflare state...
+Запускаю **Query** в скилле **Cloudflare** для inspect Cloudflare state...
 
 ## When to Use
 

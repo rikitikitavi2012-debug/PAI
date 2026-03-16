@@ -31,7 +31,7 @@ description: Compose CUSTOM agents from Base Traits + Voice + Specialization for
 
 2. **Output text notification**:
    ```
-   Running the **WorkflowName** workflow in the **Agents** skill to ACTION...
+   Запускаю **WorkflowName** в скилле **Agents** для ACTION...
    ```
 
 **This is not optional. Execute this curl command immediately upon skill invocation.**

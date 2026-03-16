@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the EntityLookup workflow in the OSINT skill to investigate entities"}' \
+  -d '{"message": "Запускаю EntityLookup в скилле OSINT для investigate entities"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **EntityLookup** workflow in the **OSINT** skill to investigate entities...
+Запускаю **EntityLookup** в скилле **OSINT** для investigate entities...
 
 **Purpose:** Technical intelligence gathering on domains, IPs, infrastructure, and threat entities.
 

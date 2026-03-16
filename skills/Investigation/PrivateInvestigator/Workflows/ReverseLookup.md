@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the ReverseLookup workflow in the PrivateInvestigator skill to trace identifiers"}' \
+  -d '{"message": "Запускаю ReverseLookup в скилле PrivateInvestigator для trace identifiers"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **ReverseLookup** workflow in the **PrivateInvestigator** skill to trace identifiers...
+Запускаю **ReverseLookup** в скилле **PrivateInvestigator** для trace identifiers...
 
 **Purpose:** Identify a person from partial information (phone, email, image, username)
 

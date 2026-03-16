@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the MineReflections workflow to extract upgrade candidates from algorithm reflections"}' \
+  -d '{"message": "Запускаю MineReflections для извлечения кандидатов на улучшение из рефлексий"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **MineReflections** workflow in the **PAIUpgrade** skill to mine internal algorithm reflections...
+Запускаю **MineReflections** в скилле **PAIUpgrade** для mine internal algorithm reflections...
 
 **Mines internal algorithm reflections for recurring patterns that suggest Algorithm or system upgrades.**
 

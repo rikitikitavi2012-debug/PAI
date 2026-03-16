@@ -5,11 +5,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the AnalyzeScanResultsGemini3 workflow in the Recon skill to analyze scan results"}' \
+  -d '{"message": "Запускаю AnalyzeScanResultsGemini3 в скилле Recon для analyze scan results"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **AnalyzeScanResultsGemini3** workflow in the **Recon** skill to analyze scan results...
+Запускаю **AnalyzeScanResultsGemini3** в скилле **Recon** для analyze scan results...
 
 **Deep multi-step reasoning analysis of large-scale security scan results**
 

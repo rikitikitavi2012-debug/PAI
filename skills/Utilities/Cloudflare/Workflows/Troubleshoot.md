@@ -7,11 +7,11 @@ Diagnose and fix Cloudflare deployment issues using Code Mode MCP for API querie
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Troubleshoot workflow in the Cloudflare skill to debug deployment issues"}' \
+  -d '{"message": "Запускаю Troubleshoot в скилле Cloudflare для debug deployment issues"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **Troubleshoot** workflow in the **Cloudflare** skill to debug deployment issues...
+Запускаю **Troubleshoot** в скилле **Cloudflare** для debug deployment issues...
 
 ## When to Use
 

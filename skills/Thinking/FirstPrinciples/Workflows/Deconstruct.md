@@ -7,11 +7,11 @@
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Running the Deconstruct workflow in the FirstPrinciples skill to break down components"}' \
+  -d '{"message": "Запускаю Deconstruct в скилле FirstPrinciples для break down components"}' \
   > /dev/null 2>&1 &
 ```
 
-Running the **Deconstruct** workflow in the **FirstPrinciples** skill to break down components...
+Запускаю **Deconstruct** в скилле **FirstPrinciples** для break down components...
 
 ---
 
