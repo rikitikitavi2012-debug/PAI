@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 describe("Experiments TSV Consistency Test", () => {
-  const v4Path = join(import.meta.dir, "..", "v4.0-alpha.md");
+  const v4Path = join(import.meta.dir, "..", "v4.0.0.md");
   const autoResearchPath = join(import.meta.dir, "..", "Algorithm-Autoresearch.md");
 
   const v4Content = readFileSync(v4Path, "utf-8");
@@ -11,7 +11,7 @@ describe("Experiments TSV Consistency Test", () => {
 
   test("1) 6 columns same in both files", () => {
     // Look for the header row: iteration commit metric delta status description
-    // In v4.0-alpha.md:
+    // In v4.0.0.md:
     const v4HeaderMatch = v4Content.match(/iteration\tcommit\tmetric\tdelta\tstatus\tdescription/);
     expect(v4HeaderMatch).toBeTruthy();
 
@@ -21,12 +21,12 @@ describe("Experiments TSV Consistency Test", () => {
   });
 
   test("2) Status values: baseline,keep,discard,crash,skip", () => {
-    // In v4.0-alpha.md
+    // In v4.0.0.md
     const v4StatusMatch = v4Content.match(/`status` = `baseline \| keep \| discard \| crash \| skip`/);
     expect(v4StatusMatch).toBeTruthy();
 
     // In Algorithm-Autoresearch.md
-    // Since there are no explicit listed status rules in AutoResearch like v4.0-alpha,
+    // Since there are no explicit listed status rules in AutoResearch like v4.0.0,
     // let's verify if 'status' has 'baseline', 'keep', 'discard', 'crash', 'skip' implicitly
     // in the document via phase decriptions and delta rules.
     const arStatusMatch = autoResearchContent.match(/baseline/i) &&
@@ -38,7 +38,7 @@ describe("Experiments TSV Consistency Test", () => {
   });
 
   test("3) Delta calc rule consistent", () => {
-    // In v4.0-alpha.md
+    // In v4.0.0.md
     const v4DeltaMatch = v4Content.match(/`delta` = change from most recent `keep` or `baseline` row \(ignore `discard`\/`crash`\/`skip` rows\)/);
     expect(v4DeltaMatch).toBeTruthy();
 
@@ -48,7 +48,7 @@ describe("Experiments TSV Consistency Test", () => {
   });
 
   test("4) Context Recovery references TSV", () => {
-    // v4.0-alpha.md:
+    // v4.0.0.md:
     const v4RecoveryMatch = v4Content.match(/If `\[Q\]` criteria were used, check for `experiments\.tsv` in the PRD directory/i);
     expect(v4RecoveryMatch).toBeTruthy();
 

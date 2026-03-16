@@ -1,10 +1,10 @@
 ## Autoresearch Sub-Loop Protocol
 
-Referenced from `v4.0-alpha.md` EXECUTE phase. Loaded only when Cycle Selector routes to Autoresearch or Hybrid EXECUTE.
+Referenced from `v4.0.0.md` EXECUTE phase. Loaded only when Cycle Selector routes to Autoresearch or Hybrid EXECUTE.
 
 ### Prerequisites
 
-Before starting the sub-loop, **Verification Rehearsal** (defined in v4.0-alpha.md EXECUTE section) MUST complete for each `[Q]` metric. This validates that the metric command produces reliable measurements. Run once per `[Q]` criterion, not once per iteration.
+Before starting the sub-loop, **Verification Rehearsal** (defined in v4.0.0.md EXECUTE section) MUST complete for each `[Q]` metric. This validates that the metric command produces reliable measurements. Run once per `[Q]` criterion, not once per iteration.
 
 **Noise calibration (part of Rehearsal):** Run the metric command 3× on unchanged code. Compute variance. If σ > 2% of baseline value, the metric is noisy — widen regression tolerance to `max(5%, 2×σ)` for this criterion and log: `# noise_tolerance: X%` in experiments.tsv header. This prevents false positives on inherently noisy metrics (Lighthouse, network-dependent measurements). Deterministic metrics (test count, file size) will show σ=0 — no tolerance change needed.
 
@@ -110,7 +110,7 @@ After context compaction, recover sub-loop state by reading experiments.tsv:
 - Changes are broken, partial, or unclear → assume mid-MODIFY: `git checkout -- .` (discard), resume at IDEATE (Phase 2)
 - **Heuristic:** run a quick sanity check (lint, type-check, or `bun build --dry-run`) to decide. If it passes → commit path. If it fails → discard path.
 
-For main Algorithm state, also read the PRD (see v4.0-alpha.md Context Recovery section).
+For main Algorithm state, also read the PRD (see v4.0.0.md Context Recovery section).
 
 **Pause/resume (deliberate interruption):** If resuming after a deliberate pause (hours/days, not crash):
 1. Re-run the baseline metric command → compare with experiments.tsv baseline. If changed >5%, record new baseline and note: `# baseline_recalibrated: old → new (reason: external changes)`
@@ -250,7 +250,7 @@ After the sub-loop completes (target reached, budget exhausted, or stopped), con
 
 ## Threshold Rationale
 
-All thresholds are v4.0-alpha starting points. Calibrate by production data in LEARN Track 3.
+All thresholds are v4.0.0 starting points. Calibrate by production data in LEARN Track 3.
 
 | Threshold | Value | Why this value |
 |-----------|-------|----------------|

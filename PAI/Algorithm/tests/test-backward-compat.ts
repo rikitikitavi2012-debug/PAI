@@ -2,12 +2,12 @@ import { test, expect } from "bun:test";
 
 test("Backward Compatibility Test", async () => {
   const v3File = Bun.file("PAI/Algorithm/v3.6.0.md");
-  const v4File = Bun.file("PAI/Algorithm/v4.0-alpha.md");
+  const v4File = Bun.file("PAI/Algorithm/v4.0.0.md");
 
   const v3Text = await v3File.text();
   const v4Text = await v4File.text();
 
-  // 1) Every section header from v3.6.0 exists in v4.0-alpha
+  // 1) Every section header from v3.6.0 exists in v4.0.0
   const getHeaders = (text: string) => text.split("\n").filter(l => l.startsWith("#"));
   const v3Headers = getHeaders(v3Text);
   const v4Headers = getHeaders(v4Text);
@@ -17,7 +17,7 @@ test("Backward Compatibility Test", async () => {
     expect(v4Headers.some(v4h => v4h === h || v4h === allowedH)).toBe(true);
   }
 
-  // 2) Every code block from v3.6.0 exists in v4.0-alpha
+  // 2) Every code block from v3.6.0 exists in v4.0.0
   const getCodeBlocks = (text: string) => {
     const blocks: string[] = [];
     const lines = text.split("\n");
@@ -60,7 +60,7 @@ test("Backward Compatibility Test", async () => {
 
     // Explicitly handle allowed version changes
     if (expectedLine === "## The Algorithm 3.6.0") expectedLine = "## The Algorithm 4.0-alpha";
-    if (expectedLine === "♻︎ Entering the PAI ALGORITHM… (v3.6.0) ═════════════") expectedLine = "♻︎ Entering the PAI ALGORITHM… (v4.0-alpha) ═════════════";
+    if (expectedLine === "♻︎ Entering the PAI ALGORITHM… (v3.6.0) ═════════════") expectedLine = "♻︎ Entering the PAI ALGORITHM… (v4.0.0) ═════════════";
 
     // The previous instructions explicitly said: "Only allowed changes: header version, additions text"
     // So this change from additions to base is valid, as well as the new additions block.

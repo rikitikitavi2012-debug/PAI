@@ -24,8 +24,8 @@ Optional fields:
 
 ```yaml
 iteration: 2                              # Incremented when revisiting a completed task
-execute_mode: autoresearch                 # Override Cycle Selector routing (v4.0-alpha)
-iteration_cap: 80                          # Override default autoresearch iteration cap (v4.0-alpha)
+execute_mode: autoresearch                 # Override Cycle Selector routing (v4.0.0)
+iteration_cap: 80                          # Override default autoresearch iteration cap (v4.0.0)
 ```
 
 ### Field Rules

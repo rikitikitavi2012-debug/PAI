@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 describe("Algorithm Voice Language Tests", () => {
-  const mdPath = path.join(process.cwd(), "PAI", "Algorithm", "v4.0-alpha.md");
+  const mdPath = path.join(process.cwd(), "PAI", "Algorithm", "v4.0.0.md");
   const mdContent = fs.readFileSync(mdPath, "utf-8");
 
   const yamlPath = path.join(process.cwd(), "PAI", "config", "algorithm-phases.yaml");

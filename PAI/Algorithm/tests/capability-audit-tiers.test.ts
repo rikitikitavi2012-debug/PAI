@@ -2,8 +2,8 @@ import { test, expect } from "bun:test";
 import * as fs from "fs";
 import * as path from "path";
 
-test("Tier-based Capability Audit depth in v4.0-alpha.md", () => {
-  const v4Path = path.join(process.cwd(), "PAI/Algorithm/v4.0-alpha.md");
+test("Tier-based Capability Audit depth in v4.0.0.md", () => {
+  const v4Path = path.join(process.cwd(), "PAI/Algorithm/v4.0.0.md");
   const v4Content = fs.readFileSync(v4Path, "utf-8");
 
   const lines = v4Content.split("\n");

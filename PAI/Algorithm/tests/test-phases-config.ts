@@ -4,7 +4,7 @@ import { join } from "path";
 import yaml from "yaml";
 
 const CONFIG_PATH = join(process.cwd(), "PAI/config/algorithm-phases.yaml");
-const ALGORITHM_DOC_PATH = join(process.cwd(), "PAI/Algorithm/v4.0-alpha.md");
+const ALGORITHM_DOC_PATH = join(process.cwd(), "PAI/Algorithm/v4.0.0.md");
 
 describe("PAI/config/algorithm-phases.yaml consistency", () => {
   const configContent = readFileSync(CONFIG_PATH, "utf-8");
@@ -46,7 +46,7 @@ describe("PAI/config/algorithm-phases.yaml consistency", () => {
     }
   });
 
-  test("3. All phases from v4.0-alpha.md are present in yaml", () => {
+  test("3. All phases from v4.0.0.md are present in yaml", () => {
     const phases = parsedConfig.phases;
     const existingPhases = Object.keys(phases);
     for (const required of requiredPhases) {
@@ -60,7 +60,7 @@ describe("PAI/config/algorithm-phases.yaml consistency", () => {
     expect(parsedConfig.algorithm_entry.length).toBeGreaterThan(0);
   });
 
-  test("5. Russian phrases in yaml match the voice phrases in v4.0-alpha.md", () => {
+  test("5. Russian phrases in yaml match the voice phrases in v4.0.0.md", () => {
     const phases = parsedConfig.phases;
     const docLines = algoDocContent.split("\n");
 

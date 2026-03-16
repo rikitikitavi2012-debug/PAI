@@ -9,7 +9,7 @@ describe('Effort Level Consistency Test', () => {
   let iscCountGateTable: any[] = [];
 
   beforeAll(() => {
-    content = readFileSync(join(import.meta.dir, '../v4.0-alpha.md'), 'utf8');
+    content = readFileSync(join(import.meta.dir, '../v4.0.0.md'), 'utf8');
 
     const lines = content.split('\n');
     let currentTable = '';

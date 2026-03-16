@@ -2,8 +2,8 @@ import { expect, test, describe } from "bun:test";
 import { readFileSync } from "fs";
 import { join } from "path";
 
-describe("PAI/Algorithm/v4.0-alpha.md ISC Quality Gate completeness", () => {
-  const filePath = join(import.meta.dir, "../v4.0-alpha.md");
+describe("PAI/Algorithm/v4.0.0.md ISC Quality Gate completeness", () => {
+  const filePath = join(import.meta.dir, "../v4.0.0.md");
   const content = readFileSync(filePath, "utf-8");
 
   // Extract the "Critical Rules" section to scope our assertions

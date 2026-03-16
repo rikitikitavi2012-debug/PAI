@@ -19,10 +19,10 @@ describe('Hooks Compatibility Check', () => {
     expect(content).toContain('readFileSync(latestPath, \'utf8\')');
   });
 
-  test('LATEST file contains v4.0-alpha', () => {
+  test('LATEST file contains v4.0.0', () => {
     expect(existsSync(latestPath)).toBe(true);
     const latestVersion = readFileSync(latestPath, 'utf8').trim();
-    expect(latestVersion).toBe('v4.0-alpha');
+    expect(latestVersion).toBe('v4.0.0');
   });
 
   test('settings.json has no direct version ref (algorithmVersion)', () => {

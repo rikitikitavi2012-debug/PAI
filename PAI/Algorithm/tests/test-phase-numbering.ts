@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 describe("Algorithm Phase Numbering Tests", () => {
-  const filePath = path.join(process.cwd(), "PAI", "Algorithm", "v4.0-alpha.md");
+  const filePath = path.join(process.cwd(), "PAI", "Algorithm", "v4.0.0.md");
   const content = fs.readFileSync(filePath, "utf-8");
 
   // Regex to match the phase headers

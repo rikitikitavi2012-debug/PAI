@@ -2,8 +2,8 @@ import { expect, test, describe } from "bun:test";
 import { readFileSync } from "fs";
 import { join } from "path";
 
-describe("PAI/Algorithm/v4.0-alpha.md completeness", () => {
-  const filePath = join(import.meta.dir, "../v4.0-alpha.md");
+describe("PAI/Algorithm/v4.0.0.md completeness", () => {
+  const filePath = join(import.meta.dir, "../v4.0.0.md");
   const content = readFileSync(filePath, "utf-8");
 
   test("1. Contains all 7 phases plus CYCLE SELECTOR", () => {

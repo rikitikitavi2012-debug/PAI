@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 test("LEARN Phase Persistence requirements", () => {
-  const v4Path = path.join(process.cwd(), "PAI/Algorithm/v4.0-alpha.md");
+  const v4Path = path.join(process.cwd(), "PAI/Algorithm/v4.0.0.md");
   const content = fs.readFileSync(v4Path, "utf-8");
 
   // Extract the LEARN section

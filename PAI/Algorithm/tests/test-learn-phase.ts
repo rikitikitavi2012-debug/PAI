@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 test("LEARN Phase Dual-Track tests", () => {
-  const v4Path = path.join(process.cwd(), "PAI/Algorithm/v4.0-alpha.md");
+  const v4Path = path.join(process.cwd(), "PAI/Algorithm/v4.0.0.md");
   const autoresearchPath = path.join(process.cwd(), "PAI/Algorithm/Algorithm-Autoresearch.md");
 
   const v4Content = fs.readFileSync(v4Path, "utf-8");

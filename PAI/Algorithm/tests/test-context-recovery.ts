@@ -7,7 +7,7 @@ describe('Algorithm Context Recovery Tests', () => {
     let autoResearchContent: string;
 
     beforeAll(() => {
-        alphaContent = readFileSync(join(import.meta.dir, '../v4.0-alpha.md'), 'utf8');
+        alphaContent = readFileSync(join(import.meta.dir, '../v4.0.0.md'), 'utf8');
         autoResearchContent = readFileSync(join(import.meta.dir, '../Algorithm-Autoresearch.md'), 'utf8');
     });
 

@@ -7,7 +7,7 @@ describe('Cycle Selector Routing Rules Test', () => {
 
   beforeAll(() => {
     const basePath = process.env.PAI_DIR || process.cwd();
-    v4AlphaContent = readFileSync(join(basePath, 'PAI/Algorithm/v4.0-alpha.md'), 'utf-8');
+    v4AlphaContent = readFileSync(join(basePath, 'PAI/Algorithm/v4.0.0.md'), 'utf-8');
   });
 
   it('1) Standard tier → always Standard EXECUTE', () => {

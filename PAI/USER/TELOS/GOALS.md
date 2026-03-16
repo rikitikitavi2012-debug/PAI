@@ -60,7 +60,7 @@
 - [x] Существующая кампания обнаружена (ID 702856006, "Единая перфоманс-кампания #2", МОДЕРАЦИЯ)
 - [x] YandexDirect skill готов (4 workflows: KeywordResearch, CampaignManagement, BidOptimization, ReportAnalysis)
 - [x] Автономная оптимизация Директа: PRD + аналитический отчёт готовы (MEMORY/WORK/20260316-060000_yandex-direct-autoresearch/)
-- [x] PAI Algorithm v4.0-alpha с Autoresearch sub-loop = инструмент для CPA-оптимизации
+- [x] PAI Algorithm v4.0.0 с Autoresearch sub-loop = инструмент для CPA-оптимизации
 - [x] Домен благоустройства оцифрован (5 LS файлов: Drainage, Concrete, Paving, Earthworks, Climate SPB — 1355 строк экспертизы)
 - [x] 53 КП за 2023-2025 проанализированы → ANALYSIS.md (расценки, материалы, средний чек)
 - [x] Бизнес-идентичность формализована (COMPANY.md + BRAND.md)
@@ -440,11 +440,11 @@
 
 **3H. Autoresearch-интеграция — бригада оптимизирует метрики автономно**
 
-- [x] **Algorithm v4.0-alpha hardened** — 17 spec gaps fixed + 14/14 mechanisms verified + learning loop closed (2026-03-16)
+- [x] **Algorithm v4.0.0 hardened** — 17 spec gaps fixed + 14/14 mechanisms verified + learning loop closed (2026-03-16)
 - [x] **Learning loop closed** — LEARN.md readback + experiments.tsv aggregation + active retrieval in OBSERVE + performance trend correlation (2026-03-16)
 - [x] **FAILURES rotation** — 188→87 MB, gzip on write, daily auto-rotation (2026-03-16)
 - [x] **Yandex Direct Autoresearch PRD** — 48 ISC по 5 фазам, архитектура PAI strategy + Autoresearch tactics (2026-03-16)
-- [ ] **Algorithm v4.0 (stable)** — живой тест v4.0-alpha с реальной [Q] на Яндекс Директ → убрать alpha
+- [ ] **Algorithm v4.0 (stable)** — живой тест v4.0.0 с реальной [Q] на Яндекс Директ → убрать alpha
 - [ ] **/autoresearch skill** — SKILL.md + references + interactive plan wizard (dry-run)
 - [ ] **Trust Level framework** — L1 Supervised → L2 Monitored → L3 Autonomous → L4 Scheduled. L3+ = бригада работает ночью
 - [ ] **Autoresearch Telegram** — A0 push отчёты autoresearch progress в @A0_timecloud_bot (Trust L3+)
@@ -471,7 +471,7 @@
 
 - [x] **Telegram-бот для управления бригадой с телефона** — @A0_timecloud_bot активирован (2026-03-13). Python/aiogram бот в контейнере agent-zero-new (50002). Функции: отправка задач A0, статус, пересылка уведомлений. NotificationBridge: поллит A0 API каждые 5сек, форвардит алерты в TG. Фикс v0.9.8+ применён (poll params).
 - [ ] **Мониторинг конкурентов** — A0 ежемесячно проверяет топ-10 конкурентов: новые сайты, изменение цен, новый контент в нише TF. Алерт если появился новый конкурент или изменились цены.
-- [ ] **A0 Algorithm upgrade v3.0 → v4.0** — A0 работает на TheAlgorithm v3.0 (skill в /a0/usr/skills/). Нет ISC-Metric Mapping, Experiments TSV, Cycle Selector, Autoresearch Sub-Loop, Drift Defense. Адаптировать v4.0-alpha под архитектуру A0: Python scripts + allowed_tools + agent.system.md/behaviour.md. Учесть: A0 = headless (нет voice), контейнер (нет git worktree), другой model (GLM-5 vs Opus). Фаза 4, межсезонье.
+- [ ] **A0 Algorithm upgrade v3.0 → v4.0** — A0 работает на TheAlgorithm v3.0 (skill в /a0/usr/skills/). Нет ISC-Metric Mapping, Experiments TSV, Cycle Selector, Autoresearch Sub-Loop, Drift Defense. Адаптировать v4.0.0 под архитектуру A0: Python scripts + allowed_tools + agent.system.md/behaviour.md. Учесть: A0 = headless (нет voice), контейнер (нет git worktree), другой model (GLM-5 vs Opus). Фаза 4, межсезонье.
 - [ ] **Cross-model review в Algorithm** — A0 (GLM-5) автоматически ревьюит результаты Navi (Opus). Разные модели = разные слепые зоны.
 - [ ] **L2 Autoresearch** — самооптимизация PAI скиллов через eval (Autoresearch итерирует над Algorithm.md, eval = avg rating)
 - [ ] **Scheduled autoresearch** — ночные оптимизации по расписанию (A0 запускает, Telegram отчёт утром)

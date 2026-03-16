@@ -1,8 +1,8 @@
 import { test, expect, describe } from "bun:test";
 import { readFileSync } from "fs";
 
-describe("Time Budget Enforcement (v4.0-alpha)", () => {
-    const markdownPath = "PAI/Algorithm/v4.0-alpha.md";
+describe("Time Budget Enforcement (v4.0.0)", () => {
+    const markdownPath = "PAI/Algorithm/v4.0.0.md";
     let content = "";
     try {
         content = readFileSync(markdownPath, "utf-8");

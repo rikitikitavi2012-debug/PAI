@@ -20,7 +20,7 @@
 - **11 скиллов** — Agents, ContentAnalysis, Investigation, Media, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
 - **Security system** — SecurityValidator.hook.ts + patterns.yaml (trusted/blocked/confirm/alert + path categories)
 - **3-layer mode routing** — ModeClassifier hook (regex) → Complexity Gate (LLM) → Algorithm file
-- **Algorithm v4.0-alpha** — Cycle Selector ([B]/[Q] routing), Autoresearch Sub-Loop (8-phase iterative optimization), Layered Drift Defense (L1/L2/L3), Iteration Budget. Validated by 6-level review (3 models). Files: v4.0-alpha.md + Algorithm-Autoresearch.md
+- **Algorithm v4.0.0** — Cycle Selector ([B]/[Q] routing), Autoresearch Sub-Loop (8-phase iterative optimization), Layered Drift Defense (L1/L2/L3), Iteration Budget. Validated by 6-level review (3 models). Files: v4.0.0.md + Algorithm-Autoresearch.md
 - **Memory pipeline** — LEARNING/WISDOM/RELATIONSHIP/WORK/STATE/SECURITY + events.jsonl
 - **Feedback loop** — RatingCapture (implicit sentiment) → WisdomSync → FRAMES
 - **JulesAutoMerge pipeline** — тесты в worktree → A0 code review → gh pr merge --squash → git pull sync
@@ -72,7 +72,7 @@
 - [x] Feedback loop (RatingCapture → WisdomSync → FRAMES)
 - [x] Community: 6 PRs в upstream
 - [x] Git workflow: fork, main/master, worktrees
-- [x] Algorithm v4.0-alpha: Cycle Selector + Autoresearch Sub-Loop + Drift Defense + Iteration Budget (2026-03-15)
+- [x] Algorithm v4.0.0: Cycle Selector + Autoresearch Sub-Loop + Drift Defense + Iteration Budget (2026-03-15)
 - [x] Algorithm validation: 6-level review (RedTeam + Manual + Architect + Gemini 2.5 + A0 Sonnet + Jules 15 tests), 25 issues found, 20 fixed (2026-03-15)
 - [x] Algorithm hardening: 17 spec gaps fixed (timeout, parsing, Pareto, noise, stagnation, PARTIAL, cost model, etc.) — 2026-03-16
 - [x] Algorithm stress-test: 14/14 Autoresearch mechanisms verified on real tasks (bundle size, dead deps, stagnation, dual-Q, context recovery) — 2026-03-16
@@ -86,7 +86,7 @@
 - [ ] L2 Autoresearch: самооптимизация PAI скиллов через eval (Фаза 4)
 - [ ] State persistence (ARIS-style) для autoresearch sessions (Фаза 4)
 - [ ] Scheduled autoresearch runs: ночные оптимизации по расписанию (Фаза 4)
-- [ ] A0 Algorithm upgrade v3.0→v4.0: адаптация v4.0-alpha под A0 архитектуру (Python skills, контейнер, Sonnet) — Фаза 4
+- [ ] A0 Algorithm upgrade v3.0→v4.0: адаптация v4.0.0 под A0 архитектуру (Python skills, контейнер, Sonnet) — Фаза 4
 - [ ] Аудит скиллов по v4 структуре (11 скиллов, новая архитектура)
 - [x] PAI Workspace v2: 2 таба (Center + Telemetry), Strategic Dashboard с live cost tracking
 - [x] Z.AI интеграция в pipeline (GLM-5 inference, zai-cli MCP, ZaiVision screenshots)
@@ -199,7 +199,7 @@
 - [ ] Цели конверсий в Метрике (заявка, звонок, чат) — БЛОКЕР для Autoresearch
 - [ ] Первые кампании через API (поиск + РСЯ, ручные ставки, НЕ ЕПК)
 - [ ] Baseline данные (2-4 недели, min 100 кликов)
-- [ ] Autoresearch CPA-оптимизация (Algorithm v4.0-alpha [Q] sub-loop)
+- [ ] Autoresearch CPA-оптимизация (Algorithm v4.0.0 [Q] sub-loop)
 - [ ] Статья terrasa-spb-cena (285 показов/мес — топ ключ)
 - [ ] Страница /navesy (108 показов/мес — отдельная страница оправдана)
 - [ ] Расширение слабых статей (score 73-77)

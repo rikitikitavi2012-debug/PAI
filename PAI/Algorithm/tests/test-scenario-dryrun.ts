@@ -118,7 +118,7 @@ class Machine {
   }
 }
 
-describe("Algorithm v4.0-alpha State Machine Dry-Run", () => {
+describe("Algorithm v4.0.0 State Machine Dry-Run", () => {
   it("A) Standard pure-[B]", () => {
     const m = new Machine({ tier: "Extended", bCriteria: 10, qCriteria: 0 });
     m.run();
