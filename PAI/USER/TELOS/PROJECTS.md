@@ -2,7 +2,7 @@
 
 **Текущие и планируемые проекты.**
 
-*Последнее обновление: 2026-03-12*
+*Последнее обновление: 2026-03-16*
 
 ---
 
@@ -15,9 +15,9 @@
 **Цель:** Полноценная личная операционная система: TELOS 23/23, PAI настроен, агенты работают, контекст глубокий.
 **Срок:** Непрерывный процесс — система эволюционирует постоянно
 **Архитектура PAI v4.0.3:**
-- **34 хука** — все defensive/fail-open, shebang-based (chmod +x обязателен)
+- **35 хуков** — все defensive/fail-open, shebang-based (chmod +x обязателен)
 - **171 тест** / 34 сюиты — subprocess-based test harness (hooks/tests/)
-- **11 скиллов** — Agents, ContentAnalysis, Investigation, Media, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
+- **12 скиллов** — Agents, Autoresearch, ContentAnalysis, Investigation, Media, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
 - **Security system** — SecurityValidator.hook.ts + patterns.yaml (trusted/blocked/confirm/alert + path categories)
 - **3-layer mode routing** — ModeClassifier hook (regex) → Complexity Gate (LLM) → Algorithm file
 - **Algorithm v4.0.0** — Cycle Selector ([B]/[Q] routing), Autoresearch Sub-Loop (8-phase iterative optimization), Layered Drift Defense (L1/L2/L3), Iteration Budget. Validated by 6-level review (3 models). Files: v4.0.0.md + Algorithm-Autoresearch.md
@@ -78,10 +78,10 @@
 - [x] Algorithm stress-test: 14/14 Autoresearch mechanisms verified on real tasks (bundle size, dead deps, stagnation, dual-Q, context recovery) — 2026-03-16
 - [x] Learning loop closed: LEARN.md readback + experiments.tsv aggregation + active retrieval + performance trend correlation — 2026-03-16
 - [x] FAILURES rotation: 188→87 MB, gzip on write, daily auto-rotation via LoadContext — 2026-03-16
-- [ ] Algorithm v4.0 (stable): живой тест на Яндекс Директ CPA → убрать alpha
-- [ ] /autoresearch skill: SKILL.md + references + interactive plan wizard (Фаза 3)
-- [ ] Trust Level framework: L1-L4 graduated autonomy для autoresearch (Фаза 3)
-- [ ] Telegram notifications: A0 → @A0_timecloud_bot для Trust L3+ autoresearch (Фаза 3)
+- [x] Algorithm v4.0 (stable): v4.0.0 released, alpha убрана — 2026-03-16
+- [x] /autoresearch skill: SKILL.md + 4 workflows (Plan, Run, Resume, Report), 12-й скилл — 2026-03-16
+- [x] Trust Level framework: L1-L4 graduated autonomy в Algorithm v4.0.0 + Run.md — 2026-03-16
+- [x] Telegram notifications: AgentZero sendMessage для Trust L3+ в Run.md — 2026-03-16
 - [ ] Cross-model review через A0 в Algorithm pipeline (Фаза 4, межсезонье 2026-2027)
 - [ ] L2 Autoresearch: самооптимизация PAI скиллов через eval (Фаза 4)
 - [ ] State persistence (ARIS-style) для autoresearch sessions (Фаза 4)
