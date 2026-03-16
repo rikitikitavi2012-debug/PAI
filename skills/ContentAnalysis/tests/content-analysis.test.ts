@@ -52,8 +52,7 @@ test("SKILL.md exists and has required frontmatter fields (name, version, descri
   }
 
   expect(metadata).toHaveProperty('name');
-  expect(metadata).toHaveProperty('version');
   expect(metadata).toHaveProperty('description');
-  expect(metadata).toHaveProperty('triggers');
-  expect(Array.isArray(metadata.triggers)).toBe(true);
+  // v4 canonical format: triggers embedded in description USE WHEN, not separate YAML field
+  expect(metadata.description).toContain('USE WHEN');
 });

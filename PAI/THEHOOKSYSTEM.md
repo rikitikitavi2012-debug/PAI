@@ -6,7 +6,7 @@
 
 **Location:** `~/.claude/hooks/`
 **Configuration:** `~/.claude/settings.json`
-**Status:** Active - 20 hooks running in production
+**Status:** Active - 34 hook files, 50 configured instances across 15 event types
 
 ---
 
@@ -43,14 +43,16 @@ Claude Code supports the following hook events:
   "SessionStart": [
     {
       "hooks": [
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/KittyEnvPersist.hook.ts"
-        },
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/LoadContext.hook.ts"
-        }
+        { "type": "command", "command": "${PAI_DIR}/hooks/KittyEnvPersist.hook.ts", "once": true },
+        { "type": "command", "command": "${PAI_DIR}/hooks/StartupGreeting.hook.ts", "once": true },
+        { "type": "command", "command": "${PAI_DIR}/hooks/LoadContext.hook.ts", "once": true },
+        { "type": "command", "command": "${PAI_DIR}/hooks/handlers/BuildCLAUDE.ts", "once": true }
+      ]
+    },
+    {
+      "matcher": "compact",
+      "hooks": [
+        { "type": "command", "command": "${PAI_DIR}/hooks/PostCompactRecovery.hook.ts" }
       ]
     }
   ]
@@ -59,7 +61,10 @@ Claude Code supports the following hook events:
 
 **What They Do:**
 - `KittyEnvPersist.hook.ts` - Persists Kitty terminal env vars to disk and resets tab title to clean state
+- `StartupGreeting.hook.ts` - Welcome message and brigade briefing at session start
 - `LoadContext.hook.ts` - Injects dynamic context (relationship, learning, work summary) as `<system-reminder>` at session start
+- `handlers/BuildCLAUDE.ts` - Composes CLAUDE.md from template at session start (modular, versionable)
+- `PostCompactRecovery.hook.ts` - Recovers state after context compaction (matcher: `compact`)
 
 ---
 
@@ -76,38 +81,19 @@ Claude Code supports the following hook events:
 ```json
 {
   "SessionEnd": [
-    {
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/WorkCompletionLearning.hook.ts"
-        },
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/SessionCleanup.hook.ts"
-        },
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/RelationshipMemory.hook.ts"
-        },
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/UpdateCounts.hook.ts"
-        },
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/IntegrityCheck.hook.ts"
-        }
-      ]
-    }
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/WorkCompletionLearning.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/WisdomSync.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/SessionCleanup.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/UpdateCounts.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/IntegrityCheck.hook.ts" }] }
   ]
 }
 ```
 
 **What They Do:**
 - `WorkCompletionLearning.hook.ts` - Reads PRD.md frontmatter for work metadata and ISC section for criteria status, captures learning to `MEMORY/LEARNING/` for significant work sessions
+- `WisdomSync.hook.ts` - Syncs wisdom frames to persistent storage at session end
 - `SessionCleanup.hook.ts` - Marks PRD.md frontmatter status→COMPLETED and sets completed_at timestamp, clears session state, resets tab, cleans session names
-- `RelationshipMemory.hook.ts` - Captures relationship context (observations, behaviors) to `MEMORY/RELATIONSHIP/`
 - `UpdateCounts.hook.ts` - Updates system counts (skills, hooks, signals, workflows, files) displayed in the startup banner
 - `IntegrityCheck.hook.ts` - Runs DocCrossRefIntegrity and SystemIntegrity checks at session end
 
@@ -125,27 +111,25 @@ Claude Code supports the following hook events:
 ```json
 {
   "UserPromptSubmit": [
-    {
-      "hooks": [
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/RatingCapture.hook.ts"
-        },
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/UpdateTabTitle.hook.ts"
-        },
-        {
-          "type": "command",
-          "command": "${PAI_DIR}/hooks/SessionAutoName.hook.ts"
-        }
-      ]
-    }
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/ModeClassifier.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/RatingCapture.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/AutoWorkCreation.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/UpdateTabTitle.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/SessionAutoName.hook.ts" }] }
   ]
 }
 ```
 
 **What They Do:**
+
+**ModeClassifier.hook.ts** - Request Mode Classification
+- Classifies each prompt into Algorithm/Native/Minimal mode via deterministic regex
+- Runs pre-prompt as a hook, injecting mode header before Claude sees the request
+- Deterministic (no inference) — fast, consistent routing
+
+**AutoWorkCreation.hook.ts** - Automatic Work Directory Creation
+- Detects when Algorithm mode begins and auto-creates a `MEMORY/WORK/` directory
+- Ensures PRD.md and work tracking exist before the Algorithm starts writing to them
 
 **RatingCapture.hook.ts** - Unified Rating Detection
 - Handles both explicit ratings ("7", "8 - good work") and implicit sentiment analysis
@@ -184,15 +168,11 @@ Claude Code supports the following hook events:
 ```json
 {
   "Stop": [
-    {
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/LastResponseCache.hook.ts" },
-        { "type": "command", "command": "${PAI_DIR}/hooks/ResponseTabReset.hook.ts" },
-        { "type": "command", "command": "${PAI_DIR}/hooks/VoiceCompletion.hook.ts" },
-        { "type": "command", "command": "${PAI_DIR}/hooks/DocIntegrity.hook.ts" },
-        { "type": "command", "command": "${PAI_DIR}/hooks/AlgorithmTab.hook.ts" }
-      ]
-    }
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/LastResponseCache.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/ResponseTabReset.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/VoiceCompletion.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/DocIntegrity.hook.ts" }] },
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/RelationshipMemory.hook.ts" }] }
   ]
 }
 ```
@@ -214,8 +194,9 @@ Each Stop hook is a self-contained `.hook.ts` file that reads stdin via shared `
 - Voice gate: only main sessions (checks `kitty-sessions/{sessionId}.json`)
 - Subagents have no kitty-sessions file → voice blocked
 
-**`AlgorithmTab.hook.ts`** — Show Algorithm phase + progress in Kitty tab title
-- Reads `work.json`, finds most recently updated active session, sets tab title
+**`RelationshipMemory.hook.ts`** — Capture relationship context at response completion
+- Captures relationship observations and behavioral patterns to `MEMORY/RELATIONSHIP/`
+- Runs after each response to track evolving interaction dynamics
 
 **`DocIntegrity.hook.ts`** — Cross-reference + semantic drift checks
 - Calls `handlers/DocCrossRefIntegrity.ts` — deterministic + inference-powered doc updates
@@ -238,54 +219,22 @@ Each Stop hook is a self-contained `.hook.ts` file that reads stdin via shared `
 ```json
 {
   "PreToolUse": [
-    {
-      "matcher": "Bash",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts" }
-      ]
-    },
-    {
-      "matcher": "Edit",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts" }
-      ]
-    },
-    {
-      "matcher": "Write",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts" }
-      ]
-    },
-    {
-      "matcher": "Read",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts" }
-      ]
-    },
-    {
-      "matcher": "AskUserQuestion",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/SetQuestionTab.hook.ts" }
-      ]
-    },
-    {
-      "matcher": "Task",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/AgentExecutionGuard.hook.ts" }
-      ]
-    },
-    {
-      "matcher": "Skill",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/SkillGuard.hook.ts" }
-      ]
-    }
+    { "matcher": "Bash",  "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts" }] },
+    { "matcher": "Edit",  "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts" }] },
+    { "matcher": "Edit",  "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/LearnGate.hook.ts" }] },
+    { "matcher": "Write", "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts" }] },
+    { "matcher": "Write", "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/LearnGate.hook.ts" }] },
+    { "matcher": "Read",  "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/SecurityValidator.hook.ts" }] },
+    { "matcher": "AskUserQuestion", "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/SetQuestionTab.hook.ts" }] },
+    { "matcher": "Task",  "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/AgentExecutionGuard.hook.ts" }] },
+    { "matcher": "Skill", "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/SkillGuard.hook.ts" }] }
   ]
 }
 ```
 
 **What They Do:**
 - `SecurityValidator.hook.ts` - Validates operations against security patterns. Runs on **4 matchers**: Bash (dangerous commands), Edit (sensitive file protection), Write (sensitive file protection), Read (sensitive path access)
+- `LearnGate.hook.ts` - Blocks `phase:complete` writes without LEARN.md. Runs on **2 matchers**: Edit, Write. Ensures learning capture before marking work complete
 - `SetQuestionTab.hook.ts` - Updates tab state to "awaiting input" when AskUserQuestion is invoked
 - `AgentExecutionGuard.hook.ts` - Validates agent spawning (Task tool) against execution policies
 - `SkillGuard.hook.ts` - Prevents false skill invocations (e.g., blocks keybindings-help unless explicitly requested)
@@ -294,30 +243,22 @@ Each Stop hook is a self-contained `.hook.ts` file that reads stdin via shared `
 
 ### 6. **PostToolUse**
 **When:** After Claude executes any tool
-**Status:** Active - Algorithm state tracking
+**Status:** Active - 10 entries (Algorithm tracking, PRD sync, projects sync, research capture)
 
 **Current Hooks:**
 ```json
 {
   "PostToolUse": [
-    {
-      "matcher": "AskUserQuestion",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/QuestionAnswered.hook.ts" }
-      ]
-    },
-    {
-      "matcher": "Write",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/PRDSync.hook.ts" }
-      ]
-    },
-    {
-      "matcher": "Edit",
-      "hooks": [
-        { "type": "command", "command": "${PAI_DIR}/hooks/PRDSync.hook.ts" }
-      ]
-    }
+    { "matcher": "AskUserQuestion", "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/QuestionAnswered.hook.ts" }] },
+    { "matcher": "Bash",            "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/AlgorithmTracker.hook.ts" }] },
+    { "matcher": "TaskCreate",      "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/AlgorithmTracker.hook.ts" }] },
+    { "matcher": "TaskUpdate",      "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/AlgorithmTracker.hook.ts" }] },
+    { "matcher": "Task",            "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/AlgorithmTracker.hook.ts" }] },
+    { "matcher": "Task",            "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/ResearchCapture.hook.ts" }] },
+    { "matcher": "Write",           "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/PRDSync.hook.ts" }] },
+    { "matcher": "Write",           "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/ProjectsSync.hook.ts" }] },
+    { "matcher": "Edit",            "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/PRDSync.hook.ts" }] },
+    { "matcher": "Edit",            "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/ProjectsSync.hook.ts" }] }
   ]
 }
 ```
@@ -329,21 +270,108 @@ Each Stop hook is a self-contained `.hook.ts` file that reads stdin via shared `
 - Captures the question and answer for session context
 - Used for analytics and learning from user preferences
 
+**AlgorithmTracker.hook.ts** - Algorithm Phase + Progress Tracking
+- Fires on Bash, TaskCreate, TaskUpdate, and Task tool completions (4 matchers)
+- Tracks Algorithm phase transitions and Autoresearch sub-phases
+- Updates tab title with current phase and progress indicator
+
+**ResearchCapture.hook.ts** - Research Output Capture
+- Fires after Task tool completes (agent outputs)
+- Captures research findings from agent sessions to persistent storage
+
 **PRDSync.hook.ts** - PRD Frontmatter → work.json Sync
 - Fires after Write/Edit to PRD files in `MEMORY/WORK/`
 - Syncs PRD frontmatter (status, title, effort) to `MEMORY/STATE/work.json`
 - Keeps work registry in sync without manual updates
 - Non-blocking, fire-and-forget
 
+**ProjectsSync.hook.ts** - TELOS Projects State Sync
+- Fires after Write/Edit to project files
+- Keeps TELOS project registry in sync with file changes
+
 ---
 
 ### 7. **PreCompact**
 **When:** Before Claude compacts context (long conversations)
-**Status:** Not currently configured
-
-**Potential Use Cases:**
+**Use Cases:**
 - Preserve important context before compaction
-- Log compaction events
+- Save Algorithm state so it survives compaction
+
+**Current Hooks:**
+```json
+{
+  "PreCompact": [
+    { "hooks": [{ "type": "command", "command": "${PAI_DIR}/hooks/PreCompact.hook.ts" }] }
+  ]
+}
+```
+
+**What They Do:**
+- `PreCompact.hook.ts` - Saves session state (Algorithm phase, work context, PRD progress) to disk before context compaction. Ensures state survives the compaction boundary
+
+---
+
+### 8. **ConfigChange**
+**When:** `settings.json` is modified (configuration change detected)
+**Current Hooks:** SecurityValidator.hook.ts (1 instance)
+- Validates that configuration changes don't introduce security violations
+- Prevents unauthorized permission escalation or dangerous hook additions
+
+---
+
+### 9. **WorktreeCreate**
+**When:** A git worktree is created (agent worktree initialization)
+**Current Hooks:** WorktreeCreate.hook.ts (1 instance)
+- Initializes worktree-specific state (session mapping, tab context)
+- Sets up the worktree environment for agent execution
+
+---
+
+### 10. **WorktreeRemove**
+**When:** A git worktree is removed (agent worktree cleanup)
+**Current Hooks:** WorktreeRemove.hook.ts (1 instance)
+- Cleans up worktree-specific state files
+- Removes session mappings and temporary state for the destroyed worktree
+
+---
+
+### 11. **InstructionsLoaded**
+**When:** CLAUDE.md files are loaded into context
+**Current Hooks:** EventLogger.hook.ts (1 instance)
+- Logs the instructions-loaded event to `events.jsonl` for observability
+- Tracks which instruction files were loaded and when
+
+---
+
+### 12. **TeammateIdle**
+**When:** A teammate agent becomes idle (no active work)
+**Current Hooks:** EventLogger.hook.ts (1 instance)
+- Logs idle teammate events for monitoring agent utilization
+- Enables auto-stop of idle teammates to prevent resource waste
+
+---
+
+### 13. **SubagentStart**
+**When:** A subagent is spawned (Task tool creates a child agent)
+**Current Hooks:** EventLogger.hook.ts + AgentTab.hook.ts (2 instances)
+- `EventLogger.hook.ts` - Logs subagent lifecycle start to `events.jsonl`
+- `AgentTab.hook.ts` - Updates Kitty tab title/state to reflect active subagent
+
+---
+
+### 14. **SubagentStop**
+**When:** A subagent completes or is terminated
+**Current Hooks:** EventLogger.hook.ts + AgentTab.hook.ts (2 instances)
+- `EventLogger.hook.ts` - Logs subagent lifecycle end to `events.jsonl`
+- `AgentTab.hook.ts` - Resets tab title/state after subagent completes
+
+---
+
+### 15. **TaskCompleted**
+**When:** A task (from the Task tool) completes
+**Current Hooks:** EventLogger.hook.ts (1 instance)
+- Logs task completion to `events.jsonl` for workflow tracking
+- Enables completion analytics and progress monitoring
 
 ---
 
@@ -431,7 +459,7 @@ const VOICE_ID = getVoiceId();        // from settings.json daidentity.voiceId
 ```
 
 **Fields:**
-- `HookEventName` - One of: SessionStart, SessionEnd, UserPromptSubmit, Stop, PreToolUse, PostToolUse, PreCompact
+- `HookEventName` - One of: SessionStart, SessionEnd, UserPromptSubmit, Stop, PreToolUse, PostToolUse, PreCompact, ConfigChange, WorktreeCreate, WorktreeRemove, InstructionsLoaded, TeammateIdle, SubagentStart, SubagentStop, TaskCompleted
 - `matcher` - Pattern to match (use `"*"` for all tools, or specific tool names)
 - `type` - Always `"command"` (executes external script)
 - `command` - Path to executable hook script (TypeScript/Python/Bash)
@@ -1090,56 +1118,75 @@ HOOK LIFECYCLE:
 HOOKS BY EVENT (34 hook files, 50 settings entries):
 
 SESSION START (5 entries):
-  KittyEnvPersist.hook.ts        Persist Kitty env vars + tab reset
-  LoadContext.hook.ts             Dynamic context injection (relationship, learning, work)
-  StartupGreeting.hook.ts         Welcome message + brigade briefing
-  ModeClassifier.hook.ts          Classify request mode (Algorithm/Native/Minimal)
-  ProjectsSync.hook.ts            Sync TELOS projects state
+  KittyEnvPersist.hook.ts        Persist Kitty env vars + tab reset (once)
+  StartupGreeting.hook.ts        Welcome message + brigade briefing (once)
+  LoadContext.hook.ts             Dynamic context injection (once)
+  handlers/BuildCLAUDE.ts        Compose CLAUDE.md from template (once)
+  PostCompactRecovery.hook.ts    Recover state after compaction (matcher: compact)
 
-SESSION END (5 hooks):
+SESSION END (5 entries):
   WorkCompletionLearning.hook.ts Work/learning capture to MEMORY/
+  WisdomSync.hook.ts             Sync wisdom frames to persistent storage
   SessionCleanup.hook.ts         Mark WORK dir complete, clear state, reset tab
-  RelationshipMemory.hook.ts     Relationship context to MEMORY/RELATIONSHIP/
   UpdateCounts.hook.ts           Refresh system counts (skills, hooks, signals)
   IntegrityCheck.hook.ts         System integrity checks
 
 USER PROMPT SUBMIT (5 entries):
+  ModeClassifier.hook.ts         Classify mode (Algorithm/Native/Minimal)
   RatingCapture.hook.ts          Unified rating capture (explicit + implicit)
+  AutoWorkCreation.hook.ts       Auto-create WORK dir for Algorithm sessions
   UpdateTabTitle.hook.ts         Tab title + working state (orange)
   SessionAutoName.hook.ts        Auto-name session from first prompt
-  ModeClassifier.hook.ts         Classify mode for each prompt
-  LearnGate.hook.ts              Block phase:complete without LEARN.md
 
-STOP (5 hooks):
+STOP (5 entries):
   LastResponseCache.hook.ts      Cache response for RatingCapture bridge
   ResponseTabReset.hook.ts       Tab title/color reset after response
   VoiceCompletion.hook.ts        Voice TTS (main sessions only)
   DocIntegrity.hook.ts           Cross-ref + semantic drift checks
-  AlgorithmTracker.hook.ts       Algorithm phase + progress in tab (+ Autoresearch sub-phases)
+  RelationshipMemory.hook.ts     Relationship context to MEMORY/RELATIONSHIP/
 
 PRE TOOL USE (9 entries):
   SecurityValidator.hook.ts      Security validation [Bash, Edit, Write, Read] (4 matchers)
+  LearnGate.hook.ts              Block phase:complete without LEARN.md [Edit, Write] (2 matchers)
   SetQuestionTab.hook.ts         Tab state on question [AskUserQuestion]
   AgentExecutionGuard.hook.ts    Agent spawn guardrails [Task]
   SkillGuard.hook.ts             Skill invocation validation [Skill]
-  AutoWorkCreation.hook.ts       Auto-create WORK dir on Write to MEMORY/WORK/
 
 POST TOOL USE (10 entries):
-  QuestionAnswered.hook.ts       Post-question tab reset [AskUserQuestion]
+  QuestionAnswered.hook.ts       Post-question processing [AskUserQuestion]
+  AlgorithmTracker.hook.ts       Algorithm phase tracking [Bash, TaskCreate, TaskUpdate, Task] (4 matchers)
+  ResearchCapture.hook.ts        Capture research outputs [Task]
   PRDSync.hook.ts                PRD → work.json sync [Write, Edit] (2 matchers)
-  WisdomSync.hook.ts             Sync wisdom frames on Write/Edit
-  ResearchCapture.hook.ts        Capture research outputs
-  EventLogger.hook.ts            Log events to events.jsonl
+  ProjectsSync.hook.ts           TELOS projects state sync [Write, Edit] (2 matchers)
 
-OTHER EVENTS:
-  PreCompact.hook.ts             Save state before context compaction [PreCompact]
-  PostCompactRecovery.hook.ts    Recover state after compaction [InstructionsLoaded]
-  AgentTab.hook.ts               Tab updates for agent sessions [TeammateIdle]
-  WorktreeCreate.hook.ts         Initialize worktree state [WorktreeCreate]
-  WorktreeRemove.hook.ts         Cleanup worktree state [WorktreeRemove]
-  ConfigChange event             Blocked by SecurityValidator [ConfigChange]
-  SubagentStart/Stop hooks       Agent lifecycle tracking [SubagentStart, SubagentStop]
-  TaskCompleted.hook.ts          Task completion handling [TaskCompleted]
+PRE COMPACT (1 entry):
+  PreCompact.hook.ts             Save state before context compaction
+
+CONFIG CHANGE (1 entry):
+  SecurityValidator.hook.ts      Validate settings.json changes
+
+WORKTREE CREATE (1 entry):
+  WorktreeCreate.hook.ts         Initialize worktree state
+
+WORKTREE REMOVE (1 entry):
+  WorktreeRemove.hook.ts         Cleanup worktree state
+
+INSTRUCTIONS LOADED (1 entry):
+  EventLogger.hook.ts            Log instructions-loaded event
+
+TEAMMATE IDLE (1 entry):
+  EventLogger.hook.ts            Log idle teammate event
+
+SUBAGENT START (2 entries):
+  EventLogger.hook.ts            Log subagent lifecycle start
+  AgentTab.hook.ts               Tab updates for agent session
+
+SUBAGENT STOP (2 entries):
+  EventLogger.hook.ts            Log subagent lifecycle end
+  AgentTab.hook.ts               Reset tab after agent completes
+
+TASK COMPLETED (1 entry):
+  EventLogger.hook.ts            Log task completion event
 
 KEY FILES:
 ~/.claude/settings.json              Hook configuration
@@ -1343,6 +1390,6 @@ watch(getEventsPath(), (eventType) => { /* read new lines */ });
 
 ---
 
-**Last Updated:** 2026-03-15
-**Status:** Production - 15 hooks emitting 22 event types across 14 categories
+**Last Updated:** 2026-03-16
+**Status:** Production - 34 hook files, 50 configured instances across 15 event types. 22 event types emitted across 14 categories
 **Maintainer:** PAI System

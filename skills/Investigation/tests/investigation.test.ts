@@ -53,14 +53,8 @@ test("SKILL.md exists and has required frontmatter fields (name, version, descri
     metadata = parseSimpleYaml(frontmatterText);
   }
 
-  // Test for explicitly requested fields.
-  // Note: If the source files currently lack these fields, this test will fail.
-  // This correctly enforces the schema as requested by the prompt.
+  // v4 canonical format: name + description with USE WHEN (no separate version/triggers)
   expect(metadata).toHaveProperty('name');
-  expect(metadata).toHaveProperty('version');
   expect(metadata).toHaveProperty('description');
-  expect(metadata).toHaveProperty('triggers');
-
-  // Verify triggers is an array
-  expect(Array.isArray(metadata.triggers)).toBe(true);
+  expect(metadata.description).toContain('USE WHEN');
 });

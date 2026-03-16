@@ -152,7 +152,7 @@ paths:
 
   # ── Confirm Write: Can read, writing requires confirmation ──
   confirmWrite:
-    - "~/.claude/settings.json"
+    # settings.json removed — already in Claude Code native ask list, double-check caused hook errors
     - "**/.env"
     - "**/.env.production"
     - "**/package.json"
