@@ -37,8 +37,8 @@ const readDone = (async () => {
   } catch {}
 })();
 
-// 100ms is enough — stdin data arrives in <5ms when piped correctly
-await Promise.race([readDone, new Promise<void>(r => setTimeout(r, 100))]);
+// 300ms timeout — matches ISCQualityGate; 100ms caused false-pass under load
+await Promise.race([readDone, new Promise<void>(r => setTimeout(r, 300))]);
 reader.cancel().catch(() => {});
 
 if (!raw.trim()) out(CONTINUE);
@@ -62,7 +62,7 @@ let setsPhaseComplete = false;
 if (input.tool_name === 'Edit') {
   const oldStr: string = toolInput.old_string || '';
   const newStr: string = toolInput.new_string || '';
-  if (/^phase:\s*(observe|think|plan|build|execute|verify|learn)/i.test(oldStr)) {
+  if (/^\s*phase:\s*(observe|think|plan|build|execute|verify|learn)/im.test(oldStr)) {
     setsPhaseComplete = /^phase:\s*complete$/im.test(newStr);
   }
 } else if (input.tool_name === 'Write') {
@@ -77,7 +77,10 @@ if (existsSync(join(prdDir, 'LEARN.md'))) {
   out(CONTINUE);
 } else {
   out(JSON.stringify({
-    decision: 'block',
-    reason: `LEARN: напиши LEARN.md в ${prdDir}/ перед phase: complete. Секции: ## Reflections, ## Patterns, ## Actions.`
+    hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
+      permissionDecision: 'deny',
+      permissionDecisionReason: `LEARN: напиши LEARN.md в ${prdDir}/ перед phase: complete. Секции: ## Reflections, ## Patterns, ## Actions.`
+    }
   }));
 }

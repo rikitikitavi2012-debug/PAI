@@ -32,10 +32,8 @@ describe('LearnGate Hook', () => {
     );
 
     expect(result.exitCode).toBe(0);
-    expect(result.json).toEqual({
-      decision: 'block',
-      reason: expect.stringContaining('LEARN phase requires persistence: write LEARN.md')
-    });
+    expect(result.json?.hookSpecificOutput?.permissionDecision).toBe('deny');
+    expect(result.json?.hookSpecificOutput?.permissionDecisionReason).toContain('LEARN');
   });
 
   test('Edit PRD.md with phase:complete and LEARN.md exists → returns {continue:true}', async () => {
@@ -98,9 +96,7 @@ describe('LearnGate Hook', () => {
     );
 
     expect(result.exitCode).toBe(0);
-    expect(result.json).toEqual({
-      decision: 'block',
-      reason: expect.stringContaining('LEARN phase requires persistence: write LEARN.md')
-    });
+    expect(result.json?.hookSpecificOutput?.permissionDecision).toBe('deny');
+    expect(result.json?.hookSpecificOutput?.permissionDecisionReason).toContain('LEARN');
   });
 });
