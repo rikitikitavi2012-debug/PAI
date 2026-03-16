@@ -1,6 +1,6 @@
 ---
 name: Research
-description: Comprehensive research and content extraction — quick/standard/extensive/deep modes with multi-agent parallel research, content retrieval, AI trends analysis, and 242+ Fabric patterns. USE WHEN research, do research, quick research, extensive research, deep investigation, find information, investigate, extract alpha, analyze content, retrieve content, use fabric, AI trends, Claude research, enhance content, extract knowledge, interview research, web scraping, YouTube extraction, standard research.
+description: Comprehensive research and content extraction — quick/standard/extensive/deep modes with multi-agent parallel research, content retrieval, AI trends analysis, and 242+ Fabric patterns. USE WHEN research, do research, quick research, extensive research, deep investigation, find information, investigate, extract alpha, analyze content, retrieve content, use fabric, AI trends, Claude research, enhance content, extract knowledge, interview research, web scraping, YouTube extraction, standard research, исследование, исследуй, проведи исследование, найди информацию, глубокое исследование, быстрое исследование, анализ, изучи тему.
 context: fork
 ---
 
@@ -16,6 +16,10 @@ context: fork
 | "deep investigation" / "investigate [topic]" / "map the [X] landscape" | → Deep Investigation (iterative) |
 
 **"Research" alone = Standard mode. No exceptions.**
+
+## Language
+
+**Все агенты должны отвечать на русском языке.** При создании промптов для субагентов (ClaudeResearcher, GeminiResearcher, PerplexityResearcher, CodexResearcher) добавляй в каждый промпт: "Отвечай на русском языке. Все выводы, анализ и рекомендации — на русском."
 
 ## Customization
 
@@ -33,7 +37,7 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
    ```bash
    curl -s -X POST http://localhost:8888/notify \
      -H "Content-Type: application/json" \
-     -d '{"message": "Running the WORKFLOWNAME workflow in the Research skill to ACTION"}' \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле Research для ACTION", "voice_id": "3EuKHIEZbSzrHGNmdYsx", "voice_enabled": true}' \
      > /dev/null 2>&1 &
    ```
 

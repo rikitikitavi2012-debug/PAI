@@ -1,7 +1,24 @@
 ---
 name: Utilities
-description: Developer utilities and tools — CLI generation, skill scaffolding, agent delegation, system upgrades, evals, documents, parsing, audio editing, Fabric patterns, Cloudflare infrastructure, browser automation, meta-prompting, and aphorisms. USE WHEN create CLI, build CLI, command-line tool, wrap API, add command, upgrade tier, TypeScript CLI, create skill, new skill, scaffold skill, validate skill, update skill, fix skill structure, canonicalize skill, parallel execution, agent teams, delegate, workstreams, swarm, upgrade, improve system, system upgrade, check Anthropic, algorithm upgrade, mine reflections, find sources, research upgrade, PAI upgrade, eval, evaluate, test agent, benchmark, verify behavior, regression test, capability test, run eval, compare models, compare prompts, create judge, view results, document, process file, create document, convert format, extract text, PDF, DOCX, XLSX, PPTX, Word, Excel, spreadsheet, PowerPoint, presentation, slides, consulting report, large PDF, merge PDF, fill form, tracked changes, redlining, parse, extract, URL, transcript, entities, JSON, batch, YouTube, article, newsletter, Twitter, browser extension, collision detection, detect content type, extract article, extract newsletter, extract YouTube, extract PDF, parse content, clean audio, edit audio, remove filler words, clean podcast, remove ums, cut dead air, polish audio, transcribe, analyze audio, audio pipeline, fabric, fabric pattern, run fabric, update patterns, sync fabric, summarize, threat model pattern, Cloudflare, worker, deploy, Pages, MCP server, wrangler, DNS, KV, R2, D1, Vectorize, browser, screenshot, debug web, verify UI, troubleshoot frontend, automate browser, browse website, review stories, run stories, web automation, meta-prompting, template generation, prompt optimization, programmatic prompt, render template, validate template, prompt engineering, aphorism, quote, saying, find quote, research thinker, newsletter quotes, add aphorism, search aphorisms.
+description: Developer utilities and tools — CLI generation, skill scaffolding, agent delegation, system upgrades, evals, documents, parsing, audio editing, Fabric patterns, Cloudflare infrastructure, browser automation, meta-prompting, and aphorisms. USE WHEN create CLI, build CLI, command-line tool, wrap API, add command, upgrade tier, TypeScript CLI, create skill, new skill, scaffold skill, validate skill, update skill, fix skill structure, canonicalize skill, parallel execution, agent teams, delegate, workstreams, swarm, upgrade, improve system, system upgrade, check Anthropic, algorithm upgrade, mine reflections, find sources, research upgrade, PAI upgrade, eval, evaluate, test agent, benchmark, verify behavior, regression test, capability test, run eval, compare models, compare prompts, create judge, view results, document, process file, create document, convert format, extract text, PDF, DOCX, XLSX, PPTX, Word, Excel, spreadsheet, PowerPoint, presentation, slides, consulting report, large PDF, merge PDF, fill form, tracked changes, redlining, parse, extract, URL, transcript, entities, JSON, batch, YouTube, article, newsletter, Twitter, browser extension, collision detection, detect content type, extract article, extract newsletter, extract YouTube, extract PDF, parse content, clean audio, edit audio, remove filler words, clean podcast, remove ums, cut dead air, polish audio, transcribe, analyze audio, audio pipeline, fabric, fabric pattern, run fabric, update patterns, sync fabric, summarize, threat model pattern, Cloudflare, worker, deploy, Pages, MCP server, wrangler, DNS, KV, R2, D1, Vectorize, browser, screenshot, debug web, verify UI, troubleshoot frontend, automate browser, browse website, review stories, run stories, web automation, meta-prompting, template generation, prompt optimization, programmatic prompt, render template, validate template, prompt engineering, aphorism, quote, saying, find quote, research thinker, newsletter quotes, add aphorism, search aphorisms, создай CLI, утилита, создай скилл, делегирование, обновление системы, оценка, документ, PDF, парсинг, аудио, браузер, скриншот, афоризм, цитата, fabric паттерн, Cloudflare.
 ---
+
+## MANDATORY: Voice Notification (REQUIRED BEFORE ANY ACTION)
+
+**You MUST send this notification BEFORE doing anything else when this skill is invoked.**
+
+1. **Send voice notification**:
+   ```bash
+   curl -s -X POST http://localhost:8888/notify \
+     -H "Content-Type: application/json" \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле Utilities", "voice_id": "3EuKHIEZbSzrHGNmdYsx", "voice_enabled": true}' \
+     > /dev/null 2>&1 &
+   ```
+
+2. **Output text notification**:
+   ```
+   Running the **WorkflowName** workflow in the **Utilities** skill...
+   ```
 
 # Utilities
 

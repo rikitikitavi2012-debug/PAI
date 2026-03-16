@@ -1,6 +1,6 @@
 ---
 name: YandexDirect
-description: Yandex Direct + Metrika programmatic ad management — campaign CRUD, keyword research, bid optimization, analytics reports, and ROI tracking for timber-frame-spb.ru. USE WHEN create campaign, manage ads, yandex direct, bid optimization, ad report, CTR analysis, keyword management, ad copy, metrika analytics, ROI tracking, campaign stats, ad budget.
+description: Yandex Direct + Metrika programmatic ad management — campaign CRUD, keyword research, bid optimization, analytics reports, and ROI tracking for timber-frame-spb.ru. USE WHEN create campaign, manage ads, yandex direct, bid optimization, ad report, CTR analysis, keyword management, ad copy, metrika analytics, ROI tracking, campaign stats, ad budget, создай кампанию, управление рекламой, яндекс директ, оптимизация ставок, отчёт по рекламе, анализ CTR, ключевые слова, рекламный текст, аналитика метрика, ROI отчёт, статистика кампаний, рекламный бюджет.
 context: fork
 ---
 
@@ -25,7 +25,7 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
    ```bash
    curl -s -X POST http://localhost:8888/notify \
      -H "Content-Type: application/json" \
-     -d '{"message": "Running the WORKFLOWNAME workflow in the YandexDirect skill to ACTION"}' \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле YandexDirect для ACTION", "voice_id": "3EuKHIEZbSzrHGNmdYsx", "voice_enabled": true}' \
      > /dev/null 2>&1 &
    ```
 

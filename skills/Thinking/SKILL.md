@@ -1,8 +1,25 @@
 ---
 name: Thinking
-description: Multi-mode analytical and creative thinking — first principles decomposition, iterative depth analysis, creative brainstorming, multi-agent council debates, adversarial red teaming, world threat modeling, and scientific hypothesis testing. USE WHEN first principles, decompose, deconstruct, reconstruct, challenge assumptions, iterative depth, multi-angle, deep exploration, be creative, brainstorm, divergent ideas, tree of thoughts, maximum creativity, technical creativity, idea generation, domain specific, council, debate, perspectives, quick consensus, red team, critique, stress test, adversarial validation, parallel analysis, devil's advocate, threat model, world model, future analysis, test idea, test investment, update models, view models, time horizon, think about, figure out, experiment, iterate, science, hypothesis, define goal, design experiment, quick diagnosis, structured investigation, full cycle.
+description: Multi-mode analytical and creative thinking — first principles decomposition, iterative depth analysis, creative brainstorming, multi-agent council debates, adversarial red teaming, world threat modeling, and scientific hypothesis testing. USE WHEN first principles, decompose, deconstruct, reconstruct, challenge assumptions, iterative depth, multi-angle, deep exploration, be creative, brainstorm, divergent ideas, tree of thoughts, maximum creativity, technical creativity, idea generation, domain specific, council, debate, perspectives, quick consensus, red team, critique, stress test, adversarial validation, parallel analysis, devil's advocate, threat model, world model, future analysis, test idea, test investment, update models, view models, time horizon, think about, figure out, experiment, iterate, science, hypothesis, define goal, design experiment, quick diagnosis, structured investigation, full cycle, первые принципы, декомпозиция, разобрать по частям, мозговой штурм, креативность, дебаты, перспективы, красная команда, критика, стресс-тест, угрозы, подумай, разберись, проанализируй, эксперимент, гипотеза.
 context: fork
 ---
+
+## 🚨 MANDATORY: Voice Notification (REQUIRED BEFORE ANY ACTION)
+
+**You MUST send this notification BEFORE doing anything else when this skill is invoked.**
+
+1. **Send voice notification**:
+   ```bash
+   curl -s -X POST http://localhost:8888/notify \
+     -H "Content-Type: application/json" \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле Thinking", "voice_id": "3EuKHIEZbSzrHGNmdYsx", "voice_enabled": true}' \
+     > /dev/null 2>&1 &
+   ```
+
+2. **Output text notification**:
+   ```
+   Running the **WorkflowName** workflow in the **Thinking** skill...
+   ```
 
 # Thinking
 

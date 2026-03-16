@@ -1,8 +1,25 @@
 ---
 name: TFContent
-description: Expert Timber Frame content creation — SEO articles, blog posts, product descriptions, and competitor analysis for timber-frame-spb.ru. USE WHEN write article, blog post, timber frame content, SEO content, product page, terrace description, TF expertise, brand voice check, competitor content analysis.
+description: Expert Timber Frame content creation — SEO articles, blog posts, product descriptions, and competitor analysis for timber-frame-spb.ru. USE WHEN write article, blog post, timber frame content, SEO content, product page, terrace description, TF expertise, brand voice check, competitor content analysis, напиши статью, создай контент, SEO оптимизация, описание террасы, проверь голос бренда, контент для сайта, timber frame контент.
 context: fork
 ---
+
+## 🚨 MANDATORY: Voice Notification (REQUIRED BEFORE ANY ACTION)
+
+**You MUST send this notification BEFORE doing anything else when this skill is invoked.**
+
+1. **Send voice notification**:
+   ```bash
+   curl -s -X POST http://localhost:8888/notify \
+     -H "Content-Type: application/json" \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле TFContent", "voice_id": "3EuKHIEZbSzrHGNmdYsx", "voice_enabled": true}' \
+     > /dev/null 2>&1 &
+   ```
+
+2. **Output text notification**:
+   ```
+   Running the **WorkflowName** workflow in the **TFContent** skill...
+   ```
 
 # TFContent
 

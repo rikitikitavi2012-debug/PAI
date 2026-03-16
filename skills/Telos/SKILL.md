@@ -1,6 +1,6 @@
 ---
 name: Telos
-description: Life OS and project analysis — goals, dependencies, beliefs, wisdom, books, movies, narrative points, interview extraction, McKinsey reports, brigade audit, and project dashboards. USE WHEN Telos, life goals, projects, dependencies, books, movies, beliefs, wisdom, update TELOS, narrative points, interview extraction, write report, McKinsey report, TELOS report, project analysis, dashboard, n=24, audit TELOS, brigade audit, бригадный аудит, scan TELOS with brigade.
+description: Life OS and project analysis — goals, dependencies, beliefs, wisdom, books, movies, narrative points, interview extraction, McKinsey reports, brigade audit, and project dashboards. USE WHEN Telos, life goals, projects, dependencies, books, movies, beliefs, wisdom, update TELOS, narrative points, interview extraction, write report, McKinsey report, TELOS report, project analysis, dashboard, n=24, audit TELOS, brigade audit, бригадный аудит, scan TELOS with brigade, жизненные цели, проекты, зависимости, убеждения, мудрость, обнови TELOS, нарративные точки, извлечение интервью, напиши отчёт, отчёт McKinsey, анализ проекта, дашборд, аудит TELOS, сканировать TELOS бригадой.
 ---
 
 ## 🚨 MANDATORY: Voice Notification (REQUIRED BEFORE ANY ACTION)
@@ -11,7 +11,7 @@ description: Life OS and project analysis — goals, dependencies, beliefs, wisd
    ```bash
    curl -s -X POST http://localhost:8888/notify \
      -H "Content-Type: application/json" \
-     -d '{"message": "Running the WORKFLOWNAME workflow in the Telos skill to ACTION"}' \
+     -d '{"message": "Запускаю WORKFLOWNAME в скилле Telos для ACTION", "voice_id": "3EuKHIEZbSzrHGNmdYsx", "voice_enabled": true}' \
      > /dev/null 2>&1 &
    ```
 
