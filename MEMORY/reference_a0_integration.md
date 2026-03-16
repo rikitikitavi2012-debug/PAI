@@ -30,7 +30,7 @@ A0 → результаты в MEMORY/STATE/ → git push → Navi git pull (ч�
 | UUID | Задача | Расписание | Что делает |
 |------|--------|------------|------------|
 | `Wqg7hKhH` | Daily PAI Health Check | Ежедневно 04:00 MSK | git pull + проверка API/инфры |
-| `yJdE1wFr` | **Daily PAI Context Sync** | Ежедневно 02:00 MSK | git pull → sync DOMAINS+TELOS+USER → knowledge/custom/ (was weekly `zhDeNotK` — changed after audit found 7-day context drift causing hallucinations) |
+| `yJdE1wFr` | **Daily PAI Context Sync** | Ежедневно 02:00 MSK | git pull → sync DOMAINS+TELOS+USER → knowledge/custom/ (replaced weekly `zhDeNotK` which was deleted — audit found 7-day context drift causing hallucinations) |
 | `2HRlisSR` | Weekly TELOS Progress | Пн 03:00 MSK | Анализ прогресса по целям |
 | `iUeI9PnM` | Weekly Learning Mining | Пн 04:00 MSK | Паттерны из events/сессий |
 | `mSo4moec` | Monthly Memory Compaction | 1-е число 02:00 MSK | Сжатие vector store |
