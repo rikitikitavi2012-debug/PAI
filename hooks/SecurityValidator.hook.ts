@@ -521,8 +521,11 @@ async function handleBash(input: HookInput): Promise<void> {
         action_taken: 'Prompted user for confirmation'
       });
       stdoutWrite(JSON.stringify({
-        decision: 'ask',
-        message: `[PAI SECURITY] ⚠️ ${result.reason}\n\nCommand: ${command.slice(0, 200)}\n\nProceed?`
+        hookSpecificOutput: {
+          hookEventName: 'PreToolUse',
+          permissionDecision: 'ask',
+          permissionDecisionReason: `[PAI SECURITY] ⚠️ ${result.reason}\nCommand: ${command.slice(0, 200)}`
+        }
       }));
       break;
 
@@ -613,8 +616,11 @@ async function handleFileWrite(input: HookInput, toolName: string): Promise<void
         action_taken: 'Prompted user for confirmation'
       });
       stdoutWrite(JSON.stringify({
-        decision: 'ask',
-        message: `[PAI SECURITY] ⚠️ ${result.reason}\n\nPath: ${filePath}\n\nProceed?`
+        hookSpecificOutput: {
+          hookEventName: 'PreToolUse',
+          permissionDecision: 'ask',
+          permissionDecisionReason: `[PAI SECURITY] ⚠️ ${result.reason}\nPath: ${filePath}`
+        }
       }));
       return;
 
@@ -655,8 +661,11 @@ async function handleFileWrite(input: HookInput, toolName: string): Promise<void
         action_taken: 'Prompted user for confirmation'
       });
       stdoutWrite(JSON.stringify({
-        decision: 'ask',
-        message: `[PAI SECURITY] ⚠️ ${contentResult.reason}\n\nPath: ${filePath}\n\nProceed?`
+        hookSpecificOutput: {
+          hookEventName: 'PreToolUse',
+          permissionDecision: 'ask',
+          permissionDecisionReason: `[PAI SECURITY] ⚠️ ${contentResult.reason}\nPath: ${filePath}`
+        }
       }));
       return;
     }

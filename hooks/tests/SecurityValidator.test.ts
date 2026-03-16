@@ -78,8 +78,8 @@ describe('SecurityValidator', () => {
       hook_event_name: 'PreToolUse',
     });
     // Force push should require confirmation
-    const needsConfirm = result.json?.decision === 'ask' ||
-      result.json?.decision === 'block' ||
+    const needsConfirm = result.json?.hookSpecificOutput?.permissionDecision === 'ask' ||
+      result.json?.hookSpecificOutput?.permissionDecision === 'deny' ||
       result.exitCode === 2;
     expect(needsConfirm).toBe(true);
   });
