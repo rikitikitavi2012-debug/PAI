@@ -1,6 +1,6 @@
 ---
 name: Parser
-description: Extract structured JSON from URLs, files, videos, PDFs with entity extraction and batch support. USE WHEN parse, extract, URL, transcript, entities, JSON, batch, content, YouTube, PDF, article, newsletter, Twitter, browser extension, collision detection, detect content type, extract article, extract newsletter, extract YouTube, extract PDF, parse content.
+description: Extract structured JSON from URLs, files, videos, PDFs with entity extraction and batch support. USE WHEN parse, спарси, парсер, извлеки, extract, URL, transcript, entities, JSON, batch, content, YouTube, PDF, article, newsletter, Twitter, browser extension, collision detection, detect content type, extract article, extract newsletter, extract YouTube, extract PDF, parse content.
 ---
 
 ## Customization

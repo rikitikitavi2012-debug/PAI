@@ -1,6 +1,6 @@
 ---
 name: IterativeDepth
-description: 2-8 scientific lens passes to surface hidden requirements single-pass analysis misses. USE WHEN iterative depth, deep exploration, multi-angle analysis, multiple perspectives, examine from angles, surface hidden requirements.
+description: 2-8 scientific lens passes to surface hidden requirements single-pass analysis misses. USE WHEN iterative depth, итеративная глубина, deep exploration, multi-angle analysis, multiple perspectives, examine from angles, surface hidden requirements.
 ---
 
 ## Customization

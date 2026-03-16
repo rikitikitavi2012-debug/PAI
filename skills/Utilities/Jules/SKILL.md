@@ -1,6 +1,6 @@
 ---
 name: Jules
-description: Delegate async coding tasks to Google Jules AI agent. Create tasks, monitor sessions, review PRs, batch delegate. USE WHEN jules, delegate to jules, async task, background coding, maintenance task, write tests jules, jules PR, review jules, jules status, batch tasks jules.
+description: Delegate async coding tasks to Google Jules AI agent. Create tasks, monitor sessions, review PRs, batch delegate. USE WHEN jules, делегируй жюлю, асинхронная задача, delegate to jules, async task, background coding, maintenance task, write tests jules, jules PR, review jules, jules status, batch tasks jules.
 ---
 
 # Jules -- Async Coding Task Delegation

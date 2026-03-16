@@ -1,6 +1,6 @@
 ---
 name: Browser
-description: Visual verification and browser automation via Playwright. Headless or headed Chrome. USE WHEN browser, screenshot, debug web, verify UI, troubleshoot frontend, automate browser, browse website, review stories, run stories, recipe, web automation.
+description: Visual verification and browser automation via Playwright. Headless or headed Chrome. USE WHEN browser, браузер, веб, screenshot, debug web, verify UI, troubleshoot frontend, automate browser, browse website, review stories, run stories, recipe, web automation.
 version: 3.3.0
 ---
 

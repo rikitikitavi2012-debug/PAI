@@ -1,6 +1,6 @@
 ---
 name: Aphorisms
-description: CRUD on {PRINCIPAL.NAME}'s curated aphorism collection — search by theme, add with metadata, research thinkers, match quotes to newsletter content. USE WHEN aphorism, quote, saying, find quote for newsletter, research thinker quotes, add aphorism, search aphorisms, find aphorism.
+description: CRUD on {PRINCIPAL.NAME}'s curated aphorism collection — search by theme, add with metadata, research thinkers, match quotes to newsletter content. USE WHEN aphorism, афоризм, цитата, quote, saying, find quote for newsletter, research thinker quotes, add aphorism, search aphorisms, find aphorism.
 ---
 
 ## Customization

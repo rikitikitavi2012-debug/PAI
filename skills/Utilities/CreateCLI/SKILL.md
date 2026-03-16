@@ -1,6 +1,6 @@
 ---
 name: CreateCLI
-description: Generate production-ready TypeScript CLIs with 3-tier template system (simple argv, yargs, oclif), type safety, error handling, and documentation. USE WHEN create CLI, build CLI, command-line tool, wrap API, add command, upgrade tier, TypeScript CLI.
+description: Generate production-ready TypeScript CLIs with 3-tier template system (simple argv, yargs, oclif), type safety, error handling, and documentation. USE WHEN create CLI, создать CLI, консольная утилита, build CLI, command-line tool, wrap API, add command, upgrade tier, TypeScript CLI.
 ---
 
 ## Customization

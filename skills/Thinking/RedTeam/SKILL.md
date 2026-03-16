@@ -1,6 +1,6 @@
 ---
 name: RedTeam
-description: 32 adversarial agents to destroy weak arguments and find fatal flaws — parallel analysis and adversarial validation. USE WHEN red team, attack idea, counterarguments, critique, stress test, poke holes, devil's advocate, find weaknesses, break this, parallel analysis, adversarial validation.
+description: 32 adversarial agents to destroy weak arguments and find fatal flaws — parallel analysis and adversarial validation. USE WHEN red team, красная команда, критикуй, attack idea, counterarguments, critique, stress test, poke holes, devil's advocate, find weaknesses, break this, parallel analysis, adversarial validation.
 ---
 
 ## Customization

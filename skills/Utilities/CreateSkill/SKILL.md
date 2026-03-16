@@ -1,6 +1,6 @@
 ---
 name: CreateSkill
-description: Scaffold new PAI skills with proper YAML front matter, TitleCase naming, flat folder structure (SKILL.md + Workflows/ + Tools/), and validation against SkillSystem.md. USE WHEN create skill, new skill, skill structure, canonicalize, validate skill, update skill, fix skill structure, scaffold skill.
+description: Scaffold new PAI skills with proper YAML front matter, TitleCase naming, flat folder structure (SKILL.md + Workflows/ + Tools/), and validation against SkillSystem.md. USE WHEN create skill, создать навык, обновить навык, new skill, skill structure, canonicalize, validate skill, update skill, fix skill structure, scaffold skill.
 ---
 
 ## Customization
