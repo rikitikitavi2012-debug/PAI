@@ -37,10 +37,11 @@ if (!content) out(CONTINUE);
 const iscLines = content.match(/- \[[ x~!]\] ISC-\d+.*$/gm);
 if (!iscLines || iscLines.length === 0) out(CONTINUE);
 
+// Use (?:^|\s) instead of \b — JS \b doesn't match Cyrillic word boundaries
 const TRIVIAL_RE = [
-  /\b(exists?|существует|present)\b/i,
-  /\b(no\s+(errors?|typos?|warnings?)|без\s+ошибок)\b/i,
-  /\b(valid\s+(json|yaml|xml)|правильный\s+формат)\b/i,
+  /(?:^|\s)(exists?|существует|present)(?:\s|$|[,.])/i,
+  /(?:^|\s)(no\s+(errors?|typos?|warnings?)|без\s+ошибок)(?:\s|$|[,.])/i,
+  /(?:^|\s)(valid\s+(json|yaml|xml)|правильный\s+формат)(?:\s|$|[,.])/i,
 ];
 
 const trivialIds: string[] = [];
