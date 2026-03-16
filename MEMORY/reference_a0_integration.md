@@ -30,7 +30,7 @@ A0 → результаты в MEMORY/STATE/ → git push → Navi git pull (ч�
 | UUID | Задача | Расписание | Что делает |
 |------|--------|------------|------------|
 | `Wqg7hKhH` | Daily PAI Health Check | Ежедневно 04:00 MSK | git pull + проверка API/инфры |
-| `zhDeNotK` | **Weekly PAI Context Sync** | Вс 02:00 MSK | git pull → sync DOMAINS+TELOS+USER → knowledge/custom/ |
+| `yJdE1wFr` | **Daily PAI Context Sync** | Ежедневно 02:00 MSK | git pull → sync DOMAINS+TELOS+USER → knowledge/custom/ (was weekly `zhDeNotK` — changed after audit found 7-day context drift causing hallucinations) |
 | `2HRlisSR` | Weekly TELOS Progress | Пн 03:00 MSK | Анализ прогресса по целям |
 | `iUeI9PnM` | Weekly Learning Mining | Пн 04:00 MSK | Паттерны из events/сессий |
 | `mSo4moec` | Monthly Memory Compaction | 1-е число 02:00 MSK | Сжатие vector store |
@@ -95,7 +95,7 @@ Daily Digest UUID: `cV8vAcA6` (ежедневно 07:00 MSK / 04:00 UTC)
 ```
 Navi наращивает экспертизу (DOMAINS/, TELOS/)
   → git push private master
-  → Вс 02:00 A0 sync task: git pull → knowledge/custom/
+  → Ежедневно 02:00 A0 sync task: git pull → knowledge/custom/
   → A0 использует экспертизу в задачах
   → A0 пишет findings в MEMORY/STATE/
   → git push → Navi подтягивает через poll
@@ -105,7 +105,7 @@ Navi наращивает экспертизу (DOMAINS/, TELOS/)
 
 - [ ] Улучшить русский поиск: попробовать `labse` или `rubert-tiny2` вместо multilingual-MiniLM
 - [x] A2A протокол: настроен между контейнерами 50001↔50002 (FastA2A, 2026-03-13)
-- [ ] Webhook на push: GitHub → A0 pull (мгновенная синхронизация vs еженедельная)
+- [ ] **HIGH PRIORITY** Webhook на push: GitHub → A0 pull (мгновенная синхронизация — audit confirmed 7-day drift caused hallucination incident 2026-03-06)
 - [ ] Увеличить `memories_max_result` до 8 для research задач
 - [ ] PREFERENCES.md добавить в user-core/ sync (сейчас файл не найден в USER/)
 
