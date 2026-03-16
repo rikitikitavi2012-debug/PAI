@@ -265,25 +265,27 @@
 ## Новые цели (март 2026)
 
 ### G10: Аудит 11 скиллов PAI по структуре v4
-**Статус:** Активна (Высокий приоритет)
+**Статус:** ✅ Завершена (2026-03-16)
 **Поддерживает:** M1 (Инновации), M3 (Техно-суверенитет)
 **Срок:** Q1 2026
 **Описание:** Полный аудит всех 11 скиллов PAI по новой структуре v4.0.3. Предыдущие аудиты (Research, Telos, Agent system) делались по v3 и неприменимы. Нужно: проверить каждый скилл на работоспособность, найти баги, пофиксить, задокументировать. Включает loop mode testing и параллельные workflows.
 **Скиллы для аудита:** Agents, ContentAnalysis, Investigation, Media, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
 **Прогресс:**
-- [ ] Аудит Agents skill
-- [ ] Аудит ContentAnalysis skill
-- [ ] Аудит Investigation skill
-- [ ] Аудит Media skill
-- [ ] Аудит Research skill (ре-аудит по v4)
-- [ ] Аудит Scraping skill
-- [ ] Аудит Security skill
-- [ ] Аудит Telos skill (ре-аудит по v4)
-- [ ] Аудит Thinking skill
-- [ ] Аудит USMetrics skill
-- [ ] Аудит Utilities skill
-- [ ] Баги задокументированы и отправлены в upstream
+- [x] Аудит Agents skill — RU триггеры, voice RU, субагент RU template
+- [x] Аудит ContentAnalysis skill — RU триггеры, voice RU, убран old triggers: array
+- [x] Аудит Investigation skill — RU триггеры, voice RU, убран old triggers: array
+- [x] Аудит Media skill — RU триггеры, voice RU добавлен
+- [x] Аудит Research skill — RU триггеры, voice RU, субагент RU инструкция
+- [x] Аудит Scraping skill — disable-model-invocation: true, структура v4 ОК
+- [x] Аудит Security skill — disable-model-invocation: true, структура v4 ОК
+- [x] Аудит Telos skill — RU триггеры расширены, voice RU
+- [x] Аудит Thinking skill — RU триггеры, voice RU добавлен
+- [x] Аудит USMetrics skill — disable-model-invocation: true, структура v4 ОК
+- [x] Аудит Utilities skill — RU триггеры, voice RU добавлен
+- [x] Баги задокументированы: stdin sharing (3 major, 2 minor) → исправлены
+**Бонус:** TFContent и YandexDirect тоже аудированы и локализованы
 **Консолидировано из:** GTEMP Research боевой тест, GTEMP Telos аудит, GTEMP Skills Full Audit (все от TELOSTracker 2026-02-27)
+**PRD:** `MEMORY/WORK/20260316-070000_skill-audit-ru-localization/PRD.md`
 
 ### G11: Активное участие в PAI community
 **Статус:** Активна (непрерывная)
