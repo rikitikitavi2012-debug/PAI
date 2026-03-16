@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** system
 - **Confidence:** 75%
-- **Observation Count:** 13
-- **Last Crystallized:** 2026-03-01
+- **Observation Count:** 19
+- **Last Crystallized:** 2026-03-16
 - **Source:** Converted from system.json
 
 ---
@@ -18,6 +18,22 @@
 ### ConfigChange hook event blocks mid-session settings.json mutations — add to SecurityValidator [CRYSTAL: 85%]
 - **Confirmed:** 1 times
 - **Since:** 2026-02-22
+
+### Stdin sharing: 2+ хука в одном hooks[] массиве делят stdin — один хук = один entry [CRYSTAL: 90%]
+- **Confirmed:** 2 times (UserPromptSubmit 5 hooks, SessionEnd 5 hooks)
+- **Since:** 2026-03-16
+
+### Transcript race: Stop hooks fire before transcript fully flushed — use last_assistant_message from stdin or delay 300ms+ [CRYSTAL: 85%]
+- **Confirmed:** 1 time (VoiceCompletion silent after long responses)
+- **Since:** 2026-03-16
+
+### THEHOOKSYSTEM.md drifts 2x faster than code — automate doc sync or audit quarterly [CRYSTAL: 80%]
+- **Confirmed:** 1 time (documented 20 hooks, actual 50 instances)
+- **Since:** 2026-03-16
+
+### Voice localization = all layers: SKILL.md + Workflows + Tools + Agents + Hooks + Templates [CRYSTAL: 90%]
+- **Confirmed:** 1 time (found English voice in 5 layers after "complete" localization)
+- **Since:** 2026-03-16
 
 ---
 

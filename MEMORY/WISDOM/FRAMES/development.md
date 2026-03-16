@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** development
 - **Confidence:** 75%
-- **Observation Count:** 25
-- **Last Crystallized:** 2026-03-15
+- **Observation Count:** 39
+- **Last Crystallized:** 2026-03-16
 - **Source:** Converted from development.json
 
 ---
@@ -30,6 +30,30 @@
 ### Persistence through code, not prompts: when data must survive sessions, automatic hooks are the only reliable mechanism — prompt instructions for disk writes are architecturally unsound [CRYSTAL: 85%]
 - **Confirmed:** 1 times
 - **Since:** 2026-02-25
+
+### Schema change → test update: при изменении YAML schema, grep тесты на удалённые поля и обновить [CRYSTAL: 85%]
+- **Confirmed:** 2 times (ContentAnalysis version, Investigation triggers)
+- **Since:** 2026-03-16
+
+### Parallel agents = 3x speedup: 3-4 параллельных агента для batch операций (файлы, аудит, тесты) [CRYSTAL: 90%]
+- **Confirmed:** 4 times (skill audit, system improvements, dead capabilities, workflow localization)
+- **Since:** 2026-03-16
+
+### JS \b regex doesn't match Cyrillic — use (?:^|\s) for Russian word boundaries [CRYSTAL: 90%]
+- **Confirmed:** 1 time (ISCQualityGate)
+- **Since:** 2026-03-16
+
+### CLI tools > text edits: ISCManager, LearningRecall = детерминизм, скорость, надёжность [CRYSTAL: 85%]
+- **Confirmed:** 2 times (ISCManager dogfooding, LearningRecall in Algorithm)
+- **Since:** 2026-03-16
+
+### Double-confirm anti-pattern: не дублировать проверки на разных уровнях (hooks + Claude Code ask) [CRYSTAL: 85%]
+- **Confirmed:** 1 time (SecurityValidator confirmWrite + Claude Code ask → hook error)
+- **Since:** 2026-03-16
+
+### Test pollution ≠ code bugs: тесты проходят по отдельности, падают вместе = shared state, не regression [CRYSTAL: 85%]
+- **Confirmed:** 1 time (76 failures in batch, 0 individual)
+- **Since:** 2026-03-16
 
 ---
 
