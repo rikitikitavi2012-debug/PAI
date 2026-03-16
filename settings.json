@@ -96,6 +96,15 @@
         ]
       },
       {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/VerificationGate.hook.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Write",
         "hooks": [
           {
@@ -110,6 +119,15 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/LearnGate.hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/VerificationGate.hook.ts"
           }
         ]
       },
@@ -1150,16 +1168,16 @@
     }
   },
   "counts": {
-    "skills": 14,
-    "workflows": 175,
+    "skills": 15,
+    "workflows": 186,
     "hooks": 35,
-    "signals": 138,
+    "signals": 146,
     "files": 212,
-    "work": 203,
-    "sessions": 1777,
-    "research": 53,
-    "ratings": 246,
-    "updatedAt": "2026-03-16T00:39:08.172Z"
+    "work": 218,
+    "sessions": 1992,
+    "research": 56,
+    "ratings": 253,
+    "updatedAt": "2026-03-16T13:51:03.559Z"
   },
   "mcpServers": {
     "supabase": {
