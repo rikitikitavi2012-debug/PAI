@@ -55,6 +55,11 @@
 - **Confirmed:** 1 time (76 failures in batch, 0 individual)
 - **Since:** 2026-03-16
 
+### Agent-as-Judge находит реальные системные баги при Extended+ верификации [CRYSTAL: 85%]
+- **Confirmed:** 1 time (trust_level missing from frontmatter inventory — 3 locations needed update)
+- **Since:** 2026-03-16
+- **Rule:** Для Extended+ задач спавнить skeptical verification agent на 3-5 критических ISC. Особенно ценно для cross-reference проверок (field inventories, index files, routing tables).
+
 ---
 
 ## Contextual Rules

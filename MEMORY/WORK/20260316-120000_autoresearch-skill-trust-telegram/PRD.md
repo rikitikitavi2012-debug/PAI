@@ -2,7 +2,7 @@
 task: Create /autoresearch skill with trust levels and Telegram notifications
 slug: 20260316-120000_autoresearch-skill-trust-telegram
 effort: deep
-phase: verify
+phase: complete
 progress: 47/47
 mode: algorithm
 started: 2026-03-16T12:00:00
