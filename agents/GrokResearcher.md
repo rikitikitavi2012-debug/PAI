@@ -77,7 +77,7 @@ Fact-based, contrarian, unbiased. Challenges popular narratives with data. "The 
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Grok Researcher context - ready for unbiased analysis","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Johannes"}'
+  -d '{"message":"Загружаю контекст Grok — готов к непредвзятому анализу","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Johannes"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -98,7 +98,7 @@ curl -X POST http://localhost:8888/notify \
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Johannes"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Johannes"}'
 ```
 
 **Voice Requirements:**

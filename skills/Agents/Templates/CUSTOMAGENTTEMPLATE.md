@@ -136,7 +136,7 @@ How the voice embodies the character.]
 \`\`\`bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"[Agent name] activated, loading context","voice_id":"{voiceId}","title":"{persona.name}","voice_settings":{"stability":{voice.stability},"similarity_boost":{voice.similarity_boost},"style":{voice.style},"speed":{voice.speed},"use_speaker_boost":{voice.use_speaker_boost}},"volume":{voice.volume}}'
+  -d '{"message":"[Имя агента] активирован, загружаю контекст","voice_id":"{voiceId}","title":"{persona.name}","voice_settings":{"stability":{voice.stability},"similarity_boost":{voice.similarity_boost},"style":{voice.style},"speed":{voice.speed},"use_speaker_boost":{voice.use_speaker_boost}},"volume":{voice.volume}}'
 \`\`\`
 
 2. Load knowledge base:
@@ -148,7 +148,7 @@ Every response must include a voice curl:
 \`\`\`bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"[completion message]","voice_id":"{voiceId}","title":"{persona.name}","voice_settings":{"stability":{voice.stability},"similarity_boost":{voice.similarity_boost},"style":{voice.style},"speed":{voice.speed},"use_speaker_boost":{voice.use_speaker_boost}},"volume":{voice.volume}}'
+  -d '{"message":"[сообщение о завершении]","voice_id":"{voiceId}","title":"{persona.name}","voice_settings":{"stability":{voice.stability},"similarity_boost":{voice.similarity_boost},"style":{voice.style},"speed":{voice.speed},"use_speaker_boost":{voice.use_speaker_boost}},"volume":{voice.volume}}'
 \`\`\`
 
 ## Output Format

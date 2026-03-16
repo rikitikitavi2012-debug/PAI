@@ -119,7 +119,7 @@ Each agent's prompt includes:
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"<COMPLETED line content>","voice_id":"<agent_voice_id>","title":"<agent_name>","voice_enabled":true}'
+  -d '{"message":"<сообщение о завершении>","voice_id":"<agent_voice_id>","title":"<agent_name>","voice_enabled":true}'
 ```
 
 ### Step 6: Spotcheck (Optional but Recommended)

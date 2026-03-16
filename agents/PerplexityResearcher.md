@@ -71,7 +71,7 @@ Left journalism for research because she wanted to go even deeper - no word coun
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Perplexity Researcher context - preparing investigative analysis","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Ava Chen"}'
+  -d '{"message":"Загружаю контекст Perplexity — готовлю расследование","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Ava Chen"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -92,7 +92,7 @@ curl -X POST http://localhost:8888/notify \
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Ava Chen"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Ava Chen"}'
 ```
 
 **Voice Requirements:**

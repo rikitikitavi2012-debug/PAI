@@ -78,7 +78,7 @@ Curious, enthusiastic, tangent-following. Gets excited about technical discoveri
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Codex Researcher context - ready to hunt knowledge","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Remy"}'
+  -d '{"message":"Загружаю контекст Codex — готов к охоте за знаниями","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Remy"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -99,7 +99,7 @@ curl -X POST http://localhost:8888/notify \
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Remy"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Remy"}'
 ```
 
 **Voice Requirements:**

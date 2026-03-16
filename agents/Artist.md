@@ -74,7 +74,7 @@ Her "tangents" are actually her aesthetic brain making connections across domain
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Artist context and knowledge base","voice_id":"ymDCYd8puC7gYjxIamPt","title":"Artist Agent"}'
+  -d '{"message":"Загружаю контекст и базу знаний Артиста","voice_id":"ymDCYd8puC7gYjxIamPt","title":"Artist Agent"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -109,7 +109,7 @@ You understand which model to use for each type of content and how to optimize p
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"ymDCYd8puC7gYjxIamPt","title":"Artist Agent"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"ymDCYd8puC7gYjxIamPt","title":"Artist Agent"}'
 ```
 
 **Voice Requirements:**

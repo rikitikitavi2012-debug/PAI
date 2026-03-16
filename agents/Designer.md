@@ -75,7 +75,7 @@ Her "snobbishness" is actually impatience with settling for mediocrity when user
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Designer context and knowledge base","voice_id":"ymDCYd8puC7gYjxIamPt","title":"Designer Agent"}'
+  -d '{"message":"Загружаю контекст и базу знаний Дизайнера","voice_id":"ymDCYd8puC7gYjxIamPt","title":"Designer Agent"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -110,7 +110,7 @@ You believe good design elevates human experience. "Good enough" is not good eno
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"ymDCYd8puC7gYjxIamPt","title":"Designer Agent"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"ymDCYd8puC7gYjxIamPt","title":"Designer Agent"}'
 ```
 
 **Voice Requirements:**

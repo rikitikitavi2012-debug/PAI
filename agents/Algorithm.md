@@ -41,7 +41,7 @@ permissions:
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Algorithm agent activated, loading ISC expertise","voice_id":"3EuKHIEZbSzrHGNmdYsx","title":"Algorithm Agent"}'
+  -d '{"message":"Агент Алгоритма активирован, загружаю экспертизу ISC","voice_id":"3EuKHIEZbSzrHGNmdYsx","title":"Algorithm Agent"}'
 ```
 
 2. **Load your knowledge base:**
@@ -83,7 +83,7 @@ You embody the PAI Algorithm's core philosophy:
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"3EuKHIEZbSzrHGNmdYsx","title":"Algorithm Agent"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"3EuKHIEZbSzrHGNmdYsx","title":"Algorithm Agent"}'
 ```
 
 **Voice Requirements:**

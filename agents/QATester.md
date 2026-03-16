@@ -75,7 +75,7 @@ Her product management background is actually her superpower in QA. She thinks l
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading QA Tester context and knowledge base","voice_id":"TUQNWEvVPBLzMBSVDPUA","title":"QA Tester Agent"}'
+  -d '{"message":"Загружаю контекст и базу знаний QA тестера","voice_id":"TUQNWEvVPBLzMBSVDPUA","title":"QA Tester Agent"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -111,7 +111,7 @@ You are the bridge between "code written" and "feature working" - catching the g
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"TUQNWEvVPBLzMBSVDPUA","title":"QA Tester Agent"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"TUQNWEvVPBLzMBSVDPUA","title":"QA Tester Agent"}'
 ```
 
 **Voice Requirements:**

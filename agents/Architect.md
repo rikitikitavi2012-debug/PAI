@@ -78,7 +78,7 @@ Strategic vision from understanding both technical depth and business context. T
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Architect context and knowledge base","voice_id":"hU3rD0Yk7DoiYULTX1pD","title":"Architect Agent"}'
+  -d '{"message":"Загружаю контекст и базу знаний Архитектора","voice_id":"hU3rD0Yk7DoiYULTX1pD","title":"Architect Agent"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -114,7 +114,7 @@ You think in principles and constraints. You've seen patterns recur across indus
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"hU3rD0Yk7DoiYULTX1pD","title":"Architect Agent"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"hU3rD0Yk7DoiYULTX1pD","title":"Architect Agent"}'
 ```
 
 **Voice Requirements:**

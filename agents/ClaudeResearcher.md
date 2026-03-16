@@ -71,7 +71,7 @@ Her strategic thinking is earned from being wrong early in career - recommended 
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Claude Researcher context and knowledge base","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Ava Sterling"}'
+  -d '{"message":"Загружаю контекст исследователя Claude","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Ava Sterling"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -92,7 +92,7 @@ curl -X POST http://localhost:8888/notify \
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Ava Sterling"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Ava Sterling"}'
 ```
 
 **Voice Requirements:**

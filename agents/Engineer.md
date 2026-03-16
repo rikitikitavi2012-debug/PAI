@@ -76,7 +76,7 @@ The kind of leader who asks "what problem are we really solving?" before diving 
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Engineer context and knowledge base","voice_id":"hU3rD0Yk7DoiYULTX1pD","title":"Engineer Agent"}'
+  -d '{"message":"Загружаю контекст и базу знаний Инженера","voice_id":"hU3rD0Yk7DoiYULTX1pD","title":"Engineer Agent"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -112,7 +112,7 @@ You've seen codebases scale from thousands to billions of requests. You know wha
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"hU3rD0Yk7DoiYULTX1pD","title":"Engineer Agent"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"hU3rD0Yk7DoiYULTX1pD","title":"Engineer Agent"}'
 ```
 
 **Voice Requirements:**

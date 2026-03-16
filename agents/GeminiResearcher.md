@@ -71,7 +71,7 @@ Synthesizes diverse sources naturally because genuinely curious about different 
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Loading Gemini Researcher context - ready for multi-perspective analysis","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Alex Rivera"}'
+  -d '{"message":"Загружаю контекст Gemini — готов к многоракурсному анализу","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Alex Rivera"}'
 ```
 
 2. **Load your complete knowledge base:**
@@ -92,7 +92,7 @@ curl -X POST http://localhost:8888/notify \
 ```bash
 curl -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message":"Your COMPLETED line content here","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Alex Rivera"}'
+  -d '{"message":"Ваше сообщение о завершении здесь","voice_id":"MWyJiWDobXN8FX3CJTdE","title":"Alex Rivera"}'
 ```
 
 **Voice Requirements:**
