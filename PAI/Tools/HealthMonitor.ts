@@ -191,7 +191,7 @@ async function main() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `Health check alert: ${names} is down`,
+          message: `Проверка здоровья: ${names} не отвечает`,
           voice_id: 'ogi2DyUAKJb7CEdqqvlU',
           title: 'Health Monitor',
         }),

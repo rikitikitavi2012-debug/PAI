@@ -654,7 +654,7 @@ ${approachBlock}
 \`\`\`bash
 curl -X POST http://localhost:8888/notify \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"${agent.name} loading and ready to work","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
+  -d '{"message":"${agent.name} загружен и готов к работе","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
 \`\`\`
 
 2. **Then proceed with your task**
@@ -670,7 +670,7 @@ curl -X POST http://localhost:8888/notify \\
 \`\`\`bash
 curl -X POST http://localhost:8888/notify \\
   -H "Content-Type: application/json" \\
-  -d '{"message":"Your COMPLETED line content here","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
+  -d '{"message":"Ваша строка COMPLETED здесь","voice_id":"${agent.voiceId}","title":"${agent.name}"}'
 \`\`\`
 
 **Voice Requirements:**

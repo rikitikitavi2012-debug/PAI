@@ -896,8 +896,8 @@ async function runLoop(prdPath: string, maxOverride?: number, agentCount: number
   writeSessionName(loopSessionId, `Loop: ${prdTitle}${sessionNameSuffix}`);
 
   // ── Voice: Loop starting ──
-  const agentMsg = agentCount > 1 ? ` ${agentCount} parallel agents.` : "";
-  voiceNotify(`Starting loop on ${prdTitle}. ${initialCriteria.total} criteria, ${initialCriteria.passing} already passing.${agentMsg}`);
+  const agentMsg = agentCount > 1 ? ` ${agentCount} параллельных агентов.` : "";
+  voiceNotify(`Запускаю луп: ${prdTitle}. ${initialCriteria.total} критериев, ${initialCriteria.passing} уже пройдено.${agentMsg}`);
 
   // Initialize Loop in PRD
   updateFrontmatter(absPath, {
@@ -939,7 +939,7 @@ async function runLoop(prdPath: string, maxOverride?: number, agentCount: number
       writeAlgorithmState(state);
       writeSessionName(loopSessionId, `Loop: ${prdTitle} [COMPLETE]`);
       const totalTime = ((Date.now() - state.algorithmStartedAt) / 1000).toFixed(0);
-      voiceNotify(`Loop complete! All ${criteria.total} criteria passing after ${frontmatter.iteration} iterations.`);
+      voiceNotify(`Луп завершён! Все ${criteria.total} критериев пройдены за ${frontmatter.iteration} итераций.`);
 
       console.log("");
       console.log(`\x1b[32m╔${"═".repeat(66)}╗\x1b[0m`);
@@ -959,7 +959,7 @@ async function runLoop(prdPath: string, maxOverride?: number, agentCount: number
       finalizeLoopState(state, "blocked", criteria);
       writeAlgorithmState(state);
       writeSessionName(loopSessionId, `Loop: ${prdTitle} [BLOCKED]`);
-      voiceNotify(`Loop blocked. ${criteria.passing} of ${criteria.total} passing. Remaining criteria need human review.`);
+      voiceNotify(`Луп заблокирован. ${criteria.passing} из ${criteria.total} пройдено. Остальные требуют ручной проверки.`);
 
       console.log("");
       console.log(`\x1b[33m\u26A0 THE ALGORITHM \u2014 BLOCKED\x1b[0m`);
@@ -974,7 +974,7 @@ async function runLoop(prdPath: string, maxOverride?: number, agentCount: number
       finalizeLoopState(state, "failed", criteria);
       writeAlgorithmState(state);
       writeSessionName(loopSessionId, `Loop: ${prdTitle} [FAILED]`);
-      voiceNotify(`Loop reached max iterations. ${criteria.passing} of ${criteria.total} passing after ${max} iterations.`);
+      voiceNotify(`Луп достиг максимума итераций. ${criteria.passing} из ${criteria.total} пройдено за ${max} итераций.`);
 
       console.log("");
       console.log(`\x1b[33m\u26A0 THE ALGORITHM \u2014 Max iterations reached (${max})\x1b[0m`);
@@ -992,7 +992,7 @@ async function runLoop(prdPath: string, maxOverride?: number, agentCount: number
       delete state.completedAt;
       writeAlgorithmState(state);
       writeSessionName(loopSessionId, `Loop: ${prdTitle} [PAUSED]`);
-      voiceNotify(`Loop paused at ${criteria.passing} of ${criteria.total} criteria.`);
+      voiceNotify(`Луп на паузе. ${criteria.passing} из ${criteria.total} критериев.`);
 
       console.log("");
       console.log(`\x1b[33m\u23F8 THE ALGORITHM \u2014 Paused\x1b[0m`);
@@ -1005,7 +1005,7 @@ async function runLoop(prdPath: string, maxOverride?: number, agentCount: number
       finalizeLoopState(state, "stopped", criteria);
       writeAlgorithmState(state);
       writeSessionName(loopSessionId, `Loop: ${prdTitle} [STOPPED]`);
-      voiceNotify(`Loop stopped.`);
+      voiceNotify(`Луп остановлен.`);
 
       console.log("");
       console.log(`\x1b[31m\u25A0 THE ALGORITHM \u2014 Stopped\x1b[0m`);
@@ -1085,9 +1085,9 @@ async function runLoop(prdPath: string, maxOverride?: number, agentCount: number
       const gained = postCriteria.passing - criteria.passing;
       const iterElapsed = ((iterEndTime - iterStartTime) / 1000).toFixed(0);
       if (gained > 0) {
-        voiceNotify(`Iteration ${newIteration} complete. ${postCriteria.passing} of ${postCriteria.total} passing. Gained ${gained}.`);
+        voiceNotify(`Итерация ${newIteration} завершена. ${postCriteria.passing} из ${postCriteria.total} пройдено. Новых: ${gained}.`);
       } else {
-        voiceNotify(`Iteration ${newIteration} complete. ${postCriteria.passing} of ${postCriteria.total}. No new criteria passed.`);
+        voiceNotify(`Итерация ${newIteration} завершена. ${postCriteria.passing} из ${postCriteria.total}. Прогресса нет.`);
       }
 
       const pct = postCriteria.total > 0 ? Math.round((postCriteria.passing / postCriteria.total) * 100) : 0;
@@ -1176,9 +1176,9 @@ async function runLoop(prdPath: string, maxOverride?: number, agentCount: number
     // Voice: Progress update
     const gained = postCriteria.passing - criteria.passing;
     if (gained > 0) {
-      voiceNotify(`Iteration ${newIteration} complete. ${postCriteria.passing} of ${postCriteria.total} passing. Gained ${gained}.`);
+      voiceNotify(`Итерация ${newIteration} завершена. ${postCriteria.passing} из ${postCriteria.total} пройдено. Новых: ${gained}.`);
     } else {
-      voiceNotify(`Iteration ${newIteration} complete. ${postCriteria.passing} of ${postCriteria.total}. No new criteria passed.`);
+      voiceNotify(`Итерация ${newIteration} завершена. ${postCriteria.passing} из ${postCriteria.total}. Прогресса нет.`);
     }
 
     // Log output summary
