@@ -114,6 +114,15 @@
         ]
       },
       {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/ISCQualityGate.hook.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Read",
         "hooks": [
           {
