@@ -115,8 +115,9 @@ mkdir -p "$NPM_GLOBAL"
 npm config set prefix "$NPM_GLOBAL" 2>/dev/null
 export PATH="${NPM_GLOBAL}/bin:${PATH}"
 
+NPM_GLOBAL_MODULES="${NPM_GLOBAL}/lib/node_modules"
 for pkg in "exa-mcp-server" "@google/gemini-cli" "zai-cli"; do
-    if npm list -g "$pkg" &>/dev/null; then
+    if [[ -d "${NPM_GLOBAL_MODULES}/${pkg}" ]]; then
         ok "$pkg already installed"
     else
         info "Installing $pkg..."
