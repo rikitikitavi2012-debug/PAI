@@ -245,4 +245,37 @@ describe('ProjectsSync', () => {
     expect(existsSync(snapshotPath)).toBe(false);
   });
 
+  test('Хук завершается быстро (< 500ms)', async () => {
+    const mockContent = `
+## Активные проекты
+
+### P0: PAI Infrastructure
+**Статус:** В разработке
+**Стек:** TypeScript, Bun, Hooks
+**Рабочая директория:** \`~/.claude\`
+`;
+    writeFileSync(telosProjectsPath, mockContent);
+
+    const result = await runHook(hook, {
+      hook_event_name: 'PostToolUse',
+      tool_name: 'Write',
+      tool_input: { file_path: telosProjectsPath }
+    }, { PAI_DIR: tempDir });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.duration).toBeLessThan(500);
+  });
+
+  test('Хук не падает при отсутствии PROJECTS.md файла', async () => {
+    // We intentionally do not write the file
+    const result = await runHook(hook, {
+      hook_event_name: 'PostToolUse',
+      tool_name: 'Write',
+      tool_input: { file_path: telosProjectsPath }
+    }, { PAI_DIR: tempDir });
+
+    expect(result.exitCode).toBe(0);
+    expect(existsSync(snapshotPath)).toBe(false);
+  });
+
 });
