@@ -1,9 +1,28 @@
 {
   "generated": "2026-03-01T00:00:00.000Z",
-  "totalSkills": 11,
+  "totalSkills": 12,
   "alwaysLoadedCount": 0,
-  "deferredCount": 11,
+  "deferredCount": 12,
   "skills": {
+    "autoresearch": {
+      "name": "Autoresearch",
+      "path": "Autoresearch/SKILL.md",
+      "fullDescription": "Autonomous metric optimization via iterative experimentation — plan, run, resume, and report on autoresearch sessions with Trust Levels and Telegram notifications. USE WHEN autoresearch, optimize metric, CPA optimization, lighthouse score, performance optimization, автоисследование, оптимизация метрики, оптимизируй CPA, ночная оптимизация.",
+      "triggers": [
+        "autoresearch",
+        "optimize",
+        "metric",
+        "cpa",
+        "lighthouse",
+        "performance",
+        "автоисследование",
+        "оптимизация",
+        "метрик",
+        "ночная"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
     "agents": {
       "name": "Agents",
       "path": "Agents/SKILL.md",
