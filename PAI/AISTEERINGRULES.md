@@ -37,9 +37,9 @@ Correct: Dev tools → 404 → fix route → verify.
 
 **Don't modify user content without asking.** Never edit quotes or user-written text. Add exactly as provided.
 
-**Minimal scope.** Only change what was asked. No bonus refactoring, no extra cleanup.
-Bad: Fix line 42 bug, also refactor whole file → 200-line diff.
-Correct: Fix the bug → 1-line diff.
+**Verification rigor over speed.** Every claim of completion MUST include evidence: test output, screenshot, diff, or log. Indirect signals (exit code 0, file exists) are NOT sufficient — verify the actual outcome. When in doubt, over-verify. This replaces the former "Minimal scope" rule — proactive fixes are encouraged (per USER rules), but every fix must be verified.
+Bad: "Dashboard deployed" → checked exit code only. "Message delivered" → checked API 202 only.
+Correct: "Dashboard deployed" → screenshot shows data rendering. "Message delivered" → recipient log confirms receipt.
 
 **Plan means stop.** "Create a plan" = present and STOP. No execution without approval.
 
