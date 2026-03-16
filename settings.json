@@ -248,19 +248,35 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/WorkCompletionLearning.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/WisdomSync.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/SessionCleanup.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/UpdateCounts.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/IntegrityCheck.hook.ts"
@@ -274,19 +290,35 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/ModeClassifier.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/RatingCapture.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/AutoWorkCreation.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/UpdateTabTitle.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/SessionAutoName.hook.ts"
@@ -345,19 +377,35 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/LastResponseCache.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/ResponseTabReset.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/VoiceCompletion.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/DocIntegrity.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/RelationshipMemory.hook.ts"
@@ -421,7 +469,11 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/AgentTab.hook.ts"
@@ -435,7 +487,11 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/EventLogger.hook.ts"
-          },
+          }
+        ]
+      },
+      {
+        "hooks": [
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/AgentTab.hook.ts"
@@ -1076,13 +1132,13 @@
     "skills": 13,
     "workflows": 175,
     "hooks": 34,
-    "signals": 136,
+    "signals": 138,
     "files": 212,
-    "work": 198,
-    "sessions": 1776,
-    "research": 52,
-    "ratings": 243,
-    "updatedAt": "2026-03-15T22:17:02.503Z"
+    "work": 203,
+    "sessions": 1777,
+    "research": 53,
+    "ratings": 246,
+    "updatedAt": "2026-03-16T00:39:08.172Z"
   },
   "mcpServers": {
     "supabase": {
