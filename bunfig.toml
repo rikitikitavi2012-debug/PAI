@@ -1,0 +1,4 @@
+[test]
+# Preload resets PAI_DIR to temp dir before each test file
+# This prevents test pollution from shared process.env.PAI_DIR
+preload = ["./hooks/tests/preload-isolation.ts"]
