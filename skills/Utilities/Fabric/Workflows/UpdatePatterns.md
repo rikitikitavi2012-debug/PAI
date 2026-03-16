@@ -22,7 +22,7 @@ go install github.com/danielmiessler/fabric@latest
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Updating Fabric patterns from upstream repository"}' \
+  -d '{"message": "Обновляю паттерны Fabric из upstream-репозитория"}' \
   > /dev/null 2>&1 &
 ```
 

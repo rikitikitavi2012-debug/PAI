@@ -17,7 +17,7 @@ If this directory exists, load and apply any PREFERENCES.md, configurations, or 
 ```bash
 curl -s -X POST http://localhost:8888/notify \
   -H "Content-Type: application/json" \
-  -d '{"message": "Checking security updates from sources"}' \
+  -d '{"message": "Проверяю обновления безопасности из источников"}' \
   > /dev/null 2>&1 &
 ```
 
