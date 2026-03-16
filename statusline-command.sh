@@ -69,10 +69,16 @@ eval "$(jq -r '
 DA_NAME="${DA_NAME:-Assistant}"
 PAI_VERSION="${PAI_VERSION:-—}"
 
-# Get Algorithm version from LATEST file (single source of truth)
+# Get Algorithm version from LATEST symlink or file
+# LATEST can be: symlink to "v4.0.0.md" (extract version from filename)
+#                or text file containing "v4.0.0" (legacy)
 ALGO_LATEST_FILE="$PAI_DIR/PAI/Algorithm/LATEST"
-if [ -f "$ALGO_LATEST_FILE" ]; then
-    ALGO_VERSION=$(cat "$ALGO_LATEST_FILE" 2>/dev/null | tr -d '[:space:]' | sed 's/^v//i')
+if [ -L "$ALGO_LATEST_FILE" ]; then
+    # Symlink: extract version from target filename (v4.0.0.md → 4.0.0)
+    ALGO_VERSION=$(readlink "$ALGO_LATEST_FILE" | sed 's/\.md$//' | sed 's/^v//i')
+elif [ -f "$ALGO_LATEST_FILE" ]; then
+    # Text file: read content (legacy format)
+    ALGO_VERSION=$(cat "$ALGO_LATEST_FILE" 2>/dev/null | head -1 | tr -d '[:space:]' | sed 's/^v//i')
 else
     ALGO_VERSION="—"
 fi

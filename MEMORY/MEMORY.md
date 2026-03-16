@@ -18,3 +18,4 @@
 
 ## Project
 - [TF Fencing Idea](project_tf_fencing_idea.md) — идея по ограждениям для timber frame сайта
+- [Agent Claim System](project_claim_system_future.md) — claim system + deadlock detection для параллельных агентов (межсезонье)
