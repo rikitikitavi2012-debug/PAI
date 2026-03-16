@@ -20,16 +20,16 @@
 
 ## Реестр бригады
 
-| # | Имя | Tier | Роль | Провайдер | LLM | Алиас | Прокси |
-|---|------|------|------|-----------|-----|-------|--------|
-| 1 | **Navi** | T1 | Архитектор, ведущий | Anthropic | Opus 4.6 | `pai` | Да (NL) |
-| 2 | **Jules** | T1 | Async-исполнитель | Google | Gemini | JulesAPI.ts | Нет |
-| 3 | **Agent Zero** | T1 | Автономный 24/7 | Z.AI + OpenCode Zen | GLM-5 + Kimi 2.5 | AgentZero.ts | Нет |
-| 4 | **Gemini CLI** | T1 | Второе мнение, research, PAI-интегрирован | Google | Gemini Pro | `gemi` | Да (NL) |
-| 5 | **OpenCode CLI** | T1 | Мульти-провайдер кодер | OpenCode Go | Kimi 2.5 (default) | `oc` | Да (NL) |
-| 6 | **GLM-5** | T3 | Bulk inference, резерв | Zhipu AI | GLM-5 744B | Inference.ts | Нет |
-| 7 | **zai-cli** | T3 | Vision, search, read | Zhipu AI | GLM-4.6V | MCP stdio | Нет |
-| 8 | **NotebookLM** | T3 | Grounded research, podcasts | Google | Gemini | notebooklm CLI | Нет |
+| # | Имя | Tier | Роль | Провайдер | LLM | Алиас | Прокси | При падении прокси |
+|---|------|------|------|-----------|-----|-------|--------|-------------------|
+| 1 | **Navi** | T1 | Архитектор, ведущий | Anthropic | Opus 4.6 | `pai` | Да (NL) | ❌ Мёртв |
+| 2 | **Jules** | T1 | Async-исполнитель | Google | Gemini | JulesAPI.ts | Нет (Google cloud) | ✅ Работает (Google infra) |
+| 3 | **Agent Zero** | T1 | Автономный 24/7 | Z.AI + OpenCode Zen | GLM-5 + Kimi 2.5 | AgentZero.ts | Нет | ✅ Работает (Z.AI прямой) |
+| 4 | **Gemini CLI** | T1 | Второе мнение, research | Google | Gemini Pro | `gemi` | Да (NL) | ❌ Мёртв |
+| 5 | **OpenCode CLI** | T1 | Мульти-провайдер кодер | OpenCode Go | Kimi 2.5 (default) | `oc` | Да (NL) | ⚠️ Z.AI/Kimi работает |
+| 6 | **GLM-5** | T3 | Bulk inference, резерв | Zhipu AI | GLM-5 744B | Inference.ts | Нет | ✅ Работает (Z.AI прямой) |
+| 7 | **zai-cli** | T3 | Vision, search, read | Zhipu AI | GLM-4.6V | MCP stdio | Нет | ✅ Работает (Z.AI прямой) |
+| 8 | **NotebookLM** | T3 | Grounded research, podcasts | Google | Gemini | notebooklm CLI | Да (Google) | ❌ Мёртв |
 
 ---
 
