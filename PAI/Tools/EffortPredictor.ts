@@ -64,13 +64,24 @@ if (!query) { console.error("Usage: bun EffortPredictor.ts \"task description\""
 const qTokens = tokenize(query);
 const scored = [...seen.values()].map(r => ({ ...r, score: overlap(qTokens, tokenize(r.task)) }))
   .filter(r => r.score > 0).sort((a, b) => b.score - a.score).slice(0, 5);
-const avgDur = scored.length ? scored.reduce((s, r) => s + r.duration_min, 0) / scored.length : 0;
+// Filter out 0-duration records (PRDs with same started/updated timestamps — data quality issue)
+const withDuration = scored.filter(r => r.duration_min > 0);
+const avgDur = withDuration.length ? withDuration.reduce((s, r) => s + r.duration_min, 0) / withDuration.length : 0;
 const avgIsc = scored.length ? Math.round(scored.reduce((s, r) => s + r.isc, 0) / scored.length) : 0;
+// If no duration data, fall back to ISC-based prediction
 let suggested = "standard";
-if (avgDur >= 32) suggested = "comprehensive";
-else if (avgDur >= 16) suggested = "deep";
-else if (avgDur >= 8) suggested = "advanced";
-else if (avgDur >= 2) suggested = "extended";
+if (avgDur > 0) {
+  if (avgDur >= 32) suggested = "comprehensive";
+  else if (avgDur >= 16) suggested = "deep";
+  else if (avgDur >= 8) suggested = "advanced";
+  else if (avgDur >= 2) suggested = "extended";
+} else if (avgIsc > 0) {
+  // No duration data — use ISC count as proxy
+  if (avgIsc >= 64) suggested = "comprehensive";
+  else if (avgIsc >= 40) suggested = "deep";
+  else if (avgIsc >= 24) suggested = "advanced";
+  else if (avgIsc >= 16) suggested = "extended";
+}
 const confidence = scored.length >= 4 ? "high" : scored.length >= 2 ? "medium" : "low";
 console.log(JSON.stringify({
   suggested_effort: suggested, confidence, similar_tasks: scored.length,
