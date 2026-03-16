@@ -395,7 +395,7 @@
 - [x] Navi → Gemini: headless через `gemi -p "" -y -o text`
 - [x] Navi → OpenCode: headless через `opencode run`
 - [x] Jules → A0: code review в JulesAutoMerge pipeline
-- [x] A0 knowledge sync: Weekly PAI Context Sync (Вс 02:00) — TELOS + DOMAINS + USER → knowledge/custom/ (104 файла)
+- [x] A0 knowledge sync: Daily PAI Context Sync (ежедневно 02:00 MSK) — TELOS + DOMAINS + USER → knowledge/custom/ (104 файла). Upgraded from weekly after audit found 7-day drift (2026-03-16)
 - [x] A0 behaviour.md: обновлён с доменной экспертизой и протоколами
 - [x] A0 health check: auto-pull PAI-personal при каждой проверке
 - [x] Gemini: BELIEFS + WISDOM @imports, полная routing table (DOMAINS, landscaping, market, normatives, TF KB)
@@ -429,7 +429,7 @@
 
 **3C. Ускорение синхронизации — чтобы бригада работала с актуальными данными**
 
-- [ ] **A0 daily sync вместо weekly** — Сейчас A0 обновляет знания раз в неделю (воскресенье). Если ты обновил цели в понедельник — A0 узнает только через 6 дней. Решение: изменить cron с еженедельного на ежедневный. Одна строка. Результат: A0 всегда актуален с задержкой максимум 24ч.
+- [x] **A0 daily sync вместо weekly** — ✅ Выполнено 2026-03-16. UUID yJdE1wFr (заменил zhDeNotK). Причина: аудит PAI через NotebookLM подтвердил 7-day context drift → инцидент галлюцинации A0 (2026-03-06).
 - [ ] **DOMAINS auto-growth** — Когда добавляется новый файл экспертизы в DOMAINS/ (например, новое направление бизнеса), Gemini и OpenCode не узнают — их routing tables нужно обновлять вручную. Решение: git hook после коммита — если затронут DOMAINS/, автоматически обновить symlinks и routing tables. Результат: новая экспертиза автоматически доступна всей бригаде.
 - [ ] **Context map для A0** — A0 получает файлы как плоский набор текстов, без понимания структуры. Решение: при sync генерировать _CONTEXT_MAP.md — «карту навигации»: какой файл про что, когда использовать. A0 читает карту первой и знает куда смотреть. Результат: A0 лучше находит нужную экспертизу.
 
@@ -448,6 +448,14 @@
 - [ ] **/autoresearch skill** — SKILL.md + references + interactive plan wizard (dry-run)
 - [ ] **Trust Level framework** — L1 Supervised → L2 Monitored → L3 Autonomous → L4 Scheduled. L3+ = бригада работает ночью
 - [ ] **Autoresearch Telegram** — A0 push отчёты autoresearch progress в @A0_timecloud_bot (Trust L3+)
+
+**3I. Monthly PAI Audit — системная гигиена через cross-model review**
+
+- [x] **NotebookLM как инструмент аудита** — notebooklm-py CLI установлен, Skill с 7 workflows, T3 в бригаде (2026-03-16)
+- [x] **Первый аудит проведён** — 12 файлов PAI загружены в NLM, Gemini нашёл 5 системных проблем (Verification Bypass, Minimal Scope конфликт, ISC gaming, A0 drift, hook bloat), все 5 пофикшены. Brigade cross-review: Gemini CLI (APPROVED) + OpenCode/Kimi (APPROVED) + A0/GLM-5 (нашёл баг — 3 оставшихся Count Gate). 2026-03-16
+- [x] **Audit workflow автоматизирован** — `scripts/pai-audit-collector.sh` (31 файл, 2.5MB, 5 тиров), `PAI/config/audit-manifest.yaml`, `skills/NotebookLM/Workflows/PAIAudit.md`. 8 фиксированных + adaptive вопросы из FAILURES. 2 ревьюера с ротацией. 2026-03-16
+- [ ] **Первый запланированный аудит** — апрель 2026 (1-я неделя). Тест workflow end-to-end.
+- [ ] **Audit metrics dashboard** — трекинг: findings count, severity, time-to-fix, false positive rate, escape rate, repeat findings
 
 **3E. Режим сезона — переключатель**
 

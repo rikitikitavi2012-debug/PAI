@@ -17,7 +17,7 @@
 **Архитектура PAI v4.0.3:**
 - **35 хуков** — все defensive/fail-open, shebang-based (chmod +x обязателен)
 - **171 тест** / 34 сюиты — subprocess-based test harness (hooks/tests/)
-- **12 скиллов** — Agents, Autoresearch, ContentAnalysis, Investigation, Media, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
+- **13 скиллов** — Agents, Autoresearch, ContentAnalysis, Investigation, Media, NotebookLM, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
 - **Security system** — SecurityValidator.hook.ts + patterns.yaml (trusted/blocked/confirm/alert + path categories)
 - **3-layer mode routing** — ModeClassifier hook (regex) → Complexity Gate (LLM) → Algorithm file
 - **Algorithm v4.0.0** — Cycle Selector ([B]/[Q] routing), Autoresearch Sub-Loop (8-phase iterative optimization), Layered Drift Defense (L1/L2/L3), Iteration Budget. Validated by 6-level review (3 models). Files: v4.0.0.md + Algorithm-Autoresearch.md
@@ -45,7 +45,7 @@
 - **TELOS контекст** — 24 файла заполнены (+FINANCES.md), эволюция продолжается
 - **PAI инфраструктура** — хуки, скиллы, агенты, воркфлоу
 - **Community contribution** — PRs, issues, code review в upstream PAI
-- **AI Brigade (7 членов, T1/T2/T3)** — T1: Navi (архитектор) + Jules (async-кодер) + A0 (24/7 VPS) + OpenCode (headless coder). T2: Gemini CLI (interactive). T3: GLM-5 + zai-cli (tools)
+- **AI Brigade (8 членов, T1/T2/T3)** — T1: Navi (архитектор) + Jules (async-кодер) + A0 (24/7 VPS) + OpenCode (headless coder). T2: Gemini CLI (interactive). T3: GLM-5 + zai-cli (tools) + NotebookLM (grounded research)
   - **A0 development loop:** Jules пишет тесты/фиксы в `agent-zero-custom` → PR → Navi review → deploy на VPS. A0 растёт вместе с бригадой
 - **JulesAutoMerge** — автоматизация merge Jules PRs с A0 code review
 - **Miessler Philosophy** — 9 операционных принципов вшиты в нервную систему (CLAUDE.md + AISTEERINGRULES.md)
@@ -82,6 +82,16 @@
 - [x] /autoresearch skill: SKILL.md + 4 workflows (Plan, Run, Resume, Report), 12-й скилл — 2026-03-16
 - [x] Trust Level framework: L1-L4 graduated autonomy в Algorithm v4.0.0 + Run.md — 2026-03-16
 - [x] Telegram notifications: AgentZero sendMessage для Trust L3+ в Run.md — 2026-03-16
+- [x] NotebookLM integration: notebooklm-py v0.3.4 + Skill (7 workflows) + T3 в бригаде — 2026-03-16
+- [x] PAI Audit via NotebookLM: первый cross-model аудит (Gemini), 5 проблем найдено и пофикшено — 2026-03-16
+- [x] Steering Rules: Minimal Scope → Verification Rigor (аудит: 0 failures от проактивности, 43 от пассивности) — 2026-03-16
+- [x] Algorithm: ISC Count Gate → Quality Gate (Splitting Test вместо числовых полов) — 2026-03-16
+- [x] A0 sync: weekly → daily (аудит подтвердил 7-day context drift → hallucination incident) — 2026-03-16
+- [x] Monthly PAI Audit workflow: collector script + manifest + 7 workflows + brigade rotation — 2026-03-16
+- [ ] Hook consolidation: моно-хуки по событиям (Stop, UserPromptSubmit, SessionEnd) — межсезонье
+- [ ] VerificationGate.hook.ts: механический enforcement верификации (по аналогии с LearnGate) — межсезонье
+- [ ] Escape rate metrics: автоматический подсчёт ISC escapes в NATIVE — межсезонье
+- [ ] NotebookLM cookie monitoring: алерт при expiry, auto-relogin workflow — межсезонье
 - [ ] Cross-model review через A0 в Algorithm pipeline (Фаза 4, межсезонье 2026-2027)
 - [ ] L2 Autoresearch: самооптимизация PAI скиллов через eval (Фаза 4)
 - [ ] State persistence (ARIS-style) для autoresearch sessions (Фаза 4)
