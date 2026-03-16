@@ -15,7 +15,7 @@
 **Цель:** Полноценная личная операционная система: TELOS 23/23, PAI настроен, агенты работают, контекст глубокий.
 **Срок:** Непрерывный процесс — система эволюционирует постоянно
 **Архитектура PAI v4.0.3:**
-- **30 хуков** — все defensive/fail-open, shebang-based (chmod +x обязателен)
+- **34 хука** — все defensive/fail-open, shebang-based (chmod +x обязателен)
 - **171 тест** / 34 сюиты — subprocess-based test harness (hooks/tests/)
 - **11 скиллов** — Agents, ContentAnalysis, Investigation, Media, Research, Scraping, Security, Telos, Thinking, USMetrics, Utilities
 - **Security system** — SecurityValidator.hook.ts + patterns.yaml (trusted/blocked/confirm/alert + path categories)
@@ -74,7 +74,11 @@
 - [x] Git workflow: fork, main/master, worktrees
 - [x] Algorithm v4.0-alpha: Cycle Selector + Autoresearch Sub-Loop + Drift Defense + Iteration Budget (2026-03-15)
 - [x] Algorithm validation: 6-level review (RedTeam + Manual + Architect + Gemini 2.5 + A0 Sonnet + Jules 15 tests), 25 issues found, 20 fixed (2026-03-15)
-- [ ] Algorithm v4.0 (stable): живой тест с [Q] критерием → убрать alpha
+- [x] Algorithm hardening: 17 spec gaps fixed (timeout, parsing, Pareto, noise, stagnation, PARTIAL, cost model, etc.) — 2026-03-16
+- [x] Algorithm stress-test: 14/14 Autoresearch mechanisms verified on real tasks (bundle size, dead deps, stagnation, dual-Q, context recovery) — 2026-03-16
+- [x] Learning loop closed: LEARN.md readback + experiments.tsv aggregation + active retrieval + performance trend correlation — 2026-03-16
+- [x] FAILURES rotation: 188→87 MB, gzip on write, daily auto-rotation via LoadContext — 2026-03-16
+- [ ] Algorithm v4.0 (stable): живой тест на Яндекс Директ CPA → убрать alpha
 - [ ] /autoresearch skill: SKILL.md + references + interactive plan wizard (Фаза 3)
 - [ ] Trust Level framework: L1-L4 graduated autonomy для autoresearch (Фаза 3)
 - [ ] Telegram notifications: A0 → @A0_timecloud_bot для Trust L3+ autoresearch (Фаза 3)
@@ -130,7 +134,7 @@
 ---
 
 ### P1: Сайт Timber Frame + Благоустройство (премиум террасы + полный цикл участка)
-**Статус:** MVP LIVE + ВИЗУАЛ ГОТОВ — timber-frame-spb.ru задеплоен 08.03.2026. Портфолио визуализировано. Благоустройство: экспертиза оцифрована (5 LS файлов + ANALYSIS.md), ROADMAP расширен на /blagoustrojstvo. Реклама НЕ запущена.
+**Статус:** MVP LIVE + API VERIFIED — timber-frame-spb.ru задеплоен 08.03.2026. Портфолио визуализировано. Благоустройство оцифровано. Yandex Direct/Metrika/Wordstat API verified (единый токен). Автономная оптимизация спроектирована (PRD 48 ISC). Реклама НЕ запущена — блокер ФЗ-152.
 **Суть:** Сайт для привлечения премиум-клиентов на TF террасы/веранды/навесы + благоустройство участков как кросс-продажа и отдельная услуга. Команда: Иван (руководитель, прораб благоустройства) + Виктор Шульц (мастер TF, 3D SketchUp) + Алексей (прораб, ИП, бригады). Полный цикл: от расчистки до последнего нагеля.
 **Результат Quick Research (2026-02-27):** Ниша подтверждена свободной. 6+ конкурентов по общему рынку, 0 по TF малым формам. Цены от 12K руб/м2 (бюджет) до 40K+ (премиум). ЦА: загородные дома Ленобласть. Сохранено: `MEMORY/RESEARCH/2026-02/2026-02-27_timber-frame-spb/`
 **Двойная цель:**
@@ -153,6 +157,8 @@
 - [x] Скилл YandexDirect (кампании, ключи, ставки, отчёты) — валидирован
 - [x] Исследование ФЗ-152: Supabase нельзя для ПД, нужен хостинг в РФ
 - [x] Исследование Yandex Direct API v5 + Metrika API
+- [x] Yandex API verified: единый OAuth токен (direct:api + wordstat:api + metrika:read), 2 счётчика Метрики, 1 кампания в аккаунте
+- [x] Автономная оптимизация Директа: аналитический отчёт + PRD 48 ISC по 5 фазам (MEMORY/WORK/20260316-060000_yandex-direct-autoresearch/)
 - [x] Конкурентная разведка: СОЗДАЙ-ТЕРРАСУ (3370 Telegram subs, 611 видео, 51 статья) → COMPETITIVE_INTELLIGENCE.md
 - [x] Content Gap Analysis: 7 тем конкурента (ошибки стройки, материалы, покрытия) + 7 наших уникальных
 - [x] IllustratedArticle pipeline: A0 текст → Navi изображения → Vision QA → WebP → deploy
@@ -190,7 +196,10 @@
 - Фото Ивана — "не похож" (нужны 3-5 референсов без каски)
 **Следующие шаги:**
 - [ ] ФЗ-152: политика конфиденциальности + регистрация оператора ПД (ДО запуска рекламы)
-- [ ] Первая рекламная кампания Яндекс.Директ (к апрелю — начало сезона)
+- [ ] Цели конверсий в Метрике (заявка, звонок, чат) — БЛОКЕР для Autoresearch
+- [ ] Первые кампании через API (поиск + РСЯ, ручные ставки, НЕ ЕПК)
+- [ ] Baseline данные (2-4 недели, min 100 кликов)
+- [ ] Autoresearch CPA-оптимизация (Algorithm v4.0-alpha [Q] sub-loop)
 - [ ] Статья terrasa-spb-cena (285 показов/мес — топ ключ)
 - [ ] Страница /navesy (108 показов/мес — отдельная страница оправдана)
 - [ ] Расширение слабых статей (score 73-77)
