@@ -208,7 +208,7 @@ if [[ -d "${PAI_ROOT}/hooks" ]]; then
     while IFS= read -r -d '' hook; do
         chmod +x "$hook"
         ((HOOK_COUNT++))
-    done < <(find "${PAI_ROOT}/hooks" -name "*.ts" -o -name "*.sh" -print0 2>/dev/null)
+    done < <(find "${PAI_ROOT}/hooks" \( -name "*.ts" -o -name "*.sh" \) -print0 2>/dev/null)
     ok "${HOOK_COUNT} hooks made executable"
 else
     warn "hooks/ directory not found"
