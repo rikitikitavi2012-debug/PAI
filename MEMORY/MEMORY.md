@@ -1,7 +1,9 @@
 # Memory Index
 
 ## Reference
+- [NotebookLM Integration](reference_notebooklm_integration.md) — интеграция Google NotebookLM: notebooklm-py, паттерны (Zero-Token YouTube, Content Pipeline), риски, экосистема
 - [A0 Integration Architecture](reference_a0_integration.md) — полная схема интеграции Agent Zero: sync, knowledge base, scheduled tasks, улучшения
+- [Session Search (FTS5)](reference_session_search.md) — FTS5 полнотекстовый поиск по истории сессий, skill /recall, автоиндексация
 - [Gemini CLI Integration](reference_gemini_integration.md) — схема интеграции Gemini CLI: GEMINI.md, symlinks, hooks, routing table, DOMAINS
 - [OpenCode CLI Integration](reference_opencode_integration.md) — схема интеграции OpenCode: AGENTS.md, plugin, symlinks, routing table, providers
 - [Jules Integration](reference_jules_integration.md) — схема интеграции Jules: AGENTS.md, API, AutoMerge, русский язык, ограничения
@@ -17,5 +19,7 @@
 - [Hooks stdin sharing](feedback_hooks_stdin_sharing.md) — 2+ хука в одном hooks[] делят stdin. Один хук = один matcher entry.
 
 ## Project
+- [A0 Telegram Bot Project](project_a0_telegram_bot.md) — рабочая директория /home/ser/projects/a0-telegram-bot/, стек, деплой, статус фаз, Jules PRs
+- [A0 Infrastructure Status](project_a0_infra.md) — что сделано 2026-03-18 (FD fix, git, bot, backup), что осталось (50003 патч, health monitor, webhook)
 - [TF Fencing Idea](project_tf_fencing_idea.md) — идея по ограждениям для timber frame сайта
 - [Agent Claim System](project_claim_system_future.md) — claim system + deadlock detection для параллельных агентов (межсезонье)

@@ -1,8 +1,8 @@
 {
   "generated": "2026-03-01T00:00:00.000Z",
-  "totalSkills": 12,
+  "totalSkills": 14,
   "alwaysLoadedCount": 0,
-  "deferredCount": 12,
+  "deferredCount": 13,
   "skills": {
     "autoresearch": {
       "name": "Autoresearch",
@@ -319,6 +319,26 @@
       "tier": "deferred",
       "minModel": "sonnet"
     },
+    "notebooklm": {
+      "name": "NotebookLM",
+      "path": "NotebookLM/SKILL.md",
+      "fullDescription": "Google NotebookLM integration — podcast generation, research knowledge bases, YouTube extraction, content pipelines. USE WHEN podcast, подкаст, notebooklm, notebook, knowledge base, база знаний, audio overview, аудио обзор, YouTube extraction, research notebook, исследовательский блокнот, создай подкаст, generate podcast, create podcast, аудио из статьи, audio from article, сгенерируй аудио, quiz from docs.",
+      "triggers": [
+        "podcast",
+        "подкаст",
+        "notebooklm",
+        "notebook",
+        "knowledge",
+        "база",
+        "audio",
+        "аудио",
+        "youtube",
+        "блокнот",
+        "generate"
+      ],
+      "tier": "deferred",
+      "minModel": "sonnet"
+    },
     "utilities": {
       "name": "Utilities",
       "path": "Utilities/SKILL.md",
@@ -432,6 +452,26 @@
       ],
       "tier": "deferred",
       "minModel": "sonnet"
+    },
+    "recall": {
+      "name": "Recall",
+      "path": "PAI/Skills/recall/SKILL.md",
+      "fullDescription": "Full-text search across PAI conversation history using FTS5 — find previous discussions, context recall, search history. USE WHEN /recall, find in history, search history, о чём говорили, найди в истории, context recall, past sessions, что мы обсуждали.",
+      "triggers": [
+        "recall",
+        "find",
+        "history",
+        "search",
+        "найди",
+        "истории",
+        "говорили",
+        "обсуждали",
+        "context",
+        "past",
+        "sessions"
+      ],
+      "tier": "deferred",
+      "minModel": "haiku"
     }
   }
 }

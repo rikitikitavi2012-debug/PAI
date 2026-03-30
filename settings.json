@@ -7,7 +7,12 @@
     "BASH_DEFAULT_TIMEOUT_MS": "600000",
     "PAI_CONFIG_DIR": "/home/ser/.config/PAI",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS": "10000"
+    "CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS": "10000",
+    "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
+    "ANTHROPIC_API_KEY": "4a8ff1c2abfb408fac83e99ea30c20dd.xpUcmF8mcvY5ljDA",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.1",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5-turbo"
   },
   "includeGitInstructions": false,
   "permissions": {
@@ -448,6 +453,14 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/RelationshipMemory.hook.ts"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/PAI/Tools/SessionSearch/index-hook.ts"
           }
         ]
       }
@@ -1026,8 +1039,9 @@
       "includeGitInstructions: false saves ~2K tokens by skipping built-in git system prompt."
     ]
   },
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "plansDirectory": "Plans/",
+  "voiceEnabled": true,
   "autoMemoryDirectory": "/home/ser/.claude/MEMORY/",
   "loadAtStartup": {
     "_docs": "Files force-loaded into session context at startup by LoadContext.hook.ts. Paths relative to PAI_DIR. Injected as <system-reminder> blocks.",
@@ -1171,13 +1185,13 @@
     "skills": 15,
     "workflows": 186,
     "hooks": 36,
-    "signals": 146,
+    "signals": 169,
     "files": 212,
-    "work": 218,
-    "sessions": 1992,
-    "research": 56,
-    "ratings": 253,
-    "updatedAt": "2026-03-16T13:51:03.559Z"
+    "work": 257,
+    "sessions": 2560,
+    "research": 60,
+    "ratings": 278,
+    "updatedAt": "2026-03-30T07:46:22.608Z"
   },
   "mcpServers": {
     "supabase": {
