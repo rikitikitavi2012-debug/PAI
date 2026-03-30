@@ -1,15 +1,18 @@
-════ PAI | NATIVE MODE ═══════════════════════
-🗒️ TASK: Найти результаты исследования Hermes Agent
-🔄 ITERATION on: Иван спрашивает что было взято из Гермеса и применено
-📃 CONTENT:
-**Нашёл в MEMORY:**
-- Задача `20260330-095807_httpsgithubcomnousresearchhermesa` — создана сегодня в 09:58
-- Статус: **COMPLETED**, но все фазы в THREAD.md = "Pending"
-- PRD пустой — ISC не созданы
-- Scratch папка пустая
+## Итог по всем трём пунктам
 
-**Вывод:** Результаты исследования **не были сохранены**. Задача была создана, но Algoritm не выполнил фазы OBSERVE→LEARN.
+| Пункт | Статус | Результат |
+|-------|--------|-----------|
+| **LEARN.md adoption 4%** | Ложная тревога | LearnGate работает. 100% compliance post-install. 4% = legacy без хука. |
+| **188 MB FAILURES** | **Исправлено** | 188→87 MB. Gzip on write + rotation + daily cleanup. |
+| **Cross-task analytics** | Преждевременно | 4 experiments.tsv — basic aggregation уже есть, ML-level ждёт данных. |
 
-🔧 CHANGE: Нет изменений — это диагностика
-✅ VERIFY: Проверил MEMORY/WORK, RESEARCH, FRAMES, session-index.db
-🗣️ Navi: Иван, в MEMORY нет сохранённых результатов по Hermes Agent. Задача была создана утром, но фазы не выполнены. Хочешь изучить репозиторий сейчас и зафиксировать что можно применить?
+**Сессия целиком — 4 задачи закрыты:**
+
+| # | Задача | Коммитов | Ключевой результат |
+|---|--------|----------|-------------------|
+| 1 | Algorithm hardening (17 gaps) | 1 | 130 строк spec fixes |
+| 2 | Close learning loop | 2 | LEARN.md + experiments readback + active retrieval |
+| 3 | FAILURES rotation | 2 | 188→87 MB, auto-rotation |
+| 4 | Context recovery (14th mechanism) | — | Verified after /compact |
+
+**Алгоритм: 75% → ~90% уверенности.** Остальные 10% — продакшн-тесты на реальных edge cases.

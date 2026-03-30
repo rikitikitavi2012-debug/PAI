@@ -463,6 +463,14 @@
             "command": "${PAI_DIR}/PAI/Tools/SessionSearch/index-hook.ts"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/AutoSkillProposal.hook.ts"
+          }
+        ]
       }
     ],
     "ConfigChange": [
@@ -1183,16 +1191,16 @@
     }
   },
   "counts": {
-    "skills": 15,
+    "skills": 16,
     "workflows": 186,
     "hooks": 36,
-    "signals": 169,
+    "signals": 170,
     "files": 212,
-    "work": 261,
-    "sessions": 2561,
-    "research": 60,
+    "work": 262,
+    "sessions": 2562,
+    "research": 62,
     "ratings": 278,
-    "updatedAt": "2026-03-30T08:06:42.815Z"
+    "updatedAt": "2026-03-30T17:45:00.505Z"
   },
   "mcpServers": {
     "supabase": {
