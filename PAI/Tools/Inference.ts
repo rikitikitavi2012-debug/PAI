@@ -81,10 +81,10 @@ const CLAUDE_MODEL_MAP: Record<string, string> = {
 };
 
 // Level configurations
-const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: number; provider: 'claude' | 'gemini' | 'zai' }> = {
-  fast: { model: 'haiku', defaultTimeout: 15000, provider: 'claude' },
-  standard: { model: 'sonnet', defaultTimeout: 30000, provider: 'claude' },
-  smart: { model: 'opus', defaultTimeout: 90000, provider: 'claude' },
+const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: number; provider: 'claude' | 'gemini' | 'zai'; zaiModel?: string }> = {
+  fast: { model: 'haiku', defaultTimeout: 15000, provider: 'claude', zaiModel: 'glm-5-turbo' },
+  standard: { model: 'sonnet', defaultTimeout: 30000, provider: 'claude', zaiModel: 'glm-5' },
+  smart: { model: 'opus', defaultTimeout: 90000, provider: 'claude', zaiModel: 'glm-5.1' },
   gemini: { model: 'gemini-pro', defaultTimeout: 30000, provider: 'gemini' },
   glm5: { model: 'glm-5', defaultTimeout: 30000, provider: 'zai' },
 };
@@ -114,6 +114,8 @@ async function inferenceZai(options: InferenceOptions, level: InferenceLevel, ti
     return { success: false, output: '', error: 'No ZAI_API_KEY found', latencyMs: Date.now() - startTime, level };
   }
 
+  // Use level-specific Z.AI model (glm-5-turbo for fast, glm-5 for standard, glm-5.1 for smart)
+  const model = config.zaiModel || config.model;
   const baseUrl = 'https://api.z.ai/api/coding/paas/v4/chat/completions';
   const messages: Array<{role: string; content: string}> = [];
   if (options.systemPrompt) messages.push({ role: 'system', content: options.systemPrompt });
@@ -130,7 +132,7 @@ async function inferenceZai(options: InferenceOptions, level: InferenceLevel, ti
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: config.model,
+        model,
         messages,
         max_tokens: 2000,
       }),
@@ -267,9 +269,11 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
   const apiKey = loadApiKey('ANTHROPIC_API_KEY');
 
   if (!apiKey) {
-    const latencyMs = Date.now() - startTime;
-    emitInferenceEvent(level, 'claude', config.model, 'fail', latencyMs, 'no_api_key');
-    return { success: false, output: '', error: 'No ANTHROPIC_API_KEY found in env or .env', latencyMs, level };
+    // Fallback to Z.AI if no Anthropic key available
+    console.error('[Inference] No ANTHROPIC_API_KEY, falling back to Z.AI');
+    const zaiResult = await inferenceZai(options, level, timeout);
+    emitInferenceEvent(level, 'zai', 'glm-5', zaiResult.success ? 'ok' : 'fail', zaiResult.latencyMs, zaiResult.error);
+    return zaiResult;
   }
 
   const modelId = CLAUDE_MODEL_MAP[config.model] || config.model;
@@ -307,6 +311,15 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
     if (!response.ok) {
       const errText = await response.text();
       emitInferenceEvent(level, 'claude', config.model, 'fail', latencyMs, `http_${response.status}`);
+
+      // Fallback to Z.AI on auth errors (401, 403) or rate limits (429)
+      if (response.status === 401 || response.status === 403 || response.status === 429) {
+        console.error(`[Inference] Claude ${response.status}, falling back to Z.AI`);
+        const zaiResult = await inferenceZai(options, level, timeout);
+        emitInferenceEvent(level, 'zai', 'glm-5', zaiResult.success ? 'ok' : 'fail', zaiResult.latencyMs, zaiResult.error);
+        return zaiResult;
+      }
+
       return { success: false, output: '', error: `Anthropic API ${response.status}: ${errText.slice(0, 200)}`, latencyMs, level };
     }
 
