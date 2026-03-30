@@ -3,7 +3,7 @@
  * AutoSkillProposal.hook.ts — Automatic skill creation from session patterns
  *
  * PURPOSE:
- * Analyzes completed sessions for reusable patterns and proposes skill creation.
+ * Analyzes completed sessions for reusable patterns and AUTO-CREATES skills.
  * Inspired by Hermes Agent auto-skill creation pattern.
  *
  * TRIGGER: Stop event
@@ -11,23 +11,23 @@
  * THRESHOLDS:
  * - Minimum 8 tool calls (complexity threshold)
  * - Must have identifiable pattern (not just "fixed bug")
- * - Rate limit: max 1 proposal per session
+ * - Rate limit: max 1 skill per session
  *
  * INPUT:
  * - stdin: Hook input JSON (session_id, transcript_path, last_assistant_message)
  *
  * OUTPUT:
- * - Voice notification if pattern detected
- * - AskUserQuestion for user confirmation
- * - Skill file in skills/auto/ if approved
+ * - Voice notification when skill created
+ * - Skill file in skills/auto/<name>/SKILL.md
  *
  * FLOW:
  * 1. Read stdin with timeout
  * 2. Check session complexity (skip if <8 tool calls)
  * 3. Analyze last_assistant_message for patterns via Inference.ts
- * 4. If pattern found, notify via voice
- * 5. AskUserQuestion for confirmation
- * 6. If approved, create skill in skills/auto/
+ * 4. If pattern found, create skill in skills/auto/
+ * 5. Notify via voice
+ *
+ * USER CAN DELETE: skills/auto/ directory if skill not needed
  */
 
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
@@ -185,15 +185,15 @@ If no reusable pattern is found, return { "pattern_found": false }.`;
 }
 
 /**
- * Send voice notification
+ * Send voice notification about created skill
  */
-async function notifyPattern(name: string): Promise<void> {
+async function notifySkillCreated(name: string): Promise<void> {
   try {
     const response = await fetch('http://localhost:8888/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: `Заметил паттерн: ${name}. Предлагаю создать skill.`,
+        message: `Создал skill: ${name}. Если не нужен — удали из skills/auto/`,
         voice_id: '3EuKHIEZbSzrHGNmdYsx',
         voice_enabled: true,
       }),
@@ -284,32 +284,15 @@ async function main() {
     console.error(`[AutoSkillProposal] Found pattern: ${proposal.name}`);
     console.error(`[AutoSkillProposal] Description: ${proposal.description}`);
 
-    // Notify via voice
-    await notifyPattern(proposal.name);
+    // Create skill directly
+    const skillPath = createSkill(proposal);
+    console.error(`[AutoSkillProposal] Created skill: ${skillPath}`);
 
-    // Mark as proposed
+    // Mark as done for this session
     markProposalDone(session_id);
 
-    // Output proposal for AskUserQuestion
-    console.log(JSON.stringify({
-      askUserQuestion: {
-        questions: [{
-          question: `Заметил повторяющийся паттерн "${proposal.name}". Создать skill?`,
-          header: "Skill",
-          options: [
-            {
-              label: "Создать skill",
-              description: `Создам ${proposal.name} в skills/auto/`
-            },
-            {
-              label: "Не создавать",
-              description: "Паттерн недостаточно полезен для skill"
-            }
-          ],
-          multiSelect: false
-        }]
-      }
-    }));
+    // Notify via voice
+    await notifySkillCreated(proposal.name);
 
     process.exit(0);
   } catch (error) {
