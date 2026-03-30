@@ -1,0 +1,11 @@
+id: "20260316-163510_task"
+title: "Ответь одним предложением: какая модель тебе отвеч"
+session_id: "15bd68b9-0eb8-47c5-808f-a85f00248db9"
+created_at: "2026-03-16T16:35:10+03:00"
+completed_at: "2026-03-16T16:35:50+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -1,0 +1,46 @@
+
+expertise:
+  security:
+    name: "Security Expert"
+    description: "Deep knowledge of vulnerabilities"
+    keywords: ["security", "vulnerability"]
+  research:
+    name: "Researcher"
+    description: "Researches stuff"
+personality:
+  skeptical:
+    name: "Skeptical"
+    description: "Questions assumptions"
+  analytical:
+    name: "Analytical"
+    description: "Analyzes stuff"
+approach:
+  thorough:
+    name: "Thorough"
+    description: "Exhaustive analysis"
+voice_mappings:
+  default: "System"
+  default_voice_id: "default-id"
+  voice_registry:
+    System:
+      voice_id: "default-id"
+      description: "Default voice"
+      characteristics: ["calm"]
+      stability: 0.5
+      similarity_boost: 0.75
+    "Security Voice":
+      voice_id: "sec-id"
+      description: "Default sec voice"
+      characteristics: ["calm"]
+      stability: 0.5
+      similarity_boost: 0.75
+  mappings:
+    - traits: ["security", "skeptical"]
+      voice: "Security Voice"
+      voice_id: "sec-id"
+      reason: "Matched sec"
+  fallbacks:
+    skeptical: "Skeptical Voice"
+    skeptical_voice_id: "skep-id"
+examples: {}
+  

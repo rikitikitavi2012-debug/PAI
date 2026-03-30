@@ -1,25 +1,25 @@
 {
-  "last_check_timestamp": "2026-03-02T09:31:44.840Z",
+  "last_check_timestamp": "2026-03-29T18:18:03.733Z",
   "sources": {
     "blog_main_news": {
-      "last_hash": "d7e33f2ef1715ca3225472b591166a2d",
+      "last_hash": "a0b4f9d715559cfa1fffb5a52d57f36a",
       "last_title": "Main News: Newsroom",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "changelog_claude_code_changelog": {
-      "last_hash": "9e132dcebdc4da2e74836f01d7d88f64",
+      "last_hash": "9187e04f2e3883967315692332d89181",
       "last_title": "Claude Code CHANGELOG: inputChange",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "changelog_mcp_changelog": {
-      "last_hash": "3cb413b345eef2ed65caa97443a70f3c",
+      "last_hash": "408ff3c5bbb13984d3b01161763769ba",
       "last_title": "MCP Changelog: Latest update",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "docs_mcp_docs": {
-      "last_hash": "3cb413b345eef2ed65caa97443a70f3c",
+      "last_hash": "408ff3c5bbb13984d3b01161763769ba",
       "last_title": "MCP Docs: Documentation updated",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "docs_mcp_specification": {
       "last_hash": "a0404d2390e4f2319fcbe2d386e022a7",
@@ -32,34 +32,34 @@
       "last_checked": "2026-02-08T18:08:39.832Z"
     },
     "docs_skills_documentation": {
-      "last_hash": "fc0dfb17dd8c17955995548e55729f46",
+      "last_hash": "936fe4e79700c131d5d0cc1ad823c336",
       "last_title": "Skills Documentation: Documentation updated",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "github_claude-code_commits": {
-      "last_sha": "76c0cbaeb563cd548b11898ba3892812f1ea510f",
-      "last_title": "Merge pull request #28756 from anthropics/oct/cleanup-workflow-permissions",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_sha": "a3d9426e3e183d1fdc560fcc8a69e9d854f040c9",
+      "last_title": "chore: Update CHANGELOG.md",
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "github_skills_commits": {
-      "last_sha": "3d59511518591fa82e6cfcf0438d68dd5dad3e76",
-      "last_title": "chore: export latest skills (#465)",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_sha": "7029232b9212482c0476da354b83364bd28fab2f",
+      "last_title": "Add claude-api skill (#515)",
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "github_mcp_specification_commits": {
-      "last_sha": "21894339b1c0bdf9320078288613b84ba3051975",
-      "last_title": "Update plugin Readme to be less specific to Claude Code",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_sha": "7ce158525afb956503e149bc5009beb21fbaf7c1",
+      "last_title": "SEP-837: Update authorization spec to clarify client type requirements (#837)",
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "github_claude-cookbooks_commits": {
-      "last_sha": "112611bacad67a1e1947f35e1672d5f9f6a3ee93",
-      "last_title": "Update registry.yaml (#393)",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_sha": "14ef4cd17ce7da4c78fd049d1b8e5d325468c8ba",
+      "last_title": "fix(knowledge_graph): sync alias map, raw-vs-resolved scoring, try/except on extraction",
+      "last_checked": "2026-03-29T18:18:03.734Z"
     },
     "github_mcp_specification_releases": {
       "last_version": "2024-11-05-final",
       "last_title": "2024-11-05-final: 2024-11-05-final",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.733Z"
     },
     "blog_alignment_science_blog": {
       "last_hash": "4258a31de9cbcb914e8e5fff5e51a9a8",
@@ -67,9 +67,9 @@
       "last_checked": "2026-02-08T18:08:39.832Z"
     },
     "blog_research_page": {
-      "last_hash": "700416d5052ea1821b665b7b79177d43",
+      "last_hash": "e0c40a1fa7a80ec104ae393f36b1f19b",
       "last_title": "Research Page: Research",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.734Z"
     },
     "docs_claude_docs_home": {
       "last_hash": "5fbf6c41ef6bd48c7540e219cc5df1e9",
@@ -77,14 +77,14 @@
       "last_checked": "2026-02-13T07:41:49.996Z"
     },
     "docs_anthropic_api_docs": {
-      "last_hash": "55a5f41d6d40a9f66c2f7c9973e6d019",
+      "last_hash": "5094fc41f7d3a3e50c3b7f258fc1db0b",
       "last_title": "Anthropic API Docs: Documentation updated",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.734Z"
     },
     "github_anthropic-sdk-typescript_releases": {
-      "last_version": "sdk-v0.76.0",
-      "last_title": "sdk-v0.76.0: sdk: v0.76.0",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_version": "bedrock-sdk-v0.26.4",
+      "last_title": "bedrock-sdk-v0.26.4: bedrock-sdk: v0.26.4",
+      "last_checked": "2026-03-29T18:18:03.734Z"
     },
     "github_claude-quickstarts_commits": {
       "last_sha": "4b2549e8093a6dee1c394bdd8fcf83cb914a271a",
@@ -97,19 +97,19 @@
       "last_checked": "2026-02-08T18:08:39.832Z"
     },
     "changelog_claude_docs_release_notes": {
-      "last_hash": "07778cec2cb96378091e2993b0225e46",
+      "last_hash": "2d2064eeeaf8784c0f60171845a5a8c6",
       "last_title": "Claude Docs Release Notes: Latest update",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.734Z"
     },
     "changelog_api_release_notes": {
-      "last_hash": "cc981db136e8d24a9a098ad159be42d4",
+      "last_hash": "65d212dd78d62452bdf005a3becf42d3",
       "last_title": "API Release Notes: Latest update",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_checked": "2026-03-29T18:18:03.734Z"
     },
     "github_anthropic-sdk-python_releases": {
-      "last_version": "v0.80.0",
-      "last_title": "v0.80.0: v0.80.0",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_version": "v0.82.0",
+      "last_title": "v0.82.0: v0.82.0",
+      "last_checked": "2026-03-29T18:18:03.734Z"
     },
     "github_courses_commits": {
       "last_sha": "f4dbb137d7b02dddaf3cc73e32e20a702d3b5e77",
@@ -117,9 +117,9 @@
       "last_checked": "2025-11-14T19:49:50.328Z"
     },
     "github_claude-code_releases": {
-      "last_version": "v2.1.58",
-      "last_title": "v2.1.58: v2.1.58",
-      "last_checked": "2026-03-02T09:31:44.840Z"
+      "last_version": "v2.1.83",
+      "last_title": "v2.1.83: v2.1.83",
+      "last_checked": "2026-03-29T18:18:03.733Z"
     }
   }
 }

@@ -1,0 +1,15 @@
+
+voice_mappings:
+  voice_registry:
+    "Security Voice":
+      voice_id: "sec-id"
+      description: "Overridden sec voice registry"
+      characteristics: ["intense"]
+      prosody:
+        stability: 0.9
+        similarity_boost: 0.8
+        style: 0.5
+        speed: 1.2
+        use_speaker_boost: true
+        volume: 1.0
+  

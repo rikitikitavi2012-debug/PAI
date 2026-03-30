@@ -6,7 +6,7 @@
 
 **Location:** `~/.claude/hooks/`
 **Configuration:** `~/.claude/settings.json`
-**Status:** Active - 34 hook files, 50 configured instances across 15 event types
+**Status:** Active - 35 hook files, 50 configured instances across 15 event types
 
 ---
 
@@ -1115,7 +1115,7 @@ HOOK LIFECYCLE:
 6. Hook exits 0 (always succeeds)
 7. Claude Code continues
 
-HOOKS BY EVENT (34 hook files, 50 settings entries):
+HOOKS BY EVENT (35 hook files, 50 settings entries):
 
 SESSION START (5 entries):
   KittyEnvPersist.hook.ts        Persist Kitty env vars + tab reset (once)

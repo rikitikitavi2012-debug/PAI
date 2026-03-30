@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** learning
 - **Confidence:** 50%
-- **Observation Count:** 3
-- **Last Crystallized:** 2026-03-05
+- **Observation Count:** 4
+- **Last Crystallized:** 2026-03-16
 - **Source:** Converted from learning.json
 
 ---
@@ -49,3 +49,4 @@
 
 
 - 2026-03-05: [principle] Strong approval of improved TUI pattern and work quality
+- 2026-03-16: [anti-pattern] Frustrated — learning system stopped showing ratings visibly

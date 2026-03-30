@@ -18,7 +18,7 @@ FOR: Everything not routed to MINIMAL by ModeClassifier.
 
 **⚡ COMPLEXITY GATE — evaluate first, before anything else:**
 
-**Mechanism chain (no circular dependency):** ModeClassifier (deterministic regex hook, pre-prompt) → Complexity Gate (LLM judgment, per-task) → ISC Quality Gate (Splitting Test, per-PRD) → Mid-Session Downshift (if ISC count reveals simpler task). Four independent mechanisms at four different levels. Escape hatch and mid-session downshift are in ISC Quality Gate, not Complexity Gate.
+**Mechanism chain (no circular dependency):** ModeClassifier (deterministic regex hook, pre-prompt) → Complexity Gate (LLM judgment, per-task) → ISC Count Gate (mechanical count, per-PRD) → Mid-Session Downshift (if ISC count reveals simpler task). Four independent mechanisms at four different levels. Escape hatch and mid-session downshift are in ISC Count Gate, not Complexity Gate.
 
 Does this task require multiple steps, multiple files, investigation, planning, or verification?
 
@@ -88,7 +88,6 @@ FOR: Pure greetings, ratings, short acknowledgments — classified by ModeClassi
 
 - **Mandatory output format** — Every response MUST use exactly one mode format above. No freeform output.
 - **Response format before questions** — Complete format output FIRST, then AskUserQuestion at the end.
-- **Verification before "done"** — Before claiming completion, provide at least ONE of: test output, screenshot, file read of result, diff, or log. Exit code 0 and "file exists" are NOT evidence. This is the #1 failure pattern (6+ incidents). If you cannot verify — say so explicitly.
 
 ---
 

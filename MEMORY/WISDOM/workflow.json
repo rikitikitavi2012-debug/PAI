@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-03-15T21:41:09.982Z",
+  "updated": "2026-03-18T19:53:53.107Z",
   "observations": [
     {
       "type": "principle",
@@ -409,6 +409,55 @@
       "observation": "Correction — Navi missed obvious prerequisite validation",
       "timestamp": "2026-03-15T23:29:06+03:00",
       "session_id": "0b60436a-596e-4198-ba18-626c338af187",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — persistent errors after changes, seeking root cause",
+      "timestamp": "2026-03-16T11:25:42+03:00",
+      "session_id": "59a46297-8239-41da-90fb-0ea2c0d4d1ec",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration with Gemini's MCP connection failure",
+      "timestamp": "2026-03-17T00:47:20+03:00",
+      "session_id": "ecf8e0b3-6eba-4bc2-bf6b-2bddb5c807e6",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated — bridge still disconnected after multiple attempts",
+      "timestamp": "2026-03-17T00:51:24+03:00",
+      "session_id": "ecf8e0b3-6eba-4bc2-bf6b-2bddb5c807e6",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration — server still disconnected after changes",
+      "timestamp": "2026-03-17T01:01:47+03:00",
+      "session_id": "ecf8e0b3-6eba-4bc2-bf6b-2bddb5c807e6",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Strong approval — delivered on critical gaps identified by Gemini",
+      "timestamp": "2026-03-17T00:31:10+03:00",
+      "session_id": "ecf8e0b3-6eba-4bc2-bf6b-2bddb5c807e6",
+      "confirmed": 2
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild correction — frequency too high, needs adjustment",
+      "timestamp": "2026-03-18T21:06:37+03:00",
+      "session_id": "37f79ddd-777e-4924-80e5-7a87bf56cb7e",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Mild frustration — uncertainty about A0's work + needs clarification",
+      "timestamp": "2026-03-18T21:45:12+03:00",
+      "session_id": "8a5b6a37-87a9-44d9-a05b-8067c471e66a",
       "confirmed": 1
     }
   ]

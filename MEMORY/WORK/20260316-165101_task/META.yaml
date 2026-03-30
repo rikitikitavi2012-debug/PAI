@@ -1,0 +1,11 @@
+id: "20260316-165101_task"
+title: "Скажи одним словом: работает?"
+session_id: "413d72f4-a046-4d2b-a2e5-934667f5ca67"
+created_at: "2026-03-16T16:51:01+03:00"
+completed_at: "2026-03-16T16:51:03+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -2,8 +2,8 @@ id: "20260303-014333_measure-hook-performance-baseline"
 title: "Measure hook performance baseline"
 session_id: "perf-bench-001"
 created_at: "2026-03-03T01:43:33+03:00"
-completed_at: null
-status: "ACTIVE"
+completed_at: "2026-03-29T21:56:52+03:00"
+status: "COMPLETED"
 source: "AUTO"
 lineage:
   tools_used: []

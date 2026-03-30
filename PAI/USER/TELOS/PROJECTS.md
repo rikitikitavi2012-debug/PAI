@@ -41,12 +41,16 @@
 - **Признание:** @rikitikitavi2012-debug отмечен в release notes PAI v4.0.3
 **Подпроекты:**
 - **PAI Workspace (Kitty)** — 2 таба: Center (Command Center + Strategic Dashboard vsplit) и Telemetry (Events Live + Operational tall). Live cost tracking, brigade status, TELOS metrics. Заменяет PAI Dashboard (web). Детерминизм + zero overhead.
+- **Workspace Bridge** — MCP-based мульти-агентная координация. Claude/Gemini/OpenCode в видимых Kitty окнах общаются через MCP Bridge Server. Monitor tab, claim system, shared context. PRD с 42 ISC, 5 фаз, Jules tasks. Исследование: 40+ проектов на tmux, Kitty-native = ниша.
 - ~~**PAI Dashboard**~~ — ❌ Заменён на Kitty Workspace (март 2026). Web UI = лишний overhead для соло-разработчика. Terminal-native = быстрее, проще, надёжнее.
 - **TELOS контекст** — 24 файла заполнены (+FINANCES.md), эволюция продолжается
 - **PAI инфраструктура** — хуки, скиллы, агенты, воркфлоу
 - **Community contribution** — PRs, issues, code review в upstream PAI
 - **AI Brigade (8 членов, T1/T2/T3)** — T1: Navi (архитектор) + Jules (async-кодер) + A0 (24/7 VPS) + OpenCode (headless coder). T2: Gemini CLI (interactive). T3: GLM-5 + zai-cli (tools) + NotebookLM (grounded research)
-  - **A0 development loop:** Jules пишет тесты/фиксы в `agent-zero-custom` → PR → Navi review → deploy на VPS. A0 растёт вместе с бригадой
+  - **A0 development loop:** Jules пишет тесты/фиксы в `a0-custom` → PR → Navi review → deploy на VPS. A0 растёт вместе с бригадой
+  - **A0 инфраструктура (2026-03-18):** FD leak пропатчен (upstream #906), git repo `a0-custom` создан (15 коммитов), TG бот автостартует, weekly backup + auto-commit cron, fail2ban настроен, Docker image pinned
+  - **A0 Telegram бот:** @A0_timecloud_bot — требует доработки (форматирование, обработка ошибок, UX). Отдельный подпроект
+  - **A0 TODO (инфраструктура):** FD патч на 50003, health monitor → Telegram, webhook GitHub→A0 pull, docker-compose для container 2, container 1 обновить
 - **JulesAutoMerge** — автоматизация merge Jules PRs с A0 code review
 - **Miessler Philosophy** — 9 операционных принципов вшиты в нервную систему (CLAUDE.md + AISTEERINGRULES.md)
 **Результаты (февраль-март 2026):**
@@ -88,9 +92,12 @@
 - [x] Algorithm: ISC Count Gate → Quality Gate (Splitting Test вместо числовых полов) — 2026-03-16
 - [x] A0 sync: weekly → daily (аудит подтвердил 7-day context drift → hallucination incident) — 2026-03-16
 - [x] Monthly PAI Audit workflow: collector script + manifest + 7 workflows + brigade rotation — 2026-03-16
+- [x] A0 лечение: FD leak fix, git repo a0-custom, TG бот автостарт, backup cron, fail2ban, Docker pin — 2026-03-18
+- [ ] **A0 TG бот улучшения:** форматирование, обработка ошибок, UX — активно
+- [ ] **A0 инфра:** FD патч на 50003, health monitor → Telegram, webhook sync, docker-compose — межсезонье
 - [ ] Hook consolidation: моно-хуки по событиям (Stop, UserPromptSubmit, SessionEnd) — межсезонье
 - [ ] Hook stdin dedup: extract `readPreToolUseStdin()` + `detectsPhaseComplete()` в hooks/lib/ — 3 хука (LearnGate, VerificationGate, ISCQualityGate) дублируют ~25 строк boilerplate. hook-io.ts уже есть но только для Stop хуков — межсезонье
-- [ ] VerificationGate.hook.ts: механический enforcement верификации (по аналогии с LearnGate) — межсезонье
+- [x] VerificationGate.hook.ts: механический enforcement верификации (по аналогии с LearnGate) — межсезонье
 - [ ] Escape rate metrics: автоматический подсчёт ISC escapes в NATIVE — межсезонье
 - [ ] NotebookLM cookie monitoring: алерт при expiry, auto-relogin workflow — межсезонье
 - [ ] Cross-model review через A0 в Algorithm pipeline (Фаза 4, межсезонье 2026-2027)
@@ -103,10 +110,11 @@
 - [x] Z.AI интеграция в pipeline (GLM-5 inference, zai-cli MCP, ZaiVision screenshots)
 - [x] FINANCES.md — цифровая бухгалтерия ($240/мес fixed, 13 API keys, live trackers)
 - [x] OpenCode CLI — T1 автономный агент, headless mode, Kimi 2.5 + Z.AI models
+- [ ] Workspace Bridge: MCP Bridge Server + Monitor + Kitty integration (PRD: 42 ISC, 5 фаз)
 - [ ] TELOS panel в Kitty — goals, status прямо в терминале
 - [ ] A0 расширение scheduled tasks (health check, security scan, community watcher)
 - [ ] **A0 как участник бригады — непрерывное улучшение через Jules:**
-  - Repo: `agent-zero-custom` (приватный, GitHub)
+  - Repo: `a0-custom` (приватный, GitHub) — полная кодовая база + кастомизации
   - Scope: extensions (_80-_89), skills (8), prompts, behaviour.md — NOT core
   - Jules: тесты → баги → улучшения → PR → Navi review → deploy на VPS
   - Стратегия numbering: _80-_89 наши slots, _10-_75 upstream

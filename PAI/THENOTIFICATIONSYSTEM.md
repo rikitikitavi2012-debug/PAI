@@ -95,7 +95,7 @@ curl -s -X POST http://localhost:8888/notify \
 | Deep | <32min | All phase curls |
 | Comprehensive | <120min | All phase curls |
 
-**Task completion voice** is handled by `StopOrchestrator.hook.ts` → `handlers/VoiceNotification.ts`, which extracts the `🗣️` line from the response and POSTs to the voice server.
+**Task completion voice** is handled by `VoiceCompletion.hook.ts` → `handlers/VoiceNotification.ts`, which extracts the `🗣️` line from the response and POSTs to the voice server.
 
 ---
 

@@ -80,6 +80,9 @@ const CLAUDE_MODEL_MAP: Record<string, string> = {
   opus: 'claude-opus-4-6',
 };
 
+// Cache for invalid Anthropic key (401/403) — skip Claude for rest of session
+let claudeKeyInvalid = false;
+
 // Level configurations
 const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: number; provider: 'claude' | 'gemini' | 'zai'; zaiModel?: string }> = {
   fast: { model: 'haiku', defaultTimeout: 15000, provider: 'claude', zaiModel: 'glm-5-turbo' },
@@ -268,9 +271,10 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
   const startTime = Date.now();
   const apiKey = loadApiKey('ANTHROPIC_API_KEY');
 
-  if (!apiKey) {
-    // Fallback to Z.AI if no Anthropic key available
-    console.error('[Inference] No ANTHROPIC_API_KEY, falling back to Z.AI');
+  // Skip Claude if key was already rejected (cached 401/403)
+  if (claudeKeyInvalid || !apiKey) {
+    if (!apiKey) console.error('[Inference] No ANTHROPIC_API_KEY, falling back to Z.AI');
+    if (claudeKeyInvalid) console.error('[Inference] Claude key invalid (cached), using Z.AI');
     const zaiResult = await inferenceZai(options, level, timeout);
     emitInferenceEvent(level, 'zai', 'glm-5', zaiResult.success ? 'ok' : 'fail', zaiResult.latencyMs, zaiResult.error);
     return zaiResult;
@@ -314,6 +318,11 @@ export async function inference(options: InferenceOptions): Promise<InferenceRes
 
       // Fallback to Z.AI on auth errors (401, 403) or rate limits (429)
       if (response.status === 401 || response.status === 403 || response.status === 429) {
+        // Cache auth failures to skip Claude for rest of session
+        if (response.status === 401 || response.status === 403) {
+          claudeKeyInvalid = true;
+          console.error('[Inference] Claude key marked invalid, will use Z.AI for session');
+        }
         console.error(`[Inference] Claude ${response.status}, falling back to Z.AI`);
         const zaiResult = await inferenceZai(options, level, timeout);
         emitInferenceEvent(level, 'zai', 'glm-5', zaiResult.success ? 'ok' : 'fail', zaiResult.latencyMs, zaiResult.error);

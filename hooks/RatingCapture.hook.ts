@@ -453,6 +453,40 @@ async function main() {
       process.exit(0);
     }
 
+    // PERF OPTIMIZATION: Neutral pattern fast-path — skip inference for clearly neutral prompts
+    // These patterns have NO sentiment toward the assistant's work
+    const NEUTRAL_PATTERNS = [
+      /^\/\w+/,                    // Slash commands (/compact, /simplify, etc.)
+      /^\w+:\s*$/,                 // Single word + colon (labels)
+      /^https?:\/\//i,             // URLs
+      /^read\s+/i,                 // Read commands
+      /^run\s+/i,                  // Run commands
+      /^check\s+/i,                // Check commands
+      /^list\s+/i,                 // List commands
+      /^show\s+/i,                 // Show commands
+      /^what\s+is/i,               // Questions (no sentiment)
+      /^how\s+(do|to|can)/i,       // How-to questions
+      /^why\s+/i,                  // Why questions
+      /^where\s+/i,                // Where questions
+      /^when\s+/i,                 // When questions
+      /^can\s+you/i,               // Can you questions
+      /^could\s+you/i,             // Could you questions
+      /^please\s+/i,               // Please requests
+      /^continue$/i,               // Continue command
+      /^yes$/i,                    // Simple yes
+      /^no$/i,                     // Simple no
+      /^ok$/i,                     // Simple ok
+      /^done$/i,                   // Simple done
+      /^next$/i,                   // Simple next
+      /^go\s+ahead$/i,             // Go ahead
+      /^proceed$/i,                // Proceed
+      /^\d+\s*(files?|lines?|items?|bugs?|errors?|tasks?)$/i,  // Counts (3 files, 5 bugs)
+    ];
+    if (NEUTRAL_PATTERNS.some(re => re.test(prompt.trim()))) {
+      console.error('[RatingCapture] Neutral pattern detected, skipping sentiment analysis');
+      process.exit(0);
+    }
+
     // BUG FIX: Positive word fast-path — short praise gets rating 8 directly
     // Prevents inference timeout from dropping positive signals (the "Excellent!" bug)
     const ratingVocab = await loadRatingVocabulary();

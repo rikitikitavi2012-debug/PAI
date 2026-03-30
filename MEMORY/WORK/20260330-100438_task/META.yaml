@@ -1,0 +1,11 @@
+id: "20260330-100438_task"
+title: "Что ты уже сделал и до какой стадии дошел?"
+session_id: "6d7d6bab-3b06-4af4-bfdb-dc7f377a8494"
+created_at: "2026-03-30T10:04:38+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

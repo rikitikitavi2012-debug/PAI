@@ -1,0 +1,11 @@
+id: "20260316-201621_task"
+title: "Я тут подумал можем мы создать на базе китти полно"
+session_id: "ecf8e0b3-6eba-4bc2-bf6b-2bddb5c807e6"
+created_at: "2026-03-16T20:16:21+03:00"
+completed_at: "2026-03-17T02:08:15+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -1,7 +1,7 @@
 # Projects Registry (Оперативный снимок)
 
 *Компактная сводка для стартового контекста. Полные данные: `PAI/USER/TELOS/PROJECTS.md`*
-*Обновлено: 2026-03-13*
+*Обновлено: 2026-03-16*
 
 ## Активные
 
@@ -9,7 +9,7 @@
 |---|--------|------|------|--------|
 | P0 | PAI + TELOS (Личная AI-инфраструктура) | `~/.claude` | TypeScript, Bun, Hooks | Активен, непрерывный (PAI v4.0.3 (март 2026)) |
 | P3 | Цифровой Прораб (PWA приложение) | `/home/ser/projects/digital-foreman-app/` | React 19 + Vite 7 + TailwindCSS 4 + Zustand + Dexie.js (Ind… | Активная разработка (scaffolding + 3 модуля готовы) |
-| P1 | Сайт Timber Frame + Благоустройство (премиум террасы + полный цикл участка) | `/home/ser/projects/timber-frame-site/` | Next.js 16 / TypeScript / Tailwind v4 / shadcn/ui / Vercel | MVP LIVE + ВИЗУАЛ ГОТОВ — timber-frame-spb.ru задеплоен 08.03.2026. Портфолио в… |
+| P1 | Сайт Timber Frame + Благоустройство (премиум террасы + полный цикл участка) | `/home/ser/projects/timber-frame-site/` | Next.js 16 / TypeScript / Tailwind v4 / shadcn/ui / Vercel | MVP LIVE + API VERIFIED — timber-frame-spb.ru задеплоен 08.03.2026. Портфолио в… |
 
 ## Планируемые
 
@@ -38,4 +38,4 @@
 
 ## AI Brigade
 
-T1: Navi (архитектор) + Jules (async-кодер) + A0 (24/7 VPS) + OpenCode (headless coder). T2: Gemini CLI (interactive). T3: GLM-5 + zai-cli (tools)
+T1: Navi (архитектор) + Jules (async-кодер) + A0 (24/7 VPS) + OpenCode (headless coder). T2: Gemini CLI (interactive). T3: GLM-5 + zai-cli (tools) + NotebookLM (grounded research)

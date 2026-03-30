@@ -1,0 +1,19 @@
+# Autoresearch Experiments Log
+# Created: 2026-03-29T22:00:00+03:00
+#
+# [Q] ISC-1: UserPromptSubmit total latency < 1000ms
+# metric_direction: lower_is_better
+# target: 1000
+# baseline: 1654
+# noise_tolerance: 5%
+# noise_calibration: 1608, 1715, 1746 (variance: 4.5%)
+# think_reentries: 0
+# amplitude: normal
+# gate_cost_estimate: 120s per iteration (benchmark runs)
+#
+# [Q] ISC-2: Blocking PreToolUse max latency < 50ms
+# metric_direction: lower_is_better
+# target: 50
+# baseline: 68.6
+#
+iteration	commit	metric	delta	status	description

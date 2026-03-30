@@ -1,0 +1,3 @@
+Architect details
+
+**Model**: sonnet

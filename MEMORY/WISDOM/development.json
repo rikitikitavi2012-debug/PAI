@@ -1,6 +1,6 @@
 {
   "domain": "development",
-  "updated": "2026-03-15T21:41:09.982Z",
+  "updated": "2026-03-16T23:08:15.945Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -190,6 +190,20 @@
       "timestamp": "2026-03-15T23:31:09+03:00",
       "session_id": "0b60436a-596e-4198-ba18-626c338af187",
       "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated by repeated failure on persistent hook error",
+      "timestamp": "2026-03-16T10:55:50+03:00",
+      "session_id": "59a46297-8239-41da-90fb-0ea2c0d4d1ec",
+      "confirmed": 1
+    },
+    {
+      "type": "principle",
+      "observation": "Satisfied with Navi's debugging work, engaged and moving forward",
+      "timestamp": "2026-03-17T01:52:20+03:00",
+      "session_id": "ecf8e0b3-6eba-4bc2-bf6b-2bddb5c807e6",
+      "confirmed": 2
     }
   ]
 }

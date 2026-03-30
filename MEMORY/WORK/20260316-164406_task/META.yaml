@@ -1,0 +1,11 @@
+id: "20260316-164406_task"
+title: "Ответь одним словом: работает?"
+session_id: "d00fd6ff-4d2b-4da6-b10e-81b36ca79817"
+created_at: "2026-03-16T16:44:06+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

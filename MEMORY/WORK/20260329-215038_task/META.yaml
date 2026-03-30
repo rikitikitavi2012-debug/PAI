@@ -1,0 +1,11 @@
+id: "20260329-215038_task"
+title: "Я не знаю что что можно полезного исследовать что "
+session_id: "6d7d6bab-3b06-4af4-bfdb-dc7f377a8494"
+created_at: "2026-03-29T21:50:38+03:00"
+completed_at: "2026-03-30T10:02:16+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

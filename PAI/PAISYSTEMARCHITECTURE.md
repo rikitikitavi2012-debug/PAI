@@ -324,20 +324,12 @@ Located in `settings.json`:
 
 ```json
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/home/ser/.gemini/hooks/session-start.sh",
-            "name": "pai-context",
-            "description": "Load PAI context at session start"
-          }
-        ]
-      }
-    ]
+  "mcpServers": {
+    "bridge": {
+      "url": "http://localhost:3847/sse?agent_id=gemini",
+      "type": "sse",
+      "trust": true
+    }
   }
 }
 ```

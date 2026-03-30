@@ -3,7 +3,7 @@
 ## Meta
 - **Domain:** system
 - **Confidence:** 75%
-- **Observation Count:** 19
+- **Observation Count:** 20
 - **Last Crystallized:** 2026-03-16
 - **Source:** Converted from system.json
 
@@ -112,3 +112,5 @@
 ## Evolution Log
 - 2026-03-01: Frame created from system.json (13 observations)
 
+
+- 2026-03-16: [anti-pattern] Configuration error after Navi's changes broke bridge setup

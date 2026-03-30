@@ -1,6 +1,6 @@
 {
   "domain": "system",
-  "updated": "2026-03-01T14:59:48.570Z",
+  "updated": "2026-03-16T23:08:15.259Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -90,6 +90,13 @@
       "observation": "Impressed by thorough, systematic audit with actionable findings",
       "timestamp": "2026-02-26T23:14:29+03:00",
       "session_id": "66cf432d-f726-42e3-b555-25d6b1080662",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Configuration error after Navi's changes broke bridge setup",
+      "timestamp": "2026-03-17T01:03:46+03:00",
+      "session_id": "ecf8e0b3-6eba-4bc2-bf6b-2bddb5c807e6",
       "confirmed": 1
     }
   ]

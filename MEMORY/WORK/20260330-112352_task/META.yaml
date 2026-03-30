@@ -1,0 +1,11 @@
+id: "20260330-112352_task"
+title: "Ты помнишь что мы брали лучшего из гермес агента ч"
+session_id: "dfa0abcb-9ddf-49a8-a0df-ca685d45d80b"
+created_at: "2026-03-30T11:23:52+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

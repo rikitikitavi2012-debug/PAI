@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 46
-- **Last Crystallized:** 2026-03-15
+- **Observation Count:** 53
+- **Last Crystallized:** 2026-03-18
 - **Source:** Converted from workflow.json
 
 ---
@@ -188,3 +188,10 @@
 - 2026-03-14: [anti-pattern] Correction — missing page 41, requesting visual verification
 - 2026-03-15: [anti-pattern] Frustrated — couldn't see the result, unclear communication
 - 2026-03-15: [anti-pattern] Correction — Navi missed obvious prerequisite validation
+- 2026-03-16: [anti-pattern] Frustrated — persistent errors after changes, seeking root cause
+- 2026-03-16: [anti-pattern] Mild frustration with Gemini's MCP connection failure
+- 2026-03-16: [anti-pattern] Frustrated — bridge still disconnected after multiple attempts
+- 2026-03-16: [anti-pattern] Mild frustration — server still disconnected after changes
+- 2026-03-16: [principle] Strong approval — delivered on critical gaps identified by Gemini
+- 2026-03-18: [anti-pattern] Mild correction — frequency too high, needs adjustment
+- 2026-03-18: [anti-pattern] Mild frustration — uncertainty about A0's work + needs clarification

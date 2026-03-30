@@ -1,0 +1,11 @@
+id: "20260329-182528_task"
+title: "тест какуюмодель сейчас используешь?"
+session_id: "645cf431-e360-4113-af47-72515cdeb550"
+created_at: "2026-03-29T18:25:28+03:00"
+completed_at: "2026-03-29T21:05:15+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

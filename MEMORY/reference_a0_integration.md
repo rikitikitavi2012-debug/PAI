@@ -17,6 +17,28 @@ Navi (Claude Code, WSL)  ←→  AgentZero.ts (REST API)  ←→  A0 (Docker, VP
 **Auth:** `X-API-KEY: $A0_API_TOKEN` (в `~/.config/PAI/.env`)
 **Fallback:** Container 1 на порту 50001 (escape hatch)
 
+### Прямой SSH доступ (из WSL)
+
+```bash
+ssh agentzero    # алиас настроен в ~/.ssh/config
+```
+
+**Конфиг (~/.ssh/config):**
+```
+Host agentzero
+    HostName 72.56.86.51
+    User agentzero        # НЕ root — root login запрещён
+    IdentityFile ~/.ssh/id_rsa
+    StrictHostKeyChecking no
+```
+
+**Важно:**
+- Подключаться ТОЛЬКО как `agentzero`, никогда как `root` (ROOT LOGIN REFUSED → fail2ban бан)
+- fail2ban: maxretry=10, bantime=3600, findtime=600 (настроено 2026-03-18)
+- Привопрокси меняет IP — при бане разбанивать через escape hatch (container 1)
+- `agentzero` имеет sudo на хосте
+- SSH даёт прямой доступ к docker host → `docker exec`, `docker restart` и т.д.
+
 ## Синхронизация контекста
 
 ### Git как Message Bus
@@ -101,13 +123,30 @@ Navi наращивает экспертизу (DOMAINS/, TELOS/)
   → git push → Navi подтягивает через poll
 ```
 
+## Git репозиторий A0 (2026-03-18)
+
+**Приватный репо:** `rikitikitavi2012-debug/a0-custom`
+```
+/a0 (в контейнере agent-zero-new)
+  origin   → rikitikitavi2012-debug/a0-custom (push сюда, токен встроен в URL)
+  upstream → agent0ai/agent-zero (только cherry-pick, НИКОГДА не push)
+```
+
+**Что в репо:** ядро A0 + extensions + knowledge + behaviour.md + патчи (FD leak fix)
+**Что НЕ в репо:** чаты, SSH ключи, uploads, vector store, data/
+**API токен:** детерминистический, `sha256(runtime_id:login:password)[:16]` — пересоздаётся при рестарте. Текущий: в `~/.config/PAI/.env`
+**A0 знает:** сохранил контекст в `/a0/knowledge/git-repos-context.md` + vector memory
+
 ## Улучшения (TODO)
 
 - [ ] Улучшить русский поиск: попробовать `labse` или `rubert-tiny2` вместо multilingual-MiniLM
 - [x] A2A протокол: настроен между контейнерами 50001↔50002 (FastA2A, 2026-03-13)
-- [ ] **HIGH PRIORITY** Webhook на push: GitHub → A0 pull (мгновенная синхронизация — audit confirmed 7-day drift caused hallucination incident 2026-03-06)
+- [x] **FD leak fix:** патч tty_session.py + shell_local.py (upstream issue #906, 2026-03-18)
+- [x] **Git repo:** a0-custom создан, A0 может пушить автоматически (2026-03-18)
+- [x] **fail2ban maxretry:** 3→10, SSH доступ стабилизирован (2026-03-18)
+- [ ] **HIGH PRIORITY** Webhook на push: GitHub → A0 pull (мгновенная синхронизация)
 - [ ] Увеличить `memories_max_result` до 8 для research задач
-- [ ] PREFERENCES.md добавить в user-core/ sync (сейчас файл не найден в USER/)
+- [ ] PREFERENCES.md добавить в user-core/ sync
 
 ## Связанные файлы
 
