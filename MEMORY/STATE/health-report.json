@@ -1,41 +1,47 @@
 {
-  "timestamp": "2026-03-15T22:36:26.748Z",
-  "checks": [
-    {
-      "service": "AgentZero",
-      "status": "up",
-      "latencyMs": 1844,
-      "detail": "HTTP 200",
-      "timestamp": "2026-03-15T22:36:23.887Z"
+  "timestamp": "2026-03-19T01:02:01.260512+00:00",
+  "git_sync": {
+    "status": "OK",
+    "error": null
+  },
+  "checks": {
+    "voice_server": {
+      "status": "DOWN",
+      "latency_ms": null
     },
-    {
-      "service": "Z.AI",
-      "status": "up",
-      "latencyMs": 4705,
-      "detail": "GLM-5: Okay, the user just sent \"resp",
-      "timestamp": "2026-03-15T22:36:26.748Z"
+    "github_auth": {
+      "status": "OK",
+      "user": "rikitikitavi2012-debug"
     },
-    {
-      "service": "VoiceServer",
-      "status": "up",
-      "latencyMs": 8,
-      "detail": "HTTP 200",
-      "timestamp": "2026-03-15T22:36:22.051Z"
+    "hooks_count": {
+      "count": 36,
+      "baseline": 30,
+      "alert": true
     },
-    {
-      "service": "GitHubCLI",
-      "status": "up",
-      "latencyMs": 3679,
-      "detail": "github.com",
-      "timestamp": "2026-03-15T22:36:25.723Z"
+    "events_size": {
+      "lines": 1285,
+      "alert": false
     },
-    {
-      "service": "GeminiCLI",
-      "status": "up",
-      "latencyMs": 2409,
-      "detail": "0.33.0",
-      "timestamp": "2026-03-15T22:36:24.453Z"
+    "disk_usage": {
+      "percent": 70,
+      "alert": false
+    },
+    "open_prs": {
+      "count": null,
+      "stale": [],
+      "error": "GitHub API 403: Resource not accessible by personal access token"
+    },
+    "tests": {
+      "passed": null,
+      "failed": null,
+      "alert": false,
+      "note": "bun not installed in container"
     }
-  ],
-  "allHealthy": true
+  },
+  "overall": "WARNING",
+  "alerts": [
+    "VoiceServer DOWN",
+    "Hooks count changed: 36 (baseline: 30)",
+    "GitHub PRs API: 403 token lacks repo scope"
+  ]
 }

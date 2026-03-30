@@ -70,17 +70,18 @@ async function main() {
     }
 
     // Read session_id from stdin (Claude Code passes hook input as JSON)
+    // REDUCED TIMEOUT: 500ms (was 3000ms) — stdin is usually available immediately
     let sessionId: string | null = null;
     try {
       const stdinText = await Promise.race([
         Bun.stdin.text(),
-        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('timeout')), 500))
       ]);
       if (stdinText.trim()) {
         const hookInput = JSON.parse(stdinText);
         sessionId = hookInput.session_id || null;
       }
-    } catch (err) { process.stderr.write(`[StartupGreeting] error description: ${err}\n`); /* stdin parse failed or timed out — proceed without session_id */ }
+    } catch (err) { /* stdin parse failed or timed out — proceed without session_id */ }
 
     // Persist Kitty environment for hooks that run later without terminal context.
     // Uses per-session mapping so multiple tabs don't overwrite each other's window IDs.
@@ -100,21 +101,50 @@ async function main() {
       }
     }
 
-    // Run the banner tool
+    // Run the banner tool (cached for 30s to avoid repeated spawns)
     const bannerPath = join(paiDir, 'PAI/Tools/Banner.ts');
-    const result = spawnSync('bun', ['run', bannerPath], {
-      encoding: 'utf-8',
-      stdio: ['inherit', 'pipe', 'pipe'],
-      env: {
-        ...process.env,
-        // Pass through terminal detection env vars
-        COLUMNS: process.env.COLUMNS,
-        KITTY_WINDOW_ID: process.env.KITTY_WINDOW_ID,
-      }
-    });
+    const bannerCachePath = join(paiDir, 'MEMORY', 'STATE', 'banner-cache.json');
+    const BANNER_CACHE_TTL = 30000; // 30 seconds
 
-    if (result.stdout) {
-      console.log(result.stdout);
+    let bannerOutput = '';
+    const now = Date.now();
+
+    // Try to load cached banner
+    if (existsSync(bannerCachePath)) {
+      try {
+        const cached = JSON.parse(readFileSync(bannerCachePath, 'utf-8'));
+        if (cached.output && (now - cached.timestamp) < BANNER_CACHE_TTL) {
+          bannerOutput = cached.output;
+          console.error('📦 Using cached banner');
+        }
+      } catch { /* invalid cache */ }
+    }
+
+    // Generate fresh banner if cache miss
+    if (!bannerOutput) {
+      const result = spawnSync('bun', ['run', bannerPath], {
+        encoding: 'utf-8',
+        stdio: ['inherit', 'pipe', 'pipe'],
+        timeout: 5000,
+        env: {
+          ...process.env,
+          COLUMNS: process.env.COLUMNS,
+          KITTY_WINDOW_ID: process.env.KITTY_WINDOW_ID,
+        }
+      });
+
+      if (result.stdout) {
+        bannerOutput = result.stdout;
+        // Cache it
+        try {
+          mkdirSync(join(paiDir, 'MEMORY', 'STATE'), { recursive: true });
+          writeFileSync(bannerCachePath, JSON.stringify({ output: bannerOutput, timestamp: now }));
+        } catch { /* non-fatal */ }
+      }
+    }
+
+    if (bannerOutput) {
+      console.log(bannerOutput);
     }
 
     // Voice greeting — audio only, no visual output (avoids duplication with Banner.ts)

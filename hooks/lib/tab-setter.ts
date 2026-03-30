@@ -181,21 +181,21 @@ export function setTabState(opts: SetTabOptions): void {
     // By setting both, our title survives OSC resets.
     const toFlag = `--to=${kittyEnv.listenOn}`;
     console.error(`[tab-setter] Setting tab: "${title}" with toFlag: ${toFlag}`);
-    spawnSync('kitten', ['@', toFlag, 'set-tab-title', title], { stdio: 'ignore', timeout: 2000 });
-    spawnSync('kitten', ['@', toFlag, 'set-window-title', title], { stdio: 'ignore', timeout: 2000 });
+    spawnSync('kitten', ['@', toFlag, 'set-tab-title', title], { stdio: 'ignore', timeout: 500 });
+    spawnSync('kitten', ['@', toFlag, 'set-window-title', title], { stdio: 'ignore', timeout: 500 });
 
     // For idle state, reset ALL colors to Kitty defaults (no lingering backgrounds)
     if (state === 'idle') {
       spawnSync(
         'kitten',
         ['@', toFlag, 'set-tab-color', '--self', 'active_bg=none', 'active_fg=none', 'inactive_bg=none', 'inactive_fg=none'],
-        { stdio: 'ignore', timeout: 2000 }
+        { stdio: 'ignore', timeout: 500 }
       );
     } else {
       spawnSync(
         'kitten',
         ['@', toFlag, 'set-tab-color', '--self', `active_bg=${ACTIVE_TAB_BG}`, `active_fg=${ACTIVE_TAB_FG}`, `inactive_bg=${colors.inactiveBg}`, `inactive_fg=${INACTIVE_TAB_FG}`],
-        { stdio: 'ignore', timeout: 2000 }
+        { stdio: 'ignore', timeout: 500 }
       );
     }
     console.error(`[tab-setter] Tab commands completed successfully`);
@@ -345,20 +345,20 @@ export function setPhaseTab(phase: AlgorithmTabPhase, sessionId: string, summary
 
     const toFlag = `--to=${kittyEnv.listenOn}`;
 
-    spawnSync('kitten', ['@', toFlag, 'set-tab-title', title], { stdio: 'ignore', timeout: 2000 });
-    spawnSync('kitten', ['@', toFlag, 'set-window-title', title], { stdio: 'ignore', timeout: 2000 });
+    spawnSync('kitten', ['@', toFlag, 'set-tab-title', title], { stdio: 'ignore', timeout: 500 });
+    spawnSync('kitten', ['@', toFlag, 'set-window-title', title], { stdio: 'ignore', timeout: 500 });
 
     if (phase === 'IDLE') {
       spawnSync(
         'kitten',
         ['@', toFlag, 'set-tab-color', '--self', 'active_bg=none', 'active_fg=none', 'inactive_bg=none', 'inactive_fg=none'],
-        { stdio: 'ignore', timeout: 2000 }
+        { stdio: 'ignore', timeout: 500 }
       );
     } else {
       spawnSync(
         'kitten',
         ['@', toFlag, 'set-tab-color', '--self', `active_bg=${ACTIVE_TAB_BG}`, `active_fg=${ACTIVE_TAB_FG}`, `inactive_bg=${config.inactiveBg}`, `inactive_fg=${INACTIVE_TAB_FG}`],
-        { stdio: 'ignore', timeout: 2000 }
+        { stdio: 'ignore', timeout: 500 }
       );
     }
     console.error(`[tab-setter] Phase tab: "${title}" (${phase}, bg=${config.inactiveBg})`);

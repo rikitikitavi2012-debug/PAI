@@ -34,13 +34,33 @@
 
 import { readFileSync, existsSync, readdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { spawnSync } from 'child_process';
+import { spawnSync, spawn } from 'child_process';
 import { getPaiDir } from './lib/paths';
 import { recordSessionStart } from './lib/notifications';
 import { loadLearningDigest, loadWisdomFrames, loadFailurePatterns, loadSignalTrends, loadLearnInsights, loadExperimentPatterns } from './lib/learning-readback';
 import { rotateEvents } from './lib/event-rotation';
 import { getEventsPath } from './lib/event-emitter';
 import { rotateFailures } from '../PAI/Tools/FailureRotation';
+
+/**
+ * Run a command asynchronously with timeout.
+ * Returns stdout or empty string on failure.
+ */
+function runAsync(cmd: string, args: string[], options: { timeout?: number; cwd?: string; env?: Record<string, string> } = {}): Promise<string> {
+  return new Promise((resolve) => {
+    const proc = spawn(cmd, args, {
+      cwd: options.cwd,
+      env: options.env ? { ...process.env, ...options.env } : process.env,
+      timeout: options.timeout || 5000,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+
+    let stdout = '';
+    proc.stdout?.on('data', (d) => { stdout += d.toString(); });
+    proc.on('error', () => resolve(''));
+    proc.on('close', () => resolve(stdout.trim()));
+  });
+}
 
 interface DynamicContextConfig {
   relationshipContext?: boolean;
@@ -553,55 +573,96 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
       console.log('\n✅ PAI session ready...');
     }
 
-    // Community check — upstream PAI activity via CommunityWatcher (non-blocking, brief mode)
-    // Timeout: 5s (A0 audit HIGH-01: sync blocking on network)
-    try {
-      const communityScript = join(paiDir, 'PAI', 'Tools', 'CommunityWatcher.ts');
-      if (existsSync(communityScript)) {
-        const ccResult = spawnSync('bun', ['run', communityScript, '--brief'], {
-          encoding: 'utf-8',
-          timeout: 5000,
-          env: { ...process.env, NO_COLOR: '1' },
-        });
-        if (ccResult.stdout?.trim()) {
-          console.log('\n🌐 COMMUNITY:');
-          console.log(ccResult.stdout.trim());
-        }
-        // Inject action items from last report if available
-        const reportPath = join(paiDir, 'MEMORY', 'STATE', 'community-report.json');
-        if (existsSync(reportPath)) {
-          try {
-            const report = JSON.parse(readFileSync(reportPath, 'utf-8'));
-            const recs = (report.recommendations || []).filter(
-              (r: string) => !r.includes('Всё спокойно')
-            );
-            if (recs.length > 0) {
-              console.log('  Action items:');
-              for (const rec of recs.slice(0, 3)) {
-                console.log(`  → ${rec}`);
-              }
-            }
-          } catch { /* non-fatal */ }
-        }
-        console.error('🌐 Community check completed');
-      }
-    } catch (err) {
-      console.error(`⚠️ Community check failed: ${err}`);
+    // === PARALLEL NETWORK CALLS (with caching) ===
+    // Cache brigade data for 5 minutes to avoid network latency on every session
+    const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+    const cachePath = join(paiDir, 'MEMORY', 'STATE', 'brigade-briefing-cache.json');
+
+    interface CachedBriefing {
+      timestamp: string;
+      communityOut: string;
+      julesOut: string;
+      prOutputs: string[];
     }
 
-    // Pull latest A0 results from private remote (non-blocking, best-effort)
-    try {
-      const pullResult = spawnSync('git', ['fetch', 'private', 'master', '--quiet'], {
-        cwd: paiDir, encoding: 'utf-8', timeout: 5000,
-      });
-      if (pullResult.status === 0) {
-        // Merge only MEMORY/STATE files (safe, no conflicts expected)
-        spawnSync('git', ['checkout', 'private/master', '--', 'MEMORY/STATE/'], {
-          cwd: paiDir, encoding: 'utf-8', timeout: 5000,
-        });
-        console.error('📥 Pulled latest A0 results from private remote');
+    let communityOut = '';
+    let julesOut = '';
+    let prOutputs: string[] = [];
+
+    // Try to load cached briefing
+    let useCache = false;
+    if (existsSync(cachePath)) {
+      try {
+        const cached: CachedBriefing = JSON.parse(readFileSync(cachePath, 'utf-8'));
+        const age = Date.now() - new Date(cached.timestamp).getTime();
+        if (age < CACHE_TTL_MS) {
+          communityOut = cached.communityOut || '';
+          julesOut = cached.julesOut || '';
+          prOutputs = cached.prOutputs || [];
+          useCache = true;
+          console.error(`📦 Using cached brigade briefing (${Math.round(age / 1000)}s old)`);
+        }
+      } catch { /* invalid cache, proceed with fresh fetch */ }
+    }
+
+    // Fetch fresh data if cache expired or missing
+    if (!useCache) {
+      const communityScript = join(paiDir, 'PAI', 'Tools', 'CommunityWatcher.ts');
+      const julesApiPath = join(getPaiDir(), 'skills', 'Utilities', 'Jules', 'Tools', 'JulesAPI.ts');
+      const repos = ['PAI-personal', 'PAI', 'agent-zero-custom'];
+
+      [communityOut, julesOut, ...prOutputs] = await Promise.all([
+        // CommunityWatcher
+        existsSync(communityScript)
+          ? runAsync('bun', ['run', communityScript, '--brief'], { timeout: 5000, env: { NO_COLOR: '1' } })
+          : Promise.resolve(''),
+        // Jules sessions
+        runAsync('bun', [julesApiPath, 'sessions'], { timeout: 8000 }).catch(() => ''),
+        // gh pr list for each repo (parallel)
+        ...repos.map(repo =>
+          runAsync('gh', ['pr', 'list', '--repo', `rikitikitavi2012-debug/${repo}`, '--state', 'open', '--json', 'number'], { timeout: 3000 }).catch(() => '')
+        ),
+      ]);
+
+      // Save to cache
+      try {
+        const cacheData: CachedBriefing = {
+          timestamp: new Date().toISOString(),
+          communityOut,
+          julesOut,
+          prOutputs,
+        };
+        writeFileSync(cachePath, JSON.stringify(cacheData));
+        console.error('💾 Cached brigade briefing');
+      } catch { /* non-fatal */ }
+    }
+
+    // Process CommunityWatcher result
+    if (communityOut) {
+      console.log('\n🌐 COMMUNITY:');
+      console.log(communityOut);
+      // Inject action items from last report
+      const reportPath = join(paiDir, 'MEMORY', 'STATE', 'community-report.json');
+      if (existsSync(reportPath)) {
+        try {
+          const report = JSON.parse(readFileSync(reportPath, 'utf-8'));
+          const recs = (report.recommendations || []).filter((r: string) => !r.includes('Всё спокойно'));
+          if (recs.length > 0) {
+            console.log('  Action items:');
+            recs.slice(0, 3).forEach(rec => console.log(`  → ${rec}`));
+          }
+        } catch { /* non-fatal */ }
       }
-    } catch { /* non-fatal — offline or no remote */ }
+      console.error('🌐 Community check completed');
+    }
+
+    // Process git fetch result (checkout MEMORY/STATE if fetch succeeded)
+    try {
+      spawnSync('git', ['checkout', 'private/master', '--', 'MEMORY/STATE/'], {
+        cwd: paiDir, encoding: 'utf-8', timeout: 3000,
+      });
+      console.error('📥 Pulled latest A0 results from private remote');
+    } catch { /* non-fatal */ }
 
     // Brigade briefing — quick status of A0, Jules, AutoMerge
     try {
@@ -635,13 +696,10 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
         } catch { /* non-fatal */ }
       }
 
-      // Jules active tasks count
+      // Jules active tasks count (from parallel call above)
       try {
-        const julesResult = spawnSync('bun', [join(getPaiDir(), 'skills', 'Utilities', 'Jules', 'Tools', 'JulesAPI.ts'), 'sessions'], {
-          encoding: 'utf-8', timeout: 10000, env: { ...process.env },
-        });
-        if (julesResult.stdout?.trim()) {
-          const sessions = JSON.parse(julesResult.stdout);
+        if (julesOut) {
+          const sessions = JSON.parse(julesOut);
           const active = (Array.isArray(sessions) ? sessions : []).filter(
             (s: any) => s.state !== 'COMPLETED' && s.state !== 'FAILED'
           ).length;
@@ -651,29 +709,24 @@ Dynamic context loaded. Core identity, rules, and format are in CLAUDE.md.
         }
       } catch { /* non-fatal */ }
 
-      // Open PRs count across all repos
-      if (existsSync(jamPath)) {
-        try {
-          const repos = ['PAI-personal', 'PAI', 'agent-zero-custom'];
-          const prCounts: string[] = [];
-          for (const repo of repos) {
+      // Open PRs count (from parallel calls above)
+      try {
+        const prCounts: string[] = [];
+        for (let i = 0; i < repos.length; i++) {
+          const prOut = prOutputs[i];
+          if (prOut) {
             try {
-              const prResult = spawnSync('gh', ['pr', 'list', '--repo', `rikitikitavi2012-debug/${repo}`, '--state', 'open', '--json', 'number'], {
-                encoding: 'utf-8', timeout: 5000,
-              });
-              if (prResult.stdout?.trim()) {
-                const prs = JSON.parse(prResult.stdout);
-                if (prs.length > 0) {
-                  prCounts.push(`${prs.length} ${repo}`);
-                }
+              const prs = JSON.parse(prOut);
+              if (Array.isArray(prs) && prs.length > 0) {
+                prCounts.push(`${prs.length} ${repos[i]}`);
               }
-            } catch { /* non-fatal — skip this repo */ }
+            } catch { /* skip invalid JSON */ }
           }
-          if (prCounts.length > 0) {
-            briefingParts.push(`  📋 PRs: ${prCounts.join(', ')}`);
-          }
-        } catch { /* non-fatal */ }
-      }
+        }
+        if (prCounts.length > 0) {
+          briefingParts.push(`  📋 PRs: ${prCounts.join(', ')}`);
+        }
+      } catch { /* non-fatal */ }
 
       // A0 health with last heartbeat and scheduled task count
       if (existsSync(healthPath)) {

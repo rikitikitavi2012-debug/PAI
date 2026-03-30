@@ -1,0 +1,6 @@
+iteration	timestamp	hypothesis	change_made	metric_before	metric_after	improvement	kept	notes
+0	2026-03-30T00:00:00Z	Baseline measurement	Initial benchmark run	1611.0	1611.0	0.0	-	Baseline established
+1	2026-03-30T07:30:00Z	Parallel network calls will reduce LoadContext latency	Promise.all for CommunityWatcher, Jules API, gh pr list	4980.0	4500.0	-9.6%	yes	Marginal improvement, still slow
+2	2026-03-30T07:40:00Z	Caching brigade briefing will eliminate network latency on cache hit	5min TTL cache for brigade data	4500.0	92.0	-98.0%	yes	Major win! Cache works
+3	2026-03-30T07:50:00Z	Reducing inference budget will speed up UpdateTabTitle	3000ms → 800ms timeout	872.0	972.0	+11.5%	no	Worse! Benchmark prompts trigger inference
+4	2026-03-30T08:00:00Z	Smaller Kitty timeouts improve resilience	2000ms → 500ms spawnSync timeout	-	-	-	yes	Defensive improvement

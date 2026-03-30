@@ -170,7 +170,7 @@ const INFERENCE_TIMED_OUT = Symbol('INFERENCE_TIMED_OUT');
  * respond in time, returns nulls so the caller falls back to deterministic title.
  * The inference process is killed on timeout to avoid orphaned claude subprocesses.
  */
-const INFERENCE_BUDGET_MS = 3000;
+const INFERENCE_BUDGET_MS = 800;
 
 async function summarizePrompt(prompt: string): Promise<{ voice: string | null; title: string | null }> {
   const cleanPrompt = prompt.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1000);
@@ -235,8 +235,18 @@ async function main() {
     const thinkingTitle = quickTitle || getWorkingFallback();
     setTabState({ title: `🧠 ${prefix}${thinkingTitle}`, state: 'thinking', sessionId: data.session_id });
 
-    // Phase 2: Inference for validated title + voice summary (decoupled)
-    const { voice: voiceSummary, title: inferredTitle } = await summarizePrompt(prompt);
+    // Phase 2: Inference ONLY if quick title is weak (fallback was used)
+    // Skip inference entirely if we have a strong deterministic title
+    let voiceSummary: string | null = null;
+    let inferredTitle: string | null = null;
+
+    if (!quickTitle || thinkingTitle === getWorkingFallback()) {
+      // Weak deterministic title — use inference
+      const result = await summarizePrompt(prompt);
+      voiceSummary = result.voice;
+      inferredTitle = result.title;
+    }
+
     const finalTitle = inferredTitle || (quickTitle && isValidWorkingTitle(quickTitle) ? quickTitle : getWorkingFallback());
     setTabState({ title: `⚙️ ${prefix}${finalTitle}`, state: 'working', sessionId: data.session_id });
 
