@@ -33,7 +33,7 @@
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { readHookInput } from './lib/hook-io';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 
 const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME || '', '.claude');
 const SKILLS_AUTO_DIR = join(BASE_DIR, 'skills', 'auto');
@@ -156,7 +156,7 @@ If a reusable pattern is found, return JSON with pattern_found: true and details
 If no reusable pattern is found, return { "pattern_found": false }.`;
 
   try {
-    const result = execSync(
+    const output = execFileSync(
       'bun',
       [
         'run',
@@ -173,16 +173,13 @@ If no reusable pattern is found, return { "pattern_found": false }.`;
       }
     );
 
-    const output = result.stdout.toString('utf-8').trim();
-
-    if (result.status !== 0) {
-      console.error(`[AutoSkillProposal] Inference failed: ${result.stderr.toString('utf-8')}`);
-      return null;
+    return JSON.parse(output.toString().trim()) as SkillProposal;
+  } catch (error: any) {
+    if (error.status && error.status !== 0) {
+      console.error(`[AutoSkillProposal] Inference failed: ${error.stderr?.toString('utf-8') || error.message}`);
+    } else {
+      console.error(`[AutoSkillProposal] Error analyzing patterns: ${error}`);
     }
-
-    return JSON.parse(output) as SkillProposal;
-  } catch (error) {
-    console.error(`[AutoSkillProposal] Error analyzing patterns: ${error}`);
     return null;
   }
 }
