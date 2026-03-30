@@ -207,13 +207,13 @@ async function notifySkillCreated(name: string): Promise<void> {
 }
 
 /**
- * Create skill file in skills/auto/
+ * Create skill file in skills/auto/<name>/SKILL.md
  */
 function createSkill(proposal: SkillProposal): string {
-  const skillPath = join(SKILLS_AUTO_DIR, `${proposal.name}`, 'SKILL.md');
+  const skillDir = join(SKILLS_AUTO_DIR, proposal.name);
+  const skillPath = join(skillDir, 'SKILL.md');
 
   // Create directory if needed
-  const skillDir = dirname(skillPath);
   if (!existsSync(skillDir)) {
     mkdirSync(skillDir, { recursive: true });
   }
