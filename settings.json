@@ -1048,7 +1048,8 @@
     "files": [
       "PAI/AISTEERINGRULES.md",
       "PAI/USER/AISTEERINGRULES.md",
-      "PAI/USER/PROJECTS/PROJECTS.md"
+      "PAI/USER/PROJECTS/PROJECTS.md",
+      "PAI/MEMORY_GUIDANCE.md"
     ]
   },
   "dynamicContext": {

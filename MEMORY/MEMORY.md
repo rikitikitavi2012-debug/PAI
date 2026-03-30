@@ -1,6 +1,7 @@
 # Memory Index
 
 ## Reference
+- [Hermes Agent Analysis](2026-03/2026-03-30_hermes-agent-analysis.md) — инсайты из nousresearch/hermes-agent: Memory Guidance, Tool-use Enforcement, Skills System, что позаимствовали для PAI
 - [NotebookLM Integration](reference_notebooklm_integration.md) — интеграция Google NotebookLM: notebooklm-py, паттерны (Zero-Token YouTube, Content Pipeline), риски, экосистема
 - [A0 Integration Architecture](reference_a0_integration.md) — полная схема интеграции Agent Zero: sync, knowledge base, scheduled tasks, улучшения
 - [Session Search (FTS5)](reference_session_search.md) — FTS5 полнотекстовый поиск по истории сессий, skill /recall, автоиндексация
