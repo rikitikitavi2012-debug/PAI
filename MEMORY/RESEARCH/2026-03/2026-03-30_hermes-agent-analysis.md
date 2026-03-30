@@ -70,7 +70,12 @@ TOOL_USE_ENFORCEMENT_MODELS = ("gpt", "codex")  # применяется тол�
 + SOUL.md (from HERMES_HOME, always)
 ```
 
-**Применение:** У нас CLAUDE.md + AGENTS.md уже есть. Можно добавить SOUL.md как "личность"
+**Применение:** У нас CLAUDE.md + AGENTS.md уже есть. ~~Можно добавить SOUL.md как "личность"~~
+
+**ОТКАЗ ОТ SOUL.md (2026-03-30):**
+- Personality УЖЕ размазана по CLAUDE.md + AISTEERINGRULES.md + MEMORY/
+- SOUL.md = +1000 токенов при старте без новой ценности
+- Hermes проще архитектурно — им НУЖЕН SOUL.md, у нас layered система
 
 ### 5. Prompt Caching Auto-detection
 **Из:** `run_agent.py` (строки 661-667)
@@ -144,6 +149,6 @@ TOOLSETS = {
 **Кандидаты для v4.1:**
 1. Memory Guidance паттерн
 2. Tool-use Enforcement (для GPT моделей если будут)
-3. SOUL.md концепция
+3. ~~SOUL.md концепция~~ — НЕ НУЖНО, personality уже размазана по CLAUDE.md + AISTEERINGRULES.md + MEMORY/
 4. Platform Hints для контекстов
 5. Skill composition через includes
