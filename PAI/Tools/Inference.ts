@@ -201,7 +201,7 @@ async function inferenceGemini(options: InferenceOptions, level: InferenceLevel,
     return { success: false, output: '', error: 'No GOOGLE_API_KEY found', latencyMs: Date.now() - startTime, level };
   }
 
-  const model = 'gemini-2.0-flash';
+  const model = 'gemini-2.5-flash'; // Updated from 2.0-flash (rate limited)
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
