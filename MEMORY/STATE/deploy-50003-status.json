@@ -1,0 +1,47 @@
+{
+  "task": "Deploy AI-помощник прораба на контейнер 50003",
+  "timestamp": "2026-04-01T20:03:00+03:00",
+  "status": "COMPLETED",
+  "container": {
+    "name": "agent-zero-construction",
+    "port": 50003,
+    "version": "v1.6",
+    "a2a_url": "http://72.56.86.51:50003/a2a"
+  },
+  "promptinclude_files": [
+    {
+      "name": "01-profile.promptinclude.md",
+      "size": 5945,
+      "content": "Профиль, роль, задачи, поведение"
+    },
+    {
+      "name": "02-domain.promptinclude.md",
+      "size": 6057,
+      "content": "Техэкспертиза, пироги, нормативы, грунты"
+    },
+    {
+      "name": "03-workflow.promptinclude.md",
+      "size": 6832,
+      "content": "Рабочий процесс, чек-листы, форматы документов"
+    }
+  ],
+  "knowledge_base": [
+    "landscaping/README.md",
+    "landscaping/LS_Paving.md",
+    "landscaping/LS_Earthworks.md",
+    "landscaping/LS_Climate_SPB.md",
+    "landscaping/LS_Concrete.md",
+    "landscaping/LS_Drainage.md",
+    "landscaping/estimates/ANALYSIS.md",
+    "landscaping/estimates/batch1_extracted.md"
+  ],
+  "templates": [
+    "Чек лист прорабов.pdf",
+    "КП 27909-3.pdf",
+    "27909 Договор.pdf",
+    "27909 Отчет.docx",
+    "27909 план вариант 1.pdf"
+  ],
+  "telegram_instructions": "Добавлены инструкции для мобильного формата",
+  "verification": "Агент корректно отвечает на вопросы о профиле, задачах, нормативах и формате КП"
+}
