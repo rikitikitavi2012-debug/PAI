@@ -92,8 +92,20 @@ const LEVEL_CONFIG: Record<InferenceLevel, { model: string; defaultTimeout: numb
   glm5: { model: 'glm-5', defaultTimeout: 30000, provider: 'zai' },
 };
 
-/** Load API key from env or .env file */
+/** Load API key from env or .env file
+ * For ANTHROPIC_API_KEY: prefer file over env (env may be ZAI proxy key for glm-5.1 session)
+ * For other keys: prefer env over file (standard behavior)
+ */
 function loadApiKey(envVar: string): string {
+  // For ANTHROPIC_API_KEY, check file FIRST (env may be ZAI proxy key)
+  if (envVar === 'ANTHROPIC_API_KEY') {
+    try {
+      const envContent = readFileSync(join(process.env.HOME || '', '.config', 'PAI', '.env'), 'utf-8');
+      const match = envContent.match(/^ANTHROPIC_API_KEY=(.+)$/m);
+      if (match) return match[1].trim();
+    } catch {}
+  }
+  // Standard behavior: env first, then file
   let key = process.env[envVar] || '';
   if (!key) {
     try {
