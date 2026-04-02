@@ -126,14 +126,14 @@
 | 3 | Domain ownership enforcement | YouTube: IndyDevDan | 🟠 | ✅ Done | `6b118b5` |
 | 7 | Per-agent expertise файлы | YouTube: IndyDevDan | 🟠 | ✅ Done | `1981869` |
 | 10 | ~~`claude -p` subprocess паттерн~~ | GitHub: anthropics/skills | 🟠 | ❌ Skipped | Используем Anthropic API + Z.AI |
-| 11 | Hook "defer" decision | claude-code v2.1.89 | 🟠 | ⏳ Pending | — |
+| 11 | Hook "defer" decision | claude-code v2.1.89 | 🟠 | ✅ Done | `9dc0055` |
 | 5 | 4-уровневая прогрессивная компрессия | claude-code-book (1.3K stars) | 🟠 | ⏳ Pending | — |
 | 9 | Circuit Breaker для стагнации | how-claude-code-works (1.2K stars) | 🟠 | ✅ Done | `481bad6` |
 | 8 | Git Context Controller | YouTube: AI Jason | 🟡 | ⏳ Pending | — |
 | 14 | Lean Snapshot паттерн | GitHub: Pilot | 🟡 | ✅ Done | `7e377ae` |
 | 13 | Кросс-агентная shared memory | YouTube: AI Jason | 🟡 | ⏳ Pending | — |
 
-**Прогресс:** 9/16 внедрено (56%) | 1/16 пропущено | 6/16 pending
+**Прогресс:** 10/16 внедрено (63%) | 1/16 пропущено | 5/16 pending
 
 ---
 
