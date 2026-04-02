@@ -112,6 +112,15 @@
         ]
       },
       {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/DomainGuard.hook.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Write",
         "hooks": [
           {
@@ -144,6 +153,15 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/ISCQualityGate.hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/DomainGuard.hook.ts"
           }
         ]
       },
@@ -1240,6 +1258,35 @@
     "research": 63,
     "ratings": 287,
     "updatedAt": "2026-04-02T15:51:01.137Z"
+  },
+  "agentDomains": {
+    "_docs": "Domain ownership for subagents. Prevents blast radius issues by restricting file access per agent type.",
+    "explore": {
+      "read": ["*"],
+      "write": ["MEMORY/RESEARCH/", "MEMORY/WORK/"],
+      "_comment": "Research agents can write to research/work directories only"
+    },
+    "plan": {
+      "read": ["*"],
+      "write": ["MEMORY/WORK/", "PAI/Algorithm/"],
+      "_comment": "Planning agents can write to work directories and algorithm docs"
+    },
+    "engineer": {
+      "read": ["*"],
+      "write": ["*"],
+      "_comment": "Engineer has full access for implementation work"
+    },
+    "researcher": {
+      "read": ["*"],
+      "write": ["MEMORY/RESEARCH/", "MEMORY/WORK/"],
+      "deny": ["*.env", "*.key", "*.pem"],
+      "_comment": "Research agents with explicit secret denial"
+    },
+    "general-purpose": {
+      "read": ["*"],
+      "write": ["*"],
+      "_comment": "General agents have full access - main agent bypasses domain check"
+    }
   },
   "mcpServers": {
     "supabase": {
