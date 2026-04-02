@@ -93,7 +93,7 @@ IMPORTANT:
  * Count unique tools used in transcript by matching tool_use blocks.
  * Handles both JSON format ("name": "Tool") and XML format (<function=Tool>).
  */
-function countToolCalls(transcript: string): number {
+export function countToolCalls(transcript: string): number {
   // JSON format: "name": "ToolName" (in tool_use blocks)
   const jsonPattern = /"name":\s*"([A-Za-z]+)"/g;
   // XML format: <function=ToolName>
@@ -121,9 +121,13 @@ function countToolCalls(transcript: string): number {
 /**
  * Check if proposed triggers overlap >50% with any existing skill's triggers.
  */
-function checkDuplicate(triggers: string[], existingSkills: Record<string, any>): boolean {
+export function checkDuplicate(triggers: string[], existingSkills: Record<string, any>): boolean {
+  if (triggers.length === 0) return false;
+
   for (const skill of Object.values(existingSkills.skills || {})) {
     const existingTriggers: string[] = (skill as any).triggers || [];
+    if (existingTriggers.length === 0) continue;
+
     const intersection = triggers.filter(t => existingTriggers.includes(t));
     if (intersection.length >= Math.min(triggers.length, existingTriggers.length) * 0.5) {
       return true;
@@ -135,7 +139,7 @@ function checkDuplicate(triggers: string[], existingSkills: Record<string, any>)
 /**
  * Convert any string to TitleCase (no separators).
  */
-function toTitleCase(str: string): string {
+export function toTitleCase(str: string): string {
   return str
     .split(/[-_\s]+/)
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -145,7 +149,7 @@ function toTitleCase(str: string): string {
 /**
  * Check rate limit: skip if same session or within cooldown window.
  */
-function checkRateLimit(sessionId: string): boolean {
+export function checkRateLimit(sessionId: string): boolean {
   try {
     if (!existsSync(STATE_FILE)) return true;
     const state: ProposalState = JSON.parse(readFileSync(STATE_FILE, 'utf-8'));
@@ -232,7 +236,7 @@ async function notifySkillCreated(name: string): Promise<void> {
 
 // ── Main ───────────────────────────────────────────────────────────────────
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   // Global timeout — graceful exit if anything hangs
   const timeoutId = setTimeout(() => {
     console.error('[AutoSkillProposal] Timeout, exiting');
@@ -359,4 +363,6 @@ ${rawText.slice(0, 1000)}...
   }
 }
 
-main();
+if (import.meta.main) {
+  main();
+}
