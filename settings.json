@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "showThinkingSummaries": true,
   "env": {
     "PAI_DIR": "/home/ser/.claude",
     "PROJECTS_DIR": "${PROJECTS_DIR}",
@@ -69,7 +68,7 @@
       "Write(~/.ssh/*)",
       "Edit(~/.ssh/*)"
     ],
-    "defaultMode": "default"
+    "defaultMode": "bypassPermissions"
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [],
@@ -95,7 +94,6 @@
       },
       {
         "matcher": "Edit",
-        "if": "Edit(*.md)",
         "hooks": [
           {
             "type": "command",
@@ -105,7 +103,6 @@
       },
       {
         "matcher": "Edit",
-        "if": "Edit(*.md)",
         "hooks": [
           {
             "type": "command",
@@ -124,7 +121,6 @@
       },
       {
         "matcher": "Write",
-        "if": "Write(*.md)",
         "hooks": [
           {
             "type": "command",
@@ -134,7 +130,6 @@
       },
       {
         "matcher": "Write",
-        "if": "Write(*.md)",
         "hooks": [
           {
             "type": "command",
@@ -144,7 +139,6 @@
       },
       {
         "matcher": "Write",
-        "if": "Write(*PRD*.md)",
         "hooks": [
           {
             "type": "command",
@@ -154,7 +148,6 @@
       },
       {
         "matcher": "Edit",
-        "if": "Edit(*PRD*.md)",
         "hooks": [
           {
             "type": "command",
@@ -164,7 +157,6 @@
       },
       {
         "matcher": "Write",
-        "if": "Write(*PRD*.md)",
         "hooks": [
           {
             "type": "command",
@@ -261,6 +253,24 @@
           {
             "type": "command",
             "command": "${PAI_DIR}/hooks/ResearchCapture.hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/ExpertiseCapture.hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/ExpertiseCapture.hook.ts"
           }
         ]
       },
@@ -1078,6 +1088,7 @@
   "plansDirectory": "Plans/",
   "voiceEnabled": true,
   "autoMemoryDirectory": "/home/ser/.claude/MEMORY/",
+  "showThinkingSummaries": true,
   "loadAtStartup": {
     "_docs": "Files force-loaded into session context at startup by LoadContext.hook.ts. Paths relative to PAI_DIR. Injected as <system-reminder> blocks.",
     "files": [
@@ -1220,14 +1231,14 @@
   "counts": {
     "skills": 16,
     "workflows": 186,
-    "hooks": 37,
-    "signals": 178,
+    "hooks": 38,
+    "signals": 180,
     "files": 212,
-    "work": 279,
-    "sessions": 2576,
+    "work": 284,
+    "sessions": 2577,
     "research": 62,
-    "ratings": 282,
-    "updatedAt": "2026-04-02T13:04:44.606Z"
+    "ratings": 286,
+    "updatedAt": "2026-04-02T14:50:54.856Z"
   },
   "mcpServers": {
     "supabase": {
