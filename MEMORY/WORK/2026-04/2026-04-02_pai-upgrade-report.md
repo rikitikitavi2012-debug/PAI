@@ -124,7 +124,7 @@
 | 16 | Prompt→Hook персистентность + PhaseGate | Рефлексии (6 hits) | 🔴 | ✅ Done | `df9052e` |
 | 2 | Agent Teams Inbox | YouTube: R Amjad | 🟠 | ⏳ Pending | — |
 | 3 | Domain ownership enforcement | YouTube: IndyDevDan | 🟠 | ⏳ Pending | — |
-| 7 | Per-agent expertise файлы | YouTube: IndyDevDan | 🟠 | ⏳ Pending | — |
+| 7 | Per-agent expertise файлы | YouTube: IndyDevDan | 🟠 | ✅ Done | `1981869` |
 | 10 | ~~`claude -p` subprocess паттерн~~ | GitHub: anthropics/skills | 🟠 | ❌ Skipped | Используем Anthropic API + Z.AI |
 | 11 | Hook "defer" decision | claude-code v2.1.89 | 🟠 | ⏳ Pending | — |
 | 5 | 4-уровневая прогрессивная компрессия | claude-code-book (1.3K stars) | 🟠 | ⏳ Pending | — |
@@ -133,7 +133,7 @@
 | 14 | Lean Snapshot паттерн | GitHub: Pilot | 🟡 | ⏳ Pending | — |
 | 13 | Кросс-агентная shared memory | YouTube: AI Jason | 🟡 | ⏳ Pending | — |
 
-**Прогресс:** 6/16 внедрено | 1/16 пропущено | 9/16 pending
+**Прогресс:** 7/16 внедрено (44%) | 1/16 пропущено | 8/16 pending
 
 ---
 
