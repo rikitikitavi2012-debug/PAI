@@ -153,6 +153,26 @@
         ]
       },
       {
+        "matcher": "Edit",
+        "if": "Edit(*PRD*.md)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/PhaseGate.hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "if": "Write(*PRD*.md)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${PAI_DIR}/hooks/PhaseGate.hook.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Read",
         "hooks": [
           {
