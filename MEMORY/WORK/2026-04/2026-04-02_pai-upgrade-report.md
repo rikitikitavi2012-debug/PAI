@@ -59,7 +59,7 @@
 | # | Рекомендация | Статус | Коммит |
 |---|-------------|--------|--------|
 | 2 | **Agent Teams Inbox** для координации субагентов | ⏳ Pending | — |
-| 3 | **Domain ownership enforcement** для субагентов | ⏳ Pending | — |
+| 3 | **Domain ownership enforcement** для субагентов | ✅ Done | `6b118b5` |
 | 7 | **Per-agent expertise файлы** в MEMORY/EXPERTISE/ | ⏳ Pending | — |
 | 10 | ~~`claude -p` subprocess паттерн~~ | ❌ Skipped | Используем Anthropic API + Z.AI напрямую |
 | 11 | **Hook "defer" decision** для headless режима | ⏳ Pending | — |
@@ -123,7 +123,7 @@
 | 1 | Трёхвратовая консолидация памяти | claurst leak (7K stars) | 🔴 | ⏳ Pending | — |
 | 16 | Prompt→Hook персистентность + PhaseGate | Рефлексии (6 hits) | 🔴 | ✅ Done | `df9052e` |
 | 2 | Agent Teams Inbox | YouTube: R Amjad | 🟠 | ⏳ Pending | — |
-| 3 | Domain ownership enforcement | YouTube: IndyDevDan | 🟠 | ⏳ Pending | — |
+| 3 | Domain ownership enforcement | YouTube: IndyDevDan | 🟠 | ✅ Done | `6b118b5` |
 | 7 | Per-agent expertise файлы | YouTube: IndyDevDan | 🟠 | ✅ Done | `1981869` |
 | 10 | ~~`claude -p` subprocess паттерн~~ | GitHub: anthropics/skills | 🟠 | ❌ Skipped | Используем Anthropic API + Z.AI |
 | 11 | Hook "defer" decision | claude-code v2.1.89 | 🟠 | ⏳ Pending | — |
@@ -133,7 +133,7 @@
 | 14 | Lean Snapshot паттерн | GitHub: Pilot | 🟡 | ⏳ Pending | — |
 | 13 | Кросс-агентная shared memory | YouTube: AI Jason | 🟡 | ⏳ Pending | — |
 
-**Прогресс:** 7/16 внедрено (44%) | 1/16 пропущено | 8/16 pending
+**Прогресс:** 8/16 внедрено (50%) | 1/16 пропущено | 7/16 pending
 
 ---
 
