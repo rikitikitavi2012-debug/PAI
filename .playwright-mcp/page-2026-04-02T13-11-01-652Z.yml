@@ -1,0 +1,123 @@
+- generic [ref=e2]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - button "Guide" [active] [ref=e9] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "YouTube Home" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e16]: KZ
+        - button "Skip navigation" [ref=e20] [cursor=pointer]:
+          - generic [ref=e21]: Skip navigation
+      - generic [ref=e25]:
+        - search [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - combobox "Search" [expanded] [ref=e30]: AI Jason channel ai agents 2026
+              - button "Clear search query" [ref=e32] [cursor=pointer]
+            - button "Search" [ref=e37] [cursor=pointer]
+        - generic [ref=e40]:
+          - button "Search with your voice" [ref=e42] [cursor=pointer]
+          - tooltip "tooltip"
+  - navigation [ref=e53]
+  - main [ref=e55]:
+    - generic [ref=e59]:
+      - generic [ref=e65]:
+        - button "Search filters" [ref=e67] [cursor=pointer]:
+          - generic [ref=e70]: Filters
+        - tooltip "tooltip"
+      - generic [ref=e76]:
+        - generic [ref=e81]:
+          - img [ref=e87]
+          - generic [ref=e89] [cursor=pointer]:
+            - generic [ref=e90]:
+              - link "Vertex Generative AI Studio" [ref=e93]:
+                - /url: https://www.googleadservices.com/pagead/aclk?sa=L&ai=CUwSx4mrOabLpJ-if9u8PkIHkCI_mnZKGAcigl5vUFWQQASAAYI8DggEXY2EtcHViLTYyMTk4MTE3NDcwNDkzNzGgAaTuja8oqAMEyAMKqgSxAk_Qtuhb9Zpf5ZOLOdhyLsEBL6o7yhI6vZrtRPYaMqrr22eHaxCEy3opsOFV-u9W_wV3MzKOqCOrilI6coK9Lp1DWKA2Oed5lpax0E4cpvwNFZpvKgr1AM2UnWsU7Kemne3KLIuebKlKRyWoSpEst9edm7wC3du5RXBX1qQIs9l5tPHcXXAQnkPJo6LeNFFvQWc5Fk-d9rIDvvJQFMmqF2UnXhNYHn3Ij53-Cf-UZDdz9gWpdI58c0tw7IcGgd42ZMiybr1ZrYADlq-uncsOyXz2OrAaR5a3V7CdSzMTB6qaaGVbmmFd3UtwGncsrVXmI5bDcrBRoShO9FuvuiM614coMlOtRWfCtSIa7TJi301wLiNmvqY_yGlKOhEKUf2ZK60Ay6Ib1Ukhwhr4uxesIj_diAWys8y-V5IFBwgTeOWavDWgBm6AB837vDSQBwSoB_LAsQKoB7jEsQKoB-G2sQKoB6XPsQKoB-edsQKoB-idsQKoB--1sQKoB_C1sQKoB_nTsQKoB8nasQKoB6ngsQKoB4QIqAem1LECqAeo0huoB7YHqAex3BuoB7CbsQKoB66xsQKoB-a8sQKoB8q6sQKoB_2ysQKoB_e4sQKoB_i4sQKoB8jPsQKoB8nPsQKoB63gsQKoB83HsQKoB_HRsQKoB_zVsQKoB_vVsQKoB4zWsQKoB4vWsQKoB5rhsQKoB53XsQKoB53UsQKoB4HGG6gH_K-xAqgHq8UbqAe3obECqAfVqbECqAfetbECqAfqsbECqAe-t7ECqAeZtbECqAeFwbECqAfrpbECqAfKqbECqAfCyLECsAgM0ggvCIBBEAEYXjICggI6EoDCgICAgIAGgICAgICQhuADKkjZoNI1UBRYkM_D857PkwOaCS1odHRwczovL2Nsb3VkLmdvb2dsZS5jb20vZ2VuZXJhdGl2ZS1haS1zdHVkaW-xCcplNWa4iMh8yAkAyAmKAroLPQgDEAUYBCAIKAEwHEABSABYTmAAaABwAYgBAJgBAaIBCAoAqAIC2AICqAEB2AEGgAIBiAIFugMFdmlncnHQCxLgCwHSDAIQAdoMJgoLEMDl4siooKuBtQESAgEDGg0YsrPMvlcgwbmxhtUFQAFKAhAfmg0BEqoNAktayA0B0g3PBGh0dHBzOi8vYWQuZG91YmxlY2xpY2submV0L3NlYXJjaGFkcy9saW5rL2NsaWNrP2xpZD01ODcwMDAwODk5OTExMjMzMCZkc19hX2NpZD0xMTIxMzU1MjUmZHNfYV9jYWlkPTIzNDg1MTU5ODU4JmRzX2FfYWdpZD0xOTQ2MjkwOTg2ODkmZHNfYV9maWlkPSZkc19hX2xpZD0mZHNfYV9leHRpZD0mJmRzX2VfYWRpZD03OTM1NTUwNDk3NDgmZHNfZV9tYXRjaHR5cGU9JmRzX2VfZGV2aWNlPWMmZHNfZV9uZXR3b3JrPSYmZHNfdXJsX3Y9MiZkc19kZXN0X3VybD1odHRwczovL2FkLmRvdWJsZWNsaWNrLm5ldC9kZG0vdHJhY2tjbGsvTjUyOTUuNDIyMjk4OERJU0NPVkVSWUdPT0dMRUFEUy9CMzQ2ODg0OTEuNDM4NTU3NTY0O2RjX3Rya19haWQ9NjMyMDQwOTA0O2RjX3Rya19jaWQ9MjQ2NTAyMTc3O2RjX2xhdD07ZGNfcmRpZD07dGFnX2Zvcl9jaGlsZF9kaXJlY3RlZF90cmVhdG1lbnQ9O3RmdWE9O2dkcHI9JHtHRFBSfTtnZHByX2NvbnNlbnQ9JHtHRFBSX0NPTlNFTlRfNzU1fTtsdGQ9O2RjX3Rkdj0xJmdhZF9zb3VyY2U9MiZnYWRfY2FtcGFpZ25pZD0yMzQ4NTE1OTg1OCZnYnJhaWQ9MEFBQUFBb1hqZHlRWE11Z2E5OWlCcGlzVWd0RGRpejZqbbgT____________AYgUArAUA8AVgYCAQNAVAdgVAZgWAeIWAggBgBcBihcWCAMYASABKAEwATgBQAFIAVABWAFgAqAXAboXCggBKAEwADgBSAHQGAHwGAGAGQPCGQIIAQ&ase=2&gclid=EAIaIQobChMIsuLD857PkwMV6I_9Bx2QABkBEAEYASAAEgLejPD_BwE&num=1&cid=CAASqwHkaItRGeg30UnMeo2G28a5FNn0Vk018wss61j0uytLS2_IHu-DnjT99IsgntGyo9acINRmKxYIy7XeLREfovjnSWPyqCM-8A-quPhTb0Kk_yiIdcS61nDyQUcDGJ1KyIVNKGnKKSolw1yKrU4DpMZ9aFDsbb10cMtyT7JbRwOgs93QnQbo6MUh8y2NE016piJD2cb9paEia4KvQ2JFozJDkttjgi80WV3kdNI&sig=AOD64_3xKbMy5JeNriNwhcY6wUP1NtwqDw&ms=%5BCLICK_MS%5D&nb=0&nx=%5BNX%5D&ny=%5BNY%5D&dim=%5BDIM%5D
+              - link "Leverage Google's most advanced multimodal models to create stunning AI media. Start free." [ref=e96]:
+                - /url: https://www.googleadservices.com/pagead/aclk?sa=L&ai=CUwSx4mrOabLpJ-if9u8PkIHkCI_mnZKGAcigl5vUFWQQASAAYI8DggEXY2EtcHViLTYyMTk4MTE3NDcwNDkzNzGgAaTuja8oqAMEyAMKqgSxAk_Qtuhb9Zpf5ZOLOdhyLsEBL6o7yhI6vZrtRPYaMqrr22eHaxCEy3opsOFV-u9W_wV3MzKOqCOrilI6coK9Lp1DWKA2Oed5lpax0E4cpvwNFZpvKgr1AM2UnWsU7Kemne3KLIuebKlKRyWoSpEst9edm7wC3du5RXBX1qQIs9l5tPHcXXAQnkPJo6LeNFFvQWc5Fk-d9rIDvvJQFMmqF2UnXhNYHn3Ij53-Cf-UZDdz9gWpdI58c0tw7IcGgd42ZMiybr1ZrYADlq-uncsOyXz2OrAaR5a3V7CdSzMTB6qaaGVbmmFd3UtwGncsrVXmI5bDcrBRoShO9FuvuiM614coMlOtRWfCtSIa7TJi301wLiNmvqY_yGlKOhEKUf2ZK60Ay6Ib1Ukhwhr4uxesIj_diAWys8y-V5IFBwgTeOWavDWgBm6AB837vDSQBwSoB_LAsQKoB7jEsQKoB-G2sQKoB6XPsQKoB-edsQKoB-idsQKoB--1sQKoB_C1sQKoB_nTsQKoB8nasQKoB6ngsQKoB4QIqAem1LECqAeo0huoB7YHqAex3BuoB7CbsQKoB66xsQKoB-a8sQKoB8q6sQKoB_2ysQKoB_e4sQKoB_i4sQKoB8jPsQKoB8nPsQKoB63gsQKoB83HsQKoB_HRsQKoB_zVsQKoB_vVsQKoB4zWsQKoB4vWsQKoB5rhsQKoB53XsQKoB53UsQKoB4HGG6gH_K-xAqgHq8UbqAe3obECqAfVqbECqAfetbECqAfqsbECqAe-t7ECqAeZtbECqAeFwbECqAfrpbECqAfKqbECqAfCyLECsAgM0ggvCIBBEAEYXjICggI6EoDCgICAgIAGgICAgICQhuADKkjZoNI1UBRYkM_D857PkwOaCS1odHRwczovL2Nsb3VkLmdvb2dsZS5jb20vZ2VuZXJhdGl2ZS1haS1zdHVkaW-xCcplNWa4iMh8yAkAyAmKAroLPQgDEAUYBCAIKAEwHEABSABYTmAAaABwAYgBAJgBAaIBCAoAqAIC2AICqAEB2AEGgAIBiAIFugMFdmlncnHQCxLgCwHSDAIQAdoMJgoLEMDl4siooKuBtQESAgEDGg0YsrPMvlcgwbmxhtUFQAFKAhAfmg0BEqoNAktayA0B0g3PBGh0dHBzOi8vYWQuZG91YmxlY2xpY2submV0L3NlYXJjaGFkcy9saW5rL2NsaWNrP2xpZD01ODcwMDAwODk5OTExMjMzMCZkc19hX2NpZD0xMTIxMzU1MjUmZHNfYV9jYWlkPTIzNDg1MTU5ODU4JmRzX2FfYWdpZD0xOTQ2MjkwOTg2ODkmZHNfYV9maWlkPSZkc19hX2xpZD0mZHNfYV9leHRpZD0mJmRzX2VfYWRpZD03OTM1NTUwNDk3NDgmZHNfZV9tYXRjaHR5cGU9JmRzX2VfZGV2aWNlPWMmZHNfZV9uZXR3b3JrPSYmZHNfdXJsX3Y9MiZkc19kZXN0X3VybD1odHRwczovL2FkLmRvdWJsZWNsaWNrLm5ldC9kZG0vdHJhY2tjbGsvTjUyOTUuNDIyMjk4OERJU0NPVkVSWUdPT0dMRUFEUy9CMzQ2ODg0OTEuNDM4NTU3NTY0O2RjX3Rya19haWQ9NjMyMDQwOTA0O2RjX3Rya19jaWQ9MjQ2NTAyMTc3O2RjX2xhdD07ZGNfcmRpZD07dGFnX2Zvcl9jaGlsZF9kaXJlY3RlZF90cmVhdG1lbnQ9O3RmdWE9O2dkcHI9JHtHRFBSfTtnZHByX2NvbnNlbnQ9JHtHRFBSX0NPTlNFTlRfNzU1fTtsdGQ9O2RjX3Rkdj0xJmdhZF9zb3VyY2U9MiZnYWRfY2FtcGFpZ25pZD0yMzQ4NTE1OTg1OCZnYnJhaWQ9MEFBQUFBb1hqZHlRWE11Z2E5OWlCcGlzVWd0RGRpejZqbbgT____________AYgUArAUA8AVgYCAQNAVAdgVAZgWAeIWAggBgBcBihcWCAMYASABKAEwATgBQAFIAVABWAFgAqAXAboXCggBKAEwADgBSAHQGAHwGAGAGQPCGQIIAQ&ase=2&gclid=EAIaIQobChMIsuLD857PkwMV6I_9Bx2QABkBEAEYASAAEgLejPD_BwE&num=1&cid=CAASqwHkaItRGeg30UnMeo2G28a5FNn0Vk018wss61j0uytLS2_IHu-DnjT99IsgntGyo9acINRmKxYIy7XeLREfovjnSWPyqCM-8A-quPhTb0Kk_yiIdcS61nDyQUcDGJ1KyIVNKGnKKSolw1yKrU4DpMZ9aFDsbb10cMtyT7JbRwOgs93QnQbo6MUh8y2NE016piJD2cb9paEia4KvQ2JFozJDkttjgi80WV3kdNI&sig=AOD64_3xKbMy5JeNriNwhcY6wUP1NtwqDw&ms=%5BCLICK_MS%5D&nb=7&nx=%5BNX%5D&ny=%5BNY%5D&dim=%5BDIM%5D
+              - generic [ref=e97]:
+                - generic [ref=e99]:
+                  - generic [ref=e100]: Sponsored
+                  - text: ·
+                - generic [ref=e102]: Google Cloud
+            - button "My Ad Center" [ref=e105]
+        - generic [ref=e112]:
+          - link [ref=e114] [cursor=pointer]:
+            - /url: /watch?v=j51uMah-3js&pp=ygUfQUkgSmFzb24gY2hhbm5lbCBhaSBhZ2VudHMgMjAyNg%3D%3D
+          - generic [ref=e116] [cursor=pointer]:
+            - generic [ref=e117]:
+              - heading "Attacking AI - Jason Haddix - NDC Security 2026 55 minutes" [level=3] [ref=e119]:
+                - link "Attacking AI - Jason Haddix - NDC Security 2026 55 minutes" [ref=e120]:
+                  - /url: /watch?v=j51uMah-3js&pp=ygUfQUkgSmFzb24gY2hhbm5lbCBhaSBhZ2VudHMgMjAyNg%3D%3D
+                  - text: Attacking AI - Jason Haddix - NDC Security 2026
+              - generic [ref=e123]:
+                - generic [ref=e124]: 5.5K views
+                - generic [ref=e125]: •6 days ago
+            - generic [ref=e126]:
+              - link "Go to channel NDC Conferences" [ref=e127]:
+                - /url: /@NDC
+              - link "NDC Conferences" [ref=e132]:
+                - /url: /@NDC
+            - generic [ref=e133]:
+              - text: "This talk was recorded at NDC Security in Oslo, Norway. #ndcsecurity #ndcconferences #security #developer #softwaredeveloper ..."
+              - tooltip "tooltip"
+            - img "New" [ref=e136]:
+              - generic [ref=e137]: New
+            - generic [ref=e140]:
+              - generic [ref=e141]:
+                - generic [ref=e144]: Summary
+                - button "Explore a methodology for testing AI systems against sophisticated prompt injection attacks. Learn to identify vulnerabilities in LLM agents, RAG databases, and input sanitization processes." [ref=e145]
+                - text: ·
+              - button "More" [ref=e150]
+        - generic [ref=e157]:
+          - link [ref=e159] [cursor=pointer]:
+            - /url: /watch?v=ibFJ--CH3cQ&pp=ygUfQUkgSmFzb24gY2hhbm5lbCBhaSBhZ2VudHMgMjAyNg%3D%3D
+          - generic [ref=e161] [cursor=pointer]:
+            - generic [ref=e162]:
+              - 'heading "You’re Not Behind (Yet): How to Build AI Agents in 2026 (no coding) 26 minutes" [level=3] [ref=e164]':
+                - 'link "You’re Not Behind (Yet): How to Build AI Agents in 2026 (no coding) 26 minutes" [ref=e165]':
+                  - /url: /watch?v=ibFJ--CH3cQ&pp=ygUfQUkgSmFzb24gY2hhbm5lbCBhaSBhZ2VudHMgMjAyNg%3D%3D
+                  - text: "You’re Not Behind (Yet): How to Build AI Agents in 2026 (no coding)"
+              - generic [ref=e168]:
+                - generic [ref=e169]: 170K views
+                - generic [ref=e170]: •1 month ago
+            - generic [ref=e171]:
+              - link "Go to channel Futurepedia" [ref=e172]:
+                - /url: /@futurepedia_io
+              - generic [ref=e173]:
+                - link "Futurepedia" [ref=e177]:
+                  - /url: /@futurepedia_io
+                - img "Verified" [ref=e180]
+            - generic [ref=e182]:
+              - generic [ref=e183]: "Download the free AI Agents Playbook: https://clickhubspot.com/f865c2 More from Futurepedia: Join the fastest-growing AI ..."
+              - tooltip "tooltip"
+            - generic [ref=e186]:
+              - generic [ref=e187]:
+                - generic [ref=e191]: 12 chapters
+                - button "Intro | What is an agent? | Where we're at right now | What to automate first | How to start | Time to build | Build 1 | Build 2 | More complex agents | Zapier vs n8n | Common Pitfalls (and how to avoid them) | The real skill" [ref=e192]
+              - button "More" [ref=e197]
+        - generic [ref=e204]:
+          - link [ref=e206] [cursor=pointer]:
+            - /url: /watch?v=EsTrWCV0Ph4&pp=ygUfQUkgSmFzb24gY2hhbm5lbCBhaSBhZ2VudHMgMjAyNg%3D%3D
+          - generic [ref=e208] [cursor=pointer]:
+            - generic [ref=e209]:
+              - 'heading "AI Agents Full Course 2026: Master Agentic AI (2 Hours) 2 hours, 13 minutes" [level=3] [ref=e211]':
+                - 'link "AI Agents Full Course 2026: Master Agentic AI (2 Hours) 2 hours, 13 minutes" [ref=e212]':
+                  - /url: /watch?v=EsTrWCV0Ph4&pp=ygUfQUkgSmFzb24gY2hhbm5lbCBhaSBhZ2VudHMgMjAyNg%3D%3D
+                  - text: "AI Agents Full Course 2026: Master Agentic AI (2 Hours)"
+              - generic [ref=e215]:
+                - generic [ref=e216]: 139K views
+                - generic [ref=e217]: •3 weeks ago
+            - generic [ref=e218]:
+              - link "Go to channel Nick Saraev" [ref=e219]:
+                - /url: /@nicksaraev
+              - link "Nick Saraev" [ref=e224]:
+                - /url: /@nicksaraev
+            - generic [ref=e225]:
+              - text: "Join Maker School & get customer #1 guaranteed: https://skool.com/makerschool/about All course files: ..."
+              - tooltip "tooltip"
+            - generic [ref=e228]:
+              - generic [ref=e229]:
+                - generic [ref=e233]: 28 chapters
+                - button [ref=e234]
+              - button "More" [ref=e239]

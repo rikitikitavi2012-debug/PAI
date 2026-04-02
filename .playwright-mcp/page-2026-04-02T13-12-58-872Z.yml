@@ -1,0 +1,581 @@
+- generic [ref=e2]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - button "Guide" [ref=e9] [cursor=pointer]:
+          - generic [ref=e12]:
+            - img
+        - generic [ref=e13]:
+          - link "YouTube Home" [ref=e14] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e19]:
+              - img
+          - generic [ref=e20]: KZ
+        - button "Skip navigation" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: Skip navigation
+      - generic [ref=e29]:
+        - search [ref=e30]:
+          - generic [ref=e31]:
+            - combobox "Search" [expanded] [ref=e34]
+            - button "Search" [ref=e35] [cursor=pointer]:
+              - generic [ref=e38]:
+                - img
+        - generic [ref=e40]:
+          - button "Search with your voice" [ref=e42] [cursor=pointer]:
+            - generic [ref=e46]:
+              - img
+          - tooltip "tooltip"
+      - generic [ref=e51]:
+        - button "Settings" [ref=e56] [cursor=pointer]:
+          - generic [ref=e59]:
+            - img
+        - link "Sign in" [ref=e62] [cursor=pointer]:
+          - /url: https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F%2540AIJasonZ%252Fvideos&hl=en&ec=65620
+          - generic [ref=e66]:
+            - img
+          - generic [ref=e67]: Sign in
+  - navigation [ref=e71]:
+    - generic [ref=e72]:
+      - link "Home" [ref=e74] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e77]:
+          - img
+        - generic [ref=e78]: Home
+      - link "Shorts" [ref=e80] [cursor=pointer]:
+        - /url: /shorts/
+        - generic [ref=e83]:
+          - img
+        - generic [ref=e84]: Shorts
+      - link "Subscriptions" [ref=e86] [cursor=pointer]:
+        - /url: /feed/subscriptions
+        - generic [ref=e89]:
+          - img
+        - generic [ref=e90]: Subscriptions
+      - link "You" [ref=e92] [cursor=pointer]:
+        - /url: /feed/you
+        - generic [ref=e95]:
+          - img
+        - generic [ref=e96]: You
+  - generic [ref=e97]:
+    - main [ref=e98]:
+      - generic [ref=e105]:
+        - generic [ref=e121]:
+          - heading "AI Jason" [level=1] [ref=e123]
+          - generic [ref=e124]:
+            - generic [ref=e126]: "@AIJasonZ"
+            - generic [ref=e127]: •
+            - generic [ref=e128]:
+              - generic "220 thousand subscribers" [ref=e129]: 220K subscribers
+              - generic [ref=e130]: •
+              - generic [ref=e131]: 89 videos
+          - generic [ref=e133] [cursor=pointer]:
+            - generic [ref=e134]: My name is Jason Zhou, a product designer who share interesting AI experiments & products. Email me if you need help building AI apps!
+            - button "Description. My name is Jason Zhou, a product designer who share interest...tap for more." [ref=e135]:
+              - generic [ref=e136]: ...more
+          - generic [ref=e137]:
+            - link "aibuilderclub.com" [ref=e140] [cursor=pointer]:
+              - /url: https://www.youtube.com/redirect?event=channel_header&redir_token=QUFFLUhqbHR4dTZMQ3U3R0E5ZkRtOWNxNzhNVVpzQmU0UXxBQ3Jtc0tsUkRYUGlvVXVNR3dkV25lNDZpRTZkajZhVFZ1RHRMSEZuSlRKeF9WbVpHM3Y2aldVM1VqRm9HV3dOVm9YWW9iVFYzMFJuSldvMlVSNjZDc0U4bVd6YXlGNFQ5QVNMR2RwR1l5RlNNd1Z0ZUcya3ZZaw&q=https%3A%2F%2Fwww.aibuilderclub.com%2F
+            - button "and 2 more links" [ref=e143] [cursor=pointer]
+          - button "Subscribe" [ref=e147] [cursor=pointer]:
+            - generic [ref=e148]: Subscribe
+        - tablist [ref=e155]:
+          - tablist [ref=e159]:
+            - tab "Home" [ref=e160] [cursor=pointer]:
+              - generic [ref=e161]: Home
+            - tab "Videos" [selected] [ref=e162] [cursor=pointer]:
+              - generic [ref=e163]: Videos
+            - tab "Playlists" [ref=e164] [cursor=pointer]:
+              - generic [ref=e165]: Playlists
+            - tab "Posts" [ref=e166] [cursor=pointer]:
+              - generic [ref=e167]: Posts
+            - button "Search" [ref=e171] [cursor=pointer]:
+              - generic [ref=e174]:
+                - img
+      - generic [ref=e180]:
+        - tablist [ref=e183]:
+          - tab "Latest" [selected] [ref=e187] [cursor=pointer]:
+            - generic [ref=e189]: Latest
+          - tab "Popular" [ref=e196] [cursor=pointer]:
+            - generic [ref=e198]: Popular
+          - tab "Oldest" [ref=e205] [cursor=pointer]:
+            - generic [ref=e207]: Oldest
+        - generic [ref=e211]:
+          - generic [ref=e215]:
+            - link [ref=e218] [cursor=pointer]:
+              - /url: /watch?v=kJPvfoLtFFY
+              - img [ref=e220]
+              - img [ref=e223]:
+                - generic [ref=e224]: 15:17
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e225] [cursor=pointer]:
+              - generic [ref=e226]:
+                - heading "wtf is Harness Engineer & why is it important 15 minutes" [level=3] [ref=e227]:
+                  - link "wtf is Harness Engineer & why is it important 15 minutes" [ref=e228]:
+                    - /url: /watch?v=kJPvfoLtFFY
+                    - generic [ref=e229]: wtf is Harness Engineer & why is it important
+                - generic [ref=e232]:
+                  - generic [ref=e233]: 49K views
+                  - generic [ref=e234]: •4 weeks ago
+              - button "Action menu" [ref=e237]:
+                - generic [ref=e240]:
+                  - img
+          - generic [ref=e244]:
+            - link [ref=e247] [cursor=pointer]:
+              - /url: /watch?v=kcOowmrVI7k
+              - img [ref=e249]
+              - img [ref=e252]:
+                - generic [ref=e253]: 4:53
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e254] [cursor=pointer]:
+              - generic [ref=e255]:
+                - heading "How to prompt Gemini 3.1 for Epic animations 4 minutes, 53 seconds" [level=3] [ref=e256]:
+                  - link "How to prompt Gemini 3.1 for Epic animations 4 minutes, 53 seconds" [ref=e257]:
+                    - /url: /watch?v=kcOowmrVI7k
+                    - generic [ref=e258]: How to prompt Gemini 3.1 for Epic animations
+                - generic [ref=e261]:
+                  - generic [ref=e262]: 22K views
+                  - generic [ref=e263]: •1 month ago
+              - button "Action menu" [ref=e266]:
+                - generic [ref=e269]:
+                  - img
+          - generic [ref=e273]:
+            - link [ref=e276] [cursor=pointer]:
+              - /url: /watch?v=3wglqgskzjQ
+              - img [ref=e278]
+              - img [ref=e281]:
+                - generic [ref=e282]: 14:10
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e283] [cursor=pointer]:
+              - generic [ref=e284]:
+                - heading "Anthropic killed Tool calling 14 minutes, 10 seconds" [level=3] [ref=e285]:
+                  - link "Anthropic killed Tool calling 14 minutes, 10 seconds" [ref=e286]:
+                    - /url: /watch?v=3wglqgskzjQ
+                    - generic [ref=e287]: Anthropic killed Tool calling
+                - generic [ref=e290]:
+                  - generic [ref=e291]: 201K views
+                  - generic [ref=e292]: •1 month ago
+              - button "Action menu" [ref=e295]:
+                - generic [ref=e298]:
+                  - img
+          - generic [ref=e302]:
+            - link [ref=e305] [cursor=pointer]:
+              - /url: /watch?v=pAIF7vZm5k0
+              - img [ref=e307]
+              - img [ref=e310]:
+                - generic [ref=e311]: 15:28
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e312] [cursor=pointer]:
+              - generic [ref=e313]:
+                - heading "Agent memory resolved? 15 minutes" [level=3] [ref=e314]:
+                  - link "Agent memory resolved? 15 minutes" [ref=e315]:
+                    - /url: /watch?v=pAIF7vZm5k0
+                    - generic [ref=e316]: Agent memory resolved?
+                - generic [ref=e319]:
+                  - generic [ref=e320]: 41K views
+                  - generic [ref=e321]: •1 month ago
+              - button "Action menu" [ref=e324]:
+                - generic [ref=e327]:
+                  - img
+          - generic [ref=e331]:
+            - link [ref=e334] [cursor=pointer]:
+              - /url: /watch?v=xQAYZBDV5jg&pp=0gcJCdkKAYcqIYzv
+            - generic [ref=e336] [cursor=pointer]:
+              - generic [ref=e337]:
+                - heading "WebMCP - Why is awesome & How to use it 11 minutes, 24 seconds" [level=3] [ref=e338]:
+                  - link "WebMCP - Why is awesome & How to use it 11 minutes, 24 seconds" [ref=e339]:
+                    - /url: /watch?v=xQAYZBDV5jg&pp=0gcJCdkKAYcqIYzv
+                    - generic [ref=e340]: WebMCP - Why is awesome & How to use it
+                - generic [ref=e343]:
+                  - generic [ref=e344]: 55K views
+                  - generic [ref=e345]: •1 month ago
+              - button "Action menu" [ref=e348]:
+                - generic [ref=e351]:
+                  - img
+          - generic [ref=e355]:
+            - link [ref=e358] [cursor=pointer]:
+              - /url: /watch?v=S2WTTMXYcYY
+            - generic [ref=e360] [cursor=pointer]:
+              - generic [ref=e361]:
+                - heading "How to install and use Claude Code Agent Teams (Reverse-engineered) 9 minutes, 39 seconds" [level=3] [ref=e362]:
+                  - link "How to install and use Claude Code Agent Teams (Reverse-engineered) 9 minutes, 39 seconds" [ref=e363]:
+                    - /url: /watch?v=S2WTTMXYcYY
+                    - generic [ref=e364]: How to install and use Claude Code Agent Teams (Reverse-engineered)
+                - generic [ref=e367]:
+                  - generic [ref=e368]: 28K views
+                  - generic [ref=e369]: •1 month ago
+              - button "Action menu" [ref=e372]:
+                - generic [ref=e375]:
+                  - img
+          - generic [ref=e379]:
+            - link [ref=e382] [cursor=pointer]:
+              - /url: /watch?v=fG95XsBO5U4
+            - generic [ref=e384] [cursor=pointer]:
+              - generic [ref=e385]:
+                - heading "Why MCP is dead & How I vibe now 10 minutes, 51 seconds" [level=3] [ref=e386]:
+                  - link "Why MCP is dead & How I vibe now 10 minutes, 51 seconds" [ref=e387]:
+                    - /url: /watch?v=fG95XsBO5U4
+                    - generic [ref=e388]: Why MCP is dead & How I vibe now
+                - generic [ref=e391]:
+                  - generic [ref=e392]: 19K views
+                  - generic [ref=e393]: •2 months ago
+              - button "Action menu" [ref=e396]:
+                - generic [ref=e399]:
+                  - img
+          - generic [ref=e403]:
+            - link [ref=e406] [cursor=pointer]:
+              - /url: /watch?v=oL6bLQOXwAY
+            - generic [ref=e408] [cursor=pointer]:
+              - generic [ref=e409]:
+                - heading "Secrets to unlock Gemini 3's hidden power... 18 minutes" [level=3] [ref=e410]:
+                  - link "Secrets to unlock Gemini 3's hidden power... 18 minutes" [ref=e411]:
+                    - /url: /watch?v=oL6bLQOXwAY
+                    - generic [ref=e412]: Secrets to unlock Gemini 3's hidden power...
+                - generic [ref=e415]:
+                  - generic [ref=e416]: 74K views
+                  - generic [ref=e417]: •3 months ago
+              - button "Action menu" [ref=e420]:
+                - generic [ref=e423]:
+                  - img
+          - generic [ref=e427]:
+            - link [ref=e430] [cursor=pointer]:
+              - /url: /watch?v=RYnxU_MTVvU
+            - generic [ref=e432] [cursor=pointer]:
+              - generic [ref=e433]:
+                - heading "Nano Banana + Gemini 3 = S-TIER UI DESIGNER 11 minutes, 29 seconds" [level=3] [ref=e434]:
+                  - link "Nano Banana + Gemini 3 = S-TIER UI DESIGNER 11 minutes, 29 seconds" [ref=e435]:
+                    - /url: /watch?v=RYnxU_MTVvU
+                    - generic [ref=e436]: Nano Banana + Gemini 3 = S-TIER UI DESIGNER
+                - generic [ref=e439]:
+                  - generic [ref=e440]: 98K views
+                  - generic [ref=e441]: •3 months ago
+              - button "Action menu" [ref=e444]:
+                - generic [ref=e447]:
+                  - img
+          - generic [ref=e451]:
+            - link [ref=e454] [cursor=pointer]:
+              - /url: /watch?v=UuyaeSLRTkE
+            - generic [ref=e456] [cursor=pointer]:
+              - generic [ref=e457]:
+                - heading "\"okay, but I want Gemini3 to perform 10x for my specific use case\" - Here is how 12 minutes, 33 seconds" [level=3] [ref=e458]:
+                  - link "\"okay, but I want Gemini3 to perform 10x for my specific use case\" - Here is how 12 minutes, 33 seconds" [ref=e459]:
+                    - /url: /watch?v=UuyaeSLRTkE
+                    - generic [ref=e460]: "\"okay, but I want Gemini3 to perform 10x for my specific use case\" - Here is how"
+                - generic [ref=e463]:
+                  - generic [ref=e464]: 31K views
+                  - generic [ref=e465]: •4 months ago
+              - button "Action menu" [ref=e468]:
+                - generic [ref=e471]:
+                  - img
+          - generic [ref=e475]:
+            - link [ref=e478] [cursor=pointer]:
+              - /url: /watch?v=vcJVnyhmLS4
+            - generic [ref=e480] [cursor=pointer]:
+              - generic [ref=e481]:
+                - heading "The Design Mode for Claude Code... 8 minutes, 33 seconds" [level=3] [ref=e482]:
+                  - link "The Design Mode for Claude Code... 8 minutes, 33 seconds" [ref=e483]:
+                    - /url: /watch?v=vcJVnyhmLS4
+                    - generic [ref=e484]: The Design Mode for Claude Code...
+                - generic [ref=e487]:
+                  - generic [ref=e488]: 41K views
+                  - generic [ref=e489]: •5 months ago
+              - button "Action menu" [ref=e492]:
+                - generic [ref=e495]:
+                  - img
+          - generic [ref=e499]:
+            - link [ref=e502] [cursor=pointer]:
+              - /url: /watch?v=1WImBwiA7RA
+            - generic [ref=e504] [cursor=pointer]:
+              - generic [ref=e505]:
+                - heading "Claude Skills - the SOP for your agent that is bigger than MCP 5 minutes, 14 seconds" [level=3] [ref=e506]:
+                  - link "Claude Skills - the SOP for your agent that is bigger than MCP 5 minutes, 14 seconds" [ref=e507]:
+                    - /url: /watch?v=1WImBwiA7RA
+                    - generic [ref=e508]: Claude Skills - the SOP for your agent that is bigger than MCP
+                - generic [ref=e511]:
+                  - generic [ref=e512]: 33K views
+                  - generic [ref=e513]: •5 months ago
+              - button "Action menu" [ref=e516]:
+                - generic [ref=e519]:
+                  - img
+          - generic [ref=e523]:
+            - link [ref=e526] [cursor=pointer]:
+              - /url: /watch?v=MW3t6jP9AOs
+            - generic [ref=e528] [cursor=pointer]:
+              - generic [ref=e529]:
+                - heading ".agent folder is making claude code 10x better... 11 minutes, 47 seconds" [level=3] [ref=e530]:
+                  - link ".agent folder is making claude code 10x better... 11 minutes, 47 seconds" [ref=e531]:
+                    - /url: /watch?v=MW3t6jP9AOs
+                    - generic [ref=e532]: .agent folder is making claude code 10x better...
+                - generic [ref=e535]:
+                  - generic [ref=e536]: 62K views
+                  - generic [ref=e537]: •5 months ago
+              - button "Action menu" [ref=e540]:
+                - generic [ref=e543]:
+                  - img
+          - generic [ref=e547]:
+            - link [ref=e550] [cursor=pointer]:
+              - /url: /watch?v=4j51FMU-SUQ
+            - generic [ref=e552] [cursor=pointer]:
+              - generic [ref=e553]:
+                - heading "Vibe Design is much better than I thought... 6 minutes, 41 seconds" [level=3] [ref=e554]:
+                  - link "Vibe Design is much better than I thought... 6 minutes, 41 seconds" [ref=e555]:
+                    - /url: /watch?v=4j51FMU-SUQ
+                    - generic [ref=e556]: Vibe Design is much better than I thought...
+                - generic [ref=e559]:
+                  - generic [ref=e560]: 18K views
+                  - generic [ref=e561]: •6 months ago
+              - button "Action menu" [ref=e564]:
+                - generic [ref=e567]:
+                  - img
+          - generic [ref=e571]:
+            - link [ref=e574] [cursor=pointer]:
+              - /url: /watch?v=LCYBVpSB0Wo
+            - generic [ref=e576] [cursor=pointer]:
+              - generic [ref=e577]:
+                - heading "I was using sub-agents wrong... Here is my way after 20+ hrs test 16 minutes" [level=3] [ref=e578]:
+                  - link "I was using sub-agents wrong... Here is my way after 20+ hrs test 16 minutes" [ref=e579]:
+                    - /url: /watch?v=LCYBVpSB0Wo
+                    - generic [ref=e580]: I was using sub-agents wrong... Here is my way after 20+ hrs test
+                - generic [ref=e583]:
+                  - generic [ref=e584]: 117K views
+                  - generic [ref=e585]: •7 months ago
+              - button "Action menu" [ref=e588]:
+                - generic [ref=e591]:
+                  - img
+          - generic [ref=e595]:
+            - link [ref=e598] [cursor=pointer]:
+              - /url: /watch?v=UZb0if-7wGE
+            - generic [ref=e600] [cursor=pointer]:
+              - generic [ref=e601]:
+                - heading "I was using Claude Code wrong... The Ultimate Workflow 18 minutes" [level=3] [ref=e602]:
+                  - link "I was using Claude Code wrong... The Ultimate Workflow 18 minutes" [ref=e603]:
+                    - /url: /watch?v=UZb0if-7wGE
+                    - generic [ref=e604]: I was using Claude Code wrong... The Ultimate Workflow
+                - generic [ref=e607]:
+                  - generic [ref=e608]: 139K views
+                  - generic [ref=e609]: •8 months ago
+              - button "Action menu" [ref=e612]:
+                - generic [ref=e615]:
+                  - img
+          - generic [ref=e619]:
+            - link [ref=e622] [cursor=pointer]:
+              - /url: /watch?v=Y4VEAI04W_U
+            - generic [ref=e624] [cursor=pointer]:
+              - generic [ref=e625]:
+                - heading "Claude Killer? My review on Kimi K2 after hrs of testing... 7 minutes, 2 seconds" [level=3] [ref=e626]:
+                  - link "Claude Killer? My review on Kimi K2 after hrs of testing... 7 minutes, 2 seconds" [ref=e627]:
+                    - /url: /watch?v=Y4VEAI04W_U
+                    - generic [ref=e628]: Claude Killer? My review on Kimi K2 after hrs of testing...
+                - generic [ref=e631]:
+                  - generic [ref=e632]: 81K views
+                  - generic [ref=e633]: •8 months ago
+              - button "Action menu" [ref=e636]:
+                - generic [ref=e639]:
+                  - img
+          - generic [ref=e643]:
+            - link [ref=e646] [cursor=pointer]:
+              - /url: /watch?v=Nocg_8ECs6w
+            - generic [ref=e648] [cursor=pointer]:
+              - generic [ref=e649]:
+                - heading "Tired of AI-ish UI? Here is how to make it better... 9 minutes, 29 seconds" [level=3] [ref=e650]:
+                  - link "Tired of AI-ish UI? Here is how to make it better... 9 minutes, 29 seconds" [ref=e651]:
+                    - /url: /watch?v=Nocg_8ECs6w
+                    - generic [ref=e652]: Tired of AI-ish UI? Here is how to make it better...
+                - generic [ref=e655]:
+                  - generic [ref=e656]: 53K views
+                  - generic [ref=e657]: •8 months ago
+              - button "Action menu" [ref=e660]:
+                - generic [ref=e663]:
+                  - img
+          - generic [ref=e667]:
+            - link [ref=e670] [cursor=pointer]:
+              - /url: /watch?v=YJ3Z9XhlF5w
+            - generic [ref=e672] [cursor=pointer]:
+              - generic [ref=e673]:
+                - heading "Claude Designer is insane...Ultimate vibe coding UI workflow 16 minutes" [level=3] [ref=e674]:
+                  - link "Claude Designer is insane...Ultimate vibe coding UI workflow 16 minutes" [ref=e675]:
+                    - /url: /watch?v=YJ3Z9XhlF5w
+                    - generic [ref=e676]: Claude Designer is insane...Ultimate vibe coding UI workflow
+                - generic [ref=e679]:
+                  - generic [ref=e680]: 188K views
+                  - generic [ref=e681]: •9 months ago
+              - button "Action menu" [ref=e684]:
+                - generic [ref=e687]:
+                  - img
+          - generic [ref=e691]:
+            - link [ref=e694] [cursor=pointer]:
+              - /url: /watch?v=JfMcFjD-tIA
+            - generic [ref=e696] [cursor=pointer]:
+              - generic [ref=e697]:
+                - heading "Vibe Versioning - Iterate UI in Cursor 10x faster 5 minutes, 56 seconds" [level=3] [ref=e698]:
+                  - link "Vibe Versioning - Iterate UI in Cursor 10x faster 5 minutes, 56 seconds" [ref=e699]:
+                    - /url: /watch?v=JfMcFjD-tIA
+                    - generic [ref=e700]: Vibe Versioning - Iterate UI in Cursor 10x faster
+                - generic [ref=e703]:
+                  - generic [ref=e704]: 23K views
+                  - generic [ref=e705]: •9 months ago
+              - button "Action menu" [ref=e708]:
+                - generic [ref=e711]:
+                  - img
+          - generic [ref=e715]:
+            - link [ref=e718] [cursor=pointer]:
+              - /url: /watch?v=iq97iSsBsR4
+            - generic [ref=e720] [cursor=pointer]:
+              - generic [ref=e721]:
+                - heading "Build the next Billion $ Agent 🚀 22 minutes" [level=3] [ref=e722]:
+                  - link "Build the next Billion $ Agent 🚀 22 minutes" [ref=e723]:
+                    - /url: /watch?v=iq97iSsBsR4
+                    - generic [ref=e724]: Build the next Billion $ Agent 🚀
+                - generic [ref=e727]:
+                  - generic [ref=e728]: 18K views
+                  - generic [ref=e729]: •9 months ago
+              - button "Action menu" [ref=e732]:
+                - generic [ref=e735]:
+                  - img
+          - generic [ref=e739]:
+            - link [ref=e742] [cursor=pointer]:
+              - /url: /watch?v=0KYWJWY62d4&pp=0gcJCdkKAYcqIYzv
+            - generic [ref=e744] [cursor=pointer]:
+              - generic [ref=e745]:
+                - heading "10x better UI design for vibe coders - Use v0 directly in Cursor 3 minutes, 35 seconds" [level=3] [ref=e746]:
+                  - link "10x better UI design for vibe coders - Use v0 directly in Cursor 3 minutes, 35 seconds" [ref=e747]:
+                    - /url: /watch?v=0KYWJWY62d4&pp=0gcJCdkKAYcqIYzv
+                    - generic [ref=e748]: 10x better UI design for vibe coders - Use v0 directly in Cursor
+                - generic [ref=e751]:
+                  - generic [ref=e752]: 52K views
+                  - generic [ref=e753]: •10 months ago
+              - button "Action menu" [ref=e756]:
+                - generic [ref=e759]:
+                  - img
+          - generic [ref=e763]:
+            - link [ref=e766] [cursor=pointer]:
+              - /url: /watch?v=2RlBb4C_XwI
+            - generic [ref=e768] [cursor=pointer]:
+              - generic [ref=e769]:
+                - heading "How to make accurate UI Tweak in Cursor with Stagewise 4 minutes, 25 seconds" [level=3] [ref=e770]:
+                  - link "How to make accurate UI Tweak in Cursor with Stagewise 4 minutes, 25 seconds" [ref=e771]:
+                    - /url: /watch?v=2RlBb4C_XwI
+                    - generic [ref=e772]: How to make accurate UI Tweak in Cursor with Stagewise
+                - generic [ref=e775]:
+                  - generic [ref=e776]: 24K views
+                  - generic [ref=e777]: •10 months ago
+              - button "Action menu" [ref=e780]:
+                - generic [ref=e783]:
+                  - img
+          - generic [ref=e787]:
+            - link [ref=e790] [cursor=pointer]:
+              - /url: /watch?v=VKAq_PA_21U
+            - generic [ref=e792] [cursor=pointer]:
+              - generic [ref=e793]:
+                - heading "Build MCP business for vibe coder 14 minutes, 2 seconds" [level=3] [ref=e794]:
+                  - link "Build MCP business for vibe coder 14 minutes, 2 seconds" [ref=e795]:
+                    - /url: /watch?v=VKAq_PA_21U
+                    - generic [ref=e796]: Build MCP business for vibe coder
+                - generic [ref=e799]:
+                  - generic [ref=e800]: 10K views
+                  - generic [ref=e801]: •10 months ago
+              - button "Action menu" [ref=e804]:
+                - generic [ref=e807]:
+                  - img
+          - generic [ref=e811]:
+            - link [ref=e814] [cursor=pointer]:
+              - /url: /watch?v=3tYBbH_nFcE&pp=0gcJCdkKAYcqIYzv
+            - generic [ref=e816] [cursor=pointer]:
+              - generic [ref=e817]:
+                - heading "Cursor + Browser control = Self improving coding agent 11 minutes, 44 seconds" [level=3] [ref=e818]:
+                  - link "Cursor + Browser control = Self improving coding agent 11 minutes, 44 seconds" [ref=e819]:
+                    - /url: /watch?v=3tYBbH_nFcE&pp=0gcJCdkKAYcqIYzv
+                    - generic [ref=e820]: Cursor + Browser control = Self improving coding agent
+                - generic [ref=e823]:
+                  - generic [ref=e824]: 35K views
+                  - generic [ref=e825]: •10 months ago
+              - button "Action menu" [ref=e828]:
+                - generic [ref=e831]:
+                  - img
+          - generic [ref=e835]:
+            - link [ref=e838] [cursor=pointer]:
+              - /url: /watch?v=dF4uCZAY1tk
+            - generic [ref=e840] [cursor=pointer]:
+              - generic [ref=e841]:
+                - heading "How I reduced 90% errors for my Cursor (Part 2) 19 minutes" [level=3] [ref=e842]:
+                  - link "How I reduced 90% errors for my Cursor (Part 2) 19 minutes" [ref=e843]:
+                    - /url: /watch?v=dF4uCZAY1tk
+                    - generic [ref=e844]: How I reduced 90% errors for my Cursor (Part 2)
+                - generic [ref=e847]:
+                  - generic [ref=e848]: 55K views
+                  - generic [ref=e849]: •11 months ago
+              - button "Action menu" [ref=e852]:
+                - generic [ref=e855]:
+                  - img
+          - generic [ref=e859]:
+            - link [ref=e862] [cursor=pointer]:
+              - /url: /watch?v=1L509JK8p1I
+            - generic [ref=e864] [cursor=pointer]:
+              - generic [ref=e865]:
+                - heading "How I reduced 90% errors for my Cursor (+ any other AI IDE) 15 minutes" [level=3] [ref=e866]:
+                  - link "How I reduced 90% errors for my Cursor (+ any other AI IDE) 15 minutes" [ref=e867]:
+                    - /url: /watch?v=1L509JK8p1I
+                    - generic [ref=e868]: How I reduced 90% errors for my Cursor (+ any other AI IDE)
+                - generic [ref=e871]:
+                  - generic [ref=e872]: 288K views
+                  - generic [ref=e873]: •11 months ago
+              - button "Action menu" [ref=e876]:
+                - generic [ref=e879]:
+                  - img
+          - generic [ref=e883]:
+            - link [ref=e886] [cursor=pointer]:
+              - /url: /watch?v=KHDMoQ2Sp2s
+            - generic [ref=e888] [cursor=pointer]:
+              - generic [ref=e889]:
+                - heading "Don't do RAG - This method is way faster & accurate... 13 minutes, 19 seconds" [level=3] [ref=e890]:
+                  - link "Don't do RAG - This method is way faster & accurate... 13 minutes, 19 seconds" [ref=e891]:
+                    - /url: /watch?v=KHDMoQ2Sp2s
+                    - generic [ref=e892]: Don't do RAG - This method is way faster & accurate...
+                - generic [ref=e895]:
+                  - generic [ref=e896]: 180K views
+                  - generic [ref=e897]: •1 year ago
+              - button "Action menu" [ref=e900]:
+                - generic [ref=e903]:
+                  - img
+          - generic [ref=e907]:
+            - link [ref=e910] [cursor=pointer]:
+              - /url: /watch?v=PLbwB5_HIdc
+            - generic [ref=e912] [cursor=pointer]:
+              - generic [ref=e913]:
+                - heading "Claude Designer is insane...Ultimate vibe coding UI workflow 9 minutes, 14 seconds" [level=3] [ref=e914]:
+                  - link "Claude Designer is insane...Ultimate vibe coding UI workflow 9 minutes, 14 seconds" [ref=e915]:
+                    - /url: /watch?v=PLbwB5_HIdc
+                    - generic [ref=e916]: Claude Designer is insane...Ultimate vibe coding UI workflow
+                - generic [ref=e919]:
+                  - generic [ref=e920]: 224K views
+                  - generic [ref=e921]: •1 year ago
+              - button "Action menu" [ref=e924]:
+                - generic [ref=e927]:
+                  - img
+          - generic [ref=e931]:
+            - link [ref=e934] [cursor=pointer]:
+              - /url: /watch?v=HJa8G6e1oRw
+            - generic [ref=e936] [cursor=pointer]:
+              - generic [ref=e937]:
+                - heading "Gemini 2.0 blew me away - The future of Multimodal Model 10 minutes, 9 seconds" [level=3] [ref=e938]:
+                  - link "Gemini 2.0 blew me away - The future of Multimodal Model 10 minutes, 9 seconds" [ref=e939]:
+                    - /url: /watch?v=HJa8G6e1oRw
+                    - generic [ref=e940]: Gemini 2.0 blew me away - The future of Multimodal Model
+                - generic [ref=e943]:
+                  - generic [ref=e944]: 16K views
+                  - generic [ref=e945]: •1 year ago
+              - button "Action menu" [ref=e948]:
+                - generic [ref=e951]:
+                  - img
+    - text: •

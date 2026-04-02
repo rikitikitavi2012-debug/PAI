@@ -1,0 +1,11 @@
+id: "20260402-130228_task"
+title: "Помоги разобраться с задачими которые висят у Джул"
+session_id: "19bff88b-9d0d-4e78-979c-fe16112813d4"
+created_at: "2026-04-02T13:02:28+03:00"
+completed_at: "2026-04-02T13:05:37+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

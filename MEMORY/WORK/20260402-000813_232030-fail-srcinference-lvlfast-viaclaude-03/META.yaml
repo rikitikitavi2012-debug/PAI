@@ -1,0 +1,11 @@
+id: "20260402-000813_232030-fail-srcinference-lvlfast-viaclaude-03"
+title: "232030  fail srcInference  lvlfast  viaclaude  03"
+session_id: "5861e4cc-7205-4031-bf0b-99c2f5f8e74a"
+created_at: "2026-04-02T00:08:13+03:00"
+completed_at: "2026-04-02T01:00:48+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

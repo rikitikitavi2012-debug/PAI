@@ -1,0 +1,139 @@
+- generic [ref=e2]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - button "Guide" [active] [ref=e9] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "YouTube Home" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e16]: KZ
+        - button "Skip navigation" [ref=e20] [cursor=pointer]:
+          - generic [ref=e21]: Skip navigation
+      - generic [ref=e25]:
+        - search [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - combobox "Search" [expanded] [ref=e30]: "\"AI Jason\" ai agents channel"
+              - button "Clear search query" [ref=e32] [cursor=pointer]
+            - button "Search" [ref=e37] [cursor=pointer]
+        - generic [ref=e40]:
+          - button "Search with your voice" [ref=e42] [cursor=pointer]
+          - tooltip "tooltip"
+  - navigation [ref=e53]
+  - main [ref=e55]:
+    - generic [ref=e59]:
+      - generic [ref=e65]:
+        - button "Search filters" [ref=e67] [cursor=pointer]:
+          - generic [ref=e70]: Filters
+        - tooltip "tooltip"
+      - generic [ref=e76]:
+        - generic [ref=e81]:
+          - img [ref=e87]
+          - generic [ref=e89] [cursor=pointer]:
+            - generic [ref=e90]:
+              - link "Create a Virtual Machine" [ref=e93]:
+                - /url: https://www.googleadservices.com/pagead/aclk?sa=L&ai=CFDf5C2vOaf7EJISE7_UPqpjzuAWP5p2ShgGMn-feuBVkEAEgAGCPA4IBF2NhLXB1Yi02MjE5ODExNzQ3MDQ5MzcxoAGk7o2vKKgDBMgDCqoErgJP0FBoGV2i3AkG3sADdlotN3X80365yz3-YLyVsHNmZrv3m9bhva3MoK1VMUa3vkEXOojt4fjqegDriiJy9TpEGt7I-IPcuLVR0M-r4fgq4cXIV1HaY0j4wO8EHmtR5TP2pyxQp2KS1rFkq_TRsTxh5ZBDpbX_duj8dS4XAWFvyefSUlkNszZ9mivCQJ_61ZLXcsLN9g6uaUW6Y-kgNSzOyeZ5g6hVX4RNPNPuIFVF0wJgHmPVJPP_okB_mOMuzD93KPkQtp4odQ0QBceoE6UYy9dOIaptBvE0q2R5LFmeKGG60nlJ1i07Id_50VkAX-YVqg18Z63mGgsm4MEeGDR08S2HH2kXt0XRh03Ykvz5feKEb1-0jYMEkd8ICUergm4sQFiP85WjVY6r0WmZbYgFsrPMvleSBQcIE3jlmrw1oAZugAfN-7w0kAcEqAfywLECqAe4xLECqAfhtrECqAelz7ECqAfnnbECqAfonbECqAfvtbECqAfwtbECqAf507ECqAfJ2rECqAep4LECqAeECKgHptSxAqgHqNIbqAe2B6gHsdwbqAewm7ECqAeusbECqAfmvLECqAfKurECqAf9srECqAf3uLECqAf4uLECqAfIz7ECqAfJz7ECqAet4LECqAfNx7ECqAfx0bECqAf81bECqAf71bECqAeM1rECqAeL1rECqAea4bECqAed17ECqAed1LECqAeBxhuoB_yvsQKoB6vFG6gHt6GxAqgH1amxAqgH3rWxAqgH6rGxAqgHvrexAqgHmbWxAqgHhcGxAqgH66WxAqgHyqmxAqgHwsixArAIDNIILwiAQRABGF4yAoICOhKAwoCAgICABoCAgICAkIbgAypI2aDSNVAUWODhhoefz5MDmgkpaHR0cHM6Ly9jbG91ZC5nb29nbGUuY29tL3Byb2R1Y3RzL2NvbXB1dGWxCXYvI4JmASUuyAkAyAmKAroLPQgDEAUYBCAIKAEwHEABSABYTmAAaABwAYgBAJgBAaIBCAoAqAIC2AICqAEB2AEGgAIBiAIFugMFdmlncnHQCxLgCwHSDAIQAdoMJQoKEPCb4vqe1OmVYxICAQMaDRiys8y-VyDRqLGG1QVAAUoCEB-aDQESqg0CS1rIDQHSDc8EaHR0cHM6Ly9hZC5kb3VibGVjbGljay5uZXQvc2VhcmNoYWRzL2xpbmsvY2xpY2s_bGlkPTU4NzAwMDA4OTk5MTEyMjQ5JmRzX2FfY2lkPTExMjEzNTUyNSZkc19hX2NhaWQ9MjM0ODUxNTk4NTgmZHNfYV9hZ2lkPTE5NDYyOTA5NjUyOSZkc19hX2ZpaWQ9JmRzX2FfbGlkPSZkc19hX2V4dGlkPSYmZHNfZV9hZGlkPTc5MzU1NDkwNjg3MyZkc19lX21hdGNodHlwZT0mZHNfZV9kZXZpY2U9YyZkc19lX25ldHdvcms9JiZkc191cmxfdj0yJmRzX2Rlc3RfdXJsPWh0dHBzOi8vYWQuZG91YmxlY2xpY2submV0L2RkbS90cmFja2Nsay9ONTI5NS40MjIyOTg4RElTQ09WRVJZR09PR0xFQURTL0IzNDY4ODQ5MS40Mzg4NjU3MzQ7ZGNfdHJrX2FpZD02MzE5ODAxNDU7ZGNfdHJrX2NpZD0yNDY1MDIxNzc7ZGNfbGF0PTtkY19yZGlkPTt0YWdfZm9yX2NoaWxkX2RpcmVjdGVkX3RyZWF0bWVudD07dGZ1YT07Z2Rwcj0ke0dEUFJ9O2dkcHJfY29uc2VudD0ke0dEUFJfQ09OU0VOVF83NTV9O2x0ZD07ZGNfdGR2PTEmZ2FkX3NvdXJjZT0yJmdhZF9jYW1wYWlnbmlkPTIzNDg1MTU5ODU4JmdicmFpZD0wQUFBQUFvWGpkeVFYTXVnYTk5aUJwaXNVZ3REZGl6NmptuBP___________8BiBQCsBQDwBWBgIBA0BUB2BUBmBYB4hYCCAGAFwGKFxYIAxgBIAEoATABOAFAAUgBUAFYAWACoBcBuhcKCAEoATAAOAFIAdAYAfAYAYAZA8IZAggB&ase=2&gclid=EAIaIQobChMIvvaGh5_PkwMVBMK7CB0qzBxXEAEYASAAEgL8U_D_BwE&num=1&cid=CAASqwHkaF23NczLmgs1UHntkkh57SEU3lZezzef0JiPMzdpw73D-TVYWxXaxBYwF5xWPVaVLj95SK22wLqsK3ZEQNpE2dGRGlSTZX4HPvp6QI4742KwdC7p2u_OWVh-dxzCtvsn14De4cxqxhiW45p3EURtgdXeBtI77JEqhvSgkVopozTP4RCuuazslqADzlsYpOlX-GCNFev2oIWnCQovpXsb655EcpQ9Iluw89o&sig=AOD64_2vzUtvd00KQww_YMasj5MPnkAIWg&ms=%5BCLICK_MS%5D&nb=0&nx=%5BNX%5D&ny=%5BNY%5D&dim=%5BDIM%5D
+              - link "From general purpose to high end vCPUs for compute intensive workloads. Start free." [ref=e96]:
+                - /url: https://www.googleadservices.com/pagead/aclk?sa=L&ai=CFDf5C2vOaf7EJISE7_UPqpjzuAWP5p2ShgGMn-feuBVkEAEgAGCPA4IBF2NhLXB1Yi02MjE5ODExNzQ3MDQ5MzcxoAGk7o2vKKgDBMgDCqoErgJP0FBoGV2i3AkG3sADdlotN3X80365yz3-YLyVsHNmZrv3m9bhva3MoK1VMUa3vkEXOojt4fjqegDriiJy9TpEGt7I-IPcuLVR0M-r4fgq4cXIV1HaY0j4wO8EHmtR5TP2pyxQp2KS1rFkq_TRsTxh5ZBDpbX_duj8dS4XAWFvyefSUlkNszZ9mivCQJ_61ZLXcsLN9g6uaUW6Y-kgNSzOyeZ5g6hVX4RNPNPuIFVF0wJgHmPVJPP_okB_mOMuzD93KPkQtp4odQ0QBceoE6UYy9dOIaptBvE0q2R5LFmeKGG60nlJ1i07Id_50VkAX-YVqg18Z63mGgsm4MEeGDR08S2HH2kXt0XRh03Ykvz5feKEb1-0jYMEkd8ICUergm4sQFiP85WjVY6r0WmZbYgFsrPMvleSBQcIE3jlmrw1oAZugAfN-7w0kAcEqAfywLECqAe4xLECqAfhtrECqAelz7ECqAfnnbECqAfonbECqAfvtbECqAfwtbECqAf507ECqAfJ2rECqAep4LECqAeECKgHptSxAqgHqNIbqAe2B6gHsdwbqAewm7ECqAeusbECqAfmvLECqAfKurECqAf9srECqAf3uLECqAf4uLECqAfIz7ECqAfJz7ECqAet4LECqAfNx7ECqAfx0bECqAf81bECqAf71bECqAeM1rECqAeL1rECqAea4bECqAed17ECqAed1LECqAeBxhuoB_yvsQKoB6vFG6gHt6GxAqgH1amxAqgH3rWxAqgH6rGxAqgHvrexAqgHmbWxAqgHhcGxAqgH66WxAqgHyqmxAqgHwsixArAIDNIILwiAQRABGF4yAoICOhKAwoCAgICABoCAgICAkIbgAypI2aDSNVAUWODhhoefz5MDmgkpaHR0cHM6Ly9jbG91ZC5nb29nbGUuY29tL3Byb2R1Y3RzL2NvbXB1dGWxCXYvI4JmASUuyAkAyAmKAroLPQgDEAUYBCAIKAEwHEABSABYTmAAaABwAYgBAJgBAaIBCAoAqAIC2AICqAEB2AEGgAIBiAIFugMFdmlncnHQCxLgCwHSDAIQAdoMJQoKEPCb4vqe1OmVYxICAQMaDRiys8y-VyDRqLGG1QVAAUoCEB-aDQESqg0CS1rIDQHSDc8EaHR0cHM6Ly9hZC5kb3VibGVjbGljay5uZXQvc2VhcmNoYWRzL2xpbmsvY2xpY2s_bGlkPTU4NzAwMDA4OTk5MTEyMjQ5JmRzX2FfY2lkPTExMjEzNTUyNSZkc19hX2NhaWQ9MjM0ODUxNTk4NTgmZHNfYV9hZ2lkPTE5NDYyOTA5NjUyOSZkc19hX2ZpaWQ9JmRzX2FfbGlkPSZkc19hX2V4dGlkPSYmZHNfZV9hZGlkPTc5MzU1NDkwNjg3MyZkc19lX21hdGNodHlwZT0mZHNfZV9kZXZpY2U9YyZkc19lX25ldHdvcms9JiZkc191cmxfdj0yJmRzX2Rlc3RfdXJsPWh0dHBzOi8vYWQuZG91YmxlY2xpY2submV0L2RkbS90cmFja2Nsay9ONTI5NS40MjIyOTg4RElTQ09WRVJZR09PR0xFQURTL0IzNDY4ODQ5MS40Mzg4NjU3MzQ7ZGNfdHJrX2FpZD02MzE5ODAxNDU7ZGNfdHJrX2NpZD0yNDY1MDIxNzc7ZGNfbGF0PTtkY19yZGlkPTt0YWdfZm9yX2NoaWxkX2RpcmVjdGVkX3RyZWF0bWVudD07dGZ1YT07Z2Rwcj0ke0dEUFJ9O2dkcHJfY29uc2VudD0ke0dEUFJfQ09OU0VOVF83NTV9O2x0ZD07ZGNfdGR2PTEmZ2FkX3NvdXJjZT0yJmdhZF9jYW1wYWlnbmlkPTIzNDg1MTU5ODU4JmdicmFpZD0wQUFBQUFvWGpkeVFYTXVnYTk5aUJwaXNVZ3REZGl6NmptuBP___________8BiBQCsBQDwBWBgIBA0BUB2BUBmBYB4hYCCAGAFwGKFxYIAxgBIAEoATABOAFAAUgBUAFYAWACoBcBuhcKCAEoATAAOAFIAdAYAfAYAYAZA8IZAggB&ase=2&gclid=EAIaIQobChMIvvaGh5_PkwMVBMK7CB0qzBxXEAEYASAAEgL8U_D_BwE&num=1&cid=CAASqwHkaF23NczLmgs1UHntkkh57SEU3lZezzef0JiPMzdpw73D-TVYWxXaxBYwF5xWPVaVLj95SK22wLqsK3ZEQNpE2dGRGlSTZX4HPvp6QI4742KwdC7p2u_OWVh-dxzCtvsn14De4cxqxhiW45p3EURtgdXeBtI77JEqhvSgkVopozTP4RCuuazslqADzlsYpOlX-GCNFev2oIWnCQovpXsb655EcpQ9Iluw89o&sig=AOD64_2vzUtvd00KQww_YMasj5MPnkAIWg&ms=%5BCLICK_MS%5D&nb=7&nx=%5BNX%5D&ny=%5BNY%5D&dim=%5BDIM%5D
+              - generic [ref=e97]:
+                - generic [ref=e99]:
+                  - generic [ref=e100]: Sponsored
+                  - text: ·
+                - generic [ref=e102]: Google Cloud
+            - button "My Ad Center" [ref=e105]
+        - generic [ref=e112]:
+          - link [ref=e114] [cursor=pointer]:
+            - /url: /@AIJasonZ
+          - generic [ref=e117]:
+            - link "AI Jason @AIJasonZ•220K subscribers My name is Jason Zhou, a product designer who share interesting AI experiments & products. Email me if you need help building ..." [ref=e118] [cursor=pointer]:
+              - /url: /@AIJasonZ
+              - generic [ref=e119]:
+                - generic [ref=e123]: AI Jason
+                - generic [ref=e124]: "@AIJasonZ•220K subscribers"
+                - generic [ref=e125]: My name is Jason Zhou, a product designer who share interesting AI experiments & products. Email me if you need help building ...
+            - link "Subscribe" [ref=e130] [cursor=pointer]:
+              - /url: https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3D%252Fresults%253Fsearch_query%253D%252522AI%252BJason%252522%252Bai%252Bagents%252Bchannel%26continue_action%3DQUFFLUhqbDA3UDB5TWgzdXZVWWlYbzYtYkIydTZ0Z2JCZ3xBQ3Jtc0tuUnRwYTl6UzhZeTRUSWFVb1QxOFNoRXhUVU1mQVA5MGRiSWNka3JnVmktZGtBbWhUMTBrYlptdldGYzJPOUZuVGQxMFNqSWt2VXJNOXBHY0RidnhSSElwQm9MU0Q3RXhaTDZ5Q2JpNGVjT3V4OU1td3BKbEIzTmVkX3FUb0VzTGhHeE9oX2YtX1ZHMDU1U1M0aEQ4VmVRYW5iV2diaDZhT2NkZVlIOFA4eDlSZ1Ixb3FUbTJqWm9DbGp2NmhGVDRoV0FqbDA&hl=en
+              - generic [ref=e131]: Subscribe
+        - generic [ref=e136]:
+          - link [ref=e138] [cursor=pointer]:
+            - /url: /watch?v=WCYf2Agml-s&pp=ygUcIkFJIEphc29uIiBhaSBhZ2VudHMgY2hhbm5lbA%3D%3D
+          - generic [ref=e140] [cursor=pointer]:
+            - generic [ref=e141]:
+              - heading "INSANELY Fast AI Cold Call Agent- built w/ Groq 27 minutes" [level=3] [ref=e143]:
+                - link "INSANELY Fast AI Cold Call Agent- built w/ Groq 27 minutes" [ref=e144]:
+                  - /url: /watch?v=WCYf2Agml-s&pp=ygUcIkFJIEphc29uIiBhaSBhZ2VudHMgY2hhbm5lbA%3D%3D
+                  - text: INSANELY Fast AI Cold Call Agent- built w/ Groq
+              - generic [ref=e147]:
+                - generic [ref=e148]: 230K views
+                - generic [ref=e149]: •2 years ago
+            - generic [ref=e150]:
+              - link "Go to channel AI Jason" [ref=e151]:
+                - /url: /@AIJasonZ
+              - link "AI Jason" [ref=e157]:
+                - /url: /@AIJasonZ
+            - generic [ref=e158]:
+              - generic [ref=e159]: What exactly is Groq LPU? I will take you through a real example of building a real time AI cold call agent with the speed of Groq ...
+              - tooltip "tooltip"
+            - generic [ref=e162]:
+              - generic [ref=e163]:
+                - generic [ref=e167]: 9 chapters
+                - 'button "Intro | CPU vs GPU vs LPU | What is LPU | Use cases Groq unlock | Tutorial: Build sales agent with voice AI | Demo: Voice AI | Setup Phone number for AI agent | Integrate voice AI into existing WhatsApp sales agent | Demo" [ref=e168]'
+              - button "More" [ref=e173]
+        - generic [ref=e180]:
+          - link [ref=e182] [cursor=pointer]:
+            - /url: /watch?v=uywkK9owKkY&pp=ygUcIkFJIEphc29uIiBhaSBhZ2VudHMgY2hhbm5lbA%3D%3D
+          - generic [ref=e184] [cursor=pointer]:
+            - generic [ref=e185]:
+              - heading "From $0 to $4m with just 2 people (ComfyUI Crash-course for E-commerce) 28 minutes" [level=3] [ref=e187]:
+                - link "From $0 to $4m with just 2 people (ComfyUI Crash-course for E-commerce) 28 minutes" [ref=e188]:
+                  - /url: /watch?v=uywkK9owKkY&pp=ygUcIkFJIEphc29uIiBhaSBhZ2VudHMgY2hhbm5lbA%3D%3D
+                  - text: From $0 to $4m with just 2 people (ComfyUI Crash-course for E-commerce)
+              - generic [ref=e191]:
+                - generic [ref=e192]: 62K views
+                - generic [ref=e193]: •1 year ago
+            - generic [ref=e194]:
+              - link "Go to channel AI Jason" [ref=e195]:
+                - /url: /@AIJasonZ
+              - link "AI Jason" [ref=e201]:
+                - /url: /@AIJasonZ
+            - generic [ref=e202]:
+              - generic [ref=e203]: ComfyUI tutorial for covering all sorts of Ecommerce related use cases Free E-book of how to dominate Search Results in the AI ...
+              - tooltip "tooltip"
+            - generic [ref=e206]:
+              - generic [ref=e207]:
+                - generic [ref=e211]: 7 chapters
+                - button "AI in chinese Ecommerce | ComfyUI basics | Text to image | Image to image | Mask | Controlnet | Case study of AI model swap" [ref=e212]
+              - button "More" [ref=e217]
+        - generic [ref=e224]:
+          - link [ref=e226] [cursor=pointer]:
+            - /url: /watch?v=-xNXPxPYJ1Q&pp=ygUcIkFJIEphc29uIiBhaSBhZ2VudHMgY2hhbm5lbA%3D%3D
+          - generic [ref=e228] [cursor=pointer]:
+            - generic [ref=e229]:
+              - 'heading "🚨 Don''t Misuse AI! Jason & Aza''s Guide #easy2digital #GenerativeAI 7 minutes, 26 seconds" [level=3] [ref=e231]':
+                - 'link "🚨 Don''t Misuse AI! Jason & Aza''s Guide #easy2digital #GenerativeAI 7 minutes, 26 seconds" [ref=e232]':
+                  - /url: /watch?v=-xNXPxPYJ1Q&pp=ygUcIkFJIEphc29uIiBhaSBhZ2VudHMgY2hhbm5lbA%3D%3D
+                  - text: "🚨 Don't Misuse AI! Jason & Aza's Guide #easy2digital #GenerativeAI"
+              - generic [ref=e235]:
+                - generic [ref=e236]: 5 views
+                - generic [ref=e237]: •1 month ago
+            - generic [ref=e238]:
+              - link "Go to channel EASY2DIGITAL" [ref=e239]:
+                - /url: /@easy2digital
+              - link "EASY2DIGITAL" [ref=e244]:
+                - /url: /@easy2digital
+            - generic [ref=e245]:
+              - generic [ref=e246]: Discover the definitive guide to deploying AI effectively! In this episode of 'Real Terms for AI,' Jason and Aza dissect when to use ...
+              - tooltip "tooltip"
+        - generic [ref=e248]:
+          - link [ref=e250] [cursor=pointer]:
+            - /url: /@ThisWeekinAIPodcast
+          - generic [ref=e253]:
+            - 'link "This Week in AI @ThisWeekinAIPodcast•5.18K subscribers An experts-only AI podcast, hosted by Jason Calacanis Presented by PayPal Open: One Platform for All Business What to expect: ..." [ref=e254] [cursor=pointer]':
+              - /url: /@ThisWeekinAIPodcast
+              - generic [ref=e255]:
+                - generic [ref=e259]: This Week in AI
+                - generic [ref=e260]: "@ThisWeekinAIPodcast•5.18K subscribers"
+                - generic [ref=e261]: "An experts-only AI podcast, hosted by Jason Calacanis Presented by PayPal Open: One Platform for All Business What to expect: ..."
+            - link "Subscribe" [ref=e266] [cursor=pointer]:
+              - /url: https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3D%252Fresults%253Fsearch_query%253D%252522AI%252BJason%252522%252Bai%252Bagents%252Bchannel%26continue_action%3DQUFFLUhqbFF3OWlzN2syVFJLVk9WSFBZcmxkVy1YN2V6Z3xBQ3Jtc0tuNFRFYWhkWWsyMDUyUFYtRHFKVl9IMWQwdldFd1luS01reFpWaUF4S0RYMUJxQUJKMXZpWlBzRmFhcUVHM3d3OUxud212ajhhMXVvLWFUeFZkcUZoZ3h5Y215MVFRekJyODFHNXBMakJrS25waDRELVpfVnJpU2tNSWFNN1hCZEt0U0hXOGpsZHB2R0o4N21BVlhIbjZQTmx1bmtiZUNOZllYeWdRR2VVdko3QlJmMUNVQnNRU0pVY0RfdjZuOXB1Q0pSeGI&hl=en
+              - generic [ref=e267]: Subscribe

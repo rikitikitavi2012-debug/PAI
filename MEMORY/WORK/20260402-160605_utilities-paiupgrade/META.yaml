@@ -1,0 +1,11 @@
+id: "20260402-160605_utilities-paiupgrade"
+title: "Utilities PAIUpgrade"
+session_id: "b6043db2-1bea-4098-846c-18d2b5dd4974"
+created_at: "2026-04-02T16:06:05+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -1,0 +1,13 @@
+- iframe [ref=e2]:
+  - generic [ref=f5e3]:
+    - paragraph [ref=f5e4]: This page isn't available. Sorry about that.
+    - paragraph [ref=f5e5]: Try searching for something else.
+    - generic [ref=f5e6]:
+      - link "YouTube home KZ" [ref=f5e7] [cursor=pointer]:
+        - /url: https://www.youtube.com/
+        - generic "YouTube home" [ref=f5e8]
+        - text: KZ
+      - generic [ref=f5e9]:
+        - textbox "Search" [ref=f5e11]
+        - button "Search" [ref=f5e12] [cursor=pointer]:
+          - generic [ref=f5e13]: Search

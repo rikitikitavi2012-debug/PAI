@@ -1,0 +1,11 @@
+id: "20260401-212405_task"
+title: "Сезон уже начинается что нам делать с сайтом и рек"
+session_id: "13935d01-45ce-423c-be85-c12948192d01"
+created_at: "2026-04-01T21:24:05+03:00"
+completed_at: "2026-04-02T00:59:56+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

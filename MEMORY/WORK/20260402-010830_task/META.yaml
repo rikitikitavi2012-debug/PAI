@@ -1,0 +1,11 @@
+id: "20260402-010830_task"
+title: "Я перезапустил китти как проверить что все работае"
+session_id: "5861e4cc-7205-4031-bf0b-99c2f5f8e74a"
+created_at: "2026-04-02T01:08:30+03:00"
+completed_at: "2026-04-02T01:12:37+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

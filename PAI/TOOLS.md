@@ -66,7 +66,7 @@ if (result.success) {
 - Hooks use this for sentiment analysis, tab titles, work classification
 
 **Technical Details:**
-- Uses Claude CLI with subscription (not API key)
+- Uses ANTHROPIC_API_KEY (direct API). Gemini uses gemini-cli provider
 - Disables tools and hooks to prevent recursion
 - Returns latency metrics for monitoring
 

@@ -1,6 +1,6 @@
 {
   "domain": "workflow",
-  "updated": "2026-03-18T19:53:53.107Z",
+  "updated": "2026-04-01T21:59:56.099Z",
   "observations": [
     {
       "type": "principle",
@@ -458,6 +458,13 @@
       "observation": "Mild frustration — uncertainty about A0's work + needs clarification",
       "timestamp": "2026-03-18T21:45:12+03:00",
       "session_id": "8a5b6a37-87a9-44d9-a05b-8067c471e66a",
+      "confirmed": 1
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Confused by unclear instructions",
+      "timestamp": "2026-04-02T00:30:48+03:00",
+      "session_id": "13935d01-45ce-423c-be85-c12948192d01",
       "confirmed": 1
     }
   ]

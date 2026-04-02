@@ -1,0 +1,11 @@
+id: "20260402-011435_task"
+title: "Выполнил как проверить?"
+session_id: "5861e4cc-7205-4031-bf0b-99c2f5f8e74a"
+created_at: "2026-04-02T01:14:35+03:00"
+completed_at: "2026-04-02T01:25:27+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

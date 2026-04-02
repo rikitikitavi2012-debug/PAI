@@ -1,23 +1,25 @@
 {
-  "last_check_timestamp": "2026-02-13T07:42:00Z",
+  "last_check_timestamp": "2026-04-02T13:15:00Z",
   "channels": {
-    "Indy Dev Dan": {
-      "last_video_id": "RpUTF_U4kiw",
-      "last_video_title": "Claude Code Multi-Agent Orchestration with Opus 4.6, Tmux and Agent Sandboxes",
-      "last_checked": "2026-02-13T07:42:00Z",
-      "seen_videos": ["RpUTF_U4kiw", "4_2j5wgt_ds", "3_mwKbYvbUg", "u5GkG71PkR0", "-WBHNFAB0OE", "VqDs46A8pqE", "fop_yxV-mPo", "u-SQ0Jsv4mI"]
+    "IndyDevDan": {
+      "last_video_id": "M30gp1315Y4",
+      "last_video_title": "One Agent Is NOT ENOUGH: Agentic Coding BEYOND Claude Code",
+      "last_checked": "2026-04-02T13:15:00Z",
+      "seen_videos": ["M30gp1315Y4", "TqjmTZRL31E", "_vpNQ6IwP9w", "LOazLNQnB80", "V5A1IU8VVp4", "f8cfH5XX-XU", "efctPj6bjCY", "RpUTF_U4kiw", "4_2j5wgt_ds", "3_mwKbYvbUg", "u5GkG71PkR0", "-WBHNFAB0OE", "VqDs46A8pqE", "fop_yxV-mPo", "u-SQ0Jsv4mI"]
     },
     "AI Jason": {
-      "last_video_id": "S2WTTMXYcYY",
-      "last_video_title": "Agent teams VS sub agents",
-      "last_checked": "2026-02-13T07:42:00Z",
-      "seen_videos": ["S2WTTMXYcYY", "fG95XsBO5U4", "oL6bLQOXwAY", "RYnxU_MTVvU", "UuyaeSLRTkE"]
+      "channel_handle": "@AIJasonZ",
+      "last_video_id": "kJPvfoLtFFY",
+      "last_video_title": "wtf is Harness Engineer & why is it important",
+      "last_checked": "2026-04-02T13:15:00Z",
+      "seen_videos": ["kJPvfoLtFFY", "kcOowmrVI7k", "3wglqgskzjQ", "pAIF7vZm5k0", "xQAYZBDV5jg", "S2WTTMXYcYY", "fG95XsBO5U4", "oL6bLQOXwAY", "RYnxU_MTVvU", "UuyaeSLRTkE"]
     },
     "R Amjad": {
-      "last_video_id": "DWiYdXrxSwg",
-      "last_video_title": "Anthropic Just Dropped Agent Swarms",
-      "last_checked": "2026-02-13T07:42:00Z",
-      "seen_videos": ["DWiYdXrxSwg", "6omInQipcag", "aF4QAHbNDrA", "NmKdYlODC24", "sy65ARFI9Bg"]
+      "channel_handle": "@RAmjad",
+      "last_video_id": "YSbB5gc_1K8",
+      "last_video_title": "Claude Code Source Code Leaked... 18 New Features",
+      "last_checked": "2026-04-02T13:15:00Z",
+      "seen_videos": ["YSbB5gc_1K8", "OnQ4BGN8B-s", "pOsGxVKYd3s", "7PnF8qctDi8", "DqjBbAr3oTo", "qXWz-V_XMOc", "AzmnaoVP8sk", "y3xzYwxQuHc", "F_frSYyhzOE", "DWiYdXrxSwg", "6omInQipcag", "aF4QAHbNDrA", "NmKdYlODC24", "sy65ARFI9Bg"]
     }
   }
 }

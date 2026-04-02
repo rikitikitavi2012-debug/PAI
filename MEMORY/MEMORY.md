@@ -12,6 +12,7 @@
 - [Yandex Estimates](reference_estimates_yandex.md) — справочник по оценкам из Яндекса
 
 ## Feedback
+- [Абсолютные пути для скриптов](feedback_script_paths.md) — всегда `~/.claude/...` или `cd` перед bun-запуском
 - [Не спамить A0](feedback_no_spam_a0.md) — не слать повторные запросы A0, ждать ответ или poll
 - [Upstream Strategy](feedback_upstream_strategy.md) — НИКОГДА не merge upstream. Только cherry-pick. CLAUDE.md и Algorithm — наши.
 - [Cross-Model Review](feedback_crossmodel_review.md) — ОБЯЗАТЕЛЬНО Gemini + A0 review при изменениях Algorithm. Claude has shared blind spots.
@@ -22,5 +23,6 @@
 ## Project
 - [A0 Telegram Bot Project](project_a0_telegram_bot.md) — рабочая директория /home/ser/projects/a0-telegram-bot/, стек, деплой, статус фаз, Jules PRs
 - [A0 Infrastructure Status](project_a0_infra.md) — что сделано 2026-03-18 (FD fix, git, bot, backup), что осталось (50003 патч, health monitor, webhook)
+- [Hosting Decision Timber Frame](project_hosting_decision.md) — решение по хостингу: Cloudflare Proxy сейчас + Coolify потом (декабрь)
 - [TF Fencing Idea](project_tf_fencing_idea.md) — идея по ограждениям для timber frame сайта
 - [Agent Claim System](project_claim_system_future.md) — claim system + deadlock detection для параллельных агентов (межсезонье)

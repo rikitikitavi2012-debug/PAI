@@ -1,6 +1,6 @@
 {
   "domain": "development",
-  "updated": "2026-03-16T23:08:15.945Z",
+  "updated": "2026-04-02T14:46:16.087Z",
   "observations": [
     {
       "type": "contextual-rule",
@@ -204,6 +204,13 @@
       "timestamp": "2026-03-17T01:52:20+03:00",
       "session_id": "ecf8e0b3-6eba-4bc2-bf6b-2bddb5c807e6",
       "confirmed": 2
+    },
+    {
+      "type": "anti-pattern",
+      "observation": "Frustrated by unexpected git push failure",
+      "timestamp": "2026-04-02T17:26:36+03:00",
+      "session_id": "ec4aa8f8-dbe2-416d-8fed-efcea8338374",
+      "confirmed": 1
     }
   ]
 }

@@ -1,0 +1,71 @@
+- generic [ref=e2]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - button "Guide" [ref=e9] [cursor=pointer]
+        - generic [ref=e11]:
+          - link "YouTube Home" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e16]: KZ
+        - button "Skip navigation" [ref=e20] [cursor=pointer]:
+          - generic [ref=e21]: Skip navigation
+      - generic [ref=e25]:
+        - search [ref=e26]:
+          - generic [ref=e27]:
+            - combobox "Search" [expanded] [ref=e30]
+            - button "Search" [ref=e31] [cursor=pointer]
+        - generic [ref=e34]:
+          - button "Search with your voice" [ref=e36] [cursor=pointer]
+          - tooltip "tooltip"
+      - generic [ref=e43]:
+        - button "Settings" [ref=e48] [cursor=pointer]
+        - link "Sign in" [ref=e52] [cursor=pointer]:
+          - /url: https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F%2540aijason%252Fvideos&hl=en&ec=65620
+          - generic [ref=e55]: Sign in
+  - navigation [ref=e59]
+  - main [ref=e61]:
+    - generic [ref=e68]:
+      - generic [ref=e84]:
+        - heading "AI Jason 5.0" [level=1] [ref=e86]
+        - generic [ref=e87]:
+          - generic [ref=e89]: "@AIJason"
+          - generic [ref=e90]: •
+          - generic [ref=e91]:
+            - generic "380 subscribers" [ref=e92]
+            - generic [ref=e93]: •
+            - generic [ref=e94]: 1 video
+        - generic [ref=e96] [cursor=pointer]:
+          - generic [ref=e97]: I post things
+          - button "Description. I post things...tap for more." [ref=e98]:
+            - generic [ref=e99]: ...more
+        - button "Subscribe" [ref=e103] [cursor=pointer]:
+          - generic [ref=e104]: Subscribe
+      - tablist [ref=e111]:
+        - tablist [ref=e115]:
+          - tab "Home" [ref=e116] [cursor=pointer]:
+            - generic [ref=e117]: Home
+          - tab "Videos" [selected] [ref=e118] [cursor=pointer]:
+            - generic [ref=e119]: Videos
+          - tab "Playlists" [ref=e120] [cursor=pointer]:
+            - generic [ref=e121]: Playlists
+          - tab "Posts" [ref=e122] [cursor=pointer]:
+            - generic [ref=e123]: Posts
+          - button "Search" [ref=e127] [cursor=pointer]
+    - generic [ref=e139]:
+      - link [ref=e142] [cursor=pointer]:
+        - /url: /watch?v=GAOqrfi-VX8
+        - img [ref=e144]
+        - img [ref=e147]:
+          - generic [ref=e148]: 1:38
+        - generic:
+          - generic: Now playing
+          - generic:
+            - img
+      - generic [ref=e150] [cursor=pointer]:
+        - heading "Toxic Waste Blue Raspberry Energy Drink Taste Test Review 1 minute, 38 seconds" [level=3] [ref=e151]:
+          - link "Toxic Waste Blue Raspberry Energy Drink Taste Test Review 1 minute, 38 seconds" [ref=e152]:
+            - /url: /watch?v=GAOqrfi-VX8
+            - generic [ref=e153]: Toxic Waste Blue Raspberry Energy Drink Taste Test Review
+        - generic [ref=e156]:
+          - generic [ref=e157]: 30 views
+          - generic [ref=e158]: •8 months ago

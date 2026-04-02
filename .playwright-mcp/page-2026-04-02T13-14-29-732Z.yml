@@ -1,0 +1,608 @@
+- generic [ref=e2]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - button "Guide" [ref=e9] [cursor=pointer]:
+          - generic [ref=e12]:
+            - img
+        - generic [ref=e13]:
+          - link "YouTube Home" [ref=e14] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e19]:
+              - img
+          - generic [ref=e20]: KZ
+        - button "Skip navigation" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: Skip navigation
+      - generic [ref=e29]:
+        - search [ref=e30]:
+          - generic [ref=e31]:
+            - combobox "Search" [expanded] [ref=e34]
+            - button "Search" [ref=e35] [cursor=pointer]:
+              - generic [ref=e38]:
+                - img
+        - generic [ref=e40]:
+          - button "Search with your voice" [ref=e42] [cursor=pointer]:
+            - generic [ref=e46]:
+              - img
+          - tooltip "tooltip"
+      - generic [ref=e51]:
+        - button "Settings" [ref=e56] [cursor=pointer]:
+          - generic [ref=e59]:
+            - img
+        - link "Sign in" [ref=e62] [cursor=pointer]:
+          - /url: https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F%2540RAmjad%252Fvideos&hl=en&ec=65620
+          - generic [ref=e66]:
+            - img
+          - generic [ref=e67]: Sign in
+  - navigation [ref=e71]:
+    - generic [ref=e72]:
+      - link "Home" [ref=e74] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e77]:
+          - img
+        - generic [ref=e78]: Home
+      - link "Shorts" [ref=e80] [cursor=pointer]:
+        - /url: /shorts/
+        - generic [ref=e83]:
+          - img
+        - generic [ref=e84]: Shorts
+      - link "Subscriptions" [ref=e86] [cursor=pointer]:
+        - /url: /feed/subscriptions
+        - generic [ref=e89]:
+          - img
+        - generic [ref=e90]: Subscriptions
+      - link "You" [ref=e92] [cursor=pointer]:
+        - /url: /feed/you
+        - generic [ref=e95]:
+          - img
+        - generic [ref=e96]: You
+  - generic [ref=e97]:
+    - main [ref=e98]:
+      - generic [ref=e105]:
+        - generic [ref=e118]:
+          - heading "Ray Amjad" [level=1] [ref=e120]
+          - generic [ref=e121]:
+            - generic [ref=e123]: "@RAmjad"
+            - generic [ref=e124]: •
+            - generic [ref=e125]:
+              - generic "42.2 thousand subscribers" [ref=e126]: 42.2K subscribers
+              - generic [ref=e127]: •
+              - generic [ref=e128]: 137 videos
+          - generic [ref=e130] [cursor=pointer]:
+            - generic [ref=e131]: I make videos about agentic engineering.
+            - button "Description. I make videos about agentic engineering....tap for more." [ref=e132]:
+              - generic [ref=e133]: ...more
+          - generic [ref=e134]:
+            - link "masterclaudecode.com" [ref=e137] [cursor=pointer]:
+              - /url: https://www.youtube.com/redirect?event=channel_header&redir_token=QUFFLUhqa1E2cFg1VFoxdWhYUnkxRlhWTGNKbU5IMnEwd3xBQ3Jtc0ttdXRrSG9CY1B1T0xfbjFfcV9Ra3BTOFZJdWZ6LTY1T2JzaHc4Z2RHOUlKa3pnUm9XWDU5R3l3dnlNZG9FS1UtYk5Yd255QV9Odjc3c2FLZWp5YzNYcmxRbjdtVExYSnNFNkdJcWhsQkwyclAwT00wdw&q=https%3A%2F%2Fwww.masterclaudecode.com%2F
+            - button "and 3 more links" [ref=e140] [cursor=pointer]
+          - generic [ref=e141]:
+            - button "Subscribe" [ref=e144] [cursor=pointer]:
+              - generic [ref=e145]: Subscribe
+            - link "Community" [ref=e151] [cursor=pointer]:
+              - /url: /@RAmjad/community
+              - generic [ref=e155]:
+                - img
+              - generic [ref=e156]: Community
+        - tablist [ref=e163]:
+          - tablist [ref=e167]:
+            - tab "Home" [ref=e168] [cursor=pointer]:
+              - generic [ref=e169]: Home
+            - tab "Videos" [selected] [ref=e170] [cursor=pointer]:
+              - generic [ref=e171]: Videos
+            - tab "Shorts" [ref=e172] [cursor=pointer]:
+              - generic [ref=e173]: Shorts
+            - tab "Live" [ref=e174] [cursor=pointer]:
+              - generic [ref=e175]: Live
+            - tab "Playlists" [ref=e176] [cursor=pointer]:
+              - generic [ref=e177]: Playlists
+            - tab "Posts" [ref=e178] [cursor=pointer]:
+              - generic [ref=e179]: Posts
+            - button "Search" [ref=e183] [cursor=pointer]:
+              - generic [ref=e186]:
+                - img
+          - button [ref=e189] [cursor=pointer]:
+            - generic [ref=e190]:
+              - img
+      - generic [ref=e194]:
+        - tablist [ref=e197]:
+          - tab "Latest" [selected] [ref=e201] [cursor=pointer]:
+            - generic [ref=e203]: Latest
+          - tab "Popular" [ref=e210] [cursor=pointer]:
+            - generic [ref=e212]: Popular
+          - tab "Oldest" [ref=e219] [cursor=pointer]:
+            - generic [ref=e221]: Oldest
+        - generic [ref=e225]:
+          - generic [ref=e229]:
+            - link [ref=e232] [cursor=pointer]:
+              - /url: /watch?v=YSbB5gc_1K8
+              - img [ref=e234]
+              - img [ref=e237]:
+                - generic [ref=e238]: 16:37
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e239] [cursor=pointer]:
+              - generic [ref=e240]:
+                - heading "Claude Code Source Code Leaked… 18 New Features 16 minutes" [level=3] [ref=e241]:
+                  - link "Claude Code Source Code Leaked… 18 New Features 16 minutes" [ref=e242]:
+                    - /url: /watch?v=YSbB5gc_1K8
+                    - generic [ref=e243]: Claude Code Source Code Leaked… 18 New Features
+                - generic [ref=e246]:
+                  - generic [ref=e247]: 15K views
+                  - generic [ref=e248]: •1 day ago
+              - button "Action menu" [ref=e251]:
+                - generic [ref=e254]:
+                  - img
+          - generic [ref=e258]:
+            - link [ref=e261] [cursor=pointer]:
+              - /url: /watch?v=OnQ4BGN8B-s
+              - img [ref=e263]
+              - img [ref=e266]:
+                - generic [ref=e267]: 7:30
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e268] [cursor=pointer]:
+              - generic [ref=e269]:
+                - heading "Anthropic Just Dropped the Feature Nobody Knew They Needed 7 minutes, 30 seconds" [level=3] [ref=e270]:
+                  - link "Anthropic Just Dropped the Feature Nobody Knew They Needed 7 minutes, 30 seconds" [ref=e271]:
+                    - /url: /watch?v=OnQ4BGN8B-s
+                    - generic [ref=e272]: Anthropic Just Dropped the Feature Nobody Knew They Needed
+                - generic [ref=e275]:
+                  - generic [ref=e276]: 96K views
+                  - generic [ref=e277]: •9 days ago
+              - button "Action menu" [ref=e280]:
+                - generic [ref=e283]:
+                  - img
+          - generic [ref=e287]:
+            - link [ref=e290] [cursor=pointer]:
+              - /url: /watch?v=pOsGxVKYd3s
+              - img [ref=e292]
+              - img [ref=e295]:
+                - generic [ref=e296]: 12:20
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e297] [cursor=pointer]:
+              - generic [ref=e298]:
+                - heading "Anthropic Just Revealed Where Coding Is Heading 12 minutes, 20 seconds" [level=3] [ref=e299]:
+                  - link "Anthropic Just Revealed Where Coding Is Heading 12 minutes, 20 seconds" [ref=e300]:
+                    - /url: /watch?v=pOsGxVKYd3s
+                    - generic [ref=e301]: Anthropic Just Revealed Where Coding Is Heading
+                - generic [ref=e304]:
+                  - generic [ref=e305]: 19K views
+                  - generic [ref=e306]: •12 days ago
+              - button "Action menu" [ref=e309]:
+                - generic [ref=e312]:
+                  - img
+          - generic [ref=e316]:
+            - link [ref=e319] [cursor=pointer]:
+              - /url: /watch?v=7PnF8qctDi8&pp=0gcJCdkKAYcqIYzv
+              - img [ref=e321]
+              - img [ref=e324]:
+                - generic [ref=e325]: 18:43
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e326] [cursor=pointer]:
+              - generic [ref=e327]:
+                - heading "Anthropic Just Dropped Their Internal Skills Strategy 18 minutes" [level=3] [ref=e328]:
+                  - link "Anthropic Just Dropped Their Internal Skills Strategy 18 minutes" [ref=e329]:
+                    - /url: /watch?v=7PnF8qctDi8&pp=0gcJCdkKAYcqIYzv
+                    - generic [ref=e330]: Anthropic Just Dropped Their Internal Skills Strategy
+                - generic [ref=e333]:
+                  - generic [ref=e334]: 12K views
+                  - generic [ref=e335]: •2 weeks ago
+              - button "Action menu" [ref=e338]:
+                - generic [ref=e341]:
+                  - img
+          - generic [ref=e345]:
+            - link [ref=e348] [cursor=pointer]:
+              - /url: /watch?v=DqjBbAr3oTo
+              - img [ref=e350]
+              - img [ref=e353]:
+                - generic [ref=e354]: 7:57
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e355] [cursor=pointer]:
+              - generic [ref=e356]:
+                - heading "Anthropic Just Dropped the Feature Nobody Knew They Needed 7 minutes, 57 seconds" [level=3] [ref=e357]:
+                  - link "Anthropic Just Dropped the Feature Nobody Knew They Needed 7 minutes, 57 seconds" [ref=e358]:
+                    - /url: /watch?v=DqjBbAr3oTo
+                    - generic [ref=e359]: Anthropic Just Dropped the Feature Nobody Knew They Needed
+                - generic [ref=e362]:
+                  - generic [ref=e363]: 39K views
+                  - generic [ref=e364]: •3 weeks ago
+              - button "Action menu" [ref=e367]:
+                - generic [ref=e370]:
+                  - img
+          - generic [ref=e374]:
+            - link [ref=e377] [cursor=pointer]:
+              - /url: /watch?v=qXWz-V_XMOc
+              - img [ref=e379]
+              - img [ref=e382]:
+                - generic [ref=e383]: 12:49
+              - generic:
+                - generic: Now playing
+                - generic:
+                  - img
+            - generic [ref=e384] [cursor=pointer]:
+              - generic [ref=e385]:
+                - heading "Anthropic Just Dropped Claude Code Skills 2.0 12 minutes, 49 seconds" [level=3] [ref=e386]:
+                  - link "Anthropic Just Dropped Claude Code Skills 2.0 12 minutes, 49 seconds" [ref=e387]:
+                    - /url: /watch?v=qXWz-V_XMOc
+                    - generic [ref=e388]: Anthropic Just Dropped Claude Code Skills 2.0
+                - generic [ref=e391]:
+                  - generic [ref=e392]: 45K views
+                  - generic [ref=e393]: •4 weeks ago
+              - button "Action menu" [ref=e396]:
+                - generic [ref=e399]:
+                  - img
+          - generic [ref=e403]:
+            - link [ref=e406] [cursor=pointer]:
+              - /url: /watch?v=AzmnaoVP8sk
+            - generic [ref=e408] [cursor=pointer]:
+              - generic [ref=e409]:
+                - heading "The Top 0.01% User's Guide to Claude Code 41 minutes" [level=3] [ref=e410]:
+                  - link "The Top 0.01% User's Guide to Claude Code 41 minutes" [ref=e411]:
+                    - /url: /watch?v=AzmnaoVP8sk
+                    - generic [ref=e412]: The Top 0.01% User's Guide to Claude Code
+                - generic [ref=e415]:
+                  - generic [ref=e416]: 19K views
+                  - generic [ref=e417]: •4 weeks ago
+              - button "Action menu" [ref=e420]:
+                - generic [ref=e423]:
+                  - img
+          - generic [ref=e427]:
+            - link [ref=e430] [cursor=pointer]:
+              - /url: /watch?v=y3xzYwxQuHc
+            - generic [ref=e432] [cursor=pointer]:
+              - generic [ref=e433]:
+                - heading "Anthropic Just Dropped the Feature Everyone Asked For 9 minutes, 56 seconds" [level=3] [ref=e434]:
+                  - link "Anthropic Just Dropped the Feature Everyone Asked For 9 minutes, 56 seconds" [ref=e435]:
+                    - /url: /watch?v=y3xzYwxQuHc
+                    - generic [ref=e436]: Anthropic Just Dropped the Feature Everyone Asked For
+                - generic [ref=e439]:
+                  - generic [ref=e440]: 35K views
+                  - generic [ref=e441]: •1 month ago
+              - button "Action menu" [ref=e444]:
+                - generic [ref=e447]:
+                  - img
+          - generic [ref=e451]:
+            - link [ref=e454] [cursor=pointer]:
+              - /url: /watch?v=F_frSYyhzOE
+            - generic [ref=e456] [cursor=pointer]:
+              - generic [ref=e457]:
+                - heading "Anthropic Just Dropped 17 New Claude Code Features 16 minutes" [level=3] [ref=e458]:
+                  - link "Anthropic Just Dropped 17 New Claude Code Features 16 minutes" [ref=e459]:
+                    - /url: /watch?v=F_frSYyhzOE
+                    - generic [ref=e460]: Anthropic Just Dropped 17 New Claude Code Features
+                - generic [ref=e463]:
+                  - generic [ref=e464]: 18K views
+                  - generic [ref=e465]: •1 month ago
+              - button "Action menu" [ref=e468]:
+                - generic [ref=e471]:
+                  - img
+          - generic [ref=e475]:
+            - link [ref=e478] [cursor=pointer]:
+              - /url: /watch?v=DWiYdXrxSwg&pp=0gcJCdkKAYcqIYzv
+            - generic [ref=e480] [cursor=pointer]:
+              - generic [ref=e481]:
+                - heading "Learn Claude Code Agent Teams in 12 Minutes 12 minutes, 5 seconds" [level=3] [ref=e482]:
+                  - link "Learn Claude Code Agent Teams in 12 Minutes 12 minutes, 5 seconds" [ref=e483]:
+                    - /url: /watch?v=DWiYdXrxSwg&pp=0gcJCdkKAYcqIYzv
+                    - generic [ref=e484]: Learn Claude Code Agent Teams in 12 Minutes
+                - generic [ref=e487]:
+                  - generic [ref=e488]: 21K views
+                  - generic [ref=e489]: •1 month ago
+              - button "Action menu" [ref=e492]:
+                - generic [ref=e495]:
+                  - img
+          - generic [ref=e499]:
+            - link [ref=e502] [cursor=pointer]:
+              - /url: /watch?v=6omInQipcag
+            - generic [ref=e504] [cursor=pointer]:
+              - generic [ref=e505]:
+                - heading "Claude Code's New Task System Explained 11 minutes, 3 seconds" [level=3] [ref=e506]:
+                  - link "Claude Code's New Task System Explained 11 minutes, 3 seconds" [ref=e507]:
+                    - /url: /watch?v=6omInQipcag
+                    - generic [ref=e508]: Claude Code's New Task System Explained
+                - generic [ref=e511]:
+                  - generic [ref=e512]: 28K views
+                  - generic [ref=e513]: •2 months ago
+              - button "Action menu" [ref=e516]:
+                - generic [ref=e519]:
+                  - img
+          - generic [ref=e523]:
+            - link [ref=e526] [cursor=pointer]:
+              - /url: /watch?v=aF4QAHbNDrA
+            - generic [ref=e528] [cursor=pointer]:
+              - generic [ref=e529]:
+                - heading "Anthropic Just Added These Features to Claude Code 11 minutes, 47 seconds" [level=3] [ref=e530]:
+                  - link "Anthropic Just Added These Features to Claude Code 11 minutes, 47 seconds" [ref=e531]:
+                    - /url: /watch?v=aF4QAHbNDrA
+                    - generic [ref=e532]: Anthropic Just Added These Features to Claude Code
+                - generic [ref=e535]:
+                  - generic [ref=e536]: 19K views
+                  - generic [ref=e537]: •2 months ago
+              - button "Action menu" [ref=e540]:
+                - generic [ref=e543]:
+                  - img
+          - generic [ref=e547]:
+            - link [ref=e550] [cursor=pointer]:
+              - /url: /watch?v=NmKdYlODC24
+            - generic [ref=e552] [cursor=pointer]:
+              - generic [ref=e553]:
+                - heading "Claude Code's Biggest Update in Months 11 minutes, 25 seconds" [level=3] [ref=e554]:
+                  - link "Claude Code's Biggest Update in Months 11 minutes, 25 seconds" [ref=e555]:
+                    - /url: /watch?v=NmKdYlODC24
+                    - generic [ref=e556]: Claude Code's Biggest Update in Months
+                - generic [ref=e559]:
+                  - generic [ref=e560]: 24K views
+                  - generic [ref=e561]: •2 months ago
+              - button "Action menu" [ref=e564]:
+                - generic [ref=e567]:
+                  - img
+          - generic [ref=e571]:
+            - link [ref=e574] [cursor=pointer]:
+              - /url: /watch?v=sy65ARFI9Bg
+            - generic [ref=e576] [cursor=pointer]:
+              - generic [ref=e577]:
+                - heading "My Claude Code Workflow for 2026 20 minutes" [level=3] [ref=e578]:
+                  - link "My Claude Code Workflow for 2026 20 minutes" [ref=e579]:
+                    - /url: /watch?v=sy65ARFI9Bg
+                    - generic [ref=e580]: My Claude Code Workflow for 2026
+                - generic [ref=e583]:
+                  - generic [ref=e584]: 25K views
+                  - generic [ref=e585]: •3 months ago
+              - button "Action menu" [ref=e588]:
+                - generic [ref=e591]:
+                  - img
+          - generic [ref=e595]:
+            - link [ref=e598] [cursor=pointer]:
+              - /url: /watch?v=rXTvax9pyhs
+            - generic [ref=e600] [cursor=pointer]:
+              - generic [ref=e601]:
+                - heading "Anthropic Just Connected Claude Code to Your Browser 7 minutes, 57 seconds" [level=3] [ref=e602]:
+                  - link "Anthropic Just Connected Claude Code to Your Browser 7 minutes, 57 seconds" [ref=e603]:
+                    - /url: /watch?v=rXTvax9pyhs
+                    - generic [ref=e604]: Anthropic Just Connected Claude Code to Your Browser
+                - generic [ref=e607]:
+                  - generic [ref=e608]: 20K views
+                  - generic [ref=e609]: •3 months ago
+              - button "Action menu" [ref=e612]:
+                - generic [ref=e615]:
+                  - img
+          - generic [ref=e619]:
+            - link [ref=e622] [cursor=pointer]:
+              - /url: /watch?v=IiA4Ku5viyg&pp=0gcJCdkKAYcqIYzv
+            - generic [ref=e624] [cursor=pointer]:
+              - generic [ref=e625]:
+                - heading "Anthropic Just Added These Features to Claude Code 13 minutes, 12 seconds" [level=3] [ref=e626]:
+                  - link "Anthropic Just Added These Features to Claude Code 13 minutes, 12 seconds" [ref=e627]:
+                    - /url: /watch?v=IiA4Ku5viyg&pp=0gcJCdkKAYcqIYzv
+                    - generic [ref=e628]: Anthropic Just Added These Features to Claude Code
+                - generic [ref=e631]:
+                  - generic [ref=e632]: 19K views
+                  - generic [ref=e633]: •3 months ago
+              - button "Action menu" [ref=e636]:
+                - generic [ref=e639]:
+                  - img
+          - generic [ref=e643]:
+            - link [ref=e646] [cursor=pointer]:
+              - /url: /watch?v=pb0lVGDiigI
+            - generic [ref=e648] [cursor=pointer]:
+              - generic [ref=e649]:
+                - heading "Anthropic Reveals How to Prompt Claude Code 10x Better 14 minutes, 39 seconds" [level=3] [ref=e650]:
+                  - link "Anthropic Reveals How to Prompt Claude Code 10x Better 14 minutes, 39 seconds" [ref=e651]:
+                    - /url: /watch?v=pb0lVGDiigI
+                    - generic [ref=e652]: Anthropic Reveals How to Prompt Claude Code 10x Better
+                - generic [ref=e655]:
+                  - generic [ref=e656]: 29K views
+                  - generic [ref=e657]: •4 months ago
+              - button "Action menu" [ref=e660]:
+                - generic [ref=e663]:
+                  - img
+          - generic [ref=e667]:
+            - link [ref=e670] [cursor=pointer]:
+              - /url: /watch?v=_kaSD-W56wE
+            - generic [ref=e672] [cursor=pointer]:
+              - generic [ref=e673]:
+                - 'heading "HUGE Claude Code Update: Opus 4.5, Desktop App + More! 11 minutes, 24 seconds" [level=3] [ref=e674]':
+                  - 'link "HUGE Claude Code Update: Opus 4.5, Desktop App + More! 11 minutes, 24 seconds" [ref=e675]':
+                    - /url: /watch?v=_kaSD-W56wE
+                    - generic [ref=e676]: "HUGE Claude Code Update: Opus 4.5, Desktop App + More!"
+                - generic [ref=e679]:
+                  - generic [ref=e680]: 11K views
+                  - generic [ref=e681]: •4 months ago
+              - button "Action menu" [ref=e684]:
+                - generic [ref=e687]:
+                  - img
+          - generic [ref=e691]:
+            - link [ref=e694] [cursor=pointer]:
+              - /url: /watch?v=MtNLgdUZ9Uc&pp=0gcJCdkKAYcqIYzv
+            - generic [ref=e696] [cursor=pointer]:
+              - generic [ref=e697]:
+                - heading "Gemini 3 Pro's Vibe Coding (Fully Tested!) 18 minutes" [level=3] [ref=e698]:
+                  - link "Gemini 3 Pro's Vibe Coding (Fully Tested!) 18 minutes" [ref=e699]:
+                    - /url: /watch?v=MtNLgdUZ9Uc&pp=0gcJCdkKAYcqIYzv
+                    - generic [ref=e700]: Gemini 3 Pro's Vibe Coding (Fully Tested!)
+                - generic [ref=e703]:
+                  - generic [ref=e704]: 3.8K views
+                  - generic [ref=e705]: •4 months ago
+              - button "Action menu" [ref=e708]:
+                - generic [ref=e711]:
+                  - img
+          - generic [ref=e715]:
+            - link [ref=e718] [cursor=pointer]:
+              - /url: /watch?v=_XVZFN2MTVY
+            - generic [ref=e720] [cursor=pointer]:
+              - generic [ref=e721]:
+                - heading "Anthropic Reveal How to Make Claude Code a Better Designer 7 minutes, 3 seconds" [level=3] [ref=e722]:
+                  - link "Anthropic Reveal How to Make Claude Code a Better Designer 7 minutes, 3 seconds" [ref=e723]:
+                    - /url: /watch?v=_XVZFN2MTVY
+                    - generic [ref=e724]: Anthropic Reveal How to Make Claude Code a Better Designer
+                - generic [ref=e727]:
+                  - generic [ref=e728]: 9K views
+                  - generic [ref=e729]: •4 months ago
+              - button "Action menu" [ref=e732]:
+                - generic [ref=e735]:
+                  - img
+          - generic [ref=e739]:
+            - link [ref=e742] [cursor=pointer]:
+              - /url: /watch?v=LHd6Ig_pCrs
+            - generic [ref=e744] [cursor=pointer]:
+              - generic [ref=e745]:
+                - heading "I'll Teach You How to Save $100s on Replit 10 minutes, 3 seconds" [level=3] [ref=e746]:
+                  - link "I'll Teach You How to Save $100s on Replit 10 minutes, 3 seconds" [ref=e747]:
+                    - /url: /watch?v=LHd6Ig_pCrs
+                    - generic [ref=e748]: I'll Teach You How to Save $100s on Replit
+                - generic [ref=e751]:
+                  - generic [ref=e752]: 2.6K views
+                  - generic [ref=e753]: •4 months ago
+              - button "Action menu" [ref=e756]:
+                - generic [ref=e759]:
+                  - img
+          - generic [ref=e763]:
+            - link [ref=e766] [cursor=pointer]:
+              - /url: /watch?v=TOs0DRBcdRs
+            - generic [ref=e768] [cursor=pointer]:
+              - generic [ref=e769]:
+                - heading "Claude Code's New Default Subagents (This Week's News!) 12 minutes, 32 seconds" [level=3] [ref=e770]:
+                  - link "Claude Code's New Default Subagents (This Week's News!) 12 minutes, 32 seconds" [ref=e771]:
+                    - /url: /watch?v=TOs0DRBcdRs
+                    - generic [ref=e772]: Claude Code's New Default Subagents (This Week's News!)
+                - generic [ref=e775]:
+                  - generic [ref=e776]: 5.7K views
+                  - generic [ref=e777]: •4 months ago
+              - button "Action menu" [ref=e780]:
+                - generic [ref=e783]:
+                  - img
+          - generic [ref=e787]:
+            - link [ref=e790] [cursor=pointer]:
+              - /url: /watch?v=OtDZVZOnP3M
+            - generic [ref=e792] [cursor=pointer]:
+              - generic [ref=e793]:
+                - heading "Vibe Coding News THIS WEEK! 8 minutes, 56 seconds" [level=3] [ref=e794]:
+                  - link "Vibe Coding News THIS WEEK! 8 minutes, 56 seconds" [ref=e795]:
+                    - /url: /watch?v=OtDZVZOnP3M
+                    - generic [ref=e796]: Vibe Coding News THIS WEEK!
+                - generic [ref=e799]:
+                  - generic [ref=e800]: 4.3K views
+                  - generic [ref=e801]: •5 months ago
+              - button "Action menu" [ref=e804]:
+                - generic [ref=e807]:
+                  - img
+          - generic [ref=e811]:
+            - link [ref=e814] [cursor=pointer]:
+              - /url: /watch?v=0W7WKhA7szU
+            - generic [ref=e816] [cursor=pointer]:
+              - generic [ref=e817]:
+                - 'heading "BIG Claude Code Update: Web, Mobile, Sandbox! 12 minutes, 7 seconds" [level=3] [ref=e818]':
+                  - 'link "BIG Claude Code Update: Web, Mobile, Sandbox! 12 minutes, 7 seconds" [ref=e819]':
+                    - /url: /watch?v=0W7WKhA7szU
+                    - generic [ref=e820]: "BIG Claude Code Update: Web, Mobile, Sandbox!"
+                - generic [ref=e823]:
+                  - generic [ref=e824]: 6.2K views
+                  - generic [ref=e825]: •5 months ago
+              - button "Action menu" [ref=e828]:
+                - generic [ref=e831]:
+                  - img
+          - generic [ref=e835]:
+            - link [ref=e838] [cursor=pointer]:
+              - /url: /watch?v=v1y5EUSQ8WA
+            - generic [ref=e840] [cursor=pointer]:
+              - generic [ref=e841]:
+                - heading "Better than MCPs? Claude Code's New Skills Feature 11 minutes, 24 seconds" [level=3] [ref=e842]:
+                  - link "Better than MCPs? Claude Code's New Skills Feature 11 minutes, 24 seconds" [ref=e843]:
+                    - /url: /watch?v=v1y5EUSQ8WA
+                    - generic [ref=e844]: Better than MCPs? Claude Code's New Skills Feature
+                - generic [ref=e847]:
+                  - generic [ref=e848]: 24K views
+                  - generic [ref=e849]: •5 months ago
+              - button "Action menu" [ref=e852]:
+                - generic [ref=e855]:
+                  - img
+          - generic [ref=e859]:
+            - link [ref=e862] [cursor=pointer]:
+              - /url: /watch?v=TZrpWffK42Y
+            - generic [ref=e864] [cursor=pointer]:
+              - generic [ref=e865]:
+                - 'heading "HUGE Claude Code Update: New Model + Mobile & Web App? 6 minutes, 55 seconds" [level=3] [ref=e866]':
+                  - 'link "HUGE Claude Code Update: New Model + Mobile & Web App? 6 minutes, 55 seconds" [ref=e867]':
+                    - /url: /watch?v=TZrpWffK42Y
+                    - generic [ref=e868]: "HUGE Claude Code Update: New Model + Mobile & Web App?"
+                - generic [ref=e871]:
+                  - generic [ref=e872]: 4.8K views
+                  - generic [ref=e873]: •5 months ago
+              - button "Action menu" [ref=e876]:
+                - generic [ref=e879]:
+                  - img
+          - generic [ref=e883]:
+            - link [ref=e886] [cursor=pointer]:
+              - /url: /watch?v=R13GLp2okFw
+            - generic [ref=e888] [cursor=pointer]:
+              - generic [ref=e889]:
+                - 'heading "BIG Claude Code Update: Plugins 8 minutes, 1 second" [level=3] [ref=e890]':
+                  - 'link "BIG Claude Code Update: Plugins 8 minutes, 1 second" [ref=e891]':
+                    - /url: /watch?v=R13GLp2okFw
+                    - generic [ref=e892]: "BIG Claude Code Update: Plugins"
+                - generic [ref=e895]:
+                  - generic [ref=e896]: 11K views
+                  - generic [ref=e897]: •5 months ago
+              - button "Action menu" [ref=e900]:
+                - generic [ref=e903]:
+                  - img
+          - generic [ref=e907]:
+            - link [ref=e910] [cursor=pointer]:
+              - /url: /watch?v=fwpzzuPc11Q
+            - generic [ref=e912] [cursor=pointer]:
+              - generic [ref=e913]:
+                - heading "Codex CLI Keeps Getting Better (Everything New) 8 minutes, 2 seconds" [level=3] [ref=e914]:
+                  - link "Codex CLI Keeps Getting Better (Everything New) 8 minutes, 2 seconds" [ref=e915]:
+                    - /url: /watch?v=fwpzzuPc11Q
+                    - generic [ref=e916]: Codex CLI Keeps Getting Better (Everything New)
+                - generic [ref=e919]:
+                  - generic [ref=e920]: 6.9K views
+                  - generic [ref=e921]: •5 months ago
+              - button "Action menu" [ref=e924]:
+                - generic [ref=e927]:
+                  - img
+          - generic [ref=e931]:
+            - link [ref=e934] [cursor=pointer]:
+              - /url: /watch?v=wGQFUBFlB8Q
+            - generic [ref=e936] [cursor=pointer]:
+              - generic [ref=e937]:
+                - heading "Claude Code 2.0 + Claude Sonnet 4.5 is Finally Out! 7 minutes, 51 seconds" [level=3] [ref=e938]:
+                  - link "Claude Code 2.0 + Claude Sonnet 4.5 is Finally Out! 7 minutes, 51 seconds" [ref=e939]:
+                    - /url: /watch?v=wGQFUBFlB8Q
+                    - generic [ref=e940]: Claude Code 2.0 + Claude Sonnet 4.5 is Finally Out!
+                - generic [ref=e943]:
+                  - generic [ref=e944]: 6.7K views
+                  - generic [ref=e945]: •6 months ago
+              - button "Action menu" [ref=e948]:
+                - generic [ref=e951]:
+                  - img
+          - generic [ref=e955]:
+            - link [ref=e958] [cursor=pointer]:
+              - /url: /watch?v=Jgth1ndSPCI
+            - generic [ref=e960] [cursor=pointer]:
+              - generic [ref=e961]:
+                - heading "All the Codex CLI News (This Week!) 9 minutes, 36 seconds" [level=3] [ref=e962]:
+                  - link "All the Codex CLI News (This Week!) 9 minutes, 36 seconds" [ref=e963]:
+                    - /url: /watch?v=Jgth1ndSPCI
+                    - generic [ref=e964]: All the Codex CLI News (This Week!)
+                - generic [ref=e967]:
+                  - generic [ref=e968]: 8.6K views
+                  - generic [ref=e969]: •6 months ago
+              - button "Action menu" [ref=e972]:
+                - generic [ref=e975]:
+                  - img
+    - text: •

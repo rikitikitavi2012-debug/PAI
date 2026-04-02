@@ -70,6 +70,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
+  "model": "opus[1m]",
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [],
   "hooks": {
@@ -1229,16 +1230,16 @@
     }
   },
   "counts": {
-    "skills": 16,
-    "workflows": 186,
-    "hooks": 38,
+    "skills": 17,
+    "workflows": 194,
+    "hooks": 39,
     "signals": 180,
     "files": 212,
-    "work": 284,
-    "sessions": 2577,
-    "research": 62,
-    "ratings": 286,
-    "updatedAt": "2026-04-02T14:50:54.856Z"
+    "work": 287,
+    "sessions": 2578,
+    "research": 63,
+    "ratings": 287,
+    "updatedAt": "2026-04-02T15:51:01.137Z"
   },
   "mcpServers": {
     "supabase": {
@@ -1277,5 +1278,6 @@
       "type": "sse",
       "url": "http://72.56.86.51:50002/mcp/t-4xGU3SuhP7m4Qq-N/sse"
     }
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }

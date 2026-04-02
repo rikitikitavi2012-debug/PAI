@@ -1,0 +1,38 @@
+[
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"1\",\"subject\":\"Create ThankYouClient.tsx (Metrika tracker)\",\"description\":\"Create src/components/sections/ThankYouClient.tsx — client component that reads ?from= and UTM params via useSearchParams, fires ym(\\\"thank_you_page\\\", { source, ...utm }) on mount. Returns null. Needs Suspense wrapper in parent.\",\"assignedBy\":\"team-lead\",\"timestamp\":\"2026-04-02T15:21:18.628Z\"}",
+    "timestamp": "2026-04-02T15:21:18.628Z",
+    "read": false
+  },
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"5\",\"subject\":\"Create /spasibo page.tsx (Server Component)\",\"description\":\"Create src/app/spasibo/page.tsx — noindex metadata, 5 sections (hero, steps, CTAs, trust, contacts), Suspense-wrapped ThankYouClient. Russian content, dark theme, gold accents.\",\"assignedBy\":\"team-lead\",\"timestamp\":\"2026-04-02T15:21:38.395Z\"}",
+    "timestamp": "2026-04-02T15:21:38.395Z",
+    "read": false
+  },
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"3\",\"subject\":\"Modify ContactForm.tsx — add redirect to /spasibo\",\"description\":\"Add useRouter, UTM preservation, 1.5s setTimeout redirect to /spasibo?from=kontakty&utm_... after form success. Keep existing inline success display during the 1.5s wait.\",\"assignedBy\":\"team-lead\",\"timestamp\":\"2026-04-02T15:22:51.458Z\"}",
+    "timestamp": "2026-04-02T15:22:51.458Z",
+    "read": false
+  },
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"2\",\"subject\":\"Build verification — npm run build\",\"description\":\"Run npm run build, npx tsc --noEmit, npx vitest run to ensure green build with no regressions.\",\"assignedBy\":\"team-lead\",\"timestamp\":\"2026-04-02T15:23:46.201Z\"}",
+    "timestamp": "2026-04-02T15:23:46.201Z",
+    "read": false
+  },
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"6\",\"subject\":\"Gemini CLI + OpenCode cross-review\",\"description\":\"Run Gemini CLI for content/SEO review and OpenCode for code review in parallel. Address feedback.\",\"assignedBy\":\"team-lead\",\"timestamp\":\"2026-04-02T15:24:59.669Z\"}",
+    "timestamp": "2026-04-02T15:24:59.669Z",
+    "read": false
+  },
+  {
+    "from": "team-lead",
+    "text": "{\"type\":\"task_assignment\",\"taskId\":\"4\",\"subject\":\"Update docs (PROGRESS.md, ROADMAP.md)\",\"description\":\"Update docs/PROGRESS.md and docs/ROADMAP.md with the thank-you page completion status.\",\"assignedBy\":\"team-lead\",\"timestamp\":\"2026-04-02T15:31:31.871Z\"}",
+    "timestamp": "2026-04-02T15:31:31.871Z",
+    "read": false
+  }
+]

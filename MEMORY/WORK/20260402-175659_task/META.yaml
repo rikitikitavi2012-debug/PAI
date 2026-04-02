@@ -1,0 +1,11 @@
+id: "20260402-175659_task"
+title: "Посейчас такое происходит ято при выполнении коман"
+session_id: "043eee17-640a-46ef-a3d8-465eeb3f776b"
+created_at: "2026-04-02T17:56:59+03:00"
+completed_at: "2026-04-02T18:11:28+03:00"
+status: "COMPLETED"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

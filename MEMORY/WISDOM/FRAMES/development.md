@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** development
 - **Confidence:** 85%
-- **Observation Count:** 75
-- **Last Crystallized:** 2026-03-29
+- **Observation Count:** 76
+- **Last Crystallized:** 2026-04-02
 - **Source:** Reflection mining analysis (75 entries, 13 themes)
 
 ---
@@ -150,3 +150,4 @@
 - 2026-03-15: [anti-pattern] Correction: audit failed due to missing files
 - 2026-03-16: [anti-pattern] Frustrated by repeated failure on persistent hook error
 - 2026-03-16: [principle] Satisfied with Navi's debugging work, engaged and moving forward
+- 2026-04-02: [anti-pattern] Frustrated by unexpected git push failure

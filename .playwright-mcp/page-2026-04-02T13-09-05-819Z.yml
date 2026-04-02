@@ -1,0 +1,242 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - link "Skip to main content" [ref=e4] [cursor=pointer]:
+      - /url: "#main-content"
+    - main [ref=e5]:
+      - generic [ref=e9]:
+        - generic [ref=e12]:
+          - link "Claude Help Center" [ref=e15] [cursor=pointer]:
+            - /url: /en/
+            - img "Claude Help Center" [ref=e16]
+          - navigation [ref=e19]:
+            - link "API Docs" [ref=e20] [cursor=pointer]:
+              - /url: https://docs.claude.com/en/docs/intro
+            - link "Release Notes" [ref=e21] [cursor=pointer]:
+              - /url: https://support.claude.com/en/articles/12138966-release-notes
+            - link "How to Get Support" [ref=e22] [cursor=pointer]:
+              - /url: https://support.claude.com/en/articles/9015913-how-to-get-support
+            - generic [ref=e23] [cursor=pointer]:
+              - combobox "Change language" [ref=e24]:
+                - option "English" [selected]
+                - option "Français"
+                - option "Deutsch"
+                - option "Bahasa Indonesia"
+                - option "Italiano"
+                - option "日本語"
+                - option "한국어"
+                - option "Português"
+                - option "Pусский"
+                - option "简体中文"
+                - option "Español"
+                - option "繁體中文"
+              - generic [ref=e25]:
+                - img [ref=e26]
+                - text: English
+                - img [ref=e29]
+        - generic [ref=e36]:
+          - generic [ref=e37]: Search for articles...
+          - textbox "Search for articles..." [ref=e38]
+          - generic:
+            - img
+      - generic [ref=e43]:
+        - navigation "Breadcrumb" [ref=e46]:
+          - list [ref=e47]:
+            - listitem [ref=e48]:
+              - link "All Collections" [ref=e49] [cursor=pointer]:
+                - /url: /en/
+              - img [ref=e51]
+            - listitem [ref=e53]:
+              - link "Claude" [ref=e54] [cursor=pointer]:
+                - /url: https://support.claude.com/en/collections/4078531-claude
+              - img [ref=e56]
+            - listitem [ref=e58]:
+              - link "Features and capabilities" [ref=e59] [cursor=pointer]:
+                - /url: https://support.claude.com/en/collections/18031719-features-and-capabilities
+              - img [ref=e61]
+            - listitem [ref=e63]: What are Skills?
+        - generic [ref=e65]:
+          - generic [ref=e67]:
+            - heading "What are Skills?" [level=1] [ref=e69]
+            - generic [ref=e72]: Updated yesterday
+          - generic [ref=e73]:
+            - generic [ref=e76] [cursor=pointer]:
+              - generic [ref=e77]: Table of contents
+              - img [ref=e79]
+            - article [ref=e82]:
+              - paragraph [ref=e84]: Skills are folders of instructions, scripts, and resources that Claude loads dynamically to improve performance on specialized tasks. Skills teach Claude how to complete specific tasks in a repeatable way, whether that's creating documents with your company's brand guidelines, analyzing data using your organization's specific workflows, or automating personal tasks.
+              - paragraph [ref=e87]:
+                - text: Skills are available for users on Free, Pro, Max, Team, and Enterprise plans. This feature requires
+                - link "code execution to be enabled" [ref=e89] [cursor=pointer]:
+                  - /url: https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude#h_1c99382190
+                - text: . Skills are also available in beta for Claude Code users and for all API users using the code execution tool.
+              - paragraph [ref=e91]
+              - separator [ref=e93]
+              - paragraph [ref=e95]
+              - heading "How do Skills work?" [level=2] [ref=e97]
+              - paragraph [ref=e99]: Skills improve Claude’s consistency, speed, and performance on many tasks. Skills work through progressive disclosure—Claude determines which Skills are relevant and loads the information it needs to complete that task, helping to prevent context window overload.
+              - paragraph [ref=e101]
+              - paragraph [ref=e103]: When you ask Claude to complete a task, it reviews available Skills, loads relevant ones, and applies their instructions.
+              - paragraph [ref=e105]
+              - separator [ref=e107]
+              - paragraph [ref=e109]
+              - heading "Types of Skills" [level=2] [ref=e111]
+              - heading "Anthropic Skills" [level=3] [ref=e113]
+              - paragraph [ref=e115]: These are Skills created and maintained by Anthropic, such as enhanced document creation for Excel, Word, PowerPoint, and PDF files. Anthropic Skills are available to all users and Claude invokes them automatically when relevant.
+              - paragraph [ref=e117]
+              - heading "Custom Skills" [level=3] [ref=e119]
+              - paragraph [ref=e121]: "These are Skills you or your organization create for specialized workflows and domain-specific tasks. Here are some potential workflows you could enable using custom Skills:"
+              - list [ref=e123]:
+                - listitem [ref=e124]:
+                  - paragraph [ref=e126]: Apply brand style guidelines to documents and presentations.
+                - listitem [ref=e127]:
+                  - paragraph [ref=e129]: Generate communications following company email templates.
+                - listitem [ref=e130]:
+                  - paragraph [ref=e132]: Structure meeting notes with company-specific formats.
+                - listitem [ref=e133]:
+                  - paragraph [ref=e135]: Create tasks in company tools (JIRA, Asana, Linear) following team conventions.
+                - listitem [ref=e136]:
+                  - paragraph [ref=e138]: Execute company-specific data analysis workflows.
+                - listitem [ref=e139]:
+                  - paragraph [ref=e141]: Automate personal workflows and customize Claude to match your work style.
+                  - paragraph [ref=e143]
+              - heading "Organization provisioned skills" [level=3] [ref=e145]
+              - paragraph [ref=e147]: "For Team and Enterprise plans, organization Owners can provision skills for all users. Skills provisioned in this way appear automatically in every team member's Skills list and can be set as enabled or disabled by default. This allows organizations to:"
+              - list [ref=e149]:
+                - listitem [ref=e150]:
+                  - paragraph [ref=e152]: Distribute approved workflows consistently across all employees
+                - listitem [ref=e153]:
+                  - paragraph [ref=e155]: Ensure teams use standardized procedures and best practices
+                - listitem [ref=e156]:
+                  - paragraph [ref=e158]: Deploy new capabilities without requiring individual uploads
+              - paragraph [ref=e160]:
+                - text: Learn more about provisioning skills in
+                - link "Provision and manage Skills for your organization" [ref=e162] [cursor=pointer]:
+                  - /url: https://support.claude.com/en/articles/13119606-managing-skills-as-an-admin
+                - text: .
+              - paragraph [ref=e164]
+              - heading "Partner skills" [level=3] [ref=e166]
+              - paragraph [ref=e168]: The Skills Directory features professionally-built skills from partners like Notion, Figma, Atlassian, and others. These skills are designed to work seamlessly with their respective MCP connectors, enabling powerful integrated workflows.
+              - paragraph [ref=e170]
+              - separator [ref=e172]
+              - paragraph [ref=e174]
+              - heading "Key benefits" [level=2] [ref=e176]
+              - paragraph [ref=e178]: "Improvement in Claude’s performance of specific tasks: Skills provide specialized capabilities for tasks like document creation, data analysis, and domain-specific work that requires supplementing Claude's general knowledge."
+              - paragraph [ref=e180]
+              - paragraph [ref=e182]: "Organizational knowledge capture: Package your company's workflows, best practices, and institutional knowledge for Claude to use consistently across your team."
+              - paragraph [ref=e184]
+              - paragraph [ref=e186]: "Easy customization: Anyone can create Skills by writing instructions in Markdown—no coding required for simple Skills, though you can attach executable scripts to custom Skills for more advanced functionality."
+              - paragraph [ref=e188]
+              - paragraph [ref=e190]: "Centralized management for organizations: Team and Enterprise plan Owners can provision skills organization-wide, ensuring consistent workflows across teams without requiring individual setup from each user."
+              - paragraph [ref=e192]
+              - separator [ref=e194]
+              - paragraph [ref=e196]
+              - heading "Agent Skills open standard" [level=2] [ref=e198]
+              - paragraph [ref=e200]:
+                - text: The Agent Skills specification is published as an open standard at
+                - link "agentskills.io" [ref=e202] [cursor=pointer]:
+                  - /url: https://agentskills.io
+                - text: . This means skills you create aren't locked to Claude—the same skill format works across AI platforms and tools that adopt the standard. A reference Python SDK is also available for developers implementing skills support in their own platforms.
+              - paragraph [ref=e204]
+              - separator [ref=e206]
+              - paragraph [ref=e208]
+              - heading "Skills compared to other Claude capabilities" [level=2] [ref=e210]
+              - heading "Skills vs. projects" [level=3] [ref=e212]
+              - paragraph [ref=e214]:
+                - link "Projects" [ref=e216] [cursor=pointer]:
+                  - /url: https://support.claude.com/en/articles/9517075-what-are-projects
+                - text: provide static background knowledge that's always loaded when you start chats within them. Skills provide specialized procedures that activate dynamically when needed and work everywhere across Claude.
+              - paragraph [ref=e218]
+              - heading "Skills vs. MCP (Model Context Protocol)" [level=3] [ref=e220]
+              - paragraph [ref=e222]: "MCP connects Claude to external services and data sources. Skills provide procedural knowledge—instructions for how to complete specific tasks or workflows. You can use both together: MCP connections give Claude access to tools, while Skills teach Claude how to use those tools effectively."
+              - paragraph [ref=e224]
+              - heading "Skills vs. custom instructions" [level=3] [ref=e226]
+              - paragraph [ref=e228]:
+                - link "Custom instructions" [ref=e230] [cursor=pointer]:
+                  - /url: https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features
+                - text: apply broadly to all your conversations. Skills are task-specific and only load when relevant, making them better for specialized workflows.
+              - paragraph [ref=e232]
+              - separator [ref=e234]
+              - paragraph [ref=e236]
+              - heading "Learn more about Skills" [level=2] [ref=e238]
+              - paragraph [ref=e240]:
+                - text: To discover available Skills, check out the directory by clicking "Customize" in your account and navigating to "Skills." You can click "+" then "Browse skills" to open the directory. For more information, see
+                - link "Browse skills, connectors, and plugins in one directory" [ref=e242] [cursor=pointer]:
+                  - /url: https://support.claude.com/en/articles/14328846-browse-skills-connectors-and-plugins-in-one-directory
+                - text: .
+              - paragraph [ref=e244]
+              - paragraph [ref=e246]:
+                - text: For more details about how Skills work, see
+                - link "Agent Skills" [ref=e248] [cursor=pointer]:
+                  - /url: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview
+                - text: in our Claude Docs.
+              - generic [ref=e249]:
+                - separator [ref=e250]
+                - generic [ref=e251]: Related Articles
+                - generic [ref=e252]:
+                  - link "Anthropic Connectors Directory FAQ" [ref=e253] [cursor=pointer]:
+                    - /url: https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq
+                    - generic [ref=e255]: Anthropic Connectors Directory FAQ
+                    - img [ref=e257]
+                  - link "Use Skills in Claude" [ref=e259] [cursor=pointer]:
+                    - /url: https://support.claude.com/en/articles/12512180-use-skills-in-claude
+                    - generic [ref=e261]: Use Skills in Claude
+                    - img [ref=e263]
+                  - link "How to create custom Skills" [ref=e265] [cursor=pointer]:
+                    - /url: https://support.claude.com/en/articles/12512198-how-to-create-custom-skills
+                    - generic [ref=e267]: How to create custom Skills
+                    - img [ref=e269]
+                  - link "Anthropic Software Directory Policy" [ref=e271] [cursor=pointer]:
+                    - /url: https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy
+                    - generic [ref=e273]: Anthropic Software Directory Policy
+                    - img [ref=e275]
+                  - link "Install financial services plugins for Cowork" [ref=e277] [cursor=pointer]:
+                    - /url: https://support.claude.com/en/articles/13851150-install-financial-services-plugins-for-cowork
+                    - generic [ref=e279]: Install financial services plugins for Cowork
+                    - img [ref=e281]
+        - group "Did this answer your question?" [ref=e283]:
+          - generic [ref=e284]: Did this answer your question?
+          - generic [ref=e285]:
+            - button "Disappointed Reaction" [ref=e286] [cursor=pointer]: 😞
+            - button "Neutral Reaction" [ref=e287] [cursor=pointer]: 😐
+            - button "Smiley Reaction" [ref=e288] [cursor=pointer]: 😃
+      - generic [ref=e293]:
+        - link "Claude Help Center" [ref=e296] [cursor=pointer]:
+          - /url: /en/
+          - img "Claude Help Center" [ref=e297]
+        - generic [ref=e299]:
+          - list [ref=e302]:
+            - listitem [ref=e303]:
+              - link "Product" [ref=e304] [cursor=pointer]:
+                - /url: https://www.anthropic.com/product
+            - listitem [ref=e305]:
+              - link "Research" [ref=e306] [cursor=pointer]:
+                - /url: https://www.anthropic.com/research
+            - listitem [ref=e307]:
+              - link "Company" [ref=e308] [cursor=pointer]:
+                - /url: https://www.anthropic.com/company
+            - listitem [ref=e309]:
+              - link "News" [ref=e310] [cursor=pointer]:
+                - /url: https://www.anthropic.com/news
+            - listitem [ref=e311]:
+              - link "Careers" [ref=e312] [cursor=pointer]:
+                - /url: https://www.anthropic.com/careers
+          - list [ref=e315]:
+            - listitem [ref=e316]:
+              - link "Terms of Service - Consumer" [ref=e317] [cursor=pointer]:
+                - /url: https://www.anthropic.com/terms
+            - listitem [ref=e318]:
+              - link "Terms of Service - Commercial" [ref=e319] [cursor=pointer]:
+                - /url: https://www.anthropic.com/legal/commercial-terms
+            - listitem [ref=e320]:
+              - link "Privacy Policy" [ref=e321] [cursor=pointer]:
+                - /url: https://www.anthropic.com/privacy
+            - listitem [ref=e322]:
+              - link "Usage Policy" [ref=e323] [cursor=pointer]:
+                - /url: https://www.anthropic.com/aup
+            - listitem [ref=e324]:
+              - link "Responsible Disclosure Policy" [ref=e325] [cursor=pointer]:
+                - /url: https://www.anthropic.com/responsible-disclosure-policy
+            - listitem [ref=e326]:
+              - link "Compliance" [ref=e327] [cursor=pointer]:
+                - /url: https://trust.anthropic.com/
+  - alert [ref=e328]

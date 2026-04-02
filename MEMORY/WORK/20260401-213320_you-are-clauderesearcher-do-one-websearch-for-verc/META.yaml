@@ -1,0 +1,11 @@
+id: "20260401-213320_you-are-clauderesearcher-do-one-websearch-for-verc"
+title: "You are ClaudeResearcher Do ONE WebSearch for Vercel"
+session_id: "385706ad-17be-4375-bf45-3ec217609e46"
+created_at: "2026-04-01T21:33:20+03:00"
+completed_at: null
+status: "ACTIVE"
+source: "AUTO"
+lineage:
+  tools_used: []
+  files_changed: []
+  agents_spawned: []

@@ -3,8 +3,8 @@
 ## Meta
 - **Domain:** workflow
 - **Confidence:** 75%
-- **Observation Count:** 53
-- **Last Crystallized:** 2026-03-18
+- **Observation Count:** 54
+- **Last Crystallized:** 2026-04-01
 - **Source:** Converted from workflow.json
 
 ---
@@ -195,3 +195,4 @@
 - 2026-03-16: [principle] Strong approval — delivered on critical gaps identified by Gemini
 - 2026-03-18: [anti-pattern] Mild correction — frequency too high, needs adjustment
 - 2026-03-18: [anti-pattern] Mild frustration — uncertainty about A0's work + needs clarification
+- 2026-04-01: [anti-pattern] Confused by unclear instructions
