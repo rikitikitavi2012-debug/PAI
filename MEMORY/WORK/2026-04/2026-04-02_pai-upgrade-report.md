@@ -10,11 +10,18 @@
 | Категория | Внедрено | Pending | Пропущено |
 |-----------|----------|---------|-----------|
 | 🔴 CRITICAL | 5/6 | 1 | 0 |
-| 🟠 HIGH | 1/7 | 5 | 1 |
-| 🟡 MEDIUM | 0/3 | 3 | 0 |
-| **Итого** | **6/16** | **9** | **1** |
+| 🟠 HIGH | 4/7 | 2 | 1 |
+| 🟡 MEDIUM | 1/3 | 2 | 0 |
+| **Итого** | **10/16** | **5** | **1** |
 
-**Коммиты:** `fd2999d` (3 quick wins + EVIDENCE_FIRST) | `481bad6` (Circuit Breaker) | `df9052e` + `af1818b` (PhaseGate)
+**Коммиты:**
+- `fd2999d` — 3 quick wins + EVIDENCE_FIRST gate
+- `481bad6` — Circuit Breaker
+- `df9052e` + `af1818b` — PhaseGate hook
+- `1981869` — Per-agent expertise files
+- `6b118b5` — Domain ownership enforcement
+- `7e377ae` — Lean Snapshot pattern
+- `9dc0055` — Hook defer decision
 
 ---
 
@@ -60,20 +67,20 @@
 |---|-------------|--------|--------|
 | 2 | **Agent Teams Inbox** для координации субагентов | ⏳ Pending | — |
 | 3 | **Domain ownership enforcement** для субагентов | ✅ Done | `6b118b5` |
-| 7 | **Per-agent expertise файлы** в MEMORY/EXPERTISE/ | ⏳ Pending | — |
+| 7 | **Per-agent expertise файлы** в MEMORY/EXPERTISE/ | ✅ Done | `1981869` |
 | 10 | ~~`claude -p` subprocess паттерн~~ | ❌ Skipped | Используем Anthropic API + Z.AI напрямую |
-| 11 | **Hook "defer" decision** для headless режима | ⏳ Pending | — |
+| 11 | **Hook "defer" decision** для headless режима | ✅ Done | `9dc0055` |
 | 5 | **4-уровневая прогрессивная компрессия** | ⏳ Pending | — |
 | 9 | **Circuit Breaker** для стагнации | ✅ Done | `481bad6` |
 
 ### 🟡 MEDIUM — Интегрировать когда удобно
 
-| # | Рекомендация | Значимость для PAI | Усилия | Файлы |
-|---|-------------|-------------------|--------|-------|
-| 8 | **Принять Git Context Controller паттерн для памяти** | Плоские MEMORY файлы → ветвящаяся структура с fork/commit/merge для исследований | Med | Структура `MEMORY/` |
-| 14 | **Применить Lean Snapshot паттерн к браузерным скиллам** | 9x снижение контекста при браузерной автоматизации. 2K preview вместо 60K полного дампа | Med | Browser skill |
-| 13 | **Кросс-агентная shared memory DB** | Субагенты не разделяют память. Единый knowledge graph позволяет параллельную координацию | High | Новая инфраструктура |
-| 11b | **Аудит описаний скиллов < 1024 символов** | Claude Code обрезает описания на 1024 символа (250 для листинга). Описания PAI могут превышать | Low | `skill-index.json`, все `SKILL.md` |
+| # | Рекомендация | Статус | Коммит |
+|---|-------------|--------|--------|
+| 8 | **Git Context Controller паттерн для памяти** | ⏳ Pending | — |
+| 14 | **Lean Snapshot паттерн** для браузерных скиллов | ✅ Done | `7e377ae` |
+| 13 | **Кросс-агентная shared memory DB** | ⏳ Pending | — |
+| 11b | **Аудит описаний скиллов < 1024 символов** | ⏳ Pending | — |
 
 ### 🟢 LOW — Осведомлённость / на будущее
 
