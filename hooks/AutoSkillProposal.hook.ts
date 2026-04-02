@@ -90,18 +90,32 @@ IMPORTANT:
 // ── Helper Functions ───────────────────────────────────────────────────────
 
 /**
- * Count unique tools used in transcript by matching function call XML blocks.
+ * Count unique tools used in transcript by matching tool_use blocks.
+ * Handles both JSON format ("name": "Tool") and XML format (<function=Tool>).
  */
 function countToolCalls(transcript: string): number {
-  const toolUsePattern = /<function=([A-Za-z]+)>/g;
-  const matches = transcript.match(toolUsePattern) || [];
+  // JSON format: "name": "ToolName" (in tool_use blocks)
+  const jsonPattern = /"name":\s*"([A-Za-z]+)"/g;
+  // XML format: <function=ToolName>
+  const xmlPattern = /<function=([A-Za-z]+)>/g;
 
-  const uniqueTools = new Set(
-    matches
-      .map(m => m.match(/function=([A-Za-z]+)/)?.[1])
-      .filter(Boolean) as string[]
-  );
-  return uniqueTools.size;
+  const tools = new Set<string>();
+
+  // Extract from JSON format
+  let match;
+  while ((match = jsonPattern.exec(transcript)) !== null) {
+    // Filter out non-tool names (common JSON fields)
+    if (!['type', 'id', 'role', 'content', 'model', 'session'].includes(match[1].toLowerCase())) {
+      tools.add(match[1]);
+    }
+  }
+
+  // Extract from XML format
+  while ((match = xmlPattern.exec(transcript)) !== null) {
+    tools.add(match[1]);
+  }
+
+  return tools.size;
 }
 
 /**
@@ -241,10 +255,12 @@ async function main(): Promise<void> {
       process.exit(0);
     }
 
-    // 3. Parse transcript
-    //    Fast path sets fullResponse but not raw; handle both.
-    const transcript = await parseTranscriptFromInput(input);
-    const rawText = transcript.raw || (transcript as any).fullResponse || '';
+    // 3. Parse transcript — ALWAYS read from file, not fast path
+    //    AutoSkillProposal needs FULL session, not just last message
+    await new Promise(resolve => setTimeout(resolve, 300)); // Wait for file flush
+    const { parseTranscript } = await import('../PAI/Tools/TranscriptParser');
+    const transcript = parseTranscript(input.transcript_path);
+    const rawText = transcript.raw || '';
     if (rawText.length < 200) {
       console.error('[AutoSkillProposal] Transcript too short, skipping');
       process.exit(0);
