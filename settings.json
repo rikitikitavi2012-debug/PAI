@@ -1,5 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "showThinkingSummaries": true,
   "env": {
     "PAI_DIR": "/home/ser/.claude",
     "PROJECTS_DIR": "${PROJECTS_DIR}",
@@ -12,7 +13,8 @@
     "ANTHROPIC_API_KEY": "4a8ff1c2abfb408fac83e99ea30c20dd.xpUcmF8mcvY5ljDA",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.1",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5-turbo"
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-5-turbo",
+    "MCP_CONNECTION_NONBLOCKING": "true"
   },
   "includeGitInstructions": false,
   "permissions": {
@@ -93,6 +95,7 @@
       },
       {
         "matcher": "Edit",
+        "if": "Edit(*.md)",
         "hooks": [
           {
             "type": "command",
@@ -102,6 +105,7 @@
       },
       {
         "matcher": "Edit",
+        "if": "Edit(*.md)",
         "hooks": [
           {
             "type": "command",
@@ -120,6 +124,7 @@
       },
       {
         "matcher": "Write",
+        "if": "Write(*.md)",
         "hooks": [
           {
             "type": "command",
@@ -129,6 +134,7 @@
       },
       {
         "matcher": "Write",
+        "if": "Write(*.md)",
         "hooks": [
           {
             "type": "command",
@@ -138,6 +144,7 @@
       },
       {
         "matcher": "Write",
+        "if": "Write(*PRD*.md)",
         "hooks": [
           {
             "type": "command",
@@ -1193,14 +1200,14 @@
   "counts": {
     "skills": 16,
     "workflows": 186,
-    "hooks": 36,
-    "signals": 170,
+    "hooks": 37,
+    "signals": 178,
     "files": 212,
-    "work": 262,
-    "sessions": 2562,
+    "work": 279,
+    "sessions": 2576,
     "research": 62,
-    "ratings": 278,
-    "updatedAt": "2026-03-30T17:45:00.505Z"
+    "ratings": 282,
+    "updatedAt": "2026-04-02T13:04:44.606Z"
   },
   "mcpServers": {
     "supabase": {
