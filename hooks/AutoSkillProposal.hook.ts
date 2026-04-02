@@ -4,304 +4,343 @@
  *
  * PURPOSE:
  * Analyzes completed sessions for reusable patterns and AUTO-CREATES skills.
- * Inspired by Hermes Agent auto-skill creation pattern.
+ * Uses LLM inference (Sonnet) to evaluate session complexity and identify
+ * workflows worth codifying as skills.
  *
- * TRIGGER: Stop event
+ * TRIGGER: Stop event (PostToolUse or session end)
  *
  * THRESHOLDS:
- * - Minimum 8 tool calls (complexity threshold)
- * - Must have identifiable pattern (not just "fixed bug")
- * - Rate limit: max 1 skill per session
+ * - Minimum 5 unique tool calls in transcript
+ * - Confidence >= 0.7 from LLM analysis
+ * - Not a duplicate of existing skill (>50% trigger overlap)
+ * - Rate limit: 1 skill per session, 5-minute cooldown
  *
- * INPUT:
- * - stdin: Hook input JSON (session_id, transcript_path, last_assistant_message)
- *
- * OUTPUT:
- * - Voice notification when skill created
- * - Skill file in skills/auto/<name>/SKILL.md
- *
- * FLOW:
- * 1. Read stdin with timeout
- * 2. Check session complexity (skip if <8 tool calls)
- * 3. Analyze last_assistant_message for patterns via Inference.ts
- * 4. If pattern found, create skill in skills/auto/
- * 5. Notify via voice
- *
- * USER CAN DELETE: skills/auto/ directory if skill not needed
+ * INPUT:  stdin JSON via readHookInput + parseTranscriptFromInput
+ * OUTPUT: Skill file in skills/auto/<Name>/SKILL.md + voice notification
  */
 
-import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { readHookInput } from './lib/hook-io';
-import { execFileSync } from 'child_process';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
+import { join } from 'path';
+
+import { readHookInput, parseTranscriptFromInput } from './lib/hook-io';
+import { inference } from '../PAI/Tools/Inference';
+
+// ── Constants ──────────────────────────────────────────────────────────────
 
 const BASE_DIR = process.env.PAI_DIR || join(process.env.HOME || '', '.claude');
 const SKILLS_AUTO_DIR = join(BASE_DIR, 'skills', 'auto');
+const STATE_FILE = join(BASE_DIR, 'MEMORY', 'STATE', 'skill-proposal-state.json');
+const TIMEOUT_MS = 30_000;
+const MIN_TOOL_CALLS = 5;
 
-// Minimum complexity threshold (tool calls in last_assistant_message)
-const MIN_TOOL_CALLS = 8;
+// ── Interfaces ─────────────────────────────────────────────────────────────
 
-// Rate limit: only propose once per session
-const PROPOSAL_STATE_FILE = join(BASE_DIR, 'MEMORY', 'STATE', 'skill-proposal-state.json');
+interface SkillProposal {
+  should_create: boolean;
+  confidence: number;
+  reason: string;
+  skill?: {
+    name: string;
+    description: string;
+    triggers: string[];
+    workflow_hint: string;
+  };
+}
 
 interface ProposalState {
-  lastProposalSession: string;
+  lastSessionId: string;
   lastProposalTime: string;
 }
 
-interface SkillProposal {
-  name: string;
-  description: string;
-  triggerPhrases: string[];
-  usage: string;
-  pattern: string;
+// ── System Prompt ──────────────────────────────────────────────────────────
+
+const SKILL_ANALYSIS_PROMPT = `You are a skill creation analyst. Analyze Claude Code sessions for reusable patterns.
+
+A GOOD skill candidate:
+1. Repeats 2+ times in session (same tool sequence or workflow)
+2. Useful to OTHER sessions (not just this specific task)
+3. Non-trivial (not "fix bug", "add file", "run command")
+4. Has clear triggers (when would user want this?)
+
+A BAD skill candidate:
+- One-off task (specific to this session only)
+- Simple operation (single tool call)
+- Generic advice (no concrete workflow)
+- Already exists as a skill
+
+Output JSON:
+{
+  "should_create": boolean,
+  "confidence": 0.0-1.0,
+  "reason": "why creating or not",
+  "skill": {
+    "name": "TitleCase",
+    "description": "Brief description. USE WHEN trigger1, trigger2.",
+    "triggers": ["trigger1", "trigger2"],
+    "workflow_hint": "What the skill should do"
+  }
+}
+
+IMPORTANT:
+- name MUST be TitleCase (e.g., "DebugWorkflow", not "debug-workflow")
+- description MUST include USE WHEN clause with triggers
+- confidence MUST be 0.0-1.0
+- If should_create is false, omit skill field`;
+
+// ── Helper Functions ───────────────────────────────────────────────────────
+
+/**
+ * Count unique tools used in transcript by matching function call XML blocks.
+ */
+function countToolCalls(transcript: string): number {
+  const toolUsePattern = /<function=([A-Za-z]+)>/g;
+  const matches = transcript.match(toolUsePattern) || [];
+
+  const uniqueTools = new Set(
+    matches
+      .map(m => m.match(/function=([A-Za-z]+)/)?.[1])
+      .filter(Boolean) as string[]
+  );
+  return uniqueTools.size;
 }
 
 /**
- * Check if we already proposed a skill this session
+ * Check if proposed triggers overlap >50% with any existing skill's triggers.
  */
-function hasProposedThisSession(sessionId: string): boolean {
-  try {
-    if (!existsSync(PROPOSAL_STATE_FILE)) {
-      return false;
+function checkDuplicate(triggers: string[], existingSkills: Record<string, any>): boolean {
+  for (const skill of Object.values(existingSkills.skills || {})) {
+    const existingTriggers: string[] = (skill as any).triggers || [];
+    const intersection = triggers.filter(t => existingTriggers.includes(t));
+    if (intersection.length >= Math.min(triggers.length, existingTriggers.length) * 0.5) {
+      return true;
     }
-    const state: ProposalState = JSON.parse(readFileSync(PROPOSAL_STATE_FILE, 'utf-8'));
-    return state.lastProposalSession === sessionId;
-  } catch {
-    return false;
   }
+  return false;
 }
 
 /**
- * Mark that we've proposed a skill this session
+ * Convert any string to TitleCase (no separators).
  */
-function markProposalDone(sessionId: string): void {
+function toTitleCase(str: string): string {
+  return str
+    .split(/[-_\s]+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
+}
+
+/**
+ * Check rate limit: skip if same session or within cooldown window.
+ */
+function checkRateLimit(sessionId: string): boolean {
   try {
-    const state: ProposalState = {
-      lastProposalSession: sessionId,
-      lastProposalTime: new Date().toISOString(),
-    };
-    const dir = dirname(PROPOSAL_STATE_FILE);
-    if (!existsSync(dir)) {
-      mkdirSync(dir, { recursive: true });
-    }
-    writeFileSync(PROPOSAL_STATE_FILE, JSON.stringify(state, null, 2));
+    if (!existsSync(STATE_FILE)) return true;
+    const state: ProposalState = JSON.parse(readFileSync(STATE_FILE, 'utf-8'));
+    if (state.lastSessionId === sessionId) return false;
+    if (Date.now() - new Date(state.lastProposalTime).getTime() < 5 * 60 * 1000) return false;
   } catch {
-    // Non-critical, ignore
+    // State file corrupt or missing — allow
   }
+  return true;
 }
 
 /**
- * Count tool calls in response (rough complexity estimate)
+ * Persist state after successful proposal.
  */
-function countToolCalls(response: string): number {
-  // Count phase markers and tool invocations
-  const patterns = [
-    /━━━.*OBSERVE|THINK|PLAN|BUILD|EXECUTE|VERIFY|LEARN/,
-    /\b(Read|Write|Edit|Bash|Grep|Glob|Skill|Agent)\(/g,
-  ];
-  let count = 0;
-  for (const pattern of patterns) {
-    const matches = response.match(pattern) || [];
-    count += matches.length;
+function updateState(sessionId: string): void {
+  const dir = join(STATE_FILE, '..');
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
   }
-  return Math.floor(count / patterns.length); // Average to avoid double-counting
+  writeFileSync(STATE_FILE, JSON.stringify({
+    lastSessionId: sessionId,
+    lastProposalTime: new Date().toISOString(),
+  }));
 }
 
 /**
- * Analyze session for patterns using LLM
+ * Load existing skills from skills/ directory to check for duplicates.
+ * Scans each SKILL.md for description field containing trigger keywords.
  */
-async function analyzePatterns(response: string): Promise<SkillProposal | null> {
-  const systemPrompt = `You are a pattern analyzer. Analyze the given AI assistant response and identify if there is a reusable pattern that could become a skill.
-
-A pattern is something that:
-  1. Repeats 2+ times in the response (same action or sequence)
-  2. Has clear trigger conditions
-  3. Would benefit other users or tasks
-  4. Is NOT trivial (not just "fixed X" or "added Y")
-
-If you pattern is found, respond with JSON:
-  {
-    "pattern_found": true,
-    "name": "skill-name-in-kebab-case",
-    "description": "Short description of what this skill does",
-    "trigger_phrases": ["trigger1", "trigger2"],
-    "usage": "How to use this skill",
-    "pattern": "Description of the pattern detected"
-  }
-
-If no pattern found, respond with
-  {
-    "pattern_found": false
-  }
-
-Focus on patterns like:
-  - Multi-step workflows (plan -> execute -> verify)
-  - Repeated tool sequences
-  - Analysis frameworks
-  - Content generation patterns`;
-
-  const userPrompt = `Analyze this AI response for reusable patterns:
-
-Response:
-${response.slice(0, 4000)}
-
-Look for:
-1. Repeated action sequences (same tools called in sequence)
-2. Multi-step processes (planning, executing, verifying)
-3. Analysis patterns (decomposing, analyzing, synthesizing)
-4. Content patterns (specific formats, structures)
-
-If a reusable pattern is found, return JSON with pattern_found: true and details.
-If no reusable pattern is found, return { "pattern_found": false }.`;
+function loadExistingSkills(): { skills: Record<string, { triggers: string[] }> } {
+  const skillsDir = join(BASE_DIR, 'skills');
+  const result: Record<string, { triggers: string[] }> = {};
 
   try {
-    const output = execFileSync(
-      'bun',
-      [
-        'run',
-        join(BASE_DIR, 'PAI/Tools/Inference.ts'),
-        '--level', 'fast',
-        '--json',
-        systemPrompt,
-        userPrompt
-      ],
-      {
-        encoding: 'utf-8',
-        timeout: 15000,
-        maxBuffer: 1024 * 1024
+    for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
+      if (!entry.isDirectory() && !entry.isSymbolicLink()) continue;
+      const skillFile = join(skillsDir, entry.name, 'SKILL.md');
+      if (!existsSync(skillFile)) continue;
+
+      try {
+        const content = readFileSync(skillFile, 'utf-8');
+        // Extract USE WHEN clause from description
+        const useWhenMatch = content.match(/USE WHEN\s+(.+?)[.\n]/i);
+        const descMatch = content.match(/description:\s*(.+?)(?:\n---|\n\n)/s);
+
+        const triggerText = useWhenMatch?.[1] || descMatch?.[1] || '';
+        const triggers = triggerText
+          .split(/[,;]+/)
+          .map(t => t.trim().toLowerCase())
+          .filter(t => t.length > 2);
+
+        if (triggers.length > 0) {
+          result[entry.name] = { triggers };
+        }
+      } catch {
+        // Skip unreadable skill files
       }
-    );
-
-    return JSON.parse(output.toString().trim()) as SkillProposal;
-  } catch (error: any) {
-    if (error.status && error.status !== 0) {
-      console.error(`[AutoSkillProposal] Inference failed: ${error.stderr?.toString('utf-8') || error.message}`);
-    } else {
-      console.error(`[AutoSkillProposal] Error analyzing patterns: ${error}`);
     }
-    return null;
+  } catch {
+    // skills/ directory missing — no existing skills
   }
+
+  return { skills: result };
 }
 
 /**
- * Send voice notification about created skill
+ * Send voice notification about created skill.
  */
 async function notifySkillCreated(name: string): Promise<void> {
   try {
-    const response = await fetch('http://localhost:8888/notify', {
+    await fetch('http://localhost:8888/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: `Создал skill: ${name}. Если не нужен — удали из skills/auto/`,
-        voice_id: '3EuKHIEZbSzrHGNmdYsx',
+        message: `Создан skill: ${name}. Если не нужен — удали из skills/auto/`,
+        voice_id: 'hU3rD0Yk7DoiYULTX1pD',
         voice_enabled: true,
       }),
     });
-    if (!response.ok) {
-      console.error(`[AutoSkillProposal] Voice notification failed`);
-    }
-  } catch (error) {
-    console.error(`[AutoSkillProposal] Voice notification error: ${error}`);
+  } catch {
+    // Voice server unavailable — non-critical
   }
 }
 
-/**
- * Create skill file in skills/auto/<name>/SKILL.md
- */
-function createSkill(proposal: SkillProposal): string {
-  const skillDir = join(SKILLS_AUTO_DIR, proposal.name);
-  const skillPath = join(skillDir, 'SKILL.md');
+// ── Main ───────────────────────────────────────────────────────────────────
 
-  // Create directory if needed
-  if (!existsSync(skillDir)) {
-    mkdirSync(skillDir, { recursive: true });
-  }
+async function main(): Promise<void> {
+  // Global timeout — graceful exit if anything hangs
+  const timeoutId = setTimeout(() => {
+    console.error('[AutoSkillProposal] Timeout, exiting');
+    process.exit(0);
+  }, TIMEOUT_MS);
 
-  // Write skill file
-  const skillContent = `# ${proposal.name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-
-**Description:** ${proposal.description}
-
-**Trigger Phrases:**
-${proposal.triggerPhrases.map(p => `- \`${p}\``).join('\n')}
-
-**Usage:**
-\`\`\`
-${proposal.usage}
-\`\`\`
-
-**Pattern:**
-${proposal.pattern}
-
-**Notes:**
-- Auto-generated by AutoSkillProposal hook
-- Created: ${new Date().toISOString()}
-`;
-
-  writeFileSync(skillPath, skillContent);
-  return skillPath;
-}
-
-async function main() {
   try {
-    // Read stdin with timeout
+    // 1. Read input
     const input = await readHookInput();
     if (!input) {
       console.error('[AutoSkillProposal] No input received');
       process.exit(0);
     }
 
-    const { session_id, last_assistant_message } = input;
+    const sessionId = input.session_id;
 
-    // Check rate limit
-    if (hasProposedThisSession(session_id)) {
-      console.error('[AutoSkillProposal] Already proposed this session, skipping');
+    // 2. Rate limit check
+    if (!checkRateLimit(sessionId)) {
+      console.error('[AutoSkillProposal] Rate limited, skipping');
       process.exit(0);
     }
 
-    // Check complexity threshold
-    if (!last_assistant_message) {
-      console.error('[AutoSkillProposal] No last_assistant_message, skipping');
+    // 3. Parse transcript
+    //    Fast path sets fullResponse but not raw; handle both.
+    const transcript = await parseTranscriptFromInput(input);
+    const rawText = transcript.raw || (transcript as any).fullResponse || '';
+    if (rawText.length < 200) {
+      console.error('[AutoSkillProposal] Transcript too short, skipping');
       process.exit(0);
     }
 
-    const toolCallCount = countToolCalls(last_assistant_message);
+    // 4. Count tool calls
+    const toolCallCount = countToolCalls(rawText);
     if (toolCallCount < MIN_TOOL_CALLS) {
-      console.error(`[AutoSkillProposal] Session too simple (${toolCallCount} tool calls), skipping`);
+      console.error(`[AutoSkillProposal] Session too simple (${toolCallCount} unique tools, need ${MIN_TOOL_CALLS}), skipping`);
       process.exit(0);
     }
 
-    console.error(`[AutoSkillProposal] Analyzing session with ${toolCallCount} tool calls...`);
+    console.error(`[AutoSkillProposal] Analyzing session: ${toolCallCount} unique tools, ${rawText.length} chars`);
 
-    // Analyze patterns
-    const proposal = await analyzePatterns(last_assistant_message);
-    if (!proposal || !proposal.pattern_found) {
-      console.error('[AutoSkillProposal] No reusable pattern found');
+    // 5. Inference — Sonnet analysis
+    const result = await inference({
+      systemPrompt: SKILL_ANALYSIS_PROMPT,
+      userPrompt: `SESSION STATS:
+- Tool calls: ${toolCallCount}
+- Transcript length: ${rawText.length} chars
+
+FULL TRANSCRIPT:
+${rawText}`,
+      level: 'standard',
+      expectJson: true,
+    });
+
+    if (!result.success || !result.parsed) {
+      console.error('[AutoSkillProposal] Inference failed:', result.error || 'no parsed output');
       process.exit(0);
     }
 
-    console.error(`[AutoSkillProposal] Found pattern: ${proposal.name}`);
-    console.error(`[AutoSkillProposal] Description: ${proposal.description}`);
+    const proposal = result.parsed as SkillProposal;
+    if (!proposal.should_create || proposal.confidence < 0.7) {
+      console.error(`[AutoSkillProposal] Skipping: ${proposal.reason} (confidence: ${proposal.confidence})`);
+      process.exit(0);
+    }
 
-    // Create skill directly
-    const skillPath = createSkill(proposal);
-    console.error(`[AutoSkillProposal] Created skill: ${skillPath}`);
+    if (!proposal.skill) {
+      console.error('[AutoSkillProposal] No skill in proposal despite should_create=true');
+      process.exit(0);
+    }
 
-    // Mark as done for this session
-    markProposalDone(session_id);
+    // 6. Normalize name
+    const skillName = toTitleCase(proposal.skill.name);
 
-    // Notify via voice
-    await notifySkillCreated(proposal.name);
+    // 7. Duplicate check
+    const existingSkills = loadExistingSkills();
+    if (checkDuplicate(proposal.skill.triggers, existingSkills)) {
+      console.error(`[AutoSkillProposal] Duplicate skill detected: ${skillName}`);
+      process.exit(0);
+    }
+
+    // 8. Create skill file
+    const skillDir = join(SKILLS_AUTO_DIR, skillName);
+    if (!existsSync(skillDir)) {
+      mkdirSync(skillDir, { recursive: true });
+    }
+
+    const skillContent = `---
+name: ${skillName}
+description: ${proposal.skill.description}
+---
+
+# ${skillName}
+
+${proposal.skill.workflow_hint}
+
+## Workflow Routing
+
+| Workflow | Trigger | File |
+|----------|---------|------|
+| **Create** | "create" | \`Workflows/Create.md\` |
+
+## Examples
+
+**Auto-generated from session:**
+${rawText.slice(0, 1000)}...
+`;
+
+    writeFileSync(join(skillDir, 'SKILL.md'), skillContent);
+
+    // 9. Update state
+    updateState(sessionId);
+
+    // 10. Notify
+    clearTimeout(timeoutId);
+    console.error(`[AutoSkillProposal] Created skill: ${skillName} (confidence: ${proposal.confidence})`);
+    await notifySkillCreated(skillName);
 
     process.exit(0);
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error(`[AutoSkillProposal] Error: ${error}`);
     process.exit(0);
   }
 }
 
-main().catch((err) => {
-  console.error(`[AutoSkillProposal] Fatal error: ${err}`);
-  process.exit(0);
-});
+main();
