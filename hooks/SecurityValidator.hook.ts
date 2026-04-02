@@ -66,6 +66,7 @@ import { readFileSync, existsSync, writeFileSync, mkdirSync, statSync, writeSync
 import { join } from 'path';
 import { homedir } from 'os';
 import { paiPath } from './lib/paths';
+import { getPermissionDecision, isHeadlessMode, type HookInput } from './lib/hook-io';
 
 /** Synchronous stdout write — guarantees flush before process.exit() */
 function stdoutWrite(json: string): void {
@@ -520,11 +521,16 @@ async function handleBash(input: HookInput): Promise<void> {
         reason: result.reason,
         action_taken: 'Prompted user for confirmation'
       });
+      const bashDecision = getPermissionDecision(
+        input,
+        `[PAI SECURITY] ⚠️ ${result.reason}\nCommand: ${command.slice(0, 200)}`,
+        false // non-critical: defer in headless
+      );
       stdoutWrite(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'PreToolUse',
-          permissionDecision: 'ask',
-          permissionDecisionReason: `[PAI SECURITY] ⚠️ ${result.reason}\nCommand: ${command.slice(0, 200)}`
+          permissionDecision: bashDecision.permissionDecision,
+          permissionDecisionReason: bashDecision.permissionDecisionReason
         }
       }));
       break;
@@ -615,11 +621,16 @@ async function handleFileWrite(input: HookInput, toolName: string): Promise<void
         reason: result.reason,
         action_taken: 'Prompted user for confirmation'
       });
+      const pathDecision = getPermissionDecision(
+        input,
+        `[PAI SECURITY] ⚠️ ${result.reason}\nPath: ${filePath}`,
+        false // non-critical: defer in headless
+      );
       stdoutWrite(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'PreToolUse',
-          permissionDecision: 'ask',
-          permissionDecisionReason: `[PAI SECURITY] ⚠️ ${result.reason}\nPath: ${filePath}`
+          permissionDecision: pathDecision.permissionDecision,
+          permissionDecisionReason: pathDecision.permissionDecisionReason
         }
       }));
       return;
@@ -660,11 +671,16 @@ async function handleFileWrite(input: HookInput, toolName: string): Promise<void
         reason: contentResult.reason!,
         action_taken: 'Prompted user for confirmation'
       });
+      const contentDecision = getPermissionDecision(
+        input,
+        `[PAI SECURITY] ⚠️ ${contentResult.reason}\nPath: ${filePath}`,
+        false // non-critical: defer in headless
+      );
       stdoutWrite(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'PreToolUse',
-          permissionDecision: 'ask',
-          permissionDecisionReason: `[PAI SECURITY] ⚠️ ${contentResult.reason}\nPath: ${filePath}`
+          permissionDecision: contentDecision.permissionDecision,
+          permissionDecisionReason: contentDecision.permissionDecisionReason
         }
       }));
       return;

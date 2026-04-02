@@ -13,6 +13,10 @@ export interface HookInput {
   transcript_path: string;
   hook_event_name: string;
   last_assistant_message?: string;
+  /** Headless mode flag — set by Claude Code when running with -p flag */
+  headless?: boolean;
+  /** Parent session ID — present when this is a subagent */
+  parent_session_id?: string;
 }
 
 /**
@@ -72,4 +76,48 @@ export async function parseTranscriptFromInput(input: HookInput): Promise<Parsed
   // Slow path: read from transcript file with delay
   await new Promise(resolve => setTimeout(resolve, 300));
   return parseTranscript(input.transcript_path);
+}
+
+/**
+ * Check if running in headless mode (-p flag).
+ * In headless mode, hooks should use "defer" instead of "ask" for non-critical checks.
+ */
+export function isHeadlessMode(input: HookInput | null): boolean {
+  if (!input) return false;
+  // Check explicit headless flag or CLAUDE_CODE_HEADLESS env var
+  return input.headless === true ||
+         process.env.CLAUDE_CODE_HEADLESS === 'true' ||
+         process.env.CLAUDE_CODE_SDK === 'true';
+}
+
+/**
+ * Get the appropriate decision for headless vs interactive mode.
+ * - Interactive mode: returns "ask" → prompts user
+ * - Headless mode: returns "defer" → pauses session for later resume
+ *
+ * @param input - Hook input containing session metadata
+ * @param reason - Human-readable reason for the decision
+ * @param critical - If true, always "ask" even in headless (security-critical)
+ */
+export function getPermissionDecision(
+  input: HookInput | null,
+  reason: string,
+  critical: boolean = false
+): { permissionDecision: 'ask' | 'defer'; permissionDecisionReason: string } {
+  const headless = isHeadlessMode(input);
+
+  // Critical operations always ask, even in headless
+  if (critical) {
+    return {
+      permissionDecision: 'ask',
+      permissionDecisionReason: reason
+    };
+  }
+
+  return {
+    permissionDecision: headless ? 'defer' : 'ask',
+    permissionDecisionReason: headless
+      ? `${reason}\n\n[Headless mode: session paused. Resume with: claude -p --resume]`
+      : reason
+  };
 }
