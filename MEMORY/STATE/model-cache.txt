@@ -1,1 +1,1 @@
-glm-5.1[1m]
+Opus 4.6 (1M context)

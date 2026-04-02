@@ -1,7 +1,7 @@
 ---
 name: Browser
 description: Visual verification and browser automation via Playwright. Headless or headed Chrome. USE WHEN browser, браузер, веб, screenshot, debug web, verify UI, troubleshoot frontend, automate browser, browse website, review stories, run stories, recipe, web automation.
-version: 3.3.0
+version: 3.4.0
 ---
 
 ## Customization
@@ -329,6 +329,38 @@ The `playwright-cli snapshot` command returns a structured accessibility tree. T
 - **Better for content extraction** — structured text, not pixels
 
 Use snapshots when you need to read page content or interact with elements. Use screenshots when you need visual verification.
+
+---
+
+## Lean Snapshot Pattern (9x Context Savings)
+
+**Problem:** Full page snapshots can return 60K+ tokens of context. Most of it is noise.
+
+**Solution:** Use `depth` parameter to get a ~2K preview instead.
+
+```bash
+# LEAN (default for most tasks) — ~2K tokens
+playwright-cli -s=my snapshot --depth=2
+
+# FULL (only when you need complete structure) — ~60K tokens
+playwright-cli -s=my snapshot
+```
+
+**When to use each:**
+
+| Mode | Depth | Tokens | Use Case |
+|------|-------|--------|----------|
+| **Lean** | 2 | ~2K | Navigation, finding elements, quick checks |
+| **Medium** | 4 | ~10K | Form filling, content extraction |
+| **Full** | unlimited | ~60K | Complex interaction, accessibility audit |
+
+**Rule of thumb:** Start with `--depth=2`. Only increase if you can't find what you need.
+
+**MCP equivalent:**
+```
+mcp__playwright__browser_snapshot(depth=2)  # Lean
+mcp__playwright__browser_snapshot()          # Full
+```
 
 ---
 

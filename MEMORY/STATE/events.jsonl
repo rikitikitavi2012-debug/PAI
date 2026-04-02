@@ -1283,15 +1283,3 @@
 {"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"3.6"},"timestamp":"2026-03-15T23:31:24.328Z","session_id":"unknown"}
 {"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"0.9"},"timestamp":"2026-03-15T23:34:51.161Z","session_id":"unknown"}
 {"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"2.4"},"timestamp":"2026-03-15T23:34:52.553Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"1.0"},"timestamp":"2026-04-02T15:45:48.617Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"4.5"},"timestamp":"2026-04-02T15:45:51.988Z","session_id":"unknown"}
-{"type":"rating.captured","source":"RatingCapture","rating":8,"rating_source":"explicit","summary":"Отлично молодец","timestamp":"2026-04-02T15:46:36.723Z","session_id":"unknown"}
-{"type":"agent.start","source":"EventLogger","agent_type":"Explore","agent_id":"a69654049536c33c4","timestamp":"2026-04-02T15:46:40.063Z","session_id":"unknown"}
-{"type":"voice.sent","source":"VoiceCompletion","character_count":74,"timestamp":"2026-04-02T15:46:55.785Z","session_id":"unknown"}
-{"type":"inference.ok","source":"Inference","data":{"level":"standard","provider":"claude","model":"sonnet","latency_s":"27.2"},"timestamp":"2026-04-02T15:47:16.949Z","session_id":"unknown"}
-{"type":"agent.stop","source":"EventLogger","agent_id":"a69654049536c33c4","agent_type":"Explore","transcript_path":"/home/ser/.claude/projects/-home-ser-projects-timber-frame-site/cb1c88ab-f281-4be9-a7db-37f1f6bb12f5/subagents/agent-a69654049536c33c4.jsonl","last_message_preview":"Here is the complete report of all `timber-frame-spb.ru` references and all `alternates` patterns found under `src/`.\n\n---\n\n## Summary\n\n- **Total files referencing `timber-frame-spb.ru`**: 21 files\n- ","timestamp":"2026-04-02T15:47:28.392Z","session_id":"unknown"}
-{"type":"hook.error","source":"ExpertiseCapture","hook_name":"ExpertiseCapture","error":"writeSync is not defined","timestamp":"2026-04-02T15:47:28.500Z","session_id":"unknown"}
-{"type":"inference.fail","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"0.7","error":"http_400"},"timestamp":"2026-04-02T15:50:13.585Z","session_id":"unknown"}
-{"type":"inference.fail","source":"Inference","data":{"level":"fast","provider":"claude","model":"haiku","latency_s":"0.6","error":"http_400"},"timestamp":"2026-04-02T15:50:13.600Z","session_id":"unknown"}
-{"type":"work.completed","source":"SessionCleanup","slug":"20260402-175138_task","timestamp":"2026-04-02T15:51:00.987Z","session_id":"unknown"}
-{"type":"session.completed","source":"SessionCleanup","timestamp":"2026-04-02T15:51:01.294Z","session_id":"unknown"}
